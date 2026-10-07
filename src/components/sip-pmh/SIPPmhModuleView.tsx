@@ -191,7 +191,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
         </div>
       )}
 
-      {/* Top Banner Corporativo Núcleo Style */}
+      {/* Top Banner Corporativo TIMACA */}
       <div className="bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900 text-white rounded-2xl p-6 sm:p-7 shadow-lg border border-amber-900/40 relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent pointer-events-none" />
         

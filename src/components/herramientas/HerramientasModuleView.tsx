@@ -136,7 +136,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
     });
   }, [herramientas, searchQuery, selectedCategoria, selectedEstado]);
 
-  // Herramientas con calibraciÃ³n
+  // Herramientas con calibración
   const herramientasCalibracion = useMemo(() => {
     return herramientas.filter(h => h.requiereCalibracion);
   }, [herramientas]);
@@ -228,7 +228,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
           estado: 'Devuelto',
           fechaDevolucionReal: new Date().toISOString().split('T')[0],
           recibidoPor: currentUser.nombre,
-          condicionDevolucion: 'Devuelto a paÃ±ol en condiciones operativas.'
+          condicionDevolucion: 'Devuelto a pañol en condiciones operativas.'
         };
       }
       return p;
@@ -246,14 +246,14 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
       return h;
     }));
 
-    setNotificacion(`Herramienta ${prestamo.codigoHerramienta} devuelta al paÃ±ol central.`);
+    setNotificacion(`Herramienta ${prestamo.codigoHerramienta} devuelta al pañol central.`);
     setTimeout(() => setNotificacion(null), 3500);
   };
 
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       
-      {/* Toast NotificaciÃ³n */}
+      {/* Toast Notificación */}
       {notificacion && (
         <div className="fixed bottom-6 right-6 z-50 bg-emerald-700 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 border border-emerald-500 animate-slide-up">
           <CheckCircle2 className="w-5 h-5 text-emerald-200" />
@@ -261,7 +261,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
         </div>
       )}
 
-      {/* Top Banner Corporativo Núcleo Style */}
+      {/* Top Banner Corporativo TIMACA */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 sm:p-7 shadow-lg border border-slate-700/60 relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-sky-500/10 via-transparent to-transparent pointer-events-none" />
         
@@ -279,7 +279,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
               <span>Sistema de Control y Custodia de Herramientas</span>
             </h1>
             <p className="text-sm text-slate-300 max-w-2xl mt-1 leading-relaxed">
-              Gestión de cajas de cuadrilla (<strong className="text-sky-200">TT-A-C-207</strong>), trazabilidad de préstamos en naves y frentes de obra, y control de calibraciÃ³n de torquímetros e instrumentos.
+              Gestión de cajas de cuadrilla (<strong className="text-sky-200">TT-A-C-207</strong>), trazabilidad de préstamos en naves y frentes de obra, y control de calibración de torquímetros e instrumentos.
             </p>
           </div>
 
@@ -344,7 +344,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
             {stats.total} <span className="text-xs font-bold text-slate-500">Unidades</span>
           </div>
           <div className="mt-2 text-[11px] text-slate-600 flex items-center justify-between">
-            <span>Valor ReposiciÃ³n:</span>
+            <span>Valor Reposición:</span>
             <strong className="font-mono text-slate-900">${stats.valorTotalUsd.toLocaleString()} USD</strong>
           </div>
         </div>
@@ -378,7 +378,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
             {stats.enCalibracion} <span className="text-xs font-bold text-slate-500">Vencidas / En Lab</span>
           </div>
           <div className="mt-2 text-[11px] text-slate-600 flex items-center justify-between">
-            <span>PrÃ³ximas a vencer (&lt;30d):</span>
+            <span>Próximas a vencer (&lt;30d):</span>
             <strong className="font-mono text-amber-700">{stats.proximasCalibrar} unid.</strong>
           </div>
         </div>
@@ -395,13 +395,13 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
             {stats.cajasCuadrilla} / 40 <span className="text-xs font-bold text-slate-500">Asignadas</span>
           </div>
           <div className="mt-2 text-[11px] text-slate-600 flex items-center justify-between">
-            <span>InversiÃ³n FabricaciÃ³n:</span>
+            <span>Inversión Fabricación:</span>
             <strong className="font-mono text-indigo-700">$12.441 USD</strong>
           </div>
         </div>
       </div>
 
-      {/* Tabs Principales del MÃ³dulo */}
+      {/* Tabs Principales del Módulo */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
         
         {/* Tab Header Buttons */}
@@ -520,7 +520,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
           </div>
         )}
 
-        {/* Tab 1: CatÃ¡logo General */}
+        {/* Tab 1: Catálogo General */}
         {activeTab === 'catalogo' && (
           <div className="p-4 sm:p-6 space-y-4">
             
@@ -530,7 +530,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Buscar por cÃ³digo, nombre, responsable o ubicaciÃ³n..."
+                  placeholder="Buscar por código, nombre, responsable o ubicación..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
@@ -543,13 +543,13 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                   onChange={(e) => setSelectedCategoria(e.target.value)}
                   className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:outline-none cursor-pointer"
                 >
-                  <option value="TODAS">Todas las CategorÃ­as</option>
+                  <option value="TODAS">Todas las Categorías</option>
                   <option value="Cajas de Herramientas">Cajas de Herramientas</option>
-                  <option value="TorquÃ­metros & Metrología">TorquÃ­metros & Metrología</option>
+                  <option value="Torquímetros & Metrología">Torquímetros & Metrología</option>
                   <option value="Equipos de Soldadura">Equipos de Soldadura</option>
-                  <option value="Herramientas ElÃ©ctricas">Herramientas ElÃ©ctricas</option>
+                  <option value="Herramientas Eléctricas">Herramientas Eléctricas</option>
                   <option value="Equipos de Izaje & Tecles">Equipos de Izaje & Tecles</option>
-                  <option value="Prensas & Gatos HidrÃ¡ulicos">Prensas & Gatos HidrÃ¡ulicos</option>
+                  <option value="Prensas & Gatos Hidráulicos">Prensas & Gatos Hidráulicos</option>
                   <option value="Equipos de Oxicorte">Equipos de Oxicorte</option>
                 </select>
 
@@ -572,13 +572,13 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
               <table className="w-full text-left text-xs text-slate-700 border-collapse">
                 <thead className="bg-slate-100/80 text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-3.5">CÃ³digo / Serie</th>
-                    <th className="py-3 px-3.5">DescripciÃ³n & Modelo</th>
-                    <th className="py-3 px-3.5">CategorÃ­a</th>
-                    <th className="py-3 px-3.5">UbicaciÃ³n / Frente</th>
+                    <th className="py-3 px-3.5">Código / Serie</th>
+                    <th className="py-3 px-3.5">Descripción & Modelo</th>
+                    <th className="py-3 px-3.5">Categoría</th>
+                    <th className="py-3 px-3.5">Ubicación / Frente</th>
                     <th className="py-3 px-3.5">Estado</th>
                     <th className="py-3 px-3.5">Custodio Actual</th>
-                    <th className="py-3 px-3.5 text-right">Valor ReposiciÃ³n</th>
+                    <th className="py-3 px-3.5 text-right">Valor Reposición</th>
                     <th className="py-3 px-3.5 text-center">Acciones</th>
                   </tr>
                 </thead>
@@ -663,7 +663,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                           <button
                             onClick={() => setSelectedHerramientaParaDetalle(h)}
                             className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors cursor-pointer"
-                            title="Ver ficha tÃ©cnica completa"
+                            title="Ver ficha técnica completa"
                           >
                             <Info className="w-4 h-4" />
                           </button>
@@ -682,8 +682,8 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
           <div className="p-4 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Registro HistÃ³rico y Activo de Custodia</h3>
-                <p className="text-xs text-slate-500">Trazabilidad de herramientas entregadas a mecÃ¡nicos y frentes de obra.</p>
+                <h3 className="text-sm font-bold text-slate-900">Registro Histórico y Activo de Custodia</h3>
+                <p className="text-xs text-slate-500">Trazabilidad de herramientas entregadas a mecánicos y frentes de obra.</p>
               </div>
 
               {canEdit && (
@@ -708,7 +708,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                     <th className="py-3 px-3.5">Fecha Prevista</th>
                     <th className="py-3 px-3.5">Estado</th>
                     <th className="py-3 px-3.5">Entregado Por</th>
-                    <th className="py-3 px-3.5 text-center">AcciÃ³n</th>
+                    <th className="py-3 px-3.5 text-center">Acción</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -789,9 +789,9 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
               <div className="text-xs text-amber-900 space-y-1">
-                <strong className="font-bold">Normativa de Aseguramiento MetrolÃ³gico Industrial:</strong>
+                <strong className="font-bold">Normativa de Aseguramiento Metrológico Industrial:</strong>
                 <p>
-                  Los torquímetros, manÃ³metros de oxicorte y equipos de izaje deben contar con calibraciÃ³n periÃ³dica certificada por SENCAMER o laboratorio acreditado ISO 17025 para validar torques en pernos de cargadores de barcos y chutes de mineral.
+                  Los torquímetros, manómetros de oxicorte y equipos de izaje deben contar con calibración periódica certificada por SENCAMER o laboratorio acreditado ISO 17025 para validar torques en pernos de cargadores de barcos y chutes de mineral.
                 </p>
               </div>
             </div>
@@ -800,12 +800,12 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
               <table className="w-full text-left text-xs text-slate-700 border-collapse">
                 <thead className="bg-slate-100/80 text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-3.5">CÃ³digo / Equipo</th>
+                    <th className="py-3 px-3.5">Código / Equipo</th>
                     <th className="py-3 px-3.5">Ãltima Calibración</th>
-                    <th className="py-3 px-3.5">PrÃ³ximo Vencimiento</th>
-                    <th className="py-3 px-3.5 text-center">DÃ­as Restantes</th>
-                    <th className="py-3 px-3.5">SemÃ¡foro</th>
-                    <th className="py-3 px-3.5">Observaciones de AuditorÃ­a</th>
+                    <th className="py-3 px-3.5">Próximo Vencimiento</th>
+                    <th className="py-3 px-3.5 text-center">Días Restantes</th>
+                    <th className="py-3 px-3.5">Semáforo</th>
+                    <th className="py-3 px-3.5">Observaciones de Auditoría</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -836,7 +836,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                           {esVencido ? (
                             <span className="text-rose-600">Vencido hace {Math.abs(dias)}d</span>
                           ) : (
-                            <span className={esProximo ? 'text-amber-600' : 'text-emerald-600'}>{dias} dÃ­as</span>
+                            <span className={esProximo ? 'text-amber-600' : 'text-emerald-600'}>{dias} días</span>
                           )}
                         </td>
 
@@ -882,10 +882,10 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                   CUENTA DE COSTOS INTERNOS: TT-A-C-207
                 </span>
                 <h3 className="text-sm font-bold text-indigo-950 mt-1">
-                  FabricaciÃ³n & AsignaciÃ³n de 40 Cajas de Herramientas para Cuadrillas
+                  Fabricación & Asignación de 40 Cajas de Herramientas para Cuadrillas
                 </h3>
                 <p className="text-xs text-indigo-800 mt-1 leading-relaxed">
-                  Proyecto ejecutado e imputado en Julio 2026 por un total de <strong>$12.441 USD</strong>. Cada caja cuenta con placa de identificaciÃ³n soldada, candado maestro con combinaciÃ³n Ãºnica y juego de herramientas estandarizado de 85 a 142 piezas.
+                  Proyecto ejecutado e imputado en Julio 2026 por un total de <strong>$12.441 USD</strong>. Cada caja cuenta con placa de identificación soldada, candado maestro con combinación única y juego de herramientas estandarizado de 85 a 142 piezas.
                 </p>
               </div>
 
@@ -919,7 +919,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                   </div>
 
                   <div className="text-[11px] text-slate-600 space-y-1 bg-white p-2.5 rounded-lg border border-slate-200/80">
-                    <div><strong>UbicaciÃ³n:</strong> {caja.ubicacion}</div>
+                    <div><strong>Ubicación:</strong> {caja.ubicacion}</div>
                     {caja.responsableActual && <div><strong>Responsable:</strong> {caja.responsableActual}</div>}
                     {caja.cuadrilla && <div><strong>Cuadrilla:</strong> {caja.cuadrilla}</div>}
                     <div><strong>Valor Inventario:</strong> ${caja.valorReposicionUsd} USD</div>
@@ -948,7 +948,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                 onClick={() => setIsNewPrestamoModalOpen(false)}
                 className="text-slate-400 hover:text-slate-700 text-lg font-bold"
               >
-                â
+                ✕
               </button>
             </div>
 
@@ -984,7 +984,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">CÃ©dula de Identidad:</label>
+                  <label className="block font-semibold text-slate-700 mb-1">Cédula de Identidad:</label>
                   <input
                     type="text"
                     placeholder="V-16.892.401"
@@ -1000,7 +1000,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                   <label className="block font-semibold text-slate-700 mb-1">Cargo / Especialidad:</label>
                   <input
                     type="text"
-                    placeholder="MecÃ¡nico LÃ­der / Soldador"
+                    placeholder="Mecánico Líder / Soldador"
                     value={prestamoForm.cargo}
                     onChange={(e) => setPrestamoForm({ ...prestamoForm, cargo: e.target.value })}
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none"
@@ -1014,17 +1014,17 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                     onChange={(e) => setPrestamoForm({ ...prestamoForm, frenteDestino: e.target.value })}
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none"
                   >
-                    <option value="Nave de FabricaciÃ³n 1 - Taller Central">Nave 1 - Taller Central</option>
-                    <option value="Nave de FabricaciÃ³n 2 - CaldererÃ­a">Nave 2 - CaldererÃ­a</option>
+                    <option value="Nave de Fabricación 1 - Taller Central">Nave 1 - Taller Central</option>
+                    <option value="Nave de Fabricación 2 - Calderería">Nave 2 - Calderería</option>
                     <option value="Frente Palúa PMH - Muelle">Frente Palúa PMH - Muelle</option>
                     <option value="Frente Pellas - Tolva 2">Frente Pellas - Tolva 2</option>
-                    <option value="Patio de GrÃºas - BahÃ­a de Servicio">Patio de GrÃºas</option>
+                    <option value="Patio de Grúas - Bahía de Servicio">Patio de Grúas</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Fecha Estimada de DevoluciÃ³n:</label>
+                <label className="block font-semibold text-slate-700 mb-1">Fecha Estimada de Devolución:</label>
                 <input
                   type="date"
                   value={prestamoForm.fechaDevolucionEstimada}
@@ -1069,26 +1069,26 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                 onClick={() => setSelectedHerramientaParaDetalle(null)}
                 className="text-slate-400 hover:text-slate-700 text-lg font-bold"
               >
-                â
+                ✕
               </button>
             </div>
 
             <div className="text-xs space-y-2.5 text-slate-700">
               <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <div><strong>Modelo:</strong> {selectedHerramientaParaDetalle.marcaModelo}</div>
-                <div><strong>CategorÃ­a:</strong> {selectedHerramientaParaDetalle.categoria}</div>
-                <div><strong>UbicaciÃ³n:</strong> {selectedHerramientaParaDetalle.ubicacion}</div>
+                <div><strong>Categoría:</strong> {selectedHerramientaParaDetalle.categoria}</div>
+                <div><strong>Ubicación:</strong> {selectedHerramientaParaDetalle.ubicacion}</div>
                 <div><strong>Estado:</strong> {selectedHerramientaParaDetalle.estado}</div>
-                <div><strong>Valor ReposiciÃ³n:</strong> ${selectedHerramientaParaDetalle.valorReposicionUsd} USD</div>
+                <div><strong>Valor Reposición:</strong> ${selectedHerramientaParaDetalle.valorReposicionUsd} USD</div>
                 <div><strong>Cta Costo:</strong> {selectedHerramientaParaDetalle.cuentaCostoAsociada}</div>
               </div>
 
               {selectedHerramientaParaDetalle.requiereCalibracion && (
                 <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 text-amber-900">
-                  <strong>Control MetrolÃ³gico:</strong>
+                  <strong>Control Metrológico:</strong>
                   <div className="mt-1">Ãltima: {selectedHerramientaParaDetalle.fechaUltimaCalibracion}</div>
-                  <div>PrÃ³xima: {selectedHerramientaParaDetalle.fechaProximaCalibracion}</div>
-                  <div>DÃ­as: {selectedHerramientaParaDetalle.diasParaCalibracion} dÃ­as</div>
+                  <div>Próxima: {selectedHerramientaParaDetalle.fechaProximaCalibracion}</div>
+                  <div>Días: {selectedHerramientaParaDetalle.diasParaCalibracion} días</div>
                 </div>
               )}
 

@@ -31,6 +31,24 @@ interface HeaderProps {
   onToggleMobileSidebar?: () => void;
 }
 
+const TITULOS_VISTAS: Record<string, string> = {
+  'dashboard': 'Dashboard General',
+  'matriz-proyectos': 'Matriz de Costos por Proyecto',
+  'proyectos': 'Cuentas Auxiliares',
+  'mano-obra': 'Mano de Obra Directa (MOD)',
+  'categorias': 'Categorías de Gasto',
+  'tabla': 'Salidas de Almacén SIP',
+  'informe': 'Informe Mensual',
+  'semanas': 'Control Semanal',
+  'meses': 'Evolución Mensual',
+  'usuarios': 'Usuarios & Permisos',
+  'internos-dashboard': 'Dashboard General Interno',
+  'internos-capex': 'Inversiones CAPEX & Obras Civiles',
+  'internos-gruas': 'Flota Pesada & Grúas OPEX',
+  'internos-infra': 'Mantenimiento & Taller',
+  'internos-ppt': 'Informe Gerencial PPT',
+};
+
 export const Header: React.FC<HeaderProps> = ({
   setActiveTab,
   onOpenNewSalida,
@@ -64,12 +82,12 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-2.5 gap-3 sm:gap-6">
           
-          {/* LADO IZQUIERDO: Menú Hamburguesa Móvil + Selector Primario */}
+          {/* LADO IZQUIERDO: Menú Hamburguesa Móvil + Contexto de Vista + Selector Primario */}
           <div className="flex items-center gap-3 min-w-0">
             {/* Botón menú móvil */}
             <button
               onClick={onToggleMobileSidebar}
-              className={`md:hidden p-2 rounded-xl transition-colors cursor-pointer ${
+              className={`md:hidden p-2 rounded-xl transition-colors cursor-pointer shrink-0 ${
                 esInternos ? 'text-slate-300 hover:bg-slate-800' : 'text-neutral-700 hover:bg-neutral-100'
               }`}
               title="Abrir menú de navegación"
@@ -77,52 +95,67 @@ export const Header: React.FC<HeaderProps> = ({
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* MÓDULO COSTOS: Switch elegante de Proyectos Externos vs Internos */}
+            {/* MÓDULO COSTOS: Indicador de Vista Activa + Switch Externos/Internos */}
             {moduloActivo === 'costos' ? (
-              <div 
-                className="flex items-center p-1 rounded-xl border shadow-inner transition-colors"
-                style={{
-                  backgroundColor: esInternos ? '#0f172a' : '#f1f5f9',
-                  borderColor: esInternos ? '#334155' : '#cbd5e1'
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => onCambiarEntorno?.('externos')}
-                  className={`px-3 sm:px-4 py-1.5 rounded-lg font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
-                    !esInternos
-                      ? 'bg-blue-600 text-white shadow-xs ring-1 ring-blue-400'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                  }`}
-                  title="Ir a Proyectos Externos ($1.29M)"
-                >
-                  <Building2 className={`w-3.5 h-3.5 ${!esInternos ? 'text-white' : 'text-slate-400'}`} />
-                  <span className="tracking-tight">PROYECTOS EXTERNOS</span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded hidden sm:inline ${
-                    !esInternos ? 'bg-blue-700 text-blue-100' : 'bg-slate-800 text-slate-400'
-                  }`}>
-                    $1.29M
+              <div className="flex items-center gap-3 min-w-0">
+                {/* Título de la Sección Activa (Desktop) */}
+                <div className={`hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 text-xs ${
+                  esInternos 
+                    ? 'bg-slate-800/90 border-slate-700 text-slate-200 shadow-xs' 
+                    : 'bg-slate-100/90 border-slate-200 text-slate-800 shadow-xs'
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${esInternos ? 'bg-sky-400' : 'bg-blue-600'}`}></span>
+                  <span className="font-bold tracking-tight">
+                    {TITULOS_VISTAS[activeTab] || 'Control de Costos'}
                   </span>
-                </button>
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => onCambiarEntorno?.('internos')}
-                  className={`px-3 sm:px-4 py-1.5 rounded-lg font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
-                    esInternos
-                      ? 'bg-slate-700 text-white shadow-xs ring-1 ring-sky-400'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-                  }`}
-                  title="Ir a Proyectos Internos ($183K)"
+                {/* Switch elegante de Proyectos Externos vs Internos */}
+                <div 
+                  className="flex items-center p-1 rounded-xl border shadow-inner transition-colors shrink-0"
+                  style={{
+                    backgroundColor: esInternos ? '#0f172a' : '#f1f5f9',
+                    borderColor: esInternos ? '#334155' : '#cbd5e1'
+                  }}
                 >
-                  <Wrench className={`w-3.5 h-3.5 ${esInternos ? 'text-sky-300' : 'text-slate-500'}`} />
-                  <span className="tracking-tight">PROYECTOS INTERNOS</span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded hidden sm:inline ${
-                    esInternos ? 'bg-slate-800 text-sky-300' : 'bg-slate-300 text-slate-700'
-                  }`}>
-                    $183K
-                  </span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => onCambiarEntorno?.('externos')}
+                    className={`px-3 sm:px-4 py-1.5 rounded-lg font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
+                      !esInternos
+                        ? 'bg-blue-600 text-white shadow-xs ring-1 ring-blue-400'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                    }`}
+                    title="Ir a Proyectos Externos ($1.29M)"
+                  >
+                    <Building2 className={`w-3.5 h-3.5 ${!esInternos ? 'text-white' : 'text-slate-400'}`} />
+                    <span className="tracking-tight">PROYECTOS EXTERNOS</span>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded hidden sm:inline ${
+                      !esInternos ? 'bg-blue-700 text-blue-100' : 'bg-slate-800 text-slate-400'
+                    }`}>
+                      $1.29M
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onCambiarEntorno?.('internos')}
+                    className={`px-3 sm:px-4 py-1.5 rounded-lg font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
+                      esInternos
+                        ? 'bg-slate-700 text-white shadow-xs ring-1 ring-sky-400'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                    }`}
+                    title="Ir a Proyectos Internos ($183K)"
+                  >
+                    <Wrench className={`w-3.5 h-3.5 ${esInternos ? 'text-sky-300' : 'text-slate-500'}`} />
+                    <span className="tracking-tight">PROYECTOS INTERNOS</span>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded hidden sm:inline ${
+                      esInternos ? 'bg-slate-800 text-sky-300' : 'bg-slate-300 text-slate-700'
+                    }`}>
+                      $183K
+                    </span>
+                  </button>
+                </div>
               </div>
             ) : (
               /* OTROS MÓDULOS: Identificador claro del módulo actual */
@@ -135,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {moduloActivo === 'seguridad' && <Award className="w-4 h-4 text-emerald-400" />}
                   {moduloActivo === 'certificados' && <Award className="w-4 h-4 text-indigo-400" />}
                   <span className="font-bold text-xs">
-                    {moduloActivo === 'rrhh' && 'Recursos Humanos · Núcleo ERP'}
+                    {moduloActivo === 'rrhh' && 'Recursos Humanos · Talento TIMACA'}
                     {moduloActivo === 'herramientas' && 'Herramientas & Taller (40 Cajas)'}
                     {moduloActivo === 'dotacion' && 'Dotación EPP & Uniformes'}
                     {moduloActivo === 'sip-pmh' && 'SIP Campo Palúa · Despacho Muelle'}

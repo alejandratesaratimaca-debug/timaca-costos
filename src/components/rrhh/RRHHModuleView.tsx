@@ -188,7 +188,7 @@ export const RRHHModuleView: React.FC<RRHHModuleViewProps> = ({
     });
   }, [searchContratos, filtroSemaforoContrato, filtroTabContratos]);
 
-  // Agrupación de secciones según la arquitectura oficial de Núcleo ERP
+  // Agrupación de secciones oficiales de RRHH TIMACA
   const CATEGORIAS_RRHH = useMemo(() => [
     {
       id: 'indicadores',
@@ -276,7 +276,7 @@ export const RRHHModuleView: React.FC<RRHHModuleViewProps> = ({
           <div className="space-y-1.5">
             <div className="flex items-center gap-2.5">
               <span className="bg-white/20 text-blue-100 text-[10px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded-md border border-white/20">
-                Núcleo ERP · Módulo Oficial
+                Talento Humano · TIMACA
               </span>
               <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -768,7 +768,7 @@ export const RRHHModuleView: React.FC<RRHHModuleViewProps> = ({
               </button>
             </div>
 
-            {/* Pestañas del Expediente (Núcleo ERP) */}
+            {/* Pestañas del Expediente (TIMACA) */}
             <div className="flex items-center gap-1 px-5 pt-3 border-b border-slate-200 bg-slate-50 shrink-0 overflow-x-auto text-xs font-bold">
               {[
                 { id: 'personales', label: 'Personales & Tallas' },

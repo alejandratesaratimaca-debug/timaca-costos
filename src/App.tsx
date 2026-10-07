@@ -290,7 +290,7 @@ function AppContent() {
           />
         )}
 
-        {/* ================= MÓDULO 7: RECURSOS HUMANOS (NÚCLEO ERP) ================= */}
+        {/* ================= MÓDULO 7: RECURSOS HUMANOS (TIMACA) ================= */}
         {moduloActivo === 'rrhh' && (
           <RRHHModuleView
             currentUser={currentUser}

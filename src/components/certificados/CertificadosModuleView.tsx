@@ -155,11 +155,12 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
   return (
     <div className="space-y-6 pb-16">
       {/* ================= HEADER DEL MÓDULO DE CURSOS ================= */}
-      <div className="bg-gradient-to-r from-indigo-50/70 via-blue-50/40 to-white border border-indigo-200/90 rounded-2xl p-5 sm:p-6 text-slate-900 shadow-2xs">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white border border-slate-700/60 rounded-2xl p-6 sm:p-7 shadow-lg relative overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent pointer-events-none" />
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 border border-indigo-300 font-bold">
+              <span className="font-mono text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 font-bold">
                 [CRT] Control de Cursos & Certificaciones HSE
               </span>
               <a 
@@ -170,14 +171,14 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                 title="Abrir Google Sheet oficial de TIMACA"
               >
                 <ExternalLink className="w-3 h-3 text-emerald-400" />
-                Google Sheet Sincronizado (gid=880063311)
+                Google Sheet Sincronizado (gid=1730870257)
               </a>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
-              <GraduationCap className="w-8 h-8 text-indigo-600" />
-              Sistema de Capacitación y Competencias Técnicas TIMACA
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
+              <GraduationCap className="w-8 h-8 text-indigo-400 shrink-0" />
+              <span>Sistema de Capacitación y Competencias Técnicas TIMACA</span>
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed mt-1">
               Base de datos integral de 879 trabajadores de TIMACA, Palúa (PMH), Pellas y Briquetas. Seguimiento de los 10 cursos obligatorios de seguridad, habilitación operacional y 169 certificados verificados con respaldo en Google Drive.
             </p>
           </div>
@@ -186,7 +187,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
             {onGoToSeguridad && (
               <button
                 onClick={onGoToSeguridad}
-                className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 shadow-2xs text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-600 shadow-xs text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 Ver Seguridad Industrial & IPER
@@ -195,7 +196,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
             {onGoToGruas && (
               <button
                 onClick={onGoToGruas}
-                className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 shadow-2xs text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-600 shadow-xs text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Truck className="w-4 h-4 text-sky-400" />
                 Flota de 26 Grúas
@@ -204,9 +205,9 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
             {onVolver && (
               <button
                 onClick={onVolver}
-                className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 shadow-2xs text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-600 shadow-xs text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4 text-slate-300" />
                 Volver a Costos
               </button>
             )}
@@ -214,11 +215,11 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
         </div>
 
         {/* ================= TARJETAS KPIS EJECUTIVOS ================= */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-indigo-200/80">
-          <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-2xs">
-            <div className="text-[10px] text-slate-400 font-mono uppercase font-bold flex items-center justify-between">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-5 border-t border-slate-700/80">
+          <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-3.5 shadow-md">
+            <div className="text-[10px] text-slate-300 font-mono uppercase font-bold flex items-center justify-between">
               <span>Nómina Evaluada</span>
-              <Users className="w-3.5 h-3.5 text-indigo-600" />
+              <Users className="w-3.5 h-3.5 text-indigo-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-white mt-1">
               879
@@ -228,41 +229,41 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-2xs">
-            <div className="text-[10px] text-slate-400 font-mono uppercase font-bold flex items-center justify-between">
+          <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-3.5 shadow-md">
+            <div className="text-[10px] text-slate-300 font-mono uppercase font-bold flex items-center justify-between">
               <span>Cursos Completados</span>
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-emerald-400 mt-1">
               173
             </div>
-            <div className="text-[10px] text-emerald-300/80 mt-0.5">
+            <div className="text-[10px] text-emerald-300 mt-0.5">
               Certificaciones aprobadas
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-2xs">
-            <div className="text-[10px] text-slate-400 font-mono uppercase font-bold flex items-center justify-between">
+          <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-3.5 shadow-md">
+            <div className="text-[10px] text-slate-300 font-mono uppercase font-bold flex items-center justify-between">
               <span>Archivos en Drive</span>
               <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-sky-400 mt-1">
               169
             </div>
-            <div className="text-[10px] text-sky-300/80 mt-0.5">
+            <div className="text-[10px] text-sky-300 mt-0.5">
               PDFs con enlace directo
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-2xs">
-            <div className="text-[10px] text-slate-400 font-mono uppercase font-bold flex items-center justify-between">
+          <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-3.5 shadow-md">
+            <div className="text-[10px] text-slate-300 font-mono uppercase font-bold flex items-center justify-between">
               <span>Trabajo en Altura</span>
               <Award className="w-3.5 h-3.5 text-amber-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-amber-400 mt-1">
               90 / 166
             </div>
-            <div className="text-[10px] text-amber-300/80 mt-0.5">
+            <div className="text-[10px] text-amber-300 mt-0.5">
               54.2% cobertura operativa
             </div>
           </div>
@@ -450,9 +451,9 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
 
           {/* Tabla de Matriz */}
           <div className="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden">
-            <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600 font-mono">
+            <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs text-slate-700 font-mono">
               <span>
-                Mostrando <strong className="text-white">{Math.min(filteredTrabajadores.length, (currentPage - 1) * pageSize + 1)}</strong> - <strong className="text-white">{Math.min(filteredTrabajadores.length, currentPage * pageSize)}</strong> de <strong className="text-indigo-600">{filteredTrabajadores.length}</strong> trabajadores
+                Mostrando <strong className="text-slate-900 font-bold">{Math.min(filteredTrabajadores.length, (currentPage - 1) * pageSize + 1)}</strong> - <strong className="text-slate-900 font-bold">{Math.min(filteredTrabajadores.length, currentPage * pageSize)}</strong> de <strong className="text-indigo-600 font-bold">{filteredTrabajadores.length}</strong> trabajadores
               </span>
               <div className="flex items-center gap-2">
                 <span>Filas por página:</span>
@@ -513,7 +514,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                         <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
                           t.totalCursosCompletados > 0 
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                            : 'bg-slate-800 text-slate-400'
+                            : 'bg-slate-100 text-slate-500 border border-slate-200'
                         }`}>
                           {t.totalCursosCompletados} / {t.totalCursosAplica}
                         </span>
@@ -569,7 +570,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                       <td className="p-3 text-center">
                         <button
                           onClick={() => setCarnetTrabajador(t)}
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-900/60 text-slate-600 hover:text-rose-200 border border-slate-700 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 border border-slate-200 hover:border-indigo-300 transition-colors cursor-pointer"
                           title="Ver Carnet Digital con QR"
                         >
                           <QrCode className="w-4 h-4" />
@@ -582,16 +583,16 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
             </div>
 
             {/* Paginación */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-700">
               <div>
-                Página <strong className="text-white">{currentPage}</strong> de <strong className="text-white">{totalPages}</strong>
+                Página <strong className="text-slate-900 font-bold">{currentPage}</strong> de <strong className="text-slate-900 font-bold">{totalPages}</strong>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  className="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
                   title="Primera página"
                 >
                   <ChevronsLeft className="w-4 h-4" />
@@ -599,20 +600,20 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                  className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1 transition-colors font-medium"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Anterior</span>
                 </button>
 
-                <span className="px-3 py-1 font-mono text-slate-900 bg-white border border-slate-200 rounded-lg">
+                <span className="px-3 py-1 font-mono text-slate-900 font-bold bg-white border border-slate-300 rounded-lg shadow-2xs">
                   {currentPage} / {totalPages}
                 </span>
 
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                  className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1 transition-colors font-medium"
                 >
                   <span>Siguiente</span>
                   <ChevronRight className="w-4 h-4" />
@@ -620,7 +621,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                 <button
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  className="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
                   title="Última página"
                 >
                   <ChevronsRight className="w-4 h-4" />
@@ -669,38 +670,38 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="font-mono text-[10px] font-bold text-slate-400">
+                      <span className="font-mono text-[10px] font-bold text-slate-500">
                         C.I. {cert.cedula}
                       </span>
-                      <h3 className="font-bold text-sm text-white line-clamp-1">
+                      <h3 className="font-bold text-sm text-slate-900 line-clamp-1">
                         {cert.nombre}
                       </h3>
                       <p className="text-xs text-slate-600">
                         {cert.cargo}
                       </p>
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300 shrink-0">
                       Verificado
                     </span>
                   </div>
 
-                  <div className="pt-2 border-t border-slate-800/80 space-y-1.5 text-xs">
-                    <div className="flex items-center justify-between text-slate-400">
+                  <div className="pt-2 border-t border-slate-100 space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between text-slate-600">
                       <span>Curso:</span>
-                      <span className="font-semibold text-indigo-600 text-right">{cert.curso}</span>
+                      <span className="font-semibold text-indigo-700 text-right">{cert.curso}</span>
                     </div>
-                    <div className="flex items-center justify-between text-slate-400">
+                    <div className="flex items-center justify-between text-slate-600">
                       <span>Fecha Emisión:</span>
-                      <span className="font-mono text-slate-200">{cert.fechaEmision}</span>
+                      <span className="font-mono text-slate-900 font-semibold">{cert.fechaEmision}</span>
                     </div>
-                    <div className="flex items-center justify-between text-slate-400">
+                    <div className="flex items-center justify-between text-slate-600">
                       <span>Área:</span>
-                      <span className="text-slate-600">{cert.areaFisica || cert.departamento}</span>
+                      <span className="text-slate-700 font-medium">{cert.areaFisica || cert.departamento}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-3 mt-3 border-t border-slate-800">
+                <div className="pt-3 mt-3 border-t border-slate-100">
                   <a
                     href={cert.certificadoUrl}
                     target="_blank"
@@ -721,7 +722,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
           <div className="bg-white border border-slate-200 shadow-2xs rounded-2xl p-5 shadow-xl">
-            <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <h2 className="text-base font-black text-slate-900 mb-4 flex items-center gap-2">
               <Layers className="w-5 h-5 text-indigo-600" />
               Cumplimiento por Curso en Toda la Empresa
             </h2>
@@ -732,19 +733,19 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                 return (
                   <div key={cName} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-200">{cName}</span>
+                      <span className="font-bold text-slate-900">{cName}</span>
                       <div className="flex items-center gap-2 font-mono text-[11px]">
-                        <span className="text-emerald-400 font-bold">{stats.completados} Aprobados</span>
-                        <span className="text-slate-500">/</span>
-                        <span className="text-slate-400">{stats.aplican} Aplican</span>
-                        <span className="text-slate-500">·</span>
-                        <span className="text-indigo-600 font-bold">{pct}%</span>
+                        <span className="text-emerald-700 font-bold">{stats.completados} Aprobados</span>
+                        <span className="text-slate-400">/</span>
+                        <span className="text-slate-600 font-medium">{stats.aplican} Aplican</span>
+                        <span className="text-slate-400">·</span>
+                        <span className="text-indigo-700 font-bold">{pct}%</span>
                       </div>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
                       <div 
                         className={`h-full rounded-full transition-all duration-500 ${
-                          pct >= 80 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-indigo-500'
+                          pct >= 80 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-indigo-600'
                         }`}
                         style={{ width: `${Math.min(100, Math.max(pct, 2))}%` }}
                       />
@@ -760,84 +761,84 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
       {/* ================= TAB 4: CATÁLOGO DE CURSOS ================= */}
       {activeTab === 'catalogo' && (
         <div className="bg-white border border-slate-200 shadow-2xs rounded-2xl p-5 shadow-xl space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-indigo-600" />
             Matriz de Aplicabilidad de Cursos (CATALOGO_CURSOS)
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-600 font-medium">
             Reglas oficiales para determinar a qué cargos aplica cada uno de los 10 cursos de Seguridad Industrial según el procedimiento interno de TIMACA.
           </p>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-slate-800 text-slate-600 font-mono text-[10px] uppercase border-b border-slate-700">
-                  <th className="p-3 font-bold">Curso de Seguridad</th>
-                  <th className="p-3 font-bold text-center">Téc. Seguridad</th>
-                  <th className="p-3 font-bold text-center">Supervisores</th>
-                  <th className="p-3 font-bold">Cargos Operativos Obligatorios</th>
+                <tr className="bg-slate-100 text-slate-800 font-mono text-[11px] uppercase border-b border-slate-300">
+                  <th className="p-3 font-black">Curso de Seguridad</th>
+                  <th className="p-3 font-black text-center">Téc. Seguridad</th>
+                  <th className="p-3 font-black text-center">Supervisores</th>
+                  <th className="p-3 font-black">Cargos Operativos Obligatorios</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 text-slate-600">
-                <tr>
-                  <td className="p-3 font-bold text-white">Operadores de Grúa</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Operadores de equipo pesado, montacarguistas, mecánicos de grúa</td>
+              <tbody className="divide-y divide-slate-200 text-slate-800 bg-white">
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Operadores de Grúa</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Operadores de equipo pesado, montacarguistas, mecánicos de grúa</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Rigger - Señalero</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Albañil, Ayudante, Electricista, Fabricador, Instrumentista, Mecánico, Montador, Soldador</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Rigger - Señalero</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Albañil, Ayudante, Electricista, Fabricador, Instrumentista, Mecánico, Montador, Soldador</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Espacios Confinados</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Albañil, Andamiero, Ayudante, Electricista, Fabricador, Instrumentista, Mecánico, Montador, Soldador</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Espacios Confinados</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Albañil, Andamiero, Ayudante, Electricista, Fabricador, Instrumentista, Mecánico, Montador, Soldador</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Manejo Defensivo</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Choferes de camión plataforma, choferes de transporte de personal y vehículos de flota</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Manejo Defensivo</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Choferes de camión plataforma, choferes de transporte de personal y vehículos de flota</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Montaje / Andamio</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Andamieros, montadores de estructura y cuadrillas de parada de planta</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Montaje / Andamio</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Andamieros, montadores de estructura y cuadrillas de parada de planta</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Seguridad Laboral para Técnicos</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Técnicos de seguridad, coordinadores SHA y analistas HSE</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Seguridad Laboral para Técnicos</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Técnicos de seguridad, coordinadores SHA y analistas HSE</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Seguridad Laboral para Supervisores</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Técnicos de seguridad, coordinadores, ingenieros de proyectos, mecánicos especializados, planificadores</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Seguridad Laboral para Supervisores</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Técnicos de seguridad, coordinadores, ingenieros de proyectos, mecánicos especializados, planificadores</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Inducción General</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">100% de los trabajadores de TIMACA (Personal de planta, campo y administración)</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Inducción General</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">100% de los trabajadores de TIMACA (Personal de planta, campo y administración)</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">MATPEL (Materiales Peligrosos)</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Manejo de químicos, lubricantes, solventes, gases y combustibles DISPESUR</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">MATPEL (Materiales Peligrosos)</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Manejo de químicos, lubricantes, solventes, gases y combustibles DISPESUR</td>
                 </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Trabajo en Altura</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-400 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-400">Montadores, andamieros, soldadores, cuadrillas de muelle Palúa (PMH) y línea de pellas</td>
+                <tr className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3 font-bold text-slate-900">Trabajo en Altura</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
+                  <td className="p-3 text-slate-700">Montadores, andamieros, soldadores, cuadrillas de muelle Palúa (PMH) y línea de pellas</td>
                 </tr>
               </tbody>
             </table>
@@ -849,14 +850,14 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
       {activeTab === 'script' && (
         <div className="bg-white border border-slate-200 shadow-2xs rounded-2xl p-6 shadow-xl space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl border border-emerald-500/30">
+            <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200">
               <FolderSync className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-lg font-black text-slate-900">
                 Sincronización con Google Sheets & Apps Script
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-600 font-medium">
                 La información de capacitación se mantiene sincronizada con la hoja de cálculo matriz de TIMACA.
               </p>
             </div>
@@ -864,13 +865,13 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
-              <span className="text-[10px] font-mono text-emerald-300 font-bold uppercase">
+              <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase">
                 Google Sheets Central
               </span>
-              <h3 className="font-bold text-white text-sm">
+              <h3 className="font-bold text-slate-900 text-sm">
                 Control de Cursos de Seguridad Industrial — TIMACA
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-600">
                 Libro oficial con 880 trabajadores, fórmulas automáticas de cumplimiento y enlaces a Google Drive.
               </p>
               <a
@@ -885,13 +886,13 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
             </div>
 
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
-              <span className="text-[10px] font-mono text-sky-300 font-bold uppercase">
+              <span className="text-[10px] font-mono text-sky-700 font-bold uppercase">
                 Google Apps Script
               </span>
-              <h3 className="font-bold text-white text-sm">
+              <h3 className="font-bold text-slate-900 text-sm">
                 Proyecto de Automatización Apps Script
               </h3>
-              <p className="text-xs text-slate-400 font-mono">
+              <p className="text-xs text-slate-600 font-mono">
                 ID: 1_X3O-E4mf5l3qzHnTRBY_GbhTOpR4FCLLz-IbWatFX19zksIiQXEjMAF
               </p>
               <a
@@ -914,62 +915,62 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
           <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-slate-900 space-y-4">
             <button
               onClick={() => setCarnetTrabajador(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 p-1 rounded-lg hover:bg-slate-100 transition-colors"
             >
               ✕
             </button>
 
             <div className="text-center space-y-1">
-              <div className="inline-block px-3 py-0.5 rounded-full bg-rose-500/20 text-indigo-600 border border-rose-500/30 text-[10px] font-mono uppercase font-bold">
+              <div className="inline-block px-3 py-0.5 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-200 text-[10px] font-mono uppercase font-bold">
                 TIMACA · Carnet Digital HSE
               </div>
-              <h2 className="text-lg font-black text-white">{carnetTrabajador.nombre}</h2>
+              <h2 className="text-lg font-black text-slate-900">{carnetTrabajador.nombre}</h2>
               <p className="text-xs text-slate-600 font-mono">Cédula: {carnetTrabajador.cedula} · {carnetTrabajador.cargo}</p>
-              <p className="text-[11px] text-slate-400">{carnetTrabajador.areaFisica || 'TIMACA'} ({carnetTrabajador.departamento})</p>
+              <p className="text-[11px] text-slate-500">{carnetTrabajador.areaFisica || 'TIMACA'} ({carnetTrabajador.departamento})</p>
             </div>
 
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-center gap-4">
-              <div className="bg-white p-2 rounded-lg">
+              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-2xs">
                 <QrCode className="w-20 h-20 text-slate-950" />
               </div>
               <div className="text-left space-y-1 text-xs">
-                <span className="text-[10px] font-mono text-emerald-400 font-bold block">
+                <span className="text-[10px] font-mono text-emerald-700 font-bold block">
                   ESTATUS: HABILITADO
                 </span>
-                <p className="text-slate-600 font-mono text-[11px]">
-                  Cursos aprobados: <strong className="text-emerald-400">{carnetTrabajador.totalCursosCompletados}</strong>
+                <p className="text-slate-700 font-mono text-[11px]">
+                  Cursos aprobados: <strong className="text-emerald-700 font-bold">{carnetTrabajador.totalCursosCompletados}</strong>
                 </p>
-                <p className="text-slate-400 text-[10px]">
+                <p className="text-slate-500 text-[10px]">
                   Verificado con Base Central TIMACA
                 </p>
               </div>
             </div>
 
             <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
-              <div className="text-[10px] font-mono uppercase font-bold text-slate-400">
+              <div className="text-[10px] font-mono uppercase font-bold text-slate-700">
                 Cursos Evaluados:
               </div>
               {carnetTrabajador.cursos.map((c, i) => (
-                <div key={i} className="flex items-center justify-between text-xs p-1.5 rounded bg-slate-50/70 border border-slate-100">
-                  <span className="truncate pr-2 text-slate-200">{c.curso}</span>
+                <div key={i} className="flex items-center justify-between text-xs p-1.5 rounded bg-slate-50 border border-slate-200">
+                  <span className="truncate pr-2 text-slate-900 font-semibold">{c.curso}</span>
                   {c.completado ? (
                     c.certificadoUrl ? (
                       <a
                         href={c.certificadoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[10px] text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 px-2 py-0.5 rounded flex items-center gap-1 shrink-0 font-bold"
+                        className="text-[10px] text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded flex items-center gap-1 shrink-0 font-bold"
                       >
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink className="w-3 h-3 text-emerald-600" />
                         Drive PDF
                       </a>
                     ) : (
-                      <span className="text-[10px] text-emerald-400 font-bold shrink-0">
+                      <span className="text-[10px] text-emerald-700 font-bold shrink-0">
                         ✅ Aprobado
                       </span>
                     )
                   ) : c.aplica ? (
-                    <span className="text-[10px] text-amber-400 font-bold shrink-0">
+                    <span className="text-[10px] text-amber-700 font-bold shrink-0">
                       ⬜ Pendiente
                     </span>
                   ) : (

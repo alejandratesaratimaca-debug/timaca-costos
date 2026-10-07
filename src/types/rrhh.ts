@@ -1,5 +1,5 @@
 /**
- * Tipos de datos para el módulo de Recursos Humanos / Talento Humano (Núcleo ERP · TIMACA)
+ * Tipos de datos para el módulo de Recursos Humanos / Talento Humano (TIMACA)
  */
 
 export type SeccionRRHH =
