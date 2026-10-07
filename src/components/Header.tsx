@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCostos } from '../context/CostosContext';
 import { exportSalidasToExcel } from '../utils/excelHandler';
 import { UsuarioSistema } from '../types/usuarios';
@@ -13,7 +13,9 @@ import {
   ShieldCheck,
   HardHat,
   Award,
-  Users
+  Users,
+  Clock,
+  Calendar
 } from 'lucide-react';
 import { SuiteModulo } from '../types/suite';
 
@@ -63,6 +65,26 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { salidas, resumenSemanas, resumenMeses, resumenProyectos } = useCostos();
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentDateTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = currentDateTime.toLocaleTimeString('es-VE', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit',
+    hour12: true 
+  });
+
+  const formattedDate = currentDateTime.toLocaleDateString('es-VE', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  });
 
   const esInternos = entornoActivo === 'internos';
 
@@ -83,7 +105,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-2.5 gap-3 sm:gap-6">
           
-          {/* LADO IZQUIERDO: Menú Hamburguesa Móvil + Contexto de Vista + Selector Primario */}
+          {/* LADO IZQUIERDO: Menú Hamburguesa Móvil + Contexto de Vista */}
           <div className="flex items-center gap-3 min-w-0">
             {/* Botón menú móvil */}
             <button
@@ -96,66 +118,24 @@ export const Header: React.FC<HeaderProps> = ({
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* MÓDULO COSTOS: Indicador de Vista Activa + Switch Externos/Internos */}
+            {/* MÓDULO COSTOS: Indicador de Vista Activa */}
             {moduloActivo === 'costos' ? (
               <div className="flex items-center gap-3 min-w-0">
-                {/* Título de la Sección Activa (Desktop) */}
-                <div className={`hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 text-xs ${
+                {/* Título de la Sección Activa */}
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 text-xs ${
                   esInternos 
                     ? 'bg-slate-800/90 border-slate-700 text-slate-200 shadow-xs' 
                     : 'bg-slate-100/90 border-slate-200 text-slate-800 shadow-xs'
                 }`}>
                   <span className={`w-2 h-2 rounded-full ${esInternos ? 'bg-sky-400' : 'bg-blue-600'}`}></span>
-                  <span className="font-bold tracking-tight">
+                  <span className="font-bold tracking-tight text-xs sm:text-sm">
                     {TITULOS_VISTAS[activeTab] || 'Control de Costos'}
                   </span>
-                </div>
-
-                {/* Switch elegante de Proyectos Externos vs Internos */}
-                <div 
-                  className="flex items-center p-1 rounded-xl border shadow-inner transition-colors shrink-0"
-                  style={{
-                    backgroundColor: esInternos ? '#0f172a' : '#f1f5f9',
-                    borderColor: esInternos ? '#334155' : '#cbd5e1'
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => onCambiarEntorno?.('externos')}
-                    className={`px-3 sm:px-4 py-1.5 rounded-lg font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
-                      !esInternos
-                        ? 'bg-blue-600 text-white shadow-xs ring-1 ring-blue-400'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                    }`}
-                    title="Ir a Proyectos Externos ($1.29M)"
-                  >
-                    <Building2 className={`w-3.5 h-3.5 ${!esInternos ? 'text-white' : 'text-slate-400'}`} />
-                    <span className="tracking-tight">PROYECTOS EXTERNOS</span>
-                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded hidden sm:inline ${
-                      !esInternos ? 'bg-blue-700 text-blue-100' : 'bg-slate-800 text-slate-400'
-                    }`}>
-                      $1.29M
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => onCambiarEntorno?.('internos')}
-                    className={`px-3 sm:px-4 py-1.5 rounded-lg font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
-                      esInternos
-                        ? 'bg-slate-700 text-white shadow-xs ring-1 ring-sky-400'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-                    }`}
-                    title="Ir a Proyectos Internos ($183K)"
-                  >
-                    <Wrench className={`w-3.5 h-3.5 ${esInternos ? 'text-sky-300' : 'text-slate-500'}`} />
-                    <span className="tracking-tight">PROYECTOS INTERNOS</span>
-                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded hidden sm:inline ${
-                      esInternos ? 'bg-slate-800 text-sky-300' : 'bg-slate-300 text-slate-700'
-                    }`}>
-                      $183K
-                    </span>
-                  </button>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ml-1 ${
+                    esInternos ? 'bg-slate-700 text-sky-300 border-slate-600' : 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
+                  }`}>
+                    {esInternos ? 'Proyectos Internos' : 'Proyectos Externos'}
+                  </span>
                 </div>
               </div>
             ) : (
@@ -222,8 +202,28 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Pastilla de Usuario Activo */}
-            <div className="flex items-center gap-1.5">
+            {/* Pastilla de Usuario Activo con Hora y Fecha al lado */}
+            <div className="flex items-center gap-2">
+              {/* Reloj y Fecha en tiempo real al lado del nombre */}
+              <div 
+                className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-mono shadow-2xs select-none transition-colors ${
+                  esInternos 
+                    ? 'bg-slate-800/90 border-slate-700 text-slate-200' 
+                    : 'bg-slate-50 border-slate-200 text-slate-800'
+                }`}
+                title="Hora oficial de Venezuela y fecha actual"
+              >
+                <div className="flex items-center gap-1.5 font-bold text-sky-600">
+                  <Clock className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                  <span>{formattedTime}</span>
+                </div>
+                <span className="text-slate-300">|</span>
+                <div className="flex items-center gap-1.5 font-medium text-slate-600">
+                  <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span>{formattedDate}</span>
+                </div>
+              </div>
+
               <button
                 onClick={() => setActiveTab('usuarios')}
                 title="Ver perfil y permisos"

@@ -54,15 +54,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   mobileOpen,
   setMobileOpen
 }) => {
-  // Estados de expansión: Siempre abiertos para que no se esconda ningún contenido
+  // Estados de expansión: Departamento de costos colapsado por defecto según requerimiento
+  const [costosExpanded, setCostosExpanded] = useState(false);
   const [externosExpanded, setExternosExpanded] = useState(true);
-  const [internosExpanded, setInternosExpanded] = useState(true);
+  const [internosExpanded, setInternosExpanded] = useState(false);
 
   const esInternos = entornoActivo === 'internos';
 
   const handleSelectModulo = (modulo: SuiteModulo) => {
     onCambiarModulo(modulo);
     if (modulo === 'costos') {
+      setCostosExpanded(true);
       if (entornoActivo === 'internos') {
         setActiveTab('internos-dashboard');
       } else {
@@ -207,15 +209,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* 2. DEPARTAMENTO DE COSTOS (TODAS LAS VISTAS ABIERTAS Y VISIBLES)           */}
           {/* ========================================================================= */}
           <div className="space-y-2 pt-1 border-t border-slate-700/60">
-            {!isCollapsed && (
-              <div className="px-2 py-1 text-[11px] font-mono font-bold tracking-wider text-amber-300 uppercase flex items-center justify-between">
-                <span>2. Departamento de Costos</span>
-                <span className="text-[10px] bg-amber-950/60 text-amber-300 px-1.5 py-0.2 rounded border border-amber-700/60">$13.8M</span>
-              </div>
+            {!isCollapsed ? (
+              <button
+                type="button"
+                onClick={() => setCostosExpanded(!costosExpanded)}
+                className={`w-full px-2.5 py-1.5 text-[11px] font-mono font-bold tracking-wider uppercase flex items-center justify-between rounded-xl border transition-all cursor-pointer ${
+                  costosExpanded 
+                    ? 'bg-amber-950/40 text-amber-300 border-amber-700/60 shadow-xs' 
+                    : 'bg-slate-800/40 text-amber-400/90 border-slate-700/60 hover:bg-slate-800/80 hover:text-amber-300'
+                }`}
+                title={costosExpanded ? "Colapsar departamento de costos" : "Desplegar departamento de costos"}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>2. Depto. de Costos</span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-amber-400 transition-transform duration-200 ${costosExpanded ? 'rotate-180' : ''}`} />
+                </div>
+                <span className="text-[10px] bg-amber-950/60 text-amber-300 px-1.5 py-0.5 rounded border border-amber-700/60">$13.8M</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCollapsed(false);
+                  setCostosExpanded(true);
+                }}
+                className={`w-full flex items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
+                  moduloActivo === 'costos'
+                    ? 'bg-amber-600 text-white font-bold shadow-md'
+                    : 'text-amber-400 hover:text-white hover:bg-slate-800/60'
+                }`}
+                title="Departamento de Costos ($13.8M)"
+              >
+                <div className="p-1 rounded bg-amber-950/80 text-amber-300 border border-amber-800/60 font-mono text-[10px] font-bold">
+                  CST
+                </div>
+              </button>
             )}
 
-            {/* SECCIÓN A: PROYECTOS EXTERNOS ($1.29M) */}
-            <div className="bg-slate-800/40 rounded-xl p-2 border border-slate-700/60 space-y-1">
+            {/* SECCIONES DE COSTOS: Sólo visibles cuando el usuario despliega Costos */}
+            {costosExpanded && !isCollapsed && (
+              <div className="space-y-2">
+                {/* SECCIÓN A: PROYECTOS EXTERNOS ($1.29M) */}
+                <div className="bg-slate-800/40 rounded-xl p-2 border border-slate-700/60 space-y-1">
               {!isCollapsed ? (
                 <div 
                   onClick={() => setExternosExpanded(!externosExpanded)}
@@ -433,6 +469,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             </div>
           </div>
+        )}
+      </div>
 
           {/* ========================================================================= */}
           {/* 3. RESTO DE MÓDULOS OPERATIVOS (TOTALMENTE VISIBLES)                       */}

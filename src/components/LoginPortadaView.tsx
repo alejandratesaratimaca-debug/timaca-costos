@@ -245,14 +245,14 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
               </p>
             </div>
 
-            {/* Crédito de Autoría */}
+            {/* Identificador de Suite */}
             <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs shadow-xs ${
               esInternos 
                 ? 'bg-slate-800/80 border-slate-700 text-slate-200' 
                 : 'bg-blue-950/40 border-blue-500/30 text-slate-200'
             }`}>
               <span className={`w-2 h-2 rounded-full animate-pulse ${esInternos ? 'bg-sky-400' : 'bg-blue-400'}`} />
-              <span>Desarrollado por <strong className="text-white font-bold">Ing. Alejandra Tesara</strong></span>
+              <span>Sistema Integrado de Gestión · <strong className="text-white font-bold">TIMACA 2026</strong></span>
             </div>
 
             {/* Módulos de Operación del Sistema */}
@@ -473,7 +473,7 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
 
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-300 text-xs shadow-xs font-medium">
           <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
-          <span>Desarrollado por <strong className="text-white font-bold">Ing. Alejandra Tesara</strong></span>
+          <span>Plataforma Corporativa <strong className="text-white font-bold">TIMACA</strong></span>
         </div>
 
         <div className="flex items-center gap-3 text-[11px] text-slate-500">
