@@ -21,15 +21,8 @@ import {
   UploadCloud, 
   LogOut, 
   ChevronLeft,
-  Truck,
-  Cpu,
-  Lock,
-  Plus,
-  RefreshCw,
-  Archive,
-  UserCheck,
-  Package,
-  QrCode
+  Briefcase,
+  LayoutDashboard
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -61,10 +54,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   mobileOpen,
   setMobileOpen
 }) => {
-  // Estados para desplegar/colapsar submenús en el sidebar (Por defecto colapsados a petición del usuario)
-  const [costosExpanded, setCostosExpanded] = useState(false);
-  const [externosSubExpanded, setExternosSubExpanded] = useState(false);
-  const [internosSubExpanded, setInternosSubExpanded] = useState(false);
+  // Estados de expansión: Siempre abiertos para que no se esconda ningún contenido
+  const [externosExpanded, setExternosExpanded] = useState(true);
+  const [internosExpanded, setInternosExpanded] = useState(true);
 
   const esInternos = entornoActivo === 'internos';
 
@@ -80,25 +72,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setMobileOpen(false);
   };
 
-  const handleSelectTab = (tabId: string) => {
-    setActiveTab(tabId);
-    setMobileOpen(false);
-  };
-
-  const handleSwitchEntorno = (entorno: 'externos' | 'internos') => {
+  const handleSelectCostosTab = (tabId: string, entorno: 'externos' | 'internos') => {
     onCambiarModulo('costos');
     onCambiarEntorno(entorno);
-    if (entorno === 'internos') {
-      setActiveTab('internos-dashboard');
-    } else {
-      setActiveTab('dashboard');
-    }
+    setActiveTab(tabId);
     setMobileOpen(false);
   };
 
   return (
     <>
-      {/* Backdrop overlay para pantallas móviles */}
+      {/* Backdrop overlay para móviles */}
       {mobileOpen && (
         <div 
           onClick={() => setMobileOpen(false)}
@@ -106,16 +89,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Sidebar Container: Aclarado a un elegante navy acero (#14243b) con tipografía más grande */}
+      {/* Sidebar Container */}
       <aside 
-        className={`fixed md:sticky top-0 left-0 z-50 h-screen flex flex-col bg-[#14243b] text-slate-100 border-r border-slate-700/70 transition-all duration-300 shadow-2xl select-none ${
-          isCollapsed ? 'w-[78px]' : 'w-[305px]'
+        className={`fixed md:sticky top-0 left-0 z-50 h-screen flex flex-col bg-[#112238] text-slate-100 border-r border-slate-700/80 transition-all duration-300 shadow-2xl select-none ${
+          isCollapsed ? 'w-[76px]' : 'w-[315px]'
         } ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
         {/* ================= HEADER DEL SIDEBAR ================= */}
-        <div className="p-4 border-b border-slate-700/70 flex items-center justify-between gap-2 shrink-0 bg-[#0e1b2d]">
+        <div className="p-3.5 border-b border-slate-700/80 flex items-center justify-between gap-2 shrink-0 bg-[#0c1829]">
           {!isCollapsed ? (
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="bg-white/95 px-2 py-1 rounded-xl shadow-xs shrink-0">
@@ -123,11 +106,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="min-w-0">
                 <span className="font-black text-sm text-white tracking-wider block truncate">
-                  TIMACA OPERACIONES
+                  TIMACA SISTEMAS
                 </span>
-                <span className="text-xs text-sky-300 font-mono flex items-center gap-1.5 mt-0.5">
+                <span className="text-[11px] text-sky-300 font-mono flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Suite 100% Operativa
+                  Suite Empresarial 2026
                 </span>
               </div>
             </div>
@@ -150,407 +133,44 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* ================= CONTENIDO DE NAVEGACIÓN SCROLLABLE ================= */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-4.5 scrollbar-thin scrollbar-thumb-slate-700">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-4 scrollbar-thin scrollbar-thumb-slate-700">
           
-          {/* SECCIÓN 1: MÓDULOS DE LA SUITE OPERACIONAL */}
-          <div className="space-y-1.5">
+          {/* ========================================================================= */}
+          {/* 1. EL PRIMERO: RECURSOS HUMANOS (RRHH) - NÚCLEO ERP                        */}
+          {/* ========================================================================= */}
+          <div className="space-y-1">
             {!isCollapsed && (
-              <div className="px-2.5 py-1 text-xs font-mono font-bold tracking-wider text-slate-300 uppercase flex items-center justify-between">
-                <span>Módulos de la Suite</span>
-                <span className="text-emerald-400 font-bold">7 Activos</span>
+              <div className="px-2 py-1 text-[11px] font-mono font-bold tracking-wider text-sky-300 uppercase flex items-center justify-between">
+                <span>1. Gestión de Personal</span>
+                <span className="text-[10px] bg-blue-900/60 text-blue-200 px-1.5 py-0.2 rounded border border-blue-700/60">Prioritario</span>
               </div>
             )}
 
-            {/* 1. MÓDULO RECURSOS HUMANOS [RRH] - NÚCLEO ERP */}
             <button
               onClick={() => handleSelectModulo('rrhh')}
               className={`w-full flex items-center p-2.5 rounded-xl text-left transition-all cursor-pointer ${
                 moduloActivo === 'rrhh'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-900/40 ring-1 ring-blue-300'
-                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 ring-2 ring-blue-300'
+                  : 'bg-slate-800/60 text-slate-200 hover:text-white hover:bg-slate-700/70 border border-slate-700/50'
               }`}
               title="Recursos Humanos · Núcleo ERP: Expedientes, Contratos, Asistencia, Cuadrillas y Selección"
             >
               <div className="flex items-center gap-2.5 min-w-0 flex-1">
                 <span className={`font-mono text-xs font-black px-2 py-1 rounded shrink-0 self-center ${
-                  moduloActivo === 'rrhh' ? 'bg-blue-800 text-blue-100' : 'bg-slate-800/80 text-blue-300'
+                  moduloActivo === 'rrhh' ? 'bg-blue-900 text-white ring-1 ring-white/30' : 'bg-blue-950 text-blue-300 border border-blue-700/50'
                 }`}>
-                  RRH
+                  RRHH
                 </span>
                 {!isCollapsed && (
                   <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-sm text-white leading-tight">
+                    <span className="font-black text-sm text-white leading-tight flex items-center gap-1.5">
                       Recursos Humanos
+                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                     </span>
-                    <span className={`text-[10.5px] font-mono mt-0.5 ${
-                      moduloActivo === 'rrhh' ? 'text-blue-100' : 'text-blue-300/80'
+                    <span className={`text-[11px] mt-0.5 ${
+                      moduloActivo === 'rrhh' ? 'text-blue-100 font-medium' : 'text-slate-400'
                     }`}>
-                      Núcleo ERP · 14 Vistas
-                    </span>
-                  </div>
-                )}
-              </div>
-            </button>
-
-            {/* 2. MÓDULO COSTOS [CST] */}
-            <div className="space-y-1">
-              <button
-                onClick={() => {
-                  if (isCollapsed) setIsCollapsed(false);
-                  handleSelectModulo('costos');
-                  setCostosExpanded(!costosExpanded);
-                }}
-                className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                  moduloActivo === 'costos'
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-900/40 ring-1 ring-blue-300'
-                    : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
-                }`}
-                title="Departamento de Costos: Proyectos Externos ($1.29M) e Internos ($183K)"
-              >
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <span className={`font-mono text-xs font-black px-2 py-1 rounded shrink-0 self-center ${
-                    moduloActivo === 'costos' ? 'bg-blue-800 text-blue-100' : 'bg-slate-800/80 text-blue-300'
-                  }`}>
-                    CST
-                  </span>
-                  {!isCollapsed && (
-                    <div className="flex flex-col min-w-0">
-                      <span className="font-bold text-sm text-white leading-tight">
-                        Costos TIMACA
-                      </span>
-                      <span className={`text-[10.5px] font-mono mt-0.5 ${
-                        moduloActivo === 'costos' ? 'text-blue-100' : 'text-blue-300/80'
-                      }`}>
-                        $13.8M Acumulado
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {!isCollapsed && (
-                  <ChevronDown className={`w-4 h-4 text-slate-300 transition-transform duration-200 shrink-0 ${costosExpanded ? 'rotate-180' : ''}`} />
-                )}
-              </button>
-
-              {/* Sub-árbol de Costos (Externos vs Internos) */}
-              {!isCollapsed && costosExpanded && (
-                <div className="ml-3 pl-3 border-l-2 border-blue-400/40 space-y-2 py-1 text-xs">
-                  
-                  {/* Sub-grupo A: Proyectos Externos */}
-                  <div className="space-y-1">
-                    <div 
-                      onClick={() => {
-                        handleSwitchEntorno('externos');
-                        setExternosSubExpanded(!externosSubExpanded);
-                      }}
-                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer font-bold text-xs ${
-                        moduloActivo === 'costos' && !esInternos
-                          ? 'text-blue-200 bg-blue-950/60'
-                          : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-blue-400" />
-                        <span>Proyectos Externos</span>
-                      </div>
-                      <span className="text-[11px] font-mono text-blue-300">$1.29M</span>
-                    </div>
-
-                    {externosSubExpanded && (
-                      <div className="space-y-0.5 pl-3 border-l border-slate-700/60 text-xs">
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('externos'); handleSelectTab('dashboard'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'dashboard' && moduloActivo === 'costos' && !esInternos
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Tablero Ejecutivo
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('externos'); handleSelectTab('matriz-proyectos'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'matriz-proyectos' && moduloActivo === 'costos'
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Matriz Proyectos (PPT)
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('externos'); handleSelectTab('proyectos'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'proyectos' && moduloActivo === 'costos'
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          20 Cuentas Auxiliares
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('externos'); handleSelectTab('mano-obra'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'mano-obra' && moduloActivo === 'costos'
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Mano de Obra Diaria
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('externos'); handleSelectTab('informe'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'informe' && moduloActivo === 'costos' && !esInternos
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Presentación PPT (8 Láminas)
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('externos'); handleSelectTab('tabla'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'tabla' && moduloActivo === 'costos'
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Salidas de Almacén SIP
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Sub-grupo B: Proyectos Internos */}
-                  <div className="space-y-1 pt-1">
-                    <div 
-                      onClick={() => {
-                        handleSwitchEntorno('internos');
-                        setInternosSubExpanded(!internosSubExpanded);
-                      }}
-                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer font-bold text-xs ${
-                        moduloActivo === 'costos' && esInternos
-                          ? 'text-sky-200 bg-slate-700/60'
-                          : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Wrench className="w-4 h-4 text-sky-400" />
-                        <span>Proyectos Internos</span>
-                      </div>
-                      <span className="text-[11px] font-mono text-sky-300">$183K</span>
-                    </div>
-
-                    {internosSubExpanded && (
-                      <div className="space-y-0.5 pl-3 border-l border-slate-700/60 text-xs">
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('internos'); handleSelectTab('internos-dashboard'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'internos-dashboard' && moduloActivo === 'costos' && esInternos
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Tablero CAPEX vs OPEX
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('internos'); handleSelectTab('internos-capex'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'internos-capex'
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Obras CAPEX ($60.6K)
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('internos'); handleSelectTab('internos-gruas'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'internos-gruas'
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Flota de 26 Grúas
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('internos'); handleSelectTab('internos-mod'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'internos-mod'
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          MOD Taller (4.697 HH)
-                        </button>
-                        <button
-                          onClick={() => { onCambiarModulo('costos'); onCambiarEntorno('internos'); handleSelectTab('internos-ppt'); }}
-                          className={`w-full text-left px-2.5 py-1.5 rounded transition-colors text-[12.5px] ${
-                            activeTab === 'internos-ppt'
-                              ? 'text-white font-bold bg-slate-700/80 shadow-2xs'
-                              : 'text-slate-300 hover:text-white hover:bg-slate-700/40'
-                          }`}
-                        >
-                          Dossier PPT (10 Láminas)
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-              )}
-            </div>
-
-            {/* 3. MÓDULO HERRAMIENTAS [HRM] */}
-            <button
-              onClick={() => handleSelectModulo('herramientas')}
-              className={`w-full flex items-center p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                moduloActivo === 'herramientas'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-900/40 ring-1 ring-sky-300'
-                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
-              }`}
-              title="Sistema de Herramientas: Control de Cajas 01-40 y Calibración SENCAMER"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <span className={`font-mono text-xs font-black px-2 py-1 rounded shrink-0 self-center ${
-                  moduloActivo === 'herramientas' ? 'bg-sky-800 text-sky-100' : 'bg-slate-800/80 text-sky-300'
-                }`}>
-                  HRM
-                </span>
-                {!isCollapsed && (
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-sm text-white leading-tight">
-                      Herramientas & Taller
-                    </span>
-                    <span className={`text-[10.5px] font-mono mt-0.5 ${
-                      moduloActivo === 'herramientas' ? 'text-sky-100' : 'text-amber-300/80'
-                    }`}>
-                      40 Cajas Calibradas
-                    </span>
-                  </div>
-                )}
-              </div>
-            </button>
-
-            {/* 4. MÓDULO DOTACIÓN [EPP] */}
-            <button
-              onClick={() => handleSelectModulo('dotacion')}
-              className={`w-full flex items-center p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                moduloActivo === 'dotacion'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/40 ring-1 ring-indigo-300'
-                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
-              }`}
-              title="Sistema de Dotación: Calzado, Bragas Gabardina y LOPCYMAT"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <span className={`font-mono text-xs font-black px-2 py-1 rounded shrink-0 self-center ${
-                  moduloActivo === 'dotacion' ? 'bg-indigo-800 text-indigo-100' : 'bg-slate-800/80 text-indigo-300'
-                }`}>
-                  EPP
-                </span>
-                {!isCollapsed && (
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-sm text-white leading-tight">
-                      Dotación EPP & Uniformes
-                    </span>
-                    <span className={`text-[10.5px] font-mono mt-0.5 ${
-                      moduloActivo === 'dotacion' ? 'text-indigo-100' : 'text-emerald-300/80'
-                    }`}>
-                      92.4% LOPCYMAT
-                    </span>
-                  </div>
-                )}
-              </div>
-            </button>
-
-            {/* 5. MÓDULO SIP CAMPO PMH [PMH] */}
-            <button
-              onClick={() => handleSelectModulo('sip-pmh')}
-              className={`w-full flex items-center p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                moduloActivo === 'sip-pmh'
-                  ? 'bg-amber-600 text-slate-950 shadow-md shadow-amber-900/40 ring-1 ring-amber-300'
-                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
-              }`}
-              title="SIP de PMH Palúa: Vales de Campo, Despachos Muelle y Cola Offline"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <span className={`font-mono text-xs font-black px-2 py-1 rounded shrink-0 self-center ${
-                  moduloActivo === 'sip-pmh' ? 'bg-amber-800 text-amber-100' : 'bg-slate-800/80 text-amber-300'
-                }`}>
-                  PMH
-                </span>
-                {!isCollapsed && (
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-sm text-white leading-tight">
-                      SIP Campo Palúa/Pellas
-                    </span>
-                    <span className={`text-[10.5px] font-mono mt-0.5 ${
-                      moduloActivo === 'sip-pmh' ? 'text-slate-950 font-bold' : 'text-amber-300/80'
-                    }`}>
-                      Offline / Muelle Palúa
-                    </span>
-                  </div>
-                )}
-              </div>
-            </button>
-
-            {/* 6. MÓDULO SEGURIDAD INDUSTRIAL & HSE [SEG] */}
-            <button
-              onClick={() => handleSelectModulo('seguridad')}
-              className={`w-full flex items-center p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                moduloActivo === 'seguridad'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-900/40 ring-1 ring-emerald-300'
-                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
-              }`}
-              title="Seguridad Industrial & HSE: PTAR, LOTOTO, Charlas 5 Minutos y LOPCYMAT"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <span className={`font-mono text-xs font-black px-2 py-1 rounded shrink-0 self-center ${
-                  moduloActivo === 'seguridad' ? 'bg-emerald-800 text-emerald-100' : 'bg-slate-800/80 text-emerald-300'
-                }`}>
-                  SEG
-                </span>
-                {!isCollapsed && (
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-sm text-white leading-tight">
-                      Seguridad Industrial
-                    </span>
-                    <span className={`text-[10.5px] font-mono mt-0.5 ${
-                      moduloActivo === 'seguridad' ? 'text-emerald-100' : 'text-emerald-300/80'
-                    }`}>
-                      842 Días sin accidentes
-                    </span>
-                  </div>
-                )}
-              </div>
-            </button>
-
-            {/* 7. MÓDULO CERTIFICADOS & CURSOS [CRT] */}
-            <button
-              onClick={() => handleSelectModulo('certificados')}
-              className={`w-full flex items-center p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                moduloActivo === 'certificados'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/40 ring-1 ring-indigo-300'
-                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
-              }`}
-              title="Certificados & Cursos Técnicos: 26 Grúas ASME, Soldadores 6G e integración Google Apps Script"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <span className={`font-mono text-xs font-black px-2 py-1 rounded shrink-0 self-center ${
-                  moduloActivo === 'certificados' ? 'bg-indigo-800 text-indigo-100' : 'bg-slate-800/80 text-indigo-300'
-                }`}>
-                  CRT
-                </span>
-                {!isCollapsed && (
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-sm text-white leading-tight">
-                      Certificados & Cursos
-                    </span>
-                    <span className={`text-[10.5px] font-mono mt-0.5 ${
-                      moduloActivo === 'certificados' ? 'text-indigo-100' : 'text-indigo-300/80'
-                    }`}>
-                      26 Grúas · Apps Script
+                      Expedientes, Personal & Asistencia
                     </span>
                   </div>
                 )}
@@ -558,47 +178,422 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* SECCIÓN 2: AJUSTES & ADMINISTRACIÓN */}
-          <div className="pt-3 border-t border-slate-700/60 space-y-1.5">
+          {/* ========================================================================= */}
+          {/* 2. DEPARTAMENTO DE COSTOS (TODAS LAS VISTAS ABIERTAS Y VISIBLES)           */}
+          {/* ========================================================================= */}
+          <div className="space-y-2 pt-1 border-t border-slate-700/60">
             {!isCollapsed && (
-              <div className="px-2.5 py-1 text-xs font-mono font-bold tracking-wider text-slate-300 uppercase">
+              <div className="px-2 py-1 text-[11px] font-mono font-bold tracking-wider text-amber-300 uppercase flex items-center justify-between">
+                <span>2. Departamento de Costos</span>
+                <span className="text-[10px] bg-amber-950/60 text-amber-300 px-1.5 py-0.2 rounded border border-amber-700/60">$13.8M</span>
+              </div>
+            )}
+
+            {/* SECCIÓN A: PROYECTOS EXTERNOS ($1.29M) */}
+            <div className="bg-slate-800/40 rounded-xl p-2 border border-slate-700/60 space-y-1">
+              {!isCollapsed ? (
+                <div 
+                  onClick={() => setExternosExpanded(!externosExpanded)}
+                  className="flex items-center justify-between px-1.5 py-1 text-xs font-bold text-blue-300 cursor-pointer hover:text-white"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Proyectos Externos (Obras)</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] font-mono bg-blue-950 text-blue-200 px-1.5 py-0.5 rounded border border-blue-800/50">$1.29M</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${externosExpanded ? 'rotate-180' : ''}`} />
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center font-mono text-[10px] text-blue-400 font-bold py-1">EXT</div>
+              )}
+
+              {(externosExpanded || isCollapsed) && (
+                <div className="space-y-0.5 text-xs">
+                  <button
+                    onClick={() => handleSelectCostosTab('dashboard', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'dashboard'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Resumen General y Tablero Ejecutivo"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Tablero Ejecutivo</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('matriz-proyectos', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'matriz-proyectos'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Matriz Proyectos x Categorías (PPT Oficial)"
+                  >
+                    <TableProperties className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Matriz Proyectos (PPT)</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('proyectos', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'proyectos'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="20 Cuentas Auxiliares & 77 Presupuestos"
+                  >
+                    <Briefcase className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>20 Cuentas Auxiliares</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('mano-obra', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'mano-obra'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Mano de Obra Diaria (MOD Cuadrillas)"
+                  >
+                    <Clock className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Mano de Obra Diaria</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('categorias', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'categorias'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Auditoría por Categoría y Partidas"
+                  >
+                    <Layers className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Auditoría por Categoría</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('tabla', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'tabla'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Registro de Salidas de Almacén SIP"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Salidas de Almacén SIP</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('informe', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'informe'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Presentación Ejecutiva Oficial (PPT 8 Láminas)"
+                  >
+                    <FileText className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Presentación Ejecutiva PPT</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('semanas', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'semanas'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Evolución Semana a Semana"
+                  >
+                    <CalendarRange className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Semana a Semana</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('meses', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'meses'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Comparativa Mes a Mes"
+                  >
+                    <CalendarDays className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Mes a Mes</span>}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* SECCIÓN B: PROYECTOS INTERNOS ($183K - DANIELA RIVEROS) */}
+            <div className="bg-slate-800/40 rounded-xl p-2 border border-slate-700/60 space-y-1">
+              {!isCollapsed ? (
+                <div 
+                  onClick={() => setInternosExpanded(!internosExpanded)}
+                  className="flex items-center justify-between px-1.5 py-1 text-xs font-bold text-sky-300 cursor-pointer hover:text-white"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Wrench className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Proyectos Internos (Planta & Flota)</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] font-mono bg-sky-950 text-sky-200 px-1.5 py-0.5 rounded border border-sky-800/50">$183K</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${internosExpanded ? 'rotate-180' : ''}`} />
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center font-mono text-[10px] text-sky-400 font-bold py-1">INT</div>
+              )}
+
+              {(internosExpanded || isCollapsed) && (
+                <div className="space-y-0.5 text-xs">
+                  <button
+                    onClick={() => handleSelectCostosTab('internos-dashboard', 'internos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && esInternos && activeTab === 'internos-dashboard'
+                        ? 'bg-sky-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Tablero General de Proyectos Internos (CAPEX vs OPEX)"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Tablero CAPEX vs OPEX</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('internos-capex', 'internos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && esInternos && activeTab === 'internos-capex'
+                        ? 'bg-sky-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Obras e Infraestructura CAPEX"
+                  >
+                    <Building2 className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Obras CAPEX ($60.6K)</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('internos-gruas', 'internos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && esInternos && activeTab === 'internos-gruas'
+                        ? 'bg-sky-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Flota Móvil y 26 Grúas"
+                  >
+                    <Wrench className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Flota de 26 Grúas</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('internos-ppt', 'internos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && esInternos && (activeTab === 'internos-ppt' || activeTab === 'informe')
+                        ? 'bg-sky-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Dossier Ejecutivo PPT de Internos"
+                  >
+                    <FileText className="w-3.5 h-3.5 shrink-0" />
+                    {!isCollapsed && <span>Dossier PPT (10 Láminas)</span>}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* 3. RESTO DE MÓDULOS OPERATIVOS (TOTALMENTE VISIBLES)                       */}
+          {/* ========================================================================= */}
+          <div className="space-y-1 pt-1 border-t border-slate-700/60">
+            {!isCollapsed && (
+              <div className="px-2 py-1 text-[11px] font-mono font-bold tracking-wider text-slate-300 uppercase">
+                3. Otros Módulos Operativos
+              </div>
+            )}
+
+            {/* HERRAMIENTAS */}
+            <button
+              onClick={() => handleSelectModulo('herramientas')}
+              className={`w-full flex items-center p-2 rounded-xl text-left transition-all cursor-pointer ${
+                moduloActivo === 'herramientas'
+                  ? 'bg-sky-600 text-white shadow-md ring-1 ring-sky-300'
+                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
+              }`}
+              title="Sistema de Herramientas: Control de Cajas 01-40"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded shrink-0 ${
+                  moduloActivo === 'herramientas' ? 'bg-sky-800 text-white' : 'bg-slate-800 text-sky-300'
+                }`}>
+                  HRM
+                </span>
+                {!isCollapsed && (
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-xs text-white truncate">Herramientas & Taller</span>
+                    <span className="text-[10px] text-slate-400">40 Cajas Calibradas</span>
+                  </div>
+                )}
+              </div>
+            </button>
+
+            {/* DOTACIÓN */}
+            <button
+              onClick={() => handleSelectModulo('dotacion')}
+              className={`w-full flex items-center p-2 rounded-xl text-left transition-all cursor-pointer ${
+                moduloActivo === 'dotacion'
+                  ? 'bg-indigo-600 text-white shadow-md ring-1 ring-indigo-300'
+                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
+              }`}
+              title="Sistema de Dotación: Calzado, Bragas y LOPCYMAT"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded shrink-0 ${
+                  moduloActivo === 'dotacion' ? 'bg-indigo-800 text-white' : 'bg-slate-800 text-indigo-300'
+                }`}>
+                  EPP
+                </span>
+                {!isCollapsed && (
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-xs text-white truncate">Dotación EPP & Uniformes</span>
+                    <span className="text-[10px] text-slate-400">92.4% LOPCYMAT</span>
+                  </div>
+                )}
+              </div>
+            </button>
+
+            {/* SIP CAMPO PALÚA */}
+            <button
+              onClick={() => handleSelectModulo('sip-pmh')}
+              className={`w-full flex items-center p-2 rounded-xl text-left transition-all cursor-pointer ${
+                moduloActivo === 'sip-pmh'
+                  ? 'bg-amber-600 text-slate-950 shadow-md ring-1 ring-amber-300 font-bold'
+                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
+              }`}
+              title="SIP de PMH Palúa: Vales de Campo y Despachos Muelle"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded shrink-0 ${
+                  moduloActivo === 'sip-pmh' ? 'bg-amber-800 text-amber-100' : 'bg-slate-800 text-amber-300'
+                }`}>
+                  PMH
+                </span>
+                {!isCollapsed && (
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-xs text-white truncate">SIP Campo Palúa</span>
+                    <span className="text-[10px] text-slate-400">Offline / Muelle</span>
+                  </div>
+                )}
+              </div>
+            </button>
+
+            {/* SEGURIDAD INDUSTRIAL */}
+            <button
+              onClick={() => handleSelectModulo('seguridad')}
+              className={`w-full flex items-center p-2 rounded-xl text-left transition-all cursor-pointer ${
+                moduloActivo === 'seguridad'
+                  ? 'bg-emerald-600 text-white shadow-md ring-1 ring-emerald-300'
+                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
+              }`}
+              title="Seguridad Industrial & HSE: PTAR, LOTOTO y Charlas"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded shrink-0 ${
+                  moduloActivo === 'seguridad' ? 'bg-emerald-800 text-white' : 'bg-slate-800 text-emerald-300'
+                }`}>
+                  SEG
+                </span>
+                {!isCollapsed && (
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-xs text-white truncate">Seguridad Industrial</span>
+                    <span className="text-[10px] text-slate-400">842 Días sin accidentes</span>
+                  </div>
+                )}
+              </div>
+            </button>
+
+            {/* CERTIFICADOS */}
+            <button
+              onClick={() => handleSelectModulo('certificados')}
+              className={`w-full flex items-center p-2 rounded-xl text-left transition-all cursor-pointer ${
+                moduloActivo === 'certificados'
+                  ? 'bg-indigo-600 text-white shadow-md ring-1 ring-indigo-300'
+                  : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
+              }`}
+              title="Certificados & Cursos Técnicos: 26 Grúas ASME y Soldadores"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded shrink-0 ${
+                  moduloActivo === 'certificados' ? 'bg-indigo-800 text-white' : 'bg-slate-800 text-indigo-300'
+                }`}>
+                  CRT
+                </span>
+                {!isCollapsed && (
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-xs text-white truncate">Certificados & Cursos</span>
+                    <span className="text-[10px] text-slate-400">26 Grúas · Soldadores</span>
+                  </div>
+                )}
+              </div>
+            </button>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* 4. SECCIÓN ADMINISTRACIÓN Y ARCHIVOS                                       */}
+          {/* ========================================================================= */}
+          <div className="pt-2 border-t border-slate-700/60 space-y-1">
+            {!isCollapsed && (
+              <div className="px-2 py-1 text-[11px] font-mono font-bold tracking-wider text-slate-400 uppercase">
                 Administración
               </div>
             )}
 
             <button
-              onClick={() => handleSelectTab('usuarios')}
-              className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+              onClick={() => {
+                onCambiarModulo('costos');
+                setActiveTab('usuarios');
+                setMobileOpen(false);
+              }}
+              className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 activeTab === 'usuarios'
                   ? 'bg-slate-700 text-white font-bold shadow-xs'
                   : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
               }`}
-              title="Gestión de Usuarios y Roles del Sistema"
             >
-              <Users className="w-4 h-4 text-slate-300 shrink-0" />
+              <Users className="w-3.5 h-3.5 text-slate-300 shrink-0" />
               {!isCollapsed && <span>Usuarios & Permisos</span>}
             </button>
 
             {currentUser.permisos.canImportFiles && (
               <button
-                onClick={() => handleSelectTab('importar')}
-                className={`w-full flex items-center gap-2.5 p-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                onClick={() => {
+                  onCambiarModulo('costos');
+                  setActiveTab('importar');
+                  setMobileOpen(false);
+                }}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                   activeTab === 'importar'
                     ? 'bg-slate-700 text-white font-bold shadow-xs'
                     : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                 }`}
-                title="Carga de Archivos Excel y Vales SIP"
               >
-                <UploadCloud className="w-4 h-4 text-blue-400 shrink-0" />
-                {!isCollapsed && <span>Importar Archivos SIP</span>}
+                <UploadCloud className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                {!isCollapsed && <span>Importar Archivos Excel</span>}
               </button>
             )}
           </div>
 
         </div>
 
-        {/* ================= FOOTER DEL SIDEBAR: USUARIO ACTIVO ================= */}
-        <div className="p-3.5 border-t border-slate-700/70 bg-[#0e1b2d] shrink-0">
+        {/* ================= FOOTER DEL SIDEBAR ================= */}
+        <div className="p-3 border-t border-slate-700/80 bg-[#0c1829] shrink-0">
           {!isCollapsed ? (
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -606,13 +601,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {currentUser.nombre.slice(0, 1)}
                 </div>
                 <div className="min-w-0">
-                  <span className="font-bold text-sm text-white block truncate leading-tight">
+                  <span className="font-bold text-xs text-white block truncate leading-tight">
                     {currentUser.nombre}
                   </span>
-                  <span className="text-xs text-slate-300 block truncate leading-tight mt-0.5">
-                    {currentUser.permisos.ambitoEdicion === 'todo' && 'Control Total (Admin)'}
-                    {currentUser.permisos.ambitoEdicion === 'internos' && 'Solo Internos'}
-                    {currentUser.permisos.ambitoEdicion === 'ninguno' && 'Observador'}
+                  <span className="text-[11px] text-slate-300 block truncate leading-tight mt-0.5">
+                    {currentUser.rol}
                   </span>
                 </div>
               </div>
@@ -620,7 +613,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {onLogout && (
                 <button
                   onClick={onLogout}
-                  className="p-2 text-slate-300 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
                   title="Cerrar sesión"
                 >
                   <LogOut className="w-4 h-4" />
@@ -630,7 +623,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             <div className="flex flex-col items-center gap-2">
               <div 
-                className={`w-8 h-8 rounded-full ${currentUser.avatarColor} text-white flex items-center justify-center font-bold text-xs shadow-xs cursor-pointer`}
+                className={`w-7 h-7 rounded-full ${currentUser.avatarColor} text-white flex items-center justify-center font-bold text-xs shadow-xs cursor-pointer`}
                 title={`${currentUser.nombre} (${currentUser.rol})`}
               >
                 {currentUser.nombre.slice(0, 1)}
@@ -638,10 +631,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {onLogout && (
                 <button
                   onClick={onLogout}
-                  className="p-1.5 text-slate-300 hover:text-rose-400 rounded transition-colors"
+                  className="p-1 text-slate-400 hover:text-rose-400 rounded transition-colors"
                   title="Salir"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
