@@ -50,6 +50,7 @@ const TITULOS_VISTAS: Record<string, string> = {
 };
 
 export const Header: React.FC<HeaderProps> = ({
+  activeTab = 'dashboard',
   setActiveTab,
   onOpenNewSalida,
   currentUser,
