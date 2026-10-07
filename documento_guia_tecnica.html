@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TIMACA - Guía Técnica de Permisos y Arquitectura del Sistema</title>
+  <style>
+    @page {
+      size: letter portrait;
+      margin: 14mm 14mm 14mm 14mm;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.45;
+      font-size: 10pt;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+    .header-table {
+      width: 100%;
+      border-bottom: 2.5px solid #0b2545;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+    .logo-box {
+      font-size: 18pt;
+      font-weight: 900;
+      color: #0b2545;
+      letter-spacing: 1px;
+    }
+    .logo-sub {
+      font-size: 7.5pt;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .doc-meta {
+      text-align: right;
+      font-size: 8pt;
+      color: #475569;
+    }
+    .doc-meta strong {
+      color: #0b2545;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-family: monospace;
+    }
+    .badge-blue { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .badge-green { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-purple { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+    .badge-rose { background: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; }
+    
+    h1 {
+      font-size: 14pt;
+      color: #0f172a;
+      margin: 0 0 4px 0;
+      font-weight: 800;
+    }
+    h2 {
+      font-size: 12pt;
+      color: #0b2545;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 10.5pt;
+      color: #1e293b;
+      margin-top: 12px;
+      margin-bottom: 5px;
+      font-weight: 700;
+      page-break-after: avoid;
+    }
+    p {
+      margin: 0 0 8px 0;
+      font-size: 9.5pt;
+      color: #334155;
+    }
+    .user-card {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 7px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      background: #f8fafc;
+      page-break-inside: avoid;
+    }
+    .user-card.jessica {
+      border-left: 5px solid #10b981;
+    }
+    .user-card.daniela {
+      border-left: 5px solid #8b5cf6;
+    }
+    .user-card.alejandra {
+      border-left: 5px solid #2563eb;
+    }
+    .user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+    .user-name {
+      font-size: 11pt;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .user-email {
+      font-size: 8.5pt;
+      color: #64748b;
+      font-family: monospace;
+    }
+    .user-cargo {
+      font-size: 9pt;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+    ul {
+      margin: 3px 0 6px 16px;
+      padding: 0;
+      font-size: 9pt;
+    }
+    li {
+      margin-bottom: 3px;
+    }
+    li strong {
+      color: #0f172a;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      margin: 10px 0 12px 0;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f1f5f9;
+      color: #0b2545;
+      font-weight: 700;
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    code {
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 8pt;
+      border: 1px solid #e2e8f0;
+    }
+    .cmd-box {
+      background: #09131f;
+      color: #38bdf8;
+      border-left: 4px solid #38bdf8;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+      font-size: 8.5pt;
+      margin: 4px 0 8px 0;
+    }
+    .footer {
+      border-top: 1px solid #cbd5e1;
+      padding-top: 6px;
+      margin-top: 18px;
+      font-size: 7.5pt;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      page-break-after: avoid;
+    }
+    .highlight-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #2563eb;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 9pt;
+      margin: 10px 0;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER CORPORATIVO -->
+  <table class="header-table" style="border: none; margin-bottom: 14px;">
+    <tr>
+      <td style="border: none; padding: 0;">
+        <div class="logo-box">TIMACA</div>
+        <div class="logo-sub">TALLERES INDUSTRIALES METALÚRGICOS ANTONIO, C.A. · RIF: J-09502095-0</div>
+      </td>
+      <td style="border: none; padding: 0; text-align: right;">
+        <div class="doc-meta">
+          <strong>DOCUMENTO TÉCNICO OFICIAL</strong><br>
+          Código: <strong>TIM-DOC-SIS-2026-02</strong><br>
+          Fecha: <strong>06 de Octubre de 2026</strong><br>
+          Plataforma: <strong>https://timaca-costos.vercel.app/</strong>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <h1>GUÍA TÉCNICA DE DESARROLLO Y ASIGNACIÓN DE PERMISOS</h1>
+  <p style="font-size: 10.5pt; color: #475569; margin-bottom: 18px;">
+    Manual operativo para el equipo de trabajo: Definición de privilegios por usuario, arquitectura del software y lineamientos para la continuidad de desarrollos y adecuaciones técnicas.
+  </p>
+
+  <!-- SECCIÓN 2: PERMISOS DE USUARIOS -->
+  <h2>2. Configuración y Asignación de Permisos de Usuarios</h2>
+
+  <p>
+    El sistema cuenta con un modelo de seguridad basado en roles (RBAC) y permisos modulares granulares. A continuación se detallan los perfiles asignados para la operación:
+  </p>
+
+  <!-- JESSICA NAVARRO -->
+  <div class="user-card jessica">
+    <div class="user-header">
+      <div>
+        <span class="user-name">Jessica Navarro</span>
+        <span class="badge badge-green" style="margin-left: 8px;">Coordinador HSE & Seguridad</span>
+      </div>
+      <span class="user-email">jnavarro@timaca.com.ve</span>
+    </div>
+    <div class="user-cargo">
+      Cargo: Coordinadora de Seguridad Industrial, Certificaciones & Dotación (HSE) · Dpto. Seguridad & Salud Laboral
+    </div>
+    <p style="font-size: 9.5pt; margin-bottom: 6px;"><strong>Módulos y Permisos Habilitados:</strong></p>
+    <ul>
+      <li>
+        <strong>Módulo de Seguridad Industrial [SEG / IPER] (<code>canEditSeguridad: true</code>):</strong>
+        Acceso completo para apertura, edición y cierre de Planes de Control de Riesgos (Hoja oficial gid=716332079), registro de evaluaciones en la Matriz IPER cuantitativa (COVENIN 4004 / LOPCYMAT Art. 56), emisión de Permisos de Alto Riesgo (PTAR), monitoreo de Bloqueos LOTOTO y registro de Charlas Diarias de Seguridad (TDS).
+      </li>
+      <li>
+        <strong>Módulo de Certificados & Cursos Técnicos [CRT] (<code>canEditCertificados: true</code>):</strong>
+        Control de la matriz de capacitación de los 879 trabajadores de TIMACA, Palúa (PMH) y Pellas. Habilitación operacional, validación de certificados de los 10 cursos normativos y carga de enlaces oficiales a Google Drive.
+      </li>
+      <li>
+        <strong>Módulo de Dotación de EPP & Uniformes [EPP] (<code>canEditDotacion: true</code>):</strong>
+        Registro de entregas de botas de seguridad, bragas de gabardina, lentes, cascos y guantes; control de inventario de pañol y cálculo de porcentaje de cumplimiento LOPCYMAT.
+      </li>
+      <li>
+        <strong>Reportes y Exportación:</strong> Descarga de matrices consolidadas en formato Excel / CSV.
+      </li>
+    </ul>
+  </div>
+
+  <!-- DANIELA RIVEROS -->
+  <div class="user-card daniela">
+    <div class="user-header">
+      <div>
+        <span class="user-name">Daniela Riveros</span>
+        <span class="badge badge-purple" style="margin-left: 8px;">Analista de Costos Internos</span>
+      </div>
+      <span class="user-email">drivero@timaca.com.ve</span>
+    </div>
+    <div class="user-cargo">
+      Cargo: Analista de Costos - Gestión Interna & Herramientas · Dpto. Control de Costos Proyectos Internos
+    </div>
+    <p style="font-size: 9.5pt; margin-bottom: 6px;"><strong>Módulos y Permisos Habilitados:</strong></p>
+    <ul>
+      <li>
+        <strong>Módulo de Herramientas & Taller Central [HRM] (<code>canEditHerramientas: true</code>):</strong>
+        Control total del pañol central, asignación y préstamo de Cajas de Herramientas de Cuadrilla (01-40), control de torquímetros y calibración obligatoria SENCAMER.
+      </li>
+      <li>
+        <strong>Gestión de Costos Internos [CST-INT] (<code>canEditInternos: true</code>):</strong>
+        Control de Obras de Infraestructura CAPEX ($60.6K), Flota de 26 Grúas Móviles TIMACA (100-160T Liebherr/Grove) y Mano de Obra Directa (MOD) de Taller Central (4.697 HH).
+      </li>
+      <li>
+        <strong>Dotación para Imputaciones Internas (<code>canEditDotacion: true</code>):</strong>
+        Consulta y asignación de dotaciones para imputación directa a cuentas auxiliares de centros de costos internos.
+      </li>
+      <li>
+        <strong>Dossier Gerencial:</strong> Generación y exportación de láminas ejecutivas PPT y reportes Excel.
+      </li>
+    </ul>
+  </div>
+
+  <!-- ALEJANDRA TESARA -->
+  <div class="user-card alejandra">
+    <div class="user-header">
+      <div>
+        <span class="user-name">Ing. Alejandra Tesara</span>
+        <span class="badge badge-blue" style="margin-left: 8px;">Administrador Total</span>
+      </div>
+      <span class="user-email">alejandratesara.timaca@gmail.com</span>
+    </div>
+    <div class="user-cargo">
+      Cargo: Analista de Costos / Control Total & Coordinación Técnica · Dpto. Costos & Planificación
+    </div>
+    <p style="font-size: 9.5pt; margin-bottom: 6px;"><strong>Módulos y Permisos Habilitados:</strong></p>
+    <ul>
+      <li>
+        <strong>Acceso Global Irrestricto (<code>ambitoEdicion: 'todo'</code>):</strong>
+        Control total sobre Proyectos Externos ($13.8M / Pellas, Palúa, Muelle), Proyectos Internos ($183K), Herramientas, Dotación, SIP Campo, Seguridad Industrial y Certificaciones.
+      </li>
+      <li>
+        <strong>Administración de Usuarios:</strong> Creación, modificación de roles y asignación granular de privilegios.
+      </li>
+    </ul>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 3: RESUMEN TÉCNICO Y LENGUAJES -->
+  <h2>3. Resumen Técnico del Sistema: ¿En qué lenguaje estamos trabajando?</h2>
+
+  <p>
+    La aplicación <strong>TIMACA Suite Operacional</strong> es una plataforma web moderna, orientada al alto rendimiento y la integridad de datos corporativos. Para que el equipo técnico (Jessica, Daniela y desarrolladores) pueda realizar inclusiones y adecuaciones, a continuación se desglosan las tecnologías empleadas:
+  </p>
+
+  <h3>A. Stack Tecnológico Principal</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Tecnología</th>
+        <th style="width: 20%;">Versión</th>
+        <th>Función y Propósito en TIMACA</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>TypeScript (.ts / .tsx)</strong></td>
+        <td><code>v7.0+</code></td>
+        <td>
+          <strong>Lenguaje principal de programación.</strong> Es un superset de JavaScript que añade tipado estático estricto. Esto garantiza que cifras financieras (ej. $1.097M de Pellas), cálculos de horas hombre y fórmulas de riesgo IPER no tengan errores de tipo o conversión.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>React</strong></td>
+        <td><code>v19.0+</code></td>
+        <td>
+          <strong>Biblioteca de interfaz de usuario.</strong> Permite construir pantallas basadas en componentes reutilizables (tablas con filtros, tarjetas de KPIs, modales de permisos y carnets con código QR).
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Tailwind CSS</strong></td>
+        <td><code>v4.3+</code></td>
+        <td>
+          <strong>Motor de diseño visual y estilos.</strong> Proporciona clases utilitarias para dar formato rápido, moderno y responsive adaptado a pantallas móviles, tablets y monitores de planta.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Vite</strong></td>
+        <td><code>v8.3+</code></td>
+        <td>
+          <strong>Empaquetador y entorno de desarrollo.</strong> Compila y procesa el código en menos de 2 segundos mediante Rollup y esbuild.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Node.js</strong></td>
+        <td><code>v20.18+ LTS</code></td>
+        <td>
+          <strong>Entorno de ejecución de backend/local.</strong> Ejecuta scripts de lectura masiva de Excel, procesamiento de datos y compilación del sistema.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Vercel</strong></td>
+        <td><code>Nube CDN</code></td>
+        <td>
+          <strong>Infraestructura de Alojamiento y Despliegue Continuo.</strong> Servidores cloud globales que sirven la aplicación en vivo con certificado de seguridad SSL en <code>timaca-costos.vercel.app</code>.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>B. Mapa de Archivos: ¿Dónde realizar cambios e inclusiones?</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 28%;">Área Funcional</th>
+        <th style="width: 36%;">Vista / Componente (Diseño UI)</th>
+        <th>Fuente de Datos / Tipos (Lógica)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Seguridad Industrial & IPER</strong></td>
+        <td><code>src/components/seguridad/SeguridadModuleView.tsx</code></td>
+        <td><code>src/data/realSeguridadData.ts</code><br><small>Planes de control (gid=716332079) y catálogo de 72 peligros.</small></td>
+      </tr>
+      <tr>
+        <td><strong>Cursos & Certificaciones</strong></td>
+        <td><code>src/components/certificados/CertificadosModuleView.tsx</code></td>
+        <td><code>src/data/realCertificadosData.ts</code><br><small>879 trabajadores, 10 cursos y enlaces Google Drive.</small></td>
+      </tr>
+      <tr>
+        <td><strong>Herramientas & Taller Central</strong></td>
+        <td><code>src/components/herramientas/HerramientasModuleView.tsx</code></td>
+        <td><code>src/data/mockHerramientasData.ts</code><br><small>Cajas 01-40 y calibraciones SENCAMER.</small></td>
+      </tr>
+      <tr>
+        <td><strong>Dotación EPP & LOPCYMAT</strong></td>
+        <td><code>src/components/dotacion/DotacionModuleView.tsx</code></td>
+        <td><code>src/data/mockDotacionData.ts</code><br><small>Catálogo de prendas, stock y entregas.</small></td>
+      </tr>
+      <tr>
+        <td><strong>Costos Proyectos Externos</strong></td>
+        <td><code>src/components/ProyectosView.tsx</code></td>
+        <td><code>src/data/mockCostosData.ts</code><br><small>Pellas, Palúa, Muelle y servicios ejecutados.</small></td>
+      </tr>
+      <tr>
+        <td><strong>Costos Proyectos Internos</strong></td>
+        <td><code>src/components/DashboardInternosView.tsx</code></td>
+        <td><code>src/data/mockInternosData.ts</code><br><small>CAPEX, 26 Grúas y MOD de Taller Central.</small></td>
+      </tr>
+      <tr>
+        <td><strong>Usuarios & Permisos</strong></td>
+        <td><code>src/components/UsuariosView.tsx</code></td>
+        <td><code>src/types/usuarios.ts</code><br><small>Estructura de roles y claves de acceso.</small></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>C. Comandos Esenciales de Terminal para el Equipo</h3>
+  <p>Para trabajar en la aplicación desde Visual Studio Code o terminal PowerShell, se utilizan 3 comandos clave:</p>
+
+  <p><strong>1. Iniciar el entorno de desarrollo local (en la computadora):</strong></p>
+  <div class="cmd-box">npm run dev</div>
+  <p style="font-size: 8.5pt; color: #64748b; margin-top: -6px;">
+    Inicia un servidor local en <code>http://localhost:3000</code>. Cualquier cambio guardado en un archivo se actualiza en el navegador de manera inmediata sin recargar la página.
+  </p>
+
+  <p><strong>2. Verificar compilación y detectar posibles errores:</strong></p>
+  <div class="cmd-box">npm run build</div>
+  <p style="font-size: 8.5pt; color: #64748b; margin-top: -6px;">
+    Compila todo el proyecto con Vite y valida que no existan errores de sintaxis, variables sin definir o tipos incompatibles.
+  </p>
+
+  <p><strong>3. Publicar cambios a producción en la nube (Vercel):</strong></p>
+  <div class="cmd-box">npx vercel --prod</div>
+  <p style="font-size: 8.5pt; color: #64748b; margin-top: -6px;">
+    Sube los archivos y emite la nueva versión a <code>https://timaca-costos.vercel.app/</code> visible para toda la empresa en segundos.
+  </p>
+
+  <div class="highlight-box">
+    <strong>Recomendación para adecuaciones:</strong> Antes de desplegar a producción con <code>npx vercel --prod</code>, siempre ejecute <code>npm run build</code> para comprobar que el código se compila limpiamente al 100%.
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <div class="footer">
+    <span>TIMACA Operaciones · Sistema Integrado de Gestión de Costos, HSE y Mantenimiento</span>
+    <span>Documento Técnico Interno · Octubre 2026</span>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+.vercel
+
+dist_test/
+temp_pptx/
+scratch/
+temp_actualizado.xlsx
+

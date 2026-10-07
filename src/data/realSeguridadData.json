@@ -1,0 +1,514 @@
+{
+  "procedimiento": "CORP-035-P03 Rev. 3 · LOPCYMAT Art. 56 · NT-01-2008",
+  "catalogoPeligros": [
+    {
+      "codigo": 46023,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Caída de persona a distinto nivel"
+    },
+    {
+      "codigo": 46054,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Caída de persona al mismo nivel"
+    },
+    {
+      "codigo": 46082,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Caída de objeto por derrumbe"
+    },
+    {
+      "codigo": 46113,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Caída de objeto por desprendimiento"
+    },
+    {
+      "codigo": 46143,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Caída de objeto en manipulación"
+    },
+    {
+      "codigo": 46174,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Pisada de objeto"
+    },
+    {
+      "codigo": 46024,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Atrapamiento por o entre objetos"
+    },
+    {
+      "codigo": 46055,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Atrapamiento por vuelco de maquinaria"
+    },
+    {
+      "codigo": 46025,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Golpes contra objetos inmóviles"
+    },
+    {
+      "codigo": 46056,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Golpes contra objetos móviles"
+    },
+    {
+      "codigo": 46084,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Golpes por objetos o herramientas"
+    },
+    {
+      "codigo": 46026,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Perforado por objetos cortantes o punzantes"
+    },
+    {
+      "codigo": 46057,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Cortado por o con cuchillas"
+    },
+    {
+      "codigo": 46027,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Contacto térmico extremo"
+    },
+    {
+      "codigo": 46028,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Contacto eléctrico"
+    },
+    {
+      "codigo": 46029,
+      "categoria": "A · Condiciones de seguridad",
+      "peligro": "Proyección de partículas"
+    },
+    {
+      "codigo": 46030,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Exposición a ruido ocupacional"
+    },
+    {
+      "codigo": 46031,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Exposición a vibraciones"
+    },
+    {
+      "codigo": 46032,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Estrés térmico"
+    },
+    {
+      "codigo": 46033,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Radiaciones ionizantes: rayos X"
+    },
+    {
+      "codigo": 46064,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Radiaciones ionizantes: rayos gamma"
+    },
+    {
+      "codigo": 46034,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Radiaciones no ionizantes: ultravioleta"
+    },
+    {
+      "codigo": 46065,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Radiaciones no ionizantes: infrarrojo"
+    },
+    {
+      "codigo": 46093,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Radiaciones no ionizantes: microondas"
+    },
+    {
+      "codigo": 46124,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Radiaciones no ionizantes: ondas de radio"
+    },
+    {
+      "codigo": 46154,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Campos eléctricos"
+    },
+    {
+      "codigo": 46035,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Disconfort térmico"
+    },
+    {
+      "codigo": 46036,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Humedad"
+    },
+    {
+      "codigo": 46037,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Ventilación deficiente"
+    },
+    {
+      "codigo": 46038,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Exposición al polvo"
+    },
+    {
+      "codigo": 46039,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Deslumbramientos"
+    },
+    {
+      "codigo": 46070,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Pérdida de agudeza visual"
+    },
+    {
+      "codigo": 46098,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Fatiga visual"
+    },
+    {
+      "codigo": 46040,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Contaminantes químicos: gases"
+    },
+    {
+      "codigo": 46071,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Contaminantes químicos: humo"
+    },
+    {
+      "codigo": 46099,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Contaminantes químicos: vapores"
+    },
+    {
+      "codigo": 46130,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Contaminantes químicos: líquidos agresivos"
+    },
+    {
+      "codigo": 46041,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Virus, hongos, bacterias o parásitos"
+    },
+    {
+      "codigo": 46072,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Condiciones sanitarias de baños"
+    },
+    {
+      "codigo": 46100,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Infecciones por aguas estancadas"
+    },
+    {
+      "codigo": 46131,
+      "categoria": "B · Condiciones ambientales de trabajo",
+      "peligro": "Mordeduras o picaduras de animales e insectos"
+    },
+    {
+      "codigo": 46042,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Superficie y volumen del área de trabajo"
+    },
+    {
+      "codigo": 46043,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Espacios físicos reducidos"
+    },
+    {
+      "codigo": 46044,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Trabajo sedentario"
+    },
+    {
+      "codigo": 46075,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Movilidad restringida"
+    },
+    {
+      "codigo": 46103,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Esfuerzos o sobreesfuerzos"
+    },
+    {
+      "codigo": 46134,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Posturas forzadas"
+    },
+    {
+      "codigo": 46164,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Manipulación de carga"
+    },
+    {
+      "codigo": 46195,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Movimientos repetitivos"
+    },
+    {
+      "codigo": 46045,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Carga dinámica: trabajo ligero"
+    },
+    {
+      "codigo": 46076,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Carga dinámica: trabajo moderado"
+    },
+    {
+      "codigo": 46104,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Carga dinámica: trabajo fuerte"
+    },
+    {
+      "codigo": 46046,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Grado de atención exigido"
+    },
+    {
+      "codigo": 46047,
+      "categoria": "C · Condiciones ergonómicas",
+      "peligro": "Complejidad de la tarea"
+    },
+    {
+      "codigo": 46048,
+      "categoria": "D · Organización del trabajo",
+      "peligro": "Uso inadecuado de mobiliario, artefactos o equipos"
+    },
+    {
+      "codigo": 46049,
+      "categoria": "D · Organización del trabajo",
+      "peligro": "Cantidad inadecuada de tareas asignadas"
+    },
+    {
+      "codigo": 46050,
+      "categoria": "D · Organización del trabajo",
+      "peligro": "Velocidad inadecuada para realizar la tarea"
+    },
+    {
+      "codigo": 46051,
+      "categoria": "D · Organización del trabajo",
+      "peligro": "Monotonía y repetitividad de las tareas"
+    },
+    {
+      "codigo": 46052,
+      "categoria": "E · Aspectos psicosociales",
+      "peligro": "Desgaste profesional (síndrome de burnout)"
+    },
+    {
+      "codigo": 46053,
+      "categoria": "E · Aspectos psicosociales",
+      "peligro": "Inseguridad en las decisiones"
+    },
+    {
+      "codigo": "32.1",
+      "categoria": "E · Aspectos psicosociales",
+      "peligro": "Hábitos"
+    },
+    {
+      "codigo": "33.1",
+      "categoria": "E · Aspectos psicosociales",
+      "peligro": "Manejo de las emociones"
+    },
+    {
+      "codigo": "34.1",
+      "categoria": "E · Aspectos psicosociales",
+      "peligro": "Intimidación"
+    },
+    {
+      "codigo": "35.1",
+      "categoria": "F · Aspectos del comportamiento",
+      "peligro": "Ambigüedad del rol: incumplimiento de estándares"
+    },
+    {
+      "codigo": "36.1",
+      "categoria": "F · Aspectos del comportamiento",
+      "peligro": "Conflicto de rol: falta de competencias"
+    },
+    {
+      "codigo": "37.1",
+      "categoria": "F · Aspectos del comportamiento",
+      "peligro": "Adaptación a tareas nuevas o inusuales"
+    },
+    {
+      "codigo": "38.1",
+      "categoria": "F · Aspectos del comportamiento",
+      "peligro": "Falta de atención: distracciones o descuidos"
+    },
+    {
+      "codigo": "39.1",
+      "categoria": "G · Incendios y explosiones",
+      "peligro": "Almacenamiento de combustibles: incendio o explosión"
+    },
+    {
+      "codigo": "40.1",
+      "categoria": "G · Incendios y explosiones",
+      "peligro": "Cortocircuitos: incendio"
+    },
+    {
+      "codigo": "41.1",
+      "categoria": "H · Fenómenos naturales",
+      "peligro": "Terremoto"
+    },
+    {
+      "codigo": "42.1",
+      "categoria": "H · Fenómenos naturales",
+      "peligro": "Inundaciones"
+    },
+    {
+      "codigo": "43.1",
+      "categoria": "I · Público",
+      "peligro": "Delincuencia y desorden público"
+    }
+  ],
+  "referencias": [
+    [
+      "TABLA 2 · NIVEL DE DEFICIENCIA (ND)"
+    ],
+    [
+      "Nivel",
+      "Valor",
+      "Significado"
+    ],
+    [
+      "Muy deficiente",
+      10,
+      "Peligro muy probable de generar incidentes o controles ineficaces"
+    ],
+    [
+      "Deficiente",
+      6,
+      "Peligro que precisa corrección o controles de baja eficacia"
+    ],
+    [
+      "Mejorable",
+      2,
+      "Peligros de menor significancia con controles moderados"
+    ],
+    [
+      "Aceptable",
+      0,
+      "Sin anomalía destacable. Riesgo controlado. No se valora"
+    ],
+    [],
+    [
+      "TABLA 3 · NIVEL DE EXPOSICIÓN (NE)"
+    ],
+    [
+      "Nivel",
+      "Valor",
+      "Significado"
+    ],
+    [
+      "Continua",
+      4,
+      "Varias veces con tiempo prolongado durante la jornada"
+    ],
+    [
+      "Frecuente",
+      3,
+      "Varias veces durante la jornada con tiempos cortos"
+    ],
+    [
+      "Ocasional",
+      2,
+      "Alguna vez durante la jornada por período muy corto"
+    ],
+    [
+      "Esporádica",
+      1,
+      "De forma irregular"
+    ],
+    [],
+    [
+      "TABLA 6 · NIVEL DE CONSECUENCIA (NC)"
+    ],
+    [
+      "Nivel",
+      "Valor",
+      "Significado"
+    ],
+    [
+      "Mortal o catastrófico",
+      100,
+      "Un muerto o más. Destrucción total del sistema"
+    ],
+    [
+      "Muy grave",
+      60,
+      "Lesiones graves o irreparables. Destrucción parcial del sistema"
+    ],
+    [
+      "Grave",
+      25,
+      "Incapacidad laboral temporal. Requiere parar el proceso"
+    ],
+    [
+      "Leve",
+      10,
+      "Lesiones sin hospitalización. Reparable sin parar el proceso"
+    ],
+    [],
+    [
+      "TABLA 8 · NIVEL DE INTERVENCIÓN (NI)"
+    ],
+    [
+      "Nivel",
+      "Rango NR",
+      "Acción"
+    ],
+    [
+      "I — Intolerable",
+      "4000 a 600",
+      "Peligro inminente. Parada del trabajo. Corrección urgente"
+    ],
+    [
+      "II — Importante",
+      "500 a 150",
+      "No iniciar la actividad hasta reducir el riesgo"
+    ],
+    [
+      "III — Moderado",
+      "120 a 40",
+      "Reducir el riesgo en un plazo definido"
+    ],
+    [
+      "IV — Tolerable",
+      20,
+      "Mantener los controles y evaluar periódicamente"
+    ],
+    [],
+    [
+      "JERARQUÍA DE CONTROLES"
+    ],
+    [
+      "Orden"
+    ],
+    [
+      1,
+      "Eliminación",
+      "Suprime el peligro por completo del proceso"
+    ],
+    [
+      2,
+      "Sustitución",
+      "Reemplaza el material, equipo o método por uno menos peligroso"
+    ],
+    [
+      3,
+      "Control de ingeniería",
+      "Aísla a la persona del peligro: guardas, extracción, barandas, enclavamientos"
+    ],
+    [
+      4,
+      "Control administrativo",
+      "Cambia la forma de trabajar: procedimientos, permisos, rotación, señalización, adiestramiento"
+    ],
+    [
+      5,
+      "Equipo de protección personal",
+      "Última barrera. Nunca sustituye a los niveles anteriores"
+    ]
+  ]
+}
