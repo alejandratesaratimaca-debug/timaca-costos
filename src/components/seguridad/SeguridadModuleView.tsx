@@ -58,7 +58,7 @@ interface SeguridadModuleViewProps {
   onGoToGruas?: () => void;
 }
 
-const GOOGLE_SHEET_SEGURIDAD_URL = 'https://docs.google.com/spreadsheets/d/1-KEmOouFYYnFxayq3uQGJgZrYCgsRFfhv1CXNKmFtX4/edit?gid=716332079#gid=716332079';
+const GOOGLE_SHEET_SEGURIDAD_URL = 'https://docs.google.com/spreadsheets/d/1-KEmOouFYYnFxayq3uQGJgZrYCgsRFfhv1CXNKmFtX4/edit?gid=1489434091#gid=1489434091';
 
 export const SeguridadModuleView: React.FC<SeguridadModuleViewProps> = ({
   currentUser,

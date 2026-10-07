@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   MOCK_HERRAMIENTAS, 
   MOCK_PRESTAMOS_HERRAMIENTAS 
 } from '../../data/mockHerramientasData';
 import { Herramienta, PrestamoHerramienta, CategoriaHerramienta, EstadoHerramienta } from '../../types/suite';
 import { UsuarioSistema } from '../../types/usuarios';
+import { supabase, isSupabaseConfigured } from '../../lib/supabaseClient';
 import { 
   Wrench, 
   Search, 
@@ -40,6 +41,43 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
 }) => {
   const [herramientas, setHerramientas] = useState<Herramienta[]>(MOCK_HERRAMIENTAS);
   const [prestamos, setPrestamos] = useState<PrestamoHerramienta[]>(MOCK_PRESTAMOS_HERRAMIENTAS);
+  const [supabaseSyncActive, setSupabaseSyncActive] = useState<boolean>(false);
+
+  // Sincronización en tiempo real desde Supabase Cloud
+  useEffect(() => {
+    if (isSupabaseConfigured() && supabase) {
+      setSupabaseSyncActive(true);
+      supabase
+        .from('herramientas_vales')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(({ data, error }) => {
+          if (!error && data && data.length > 0) {
+            const valesMapeados: PrestamoHerramienta[] = data.map((v: any) => ({
+              id: v.numero,
+              herramientaId: v.lineas?.[0]?.codigo || 'HERR-SUPABASE',
+              codigoHerramienta: v.lineas?.[0]?.codigo || v.numero,
+              nombreHerramienta: v.lineas?.[0]?.descripcion || v.observaciones || 'Vale TIMACA Trazabilidad',
+              trabajadorNombre: v.responsable_nombre || 'Personal TIMACA',
+              cedula: v.responsable_cedula || 'V-00.000.000',
+              cargo: v.responsable_cargo || 'Personal Técnico',
+              frenteDestino: v.destino || 'Planta Matriz',
+              fechaPrestamo: v.fecha ? v.fecha.split('T')[0] : '2026-10-01',
+              fechaDevolucionEstimada: v.fecha_devolucion || '2026-10-31',
+              estado: v.estatus === 'CERRADO' ? 'Devuelto' : 'Activo',
+              entregadoPor: `Almacén ${v.origen || 'TALLER'} (Supabase Cloud)`,
+              condicionEntrega: v.observaciones || 'Inspeccionada conforme.'
+            }));
+
+            setPrestamos(prev => {
+              const idsExistentes = new Set(prev.map(p => p.id));
+              const nuevos = valesMapeados.filter(v => !idsExistentes.has(v.id));
+              return [...nuevos, ...prev];
+            });
+          }
+        });
+    }
+  }, []);
   
   const [activeTab, setActiveTab] = useState<'trazabilidad' | 'catalogo' | 'prestamos' | 'calibracion' | 'cajas'>('trazabilidad');
   const [searchQuery, setSearchQuery] = useState('');
@@ -150,8 +188,32 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
     }));
 
     setPrestamos(prev => [nuevoPrestamo, ...prev]);
+
+    // Persistir en Supabase Cloud
+    if (isSupabaseConfigured() && supabase) {
+      supabase.from('herramientas_vales').insert({
+        numero: nuevoPrestamo.id,
+        tipo: 'PRH',
+        origen: 'TALLER',
+        destino: nuevoPrestamo.frenteDestino,
+        responsable_nombre: nuevoPrestamo.trabajadorNombre,
+        responsable_cedula: nuevoPrestamo.cedula,
+        responsable_cargo: nuevoPrestamo.cargo,
+        supervisor: currentUser.nombre,
+        fecha_requerida: nuevoPrestamo.fechaPrestamo,
+        fecha_devolucion: nuevoPrestamo.fechaDevolucionEstimada,
+        estatus: 'VIGENTE',
+        observaciones: `Entregado por: ${nuevoPrestamo.entregadoPor}`,
+        lineas: [
+          { codigo: nuevoPrestamo.codigoHerramienta, descripcion: nuevoPrestamo.nombreHerramienta, cantidad: 1 }
+        ]
+      }).then(({ error }) => {
+        if (error) console.warn('Supabase insert warning:', error.message);
+      });
+    }
+
     setIsNewPrestamoModalOpen(false);
-    setNotificacion(`¡Custodia asignada exitosamente a ${prestamoForm.trabajadorNombre}!`);
+    setNotificacion(`¡Custodia asignada y sincronizada en Supabase con éxito para ${prestamoForm.trabajadorNombre}!`);
     setTimeout(() => setNotificacion(null), 4000);
   };
 

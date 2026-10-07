@@ -46,7 +46,7 @@ interface CertificadosModuleViewProps {
   onGoToSeguridad?: () => void;
 }
 
-const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1HLg7w29tI9XGVxwLtCE-OHQmF-JnnwoaF3OF4o_7kS8/edit?gid=880063311#gid=880063311';
+const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1HLg7w29tI9XGVxwLtCE-OHQmF-JnnwoaF3OF4o_7kS8/edit?gid=1730870257#gid=1730870257';
 const APPS_SCRIPT_URL = 'https://script.google.com/u/0/home/projects/1_X3O-E4mf5l3qzHnTRBY_GbhTOpR4FCLLz-IbWatFX19zksIiQXEjMAF/edit';
 
 export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
