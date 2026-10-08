@@ -353,6 +353,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <span>Auditar MOD Diaria</span>
             </button>
           )}
+          {onGoToValidacion && (
+            <button
+              onClick={onGoToValidacion}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-amber-950 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-xl transition-colors shadow-xs"
+              title="Módulo de Validación de Imputaciones Contables por Gerentes de Proyecto"
+            >
+              <FileCheck2 className="w-4 h-4 text-amber-800" />
+              <span>Validación Gerencial</span>
+            </button>
+          )}
           <button
             onClick={onGoToInforme}
             className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors whitespace-nowrap shadow-xs"

@@ -7,6 +7,9 @@ interface TimacaLogoProps {
   showSubtitle?: boolean;
   showRif?: boolean;
   variant?: 'light' | 'dark';
+  titulo?: string;
+  subtitulo?: string;
+  badge?: string;
 }
 
 export const TimacaLogo: React.FC<TimacaLogoProps> = ({
@@ -15,11 +18,14 @@ export const TimacaLogo: React.FC<TimacaLogoProps> = ({
   showSubtitle = true,
   showRif = false,
   variant = 'light',
+  titulo,
+  subtitulo,
+  badge
 }) => {
   const logoHeight = {
-    sm: 'h-7 sm:h-8',
-    md: 'h-8 sm:h-9',
-    lg: 'h-10 sm:h-12'
+    sm: 'h-8 sm:h-9',
+    md: 'h-9 sm:h-10',
+    lg: 'h-11 sm:h-13'
   };
 
   const isDark = variant === 'dark';
@@ -55,32 +61,36 @@ export const TimacaLogo: React.FC<TimacaLogoProps> = ({
       {/* Separador Vertical Elegante */}
       <div 
         className={`w-px shrink-0 ${
-          size === 'sm' ? 'h-6' : size === 'lg' ? 'h-10' : 'h-8'
+          size === 'sm' ? 'h-7' : size === 'lg' ? 'h-11' : 'h-9'
         } ${isDark ? 'bg-slate-700' : 'bg-slate-300'}`} 
       />
 
-      {/* Bloque de Identidad: Control de Costos */}
+      {/* Bloque de Identidad Oficial: SIGMA TIMACA */}
       <div className="flex flex-col text-left justify-center min-w-0">
-        <div className="flex items-center gap-1.5 leading-none flex-wrap">
+        <div className="flex items-center gap-2 leading-none flex-wrap">
           <span className={`font-heading font-black tracking-tight ${
-            size === 'sm' ? 'text-xs sm:text-sm' : size === 'lg' ? 'text-base sm:text-lg' : 'text-sm sm:text-base'
+            size === 'sm' ? 'text-sm sm:text-base' : size === 'lg' ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'
           } ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            CONTROL DE <span className="text-blue-600">COSTOS</span>
+            {titulo ? (
+              <span>{titulo}</span>
+            ) : (
+              <>
+                <span className="text-[#020C54] tracking-tight">SIGMA</span>
+                <span className="text-blue-600 font-extrabold ml-1.5">TIMACA</span>
+              </>
+            )}
           </span>
-          <span className="text-[9px] font-mono font-bold bg-blue-100 text-blue-900 px-1.5 py-0.5 rounded border border-blue-300">
-            CST
-          </span>
-          <span className="text-[9px] font-mono font-bold bg-amber-50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-300 hidden sm:inline-block">
-            2026
+          <span className="text-xs font-mono font-bold bg-blue-100 text-blue-900 px-2 py-0.5 rounded border border-blue-300">
+            {badge || 'SIGMA 2026'}
           </span>
         </div>
-        <span className={`text-[10px] font-sans font-medium tracking-tight mt-1 truncate ${
-          isDark ? 'text-slate-300' : 'text-slate-500'
+        <span className={`text-xs font-sans font-medium tracking-tight mt-1 truncate ${
+          isDark ? 'text-slate-300' : 'text-slate-600'
         }`}>
-          Auditoría & Gestión de Proyectos · TIMACA
+          {subtitulo || 'Sistema Integrado de Gestión de Materiales y Activos'}
         </span>
         {showRif && (
-          <span className="text-[9px] font-mono text-slate-400 mt-0.5">
+          <span className="text-xs font-mono text-slate-400 mt-0.5">
             RIF: J-09500315-9
           </span>
         )}

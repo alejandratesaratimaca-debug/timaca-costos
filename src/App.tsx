@@ -162,10 +162,20 @@ function AppContent() {
     };
   }, []);
 
-  const handleLoginSuccess = (user: UsuarioSistema, entorno?: 'externos' | 'internos') => {
+  const handleLoginSuccess = (
+    user: UsuarioSistema, 
+    entorno?: 'externos' | 'internos', 
+    modulo?: SuiteModulo,
+    targetTab?: string
+  ) => {
     setCurrentUser(user);
     setIsAuthenticated(true);
     
+    // Si el usuario seleccionó un módulo o departamento específico al iniciar sesión
+    const chosenModulo = modulo || 'costos';
+    setModuloActivoState(chosenModulo);
+    localStorage.setItem(MODULO_STORAGE_KEY, chosenModulo);
+
     let chosen = entorno || entornoActivo;
     if (user.rol === 'Analista de Costos Internos') {
       chosen = 'internos';
@@ -177,12 +187,14 @@ function AppContent() {
     setSidebarCollapsed(true);
     localStorage.setItem('TIMACA_SIDEBAR_COLLAPSED', 'true');
 
-    if (user.rol === 'Analista de Costos Internos') {
-      setActiveTab('internos-dashboard');
-    } else if (chosen === 'internos') {
-      setActiveTab('internos-dashboard');
-    } else {
-      setActiveTab('dashboard');
+    if (targetTab) {
+      setActiveTab(targetTab);
+    } else if (chosenModulo === 'costos') {
+      if (user.rol === 'Analista de Costos Internos' || chosen === 'internos') {
+        setActiveTab('internos-dashboard');
+      } else {
+        setActiveTab('dashboard');
+      }
     }
   };
 
@@ -217,6 +229,7 @@ function AppContent() {
       <LoginPortadaView 
         onLoginSuccess={handleLoginSuccess}
         entornoInicial={entornoActivo}
+        moduloInicial={moduloActivo}
       />
     );
   }
