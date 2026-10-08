@@ -289,6 +289,8 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
 
       const matchedSalidas = salidas.filter(s => {
         if (isNormalizacion(s)) return false;
+        // Si no tiene horas asignadas (0.0 hrs y $0.00), es un reporte técnico de inactividad de campo, no un costo imputable
+        if ((s.cantidad || 0) <= 0 || (s.montoTotal || 0) <= 0) return false;
 
         const catS = (s.categoria || '').toLowerCase().trim();
         const tipoS = (s.tipo || '').toLowerCase().trim();

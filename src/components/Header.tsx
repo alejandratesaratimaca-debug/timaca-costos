@@ -180,17 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             )}
 
-            {/* Botón Descargar Excel */}
-            {currentUser.permisos.canExportExcel && !esInternos && moduloActivo === 'costos' && (
-              <button
-                onClick={handleExport}
-                title="Descargar base de datos completa y resúmenes en Excel (.xlsx)"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-neutral-700 bg-white hover:bg-neutral-50 border border-neutral-300 rounded-lg transition-colors shadow-2xs whitespace-nowrap cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="hidden sm:inline">Descargar Excel</span>
-              </button>
-            )}
+
 
             {/* Botón Nueva Salida SIP */}
             {currentUser.permisos.canCreateSalidas && !esInternos && moduloActivo === 'costos' && (

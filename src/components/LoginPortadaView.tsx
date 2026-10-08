@@ -324,14 +324,16 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
                 <span>SIGMA · Sistema Integrado de Gestión TIMACA</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-                Sistema Integrado de Gestión de{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-amber-300">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+                <span className="text-white block drop-shadow-sm" style={{ color: '#ffffff' }}>
+                  Sistema Integrado de Gestión de
+                </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-200 to-amber-300 font-extrabold block mt-1 drop-shadow-sm">
                   Materiales y Activos
                 </span>
               </h1>
 
-              <p className="text-sm sm:text-base text-slate-300 font-medium max-w-2xl leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-200 font-medium max-w-2xl leading-relaxed mt-2" style={{ color: '#e2e8f0' }}>
                 Costos, dotación, herramientas y seguridad de TIMACA en un solo sistema interactivo. Una plataforma integral para controlar lo que cuesta operar TIMACA y los recursos que lo generan.
               </p>
             </div>
