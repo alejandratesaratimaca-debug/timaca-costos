@@ -1014,11 +1014,14 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
                     onChange={(e) => setPrestamoForm({ ...prestamoForm, frenteDestino: e.target.value })}
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none"
                   >
-                    <option value="Nave de Fabricación 1 - Taller Central">Nave 1 - Taller Central</option>
-                    <option value="Nave de Fabricación 2 - Calderería">Nave 2 - Calderería</option>
-                    <option value="Frente Palúa PMH - Muelle">Frente Palúa PMH - Muelle</option>
-                    <option value="Frente Pellas - Tolva 2">Frente Pellas - Tolva 2</option>
-                    <option value="Patio de Grúas - Bahía de Servicio">Patio de Grúas</option>
+                    <option value="Almacén Central">Almacén Central</option>
+                    <option value="Almacén Pellas">Almacén Pellas</option>
+                    <option value="Almacén Boca Grande">Almacén Boca Grande</option>
+                    <option value="Almacén PMH">Almacén PMH</option>
+                    <option value="Almacén Briquetas">Almacén Briquetas</option>
+                    <option value="Almacén ECO">Almacén ECO</option>
+                    <option value="Almacén SMB">Almacén SMB</option>
+                    <option value="Almacén Fabricación">Almacén Fabricación</option>
                   </select>
                 </div>
               </div>

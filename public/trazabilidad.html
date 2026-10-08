@@ -401,6 +401,9 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
     </div>
     <div class="tb-der">
       <span class="tb-bienv">Bienvenido, <b id="tbUsuario"></b> <span id="tbRol"></span></span>
+      <button class="btn-tb" id="btnNotif" onclick="abrirPanelNotificaciones()" style="position:relative;background:#0f172a;border-color:#334155;cursor:pointer" title="Notificaciones del Sistema">
+        🔔 <span id="badgeNotif" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px;font-weight:900">0</span>
+      </button>
       <button class="btn-tb azul" onclick="abrirCambioAcceso()">🔄 Cambiar almacén</button>
       <button class="btn-tb rojo" onclick="cerrarSesion()">🚪 Salir</button>
     </div>
@@ -445,7 +448,7 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAb4AAABDCAYAAADj9mCa
    estas mismas reglas se ejecutan en el servidor.
    ===================================================================== */
 
-const LS_KEY = 'timaca_trazabilidad_demo_v2';
+const LS_KEY = 'timaca_trazabilidad_demo_v4';
 let DB = null;
 const S = { u: null, ctx: null, vista: null, param: null };
 let NOW_FIX = null;
@@ -496,10 +499,177 @@ const EST_COLOR = {
 const estB = e => `<span class="est est-${EST_COLOR[e] || 'gris'}">${esc(e)}</span>`;
 
 /* ----------------------------- Persistencia ----------------------------- */
+const ALMS_TODOS_OFICIALES = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
+
+function asegurarUsuariosClave() {
+  if (!DB || !DB.usuarios) return;
+  // Asegurar Daniela Riveros (Supervisora en todos los almacenes, clave 1234)
+  let uDan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
+  if (!uDan) {
+    uDan = { usuario: 'drivero', alias: 'daniela', clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    DB.usuarios.unshift(uDan);
+  } else {
+    uDan.usuario = 'drivero';
+    uDan.alias = 'daniela';
+    uDan.clave = '1234';
+    uDan.nombre = 'Daniela Riveros';
+    uDan.cargo = 'Supervisora de Herramientas & Almacenes';
+    uDan.activo = true;
+    uDan.almacenes = ALMS_TODOS_OFICIALES;
+    uDan.maestro = true;
+    uDan.editaCostos = true;
+    uDan.perm = { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+  }
+
+  // Asegurar Jessica Navarro (Acceso a todos los almacenes, clave 1234)
+  let uJes = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro' || x.usuario.toLowerCase() === 'jessica');
+  if (!uJes) {
+    uJes = { usuario: 'jnavarro', alias: 'jessica', clave: '1234', nombre: 'Jessica Navarro', cedula: 'V-19.876.543', cargo: 'Coordinadora HSE & Seguridad Industrial', activo: true, admin: false, maestro: true, editaCostos: false, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: [], transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    DB.usuarios.splice(1, 0, uJes);
+  } else {
+    uJes.usuario = 'jnavarro';
+    uJes.alias = 'jessica';
+    uJes.clave = '1234';
+    uJes.nombre = 'Jessica Navarro';
+    uJes.cargo = 'Coordinadora HSE & Seguridad Industrial';
+    uJes.activo = true;
+    uJes.almacenes = ALMS_TODOS_OFICIALES;
+    uJes.maestro = true;
+    uJes.perm = { aprobar: [], transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+  }
+
+  // Asegurar Alejandra Tesara (Administradora con acceso a todos los almacenes, clave 1234)
+  let uAle = DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
+  if (!uAle) {
+    uAle = { usuario: 'atesara', alias: 'alejandra', clave: '1234', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos / Administradora', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    DB.usuarios.splice(2, 0, uAle);
+  } else {
+    uAle.usuario = 'atesara';
+    uAle.alias = 'alejandra';
+    uAle.clave = '1234';
+    uAle.nombre = 'Alejandra Tesara';
+    uAle.cargo = 'Analista Principal de Costos / Administradora';
+    uAle.activo = true;
+    uAle.admin = true;
+    uAle.maestro = true;
+    uAle.editaCostos = true;
+    uAle.almacenes = ALMS_TODOS_OFICIALES;
+    uAle.perm = { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+  }
+
+  DB.notificaciones = DB.notificaciones || [];
+  DB.extSol = DB.extSol || [];
+}
+
+/* =====================================================================
+   SISTEMA DE NOTIFICACIONES (WINDOWS NATIVAS + APP)
+   ===================================================================== */
+function solicitarPermisoNotificaciones() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(perm => {
+      if (perm === 'granted') {
+        toast('🔔 Notificaciones de escritorio de Windows activadas con éxito.', 'ok');
+      }
+      actualizarCampanaNotif();
+    });
+  }
+}
+
+function notificarSistema(titulo, cuerpo, tipo, data) {
+  if (!DB) return;
+  DB.notificaciones = DB.notificaciones || [];
+  const notif = {
+    id: Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+    fecha: nowISO(),
+    titulo,
+    cuerpo,
+    tipo: tipo || 'info',
+    leida: false,
+    alm: S.ctx || 'CENTRAL',
+    data: data || {}
+  };
+  DB.notificaciones.unshift(notif);
+  if (DB.notificaciones.length > 50) DB.notificaciones.length = 50;
+  guardar();
+
+  // 1. Notificación nativa en el sistema operativo Windows
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      new Notification(`TIMACA: ${titulo}`, {
+        body: cuerpo,
+        icon: '/timaca-favicon.png',
+        tag: notif.id
+      });
+    } catch (e) {
+      console.warn('Aviso de notificación:', e);
+    }
+  }
+
+  // 2. Notificación en pantalla (Toast flotante)
+  toast(`<b>${titulo}</b><br><span style="font-size:11.5px">${cuerpo}</span>`, tipo === 'err' ? 'err' : 'ok');
+
+  // 3. Actualizar campana y menú
+  actualizarCampanaNotif();
+  if (typeof pintarMenu === 'function') pintarMenu();
+}
+
+function actualizarCampanaNotif() {
+  const badge = $('badgeNotif');
+  if (!badge || !DB) return;
+  DB.notificaciones = DB.notificaciones || [];
+  const noLeidas = DB.notificaciones.filter(n => !n.leida).length;
+  if (noLeidas > 0) {
+    badge.textContent = noLeidas > 9 ? '9+' : String(noLeidas);
+    badge.style.display = 'block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function abrirPanelNotificaciones() {
+  DB.notificaciones = DB.notificaciones || [];
+  const noLeidas = DB.notificaciones.filter(n => !n.leida).length;
+  const perm = 'Notification' in window ? Notification.permission : 'unsupported';
+
+  let headerHtml = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--borde)">
+    <div><b>Historial de Notificaciones</b> <span style="font-size:11px;color:var(--texto-3)">(${DB.notificaciones.length})</span></div>
+    <div style="display:flex;gap:6px">
+      ${perm !== 'granted' ? `<button class="btn btn-navy btn-mini" onclick="solicitarPermisoNotificaciones();cerrarModal()">🔔 Activar en Windows</button>` : `<span style="font-size:11px;color:#16a34a;font-weight:700">✔ Notificaciones Windows Activadas</span>`}
+      ${noLeidas > 0 ? `<button class="btn btn-claro btn-mini" onclick="marcarTodasNotifLeidas()">Marcar leídas</button>` : ''}
+    </div>
+  </div>`;
+
+  let listaHtml = DB.notificaciones.length ? DB.notificaciones.map(n => {
+    const ico = n.tipo === 'ok' ? '✅' : n.tipo === 'err' ? '❌' : n.tipo === 'trf' ? '📦' : n.tipo === 'plz' ? '⏱️' : n.tipo === 'warn' ? '⚠️' : '🔔';
+    return `<div style="padding:9px 10px;border-radius:6px;background:${n.leida ? '#f8fafc' : '#eff6ff'};border:1px solid ${n.leida ? '#e2e8f0' : '#bfdbfe'};margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:800;color:var(--navy);font-size:12px">${ico} ${esc(n.titulo)}</span>
+        <span style="font-size:10.5px;color:var(--texto-3)">${fFH(n.fecha)}</span>
+      </div>
+      <div style="font-size:12px;color:var(--texto);margin-top:3px">${esc(n.cuerpo)}</div>
+    </div>`;
+  }).join('') : '<p class="ayuda-txt" style="text-align:center;padding:20px">No hay notificaciones recientes en el sistema.</p>';
+
+  abrirModal('🔔 Centro de Notificaciones del Sistema TIMACA', headerHtml + `<div style="max-height:420px;overflow-y:auto">${listaHtml}</div>`, [
+    { t: 'Cerrar', cls: 'btn-claro', fn: cerrarModal }
+  ], true);
+
+  DB.notificaciones.forEach(n => n.leida = true);
+  guardar();
+  actualizarCampanaNotif();
+}
+
+function marcarTodasNotifLeidas() {
+  (DB.notificaciones || []).forEach(n => n.leida = true);
+  guardar();
+  actualizarCampanaNotif();
+  abrirPanelNotificaciones();
+}
+
 function guardar() { try { localStorage.setItem(LS_KEY, JSON.stringify(DB)); } catch (e) { /* sin almacenamiento disponible */ } }
 function cargarDatos() {
-  try { const r = localStorage.getItem(LS_KEY); if (r) { DB = JSON.parse(r); return; } } catch (e) { }
-  DB = semilla(); guardar();
+  try { const r = localStorage.getItem(LS_KEY); if (r) { DB = JSON.parse(r); asegurarUsuariosClave(); guardar(); return; } } catch (e) { }
+  DB = semilla(); asegurarUsuariosClave(); guardar();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
 
@@ -508,7 +678,7 @@ const almNombre = c => (DB.almacenes.find(a => a.c === c) || { n: c }).n;
 const item = id => DB.catalogo.find(i => i.id === id);
 const valeDe = n => DB.vales.find(v => v.num === n);
 const solDe = n => DB.solicitudes.find(s => s.num === n);
-const userDe = u => DB.usuarios.find(x => x.usuario.toLowerCase() === String(u || '').toLowerCase());
+const userDe = u => DB.usuarios.find(x => x.usuario.toLowerCase() === String(u || '').toLowerCase() || (x.alias && x.alias.toLowerCase() === String(u || '').toLowerCase()));
 function exi(alm, id) {
   DB.exi[alm] = DB.exi[alm] || {};
   if (!DB.exi[alm][id]) DB.exi[alm][id] = { disp: 0, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
@@ -608,7 +778,12 @@ function guardarSolicitud(d, finalizar) {
     fechaReq: d.tipo === 'PRH' ? d.fechaReq : '', fechaDev: d.tipo === 'PRH' ? d.fechaDev : '', fechaAsig: d.tipo === 'ASI' ? d.fechaAsig : '',
     obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l))
   });
-  if (finalizar) { s.estatus = 'FINALIZADO'; s.finalizadaEn = nowISO(); bit('SOLICITUD FINALIZADA', s.num); }
+  if (finalizar) {
+    s.estatus = 'FINALIZADO';
+    s.finalizadaEn = nowISO();
+    bit('SOLICITUD FINALIZADA', s.num);
+    notificarSistema('Nueva solicitud generada', `Se generó la solicitud ${s.num} (${s.tipo}) para ${s.resp ? s.resp.nombre : 'custodio'} en ${almNombre(s.origen)}. Pendiente de aprobación por supervisión.`, 'info', { doc: s.num });
+  }
   guardar();
   return s;
 }
@@ -645,6 +820,7 @@ function aprobarSolicitud(numSol, aprobGer) {
   v.hist.push({ ev: 'Solicitud ' + s.num + ' aprobada', fecha: nowISO(), usr: S.u.nombre, color: 'verde' });
   Object.assign(s, { estatus: 'APROBADO', procesadoPor: quien(), procesadoEn: nowISO(), vale: v.num, aprobGer: tipoA ? aprobGer : '' });
   bit('SOLICITUD APROBADA', `${s.num} → ${v.num}`); guardar();
+  notificarSistema('Solicitud aprobada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue APROBADA por ${S.u.nombre}. Se generó el vale ${v.num}.`, 'ok', { doc: v.num });
   return v;
 }
 function anularSolicitud(numSol, motivo) {
@@ -655,6 +831,7 @@ function anularSolicitud(numSol, motivo) {
   if (!String(motivo || '').trim()) throw new Error('El motivo de anulación es obligatorio.');
   Object.assign(s, { estatus: 'ANULADO', procesadoPor: quien(), procesadoEn: nowISO(), motivo });
   bit('SOLICITUD ANULADA', `${s.num}: ${motivo}`); guardar();
+  notificarSistema('Solicitud anulada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue ANULADA por ${S.u.nombre}. Motivo: ${motivo}.`, 'err', { doc: s.num });
 }
 
 /* ---------- Transferencias ---------- */
@@ -665,16 +842,28 @@ function crearTransferencia(d) {
   if (!d.lineas.length) throw new Error('Agregue al menos un ítem en la carga de material.');
   validarStock(d.origen, d.lineas);
   const lineas = d.lineas.map(l => Object.assign({}, l));
-  const v = nuevoVale('TRF', { origen: d.origen, destino: d.destino, obs: d.obs || '', lineas, estatus: 'PENDIENTE DE RECEPCIÓN' });
+  const v = nuevoVale('TRF', {
+    origen: d.origen,
+    destino: d.destino,
+    resp: d.resp || null,
+    sup: d.sup || '',
+    proyecto: d.proyecto || '',
+    cuenta: d.cuenta || '',
+    despacha: d.despacha || S.u.nombre,
+    obs: d.obs || '',
+    lineas,
+    estatus: 'PENDIENTE DE RECEPCIÓN'
+  });
   v.vence = new Date(new Date(v.fecha).getTime() + DB.config.plazoHoras * 3600000).toISOString();
   lineas.forEach(l => {
     const e = exi(d.origen, l.id);
     if (l.est === 'VACIO') e.vacio -= l.cant; else e.disp -= l.cant;
     e.pend += l.cant;
-    mov({ doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: d.origen, destino: d.destino, estAnt: nomBucket[l.est], estNue: 'PENDIENTE DE RECEPCIÓN', resp: S.u.nombre, cedula: S.u.cedula, obs: 'Transferencia creada' });
+    mov({ doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: d.origen, destino: d.destino, estAnt: nomBucket[l.est], estNue: 'PENDIENTE DE RECEPCIÓN', resp: (d.resp ? d.resp.nombre : S.u.nombre), cedula: (d.resp ? d.resp.cedula : S.u.cedula), obs: (d.proyecto ? 'Proyecto: ' + d.proyecto : 'Transferencia creada') });
   });
   v.hist.push({ ev: 'Creada', fecha: v.fecha, usr: S.u.nombre, det: `Enviada a ${almNombre(d.destino)}`, color: '' });
   bit('TRANSFERENCIA CREADA', `${v.num} ${d.origen} → ${d.destino}`); guardar();
+  notificarSistema('Nueva transferencia enviada', `Transferencia ${v.num} enviada desde ${almNombre(v.origen)} hacia ${almNombre(v.destino)} por ${v.realizadoPor.nombre}. Esperando recepción.`, 'info', { doc: v.num });
   return v;
 }
 function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
@@ -691,9 +880,20 @@ function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
   });
   v.procesadoPor = sistema ? { usuario: 'SISTEMA', nombre: 'SISTEMA' } : quien();
   v.procesadoEn = fecha;
-  if (aceptar) { v.estatus = 'RECIBIDA'; v.hist.push({ ev: 'Aceptada', fecha, usr: S.u.nombre, color: 'verde' }); }
-  else if (sistema) { v.estatus = 'VENCIDA'; v.hist.push({ ev: 'Vencida', fecha, usr: 'SISTEMA', det: `Sin respuesta en ${DB.config.plazoHoras} h. Material reintegrado a ${almNombre(v.origen)}.`, color: 'naranja' }); }
-  else { v.estatus = 'RECHAZADA'; v.motivo = motivo; v.hist.push({ ev: 'Rechazada', fecha, usr: S.u.nombre, det: motivo, color: 'rojo' }); }
+  if (aceptar) {
+    v.estatus = 'RECIBIDA';
+    v.hist.push({ ev: 'Aceptada', fecha, usr: S.u.nombre, color: 'verde' });
+    notificarSistema('Transferencia Aceptada', `La transferencia ${v.num} (${almNombre(v.origen)} → ${almNombre(v.destino)}) fue ACEPTADA y recibida por ${S.u.nombre}.`, 'ok', { doc: v.num });
+  } else if (sistema) {
+    v.estatus = 'VENCIDA';
+    v.hist.push({ ev: 'Vencida', fecha, usr: 'SISTEMA', det: `Sin respuesta en ${DB.config.plazoHoras} h. Material reintegrado a ${almNombre(v.origen)}.`, color: 'naranja' });
+    notificarSistema('Transferencia Vencida', `La transferencia ${v.num} (${almNombre(v.origen)} → ${almNombre(v.destino)}) HA VENCIDO sin respuesta en ${DB.config.plazoHoras} h. El material regresó a ${almNombre(v.origen)}.`, 'err', { doc: v.num });
+  } else {
+    v.estatus = 'RECHAZADA';
+    v.motivo = motivo;
+    v.hist.push({ ev: 'Rechazada', fecha, usr: S.u.nombre, det: motivo, color: 'rojo' });
+    notificarSistema('Transferencia Rechazada', `La transferencia ${v.num} (${almNombre(v.origen)} → ${almNombre(v.destino)}) fue RECHAZADA por ${S.u.nombre}. Motivo: ${motivo}.`, 'err', { doc: v.num });
+  }
 }
 function aceptarTransferencia(n) {
   const v = valeDe(n);
@@ -823,14 +1023,83 @@ function extenderPlazo(valeNum, nueva, sup, motivo) {
   v.fechaDev = nueva;
   p.lineas.forEach(l => mov({ doc: p.num, tipo: 'PLZ', id: l.id, cant: l.cant, origen: v.origen, destino: v.destino, estAnt: 'EN PRÉSTAMO', estNue: 'EN PRÉSTAMO', resp: v.resp.nombre, cedula: v.resp.cedula, obs: `Nueva fecha ${fF(nueva)} (ref. ${v.num})` }));
   bit('EXTENSIÓN DE PLAZO', `${p.num} ref. ${v.num}`); guardar();
+  notificarSistema('Extensión de plazo procesada', `Se registró la extensión ${p.num} para el vale ${v.num}. Nueva fecha: ${fF(nueva)}.`, 'ok', { doc: p.num });
   return p;
+}
+
+function solicitarExtension(valeNum, nueva, sup, motivo) {
+  const v = valeDe(valeNum);
+  if (!v || v.tipo !== 'PRH' || saldoVale(v) === 0) throw new Error('Seleccione un préstamo con saldo pendiente.');
+  if (v.origen !== S.ctx && !S.u.admin) throw new Error('La extensión se solicita en el almacén que prestó.');
+  if (!nueva || nueva <= v.fechaDev) throw new Error('La nueva fecha debe ser posterior a la fecha de devolución actual (' + fF(v.fechaDev) + ').');
+  if (!sup) throw new Error('Indique el supervisor que autorizará la extensión.');
+
+  DB.extSol = DB.extSol || [];
+  const existente = DB.extSol.find(x => x.valeRef === valeNum && x.estatus === 'PENDIENTE');
+  if (existente) throw new Error('Ya existe una solicitud de extensión pendiente para este vale.');
+
+  const ext = {
+    id: 'EXTSOL-' + String(DB.extSol.length + 1).padStart(4, '0'),
+    valeRef: v.num,
+    alm: v.origen,
+    solicitadoPor: quien(),
+    fechaSol: nowISO(),
+    fechaDevActual: v.fechaDev,
+    nuevaFecha: nueva,
+    supervisor: sup,
+    motivo: motivo || 'Extensión de plazo de herramientas en obra',
+    estatus: 'PENDIENTE',
+    procesadoPor: null,
+    procesadoEn: null
+  };
+  DB.extSol.push(ext);
+  bit('SOLICITUD EXTENSIÓN CREADA', `${ext.id} para ${v.num}`);
+  guardar();
+
+  notificarSistema('Solicitud de extensión de plazo', `Se solicitó prorrogar el vale ${v.num} hasta el ${fF(nueva)} para ${v.resp.nombre}. Requiere aprobación de supervisión.`, 'info', { doc: v.num, extId: ext.id });
+  return ext;
+}
+
+function aprobarExtension(extId) {
+  DB.extSol = DB.extSol || [];
+  const ext = DB.extSol.find(x => x.id === extId);
+  if (!ext || ext.estatus !== 'PENDIENTE') throw new Error('La solicitud de extensión ya no está pendiente.');
+  if (!puede('aprobar', ext.alm) && !S.u.admin) throw new Error('No tiene permiso para aprobar extensiones en ' + almNombre(ext.alm) + '.');
+
+  const p = extenderPlazo(ext.valeRef, ext.nuevaFecha, S.u.nombre, ext.motivo);
+  ext.estatus = 'APROBADA';
+  ext.procesadoPor = quien();
+  ext.procesadoEn = nowISO();
+  ext.valeExt = p.num;
+  bit('EXTENSIÓN APROBADA', `${ext.id} → ${p.num}`);
+  guardar();
+
+  notificarSistema('Extensión aprobada', `La solicitud de prórroga para el vale ${ext.valeRef} fue APROBADA por el supervisor ${S.u.nombre}. Nueva fecha: ${fF(ext.nuevaFecha)}.`, 'ok', { doc: p.num });
+  return p;
+}
+
+function rechazarExtension(extId, motivo) {
+  DB.extSol = DB.extSol || [];
+  const ext = DB.extSol.find(x => x.id === extId);
+  if (!ext || ext.estatus !== 'PENDIENTE') throw new Error('La solicitud de extensión ya no está pendiente.');
+  if (!puede('aprobar', ext.alm) && !S.u.admin) throw new Error('No tiene permiso para rechazar extensiones en ' + almNombre(ext.alm) + '.');
+  if (!String(motivo || '').trim()) throw new Error('Indique el motivo del rechazo de la extensión.');
+
+  ext.estatus = 'RECHAZADA';
+  ext.motivoRechazo = motivo;
+  ext.procesadoPor = quien();
+  ext.procesadoEn = nowISO();
+  bit('EXTENSIÓN RECHAZADA', `${ext.id}: ${motivo}`);
+  guardar();
+
+  notificarSistema('Extensión rechazada', `La solicitud de prórroga para el vale ${ext.valeRef} fue RECHAZADA por el supervisor ${S.u.nombre}. Motivo: ${motivo}.`, 'err', { doc: ext.valeRef });
 }
 
 /* ---------- Entrada de ítems al catálogo del almacén ---------- */
 function registrarEntrada(d) {
   if (!(S.u.admin || puede('transferir', d.origen) || puede('recibir', d.origen))) throw new Error('Su usuario no tiene permiso para registrar entradas en ' + almNombre(d.origen) + '.');
   if (!d.lineas.length) throw new Error('Agregue al menos un ítem a la entrada.');
-  const v = nuevoVale('ENT', { origen: d.origen, destino: d.origen, obs: d.obs || '', ref: d.soporte || '', extra: { soporte: d.soporte || '', proveedor: d.proveedor || '' }, lineas: [] });
+  const v = nuevoVale('ENT', { origen: d.origen, destino: d.origen, obs: d.obs || '', ref: '', extra: { obs: d.obs || '' }, lineas: [] });
   d.lineas.forEach(l => {
     let it = DB.catalogo.find(x => x.cod === l.cod && x.marca === l.marca && x.modelo === l.modelo && (x.serial || '') === (l.serial || ''));
     if (!it) {
@@ -840,10 +1109,11 @@ function registrarEntrada(d) {
     const e = exi(d.origen, it.id);
     if (l.mod === 'CILINDRO' && l.cond === 'VACÍO') e.vacio += l.cant; else e.disp += l.cant;
     v.lineas.push(Object.assign(lineaDe(it, l.cant, l.cond)));
-    mov({ doc: v.num, tipo: 'ENT', id: it.id, cant: l.cant, origen: d.origen, destino: d.origen, estAnt: 'ENTRADA', estNue: l.mod === 'CILINDRO' && l.cond === 'VACÍO' ? 'VACÍO' : 'DISPONIBLE', resp: S.u.nombre, cedula: S.u.cedula, obs: (d.soporte ? 'Soporte: ' + d.soporte : 'Entrada al catálogo') });
+    mov({ doc: v.num, tipo: 'ENT', id: it.id, cant: l.cant, origen: d.origen, destino: d.origen, estAnt: 'ENTRADA', estNue: l.mod === 'CILINDRO' && l.cond === 'VACÍO' ? 'VACÍO' : 'DISPONIBLE', resp: S.u.nombre, cedula: S.u.cedula, obs: 'Entrada al catálogo' });
   });
-  v.hist.push({ ev: 'Entrada registrada', fecha: v.fecha, usr: S.u.nombre, det: d.soporte ? 'Soporte: ' + d.soporte : '', color: 'verde' });
+  v.hist.push({ ev: 'Entrada registrada', fecha: v.fecha, usr: S.u.nombre, det: '', color: 'verde' });
   bit('ENTRADA REGISTRADA', `${v.num} · ${d.lineas.length} línea(s)`); guardar();
+  notificarSistema('Entrada registrada', `Se registraron ${d.lineas.length} ítems en el catálogo de ${almNombre(d.origen)} bajo el vale ${v.num}.`, 'ok', { doc: v.num });
   return v;
 }
 /* Estado operativo de un ítem en el catálogo del almacén */
@@ -888,20 +1158,30 @@ function semilla() {
     version: 2, corr: {}, seq: { mov: 0, inc: 0 }, exi: {}, solicitudes: [], vales: [], movs: [], incid: [], bit: [], costosHist: [], intentos: {},
     config: { empresa: 'TALLER INDUSTRIAL METALÚRGICO ANTONIO, C.A.', direccion: 'AV. NORTE SUR CALLE PORVENIR EDIF. GALPÓN, TIMACA, PUERTO ORDAZ', rif: 'J095003159', plazoHoras: 12 },
     almacenes: [
-      { c: 'CENTRAL', n: 'Almacén Central', t: 'CENTRAL' }, { c: 'ECO', n: 'Almacén ECO', t: 'SATÉLITE' }, { c: 'FABRICACION', n: 'Almacén Fabricación', t: 'SATÉLITE' },
-      { c: 'SMB', n: 'Almacén SMB', t: 'SATÉLITE' }, { c: 'PELLAS', n: 'Almacén Pellas', t: 'SATÉLITE' }, { c: 'PMH', n: 'Almacén PMH', t: 'SATÉLITE' },
-      { c: 'BOCA GRANDE', n: 'Almacén Boca Grande', t: 'SATÉLITE' }, { c: 'BRIQUETAS', n: 'Almacén Briquetas', t: 'SATÉLITE' }
+      { c: 'CENTRAL', n: 'Almacén Central', t: 'CENTRAL' },
+      { c: 'PELLAS', n: 'Almacén Pellas', t: 'SATÉLITE' },
+      { c: 'BOCA GRANDE', n: 'Almacén Boca Grande', t: 'SATÉLITE' },
+      { c: 'PMH', n: 'Almacén PMH', t: 'SATÉLITE' },
+      { c: 'BRIQUETAS', n: 'Almacén Briquetas', t: 'SATÉLITE' },
+      { c: 'ECO', n: 'Almacén ECO', t: 'SATÉLITE' },
+      { c: 'SMB', n: 'Almacén SMB', t: 'SATÉLITE' },
+      { c: 'FABRICACION', n: 'Almacén Fabricación', t: 'SATÉLITE' }
     ],
     usuarios: [], personal: [], proyectos: [], catalogo: []
   };
+  const ALMS_TODOS = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
   const U = (usuario, clave, nombre, cedula, cargo, o) => DB.usuarios.push(Object.assign({ usuario, clave, nombre, cedula, cargo, activo: true, admin: false, maestro: false, editaCostos: false, almacenes: [], perm: { aprobar: [], transferir: [], recibir: [] } }, o, { perm: Object.assign({ aprobar: [], transferir: [], recibir: [] }, (o || {}).perm) }));
-  U('admin', 'admin123', 'Administrador del Sistema', 'V-10.000.001', 'Administrador', { admin: true, maestro: true, editaCostos: true });
+
+  // Usuarios Oficiales de Prueba TIMACA (clave 1234)
+  U('drivero', '1234', 'Daniela Riveros', 'V-20.123.456', 'Supervisora de Herramientas & Almacenes', { alias: 'daniela', almacenes: ALMS_TODOS, maestro: true, editaCostos: true, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
+  U('jnavarro', '1234', 'Jessica Navarro', 'V-19.876.543', 'Coordinadora HSE & Seguridad Industrial', { alias: 'jessica', almacenes: ALMS_TODOS, maestro: true, editaCostos: false, perm: { aprobar: [], transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
+  U('atesara', '1234', 'Alejandra Tesara', 'V-18.456.789', 'Analista Principal de Costos / Administradora', { alias: 'alejandra', admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
+
+  // Otros usuarios de apoyo
+  U('admin', '1234', 'Administrador del Sistema', 'V-10.000.001', 'Administrador', { admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
   U('central', '1234', 'Mariana Duarte', 'V-17.234.567', 'Almacenista Central', { almacenes: ['CENTRAL'], perm: { transferir: ['CENTRAL'], recibir: ['CENTRAL'] } });
-  U('supcentral', '1234', 'Ing. Roberto Salazar', 'V-12.345.678', 'Supervisor Almacén Central', { almacenes: ['CENTRAL'], perm: { aprobar: ['CENTRAL'] } });
   U('pellas', '1234', 'Luis Alvarado', 'V-19.333.444', 'Almacenista Pellas', { almacenes: ['PELLAS'], perm: { transferir: ['PELLAS'], recibir: ['PELLAS'] } });
-  U('suppellas', '1234', 'Ing. Pedro Pérez', 'V-11.222.333', 'Supervisor Pellas', { almacenes: ['PELLAS'], perm: { aprobar: ['PELLAS'] } });
   U('eco', '1234', 'Andreína Gil', 'V-20.111.222', 'Almacenista ECO', { almacenes: ['ECO'], perm: { transferir: ['ECO'], recibir: ['ECO'] } });
-  U('supeco', '1234', 'Ing. Carmen Rojas', 'V-13.444.555', 'Supervisora ECO', { almacenes: ['ECO'], perm: { aprobar: ['ECO'] } });
   U('gerencia', '1234', 'Lic. Alberto Márquez', 'V-9.876.543', 'Gerente de Operaciones', { maestro: true, editaCostos: true });
   U('auditor', '1234', 'Lic. Patricia León', 'V-14.987.321', 'Auditora Interna', { maestro: true, editaCostos: false });
 
@@ -1181,11 +1461,17 @@ function encabezadoReporte(titulo, ctxTxt, filtros) {
    INICIO DE SESIÓN
    ===================================================================== */
 function pintarUsuariosDemo() {
-  const perfil = u => u.admin ? 'Administrador (todo, incluido Maestro)' : [
-    u.almacenes.length ? u.almacenes.map(almNombre).join(', ') : '',
-    u.perm.aprobar.length ? 'aprueba solicitudes' : '', u.perm.transferir.length ? 'transfiere' : '', u.perm.recibir.length ? 'recibe' : '',
-    u.maestro ? 'Maestro' + (u.editaCostos ? ' (edita costos)' : ' (solo consulta de costos)') : ''].filter(Boolean).join(' · ');
-  $('tablaDemoUsuarios').innerHTML = DB.usuarios.filter(u => u.activo).map(u => `<tr class="clic" onclick="llenarDemo('${u.usuario}')"><td><b>${esc(u.usuario)}</b></td><td>${esc(u.clave)}</td><td>${esc(u.nombre)}<br><span style="color:#64748b">${esc(perfil(u))}</span></td></tr>`).join('');
+  const perfil = u => {
+    if (u.usuario === 'drivero' || u.usuario === 'daniela') return 'Supervisora (Todos los Almacenes: Central, Pellas, Boca Grande, PMH, Briquetas, ECO, SMB, Fabricación)';
+    if (u.usuario === 'atesara' || u.usuario === 'alejandra') return 'Administradora (Todos los Almacenes + Maestro)';
+    if (u.usuario === 'jnavarro' || u.usuario === 'jessica') return 'HSE & Seguridad (Todos los Almacenes)';
+    if (u.admin) return 'Administrador (todo, incluido Maestro)';
+    return [
+      u.almacenes.length ? (u.almacenes.length === DB.almacenes.length ? 'Todos los almacenes' : u.almacenes.map(almNombre).join(', ')) : '',
+      u.perm.aprobar.length ? 'aprueba solicitudes (Supervisor)' : '', u.perm.transferir.length ? 'transfiere' : '', u.perm.recibir.length ? 'recibe' : '',
+      u.maestro ? 'Maestro' + (u.editaCostos ? ' (edita costos)' : ' (solo consulta de costos)') : ''].filter(Boolean).join(' · ');
+  };
+  $('tablaDemoUsuarios').innerHTML = DB.usuarios.filter(u => u.activo).map(u => `<tr class="clic" onclick="llenarDemo('${u.usuario}')"><td><b>${esc(u.usuario)}</b></td><td><b>${esc(u.clave)}</b></td><td><b>${esc(u.nombre)}</b><br><span style="color:#0284c7;font-weight:700">${esc(perfil(u))}</span></td></tr>`).join('');
 }
 function llenarDemo(usr) { const u = userDe(usr); $('lgUsuario').value = u.usuario; $('lgClave').value = u.clave; actualizarAccesosLogin(); $('lgClave').focus(); }
 function opcionesAcceso(u) {
@@ -1226,6 +1512,7 @@ function entrarContexto(ctx) {
   S.ctx = ctx;
   if (ctx === 'MAESTRO') bit('ACCESO MAESTRO', 'Ingreso a vista consolidada');
   guardar();
+  actualizarCampanaNotif();
   $('pantallaLogin').style.display = 'none'; $('pantallaApp').style.display = 'flex';
   $('tbUsuario').textContent = S.u.nombre;
   $('tbRol').textContent = '(' + rolTxt(S.u, ctx) + ')';
@@ -1263,10 +1550,11 @@ function menuDef() {
   const c = S.ctx;
   const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus === 'FINALIZADO').length;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
+  const pendExt = (DB.extSol || []).filter(x => x.alm === c && x.estatus === 'PENDIENTE').length;
   const m = [
     ['Inicio', [['dash', 'Dashboard del almacén']]],
     ['Solicitudes', [['solNueva', 'Crear solicitud'], ['sol', 'Solicitudes del almacén']]],
-    ['Aprobación', [['aprobar', 'Aprobar solicitudes', pendAprob]]],
+    ['Aprobación', [['aprobar', 'Aprobar solicitudes', pendAprob], ['aprobarPlz', 'Aprobar extensiones', pendExt]]],
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
     ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
@@ -1277,7 +1565,7 @@ function menuDef() {
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
   return m;
 }
-const ICONOS = { cCatAlm: '📦', ent: '➕', mov: '🔁', dash: '📊', solNueva: '📝', sol: '📑', aprobar: '✅', trfNueva: '🚚', trfRec: '📥', trfEnv: '📤', dev: '↩️', dan: '⚠️', ext: '🚨', plz: '⏱️',
+const ICONOS = { cCatAlm: '📦', ent: '➕', mov: '🔁', dash: '📊', solNueva: '📝', sol: '📑', aprobar: '✅', aprobarPlz: '⏳', trfNueva: '🚚', trfRec: '📥', trfEnv: '📤', dev: '↩️', dan: '⚠️', ext: '🚨', plz: '⏱️',
   cExist: '🗃️', cPrest: '🔧', cVenc: '⏰', cAsig: '👷', cIncid: '🛠️', cVales: '🧾', cKardex: '📜', cEpp: '🦺', cCil: '🔥',
   aUsr: '👥', aPers: '🪪', aProy: '📁', aCat: '📚', aIni: '🏁', aConf: '⚙️', aBit: '📒', aResp: '💾',
   mRes: '⭐', mKpi: '📈', mComp: '🏭', mExp: '🗄️', mTraz: '🔍', mAlert: '🔔', mCost: '💲', mAcc: '🔐' };
@@ -1357,7 +1645,14 @@ function pintarFormulario() {
     + campo('Almacén origen', `<input value="${esc(almNombre(F.origen).replace('Almacén ', '').toUpperCase())}" readonly>`);
   if (t === 'TRF') {
     cabecera += campo('Almacén destino', `<select id="fDestino" ${ro}>${destinosPermitidos(F.origen).map(c => `<option value="${c}" ${c === F.destino ? 'selected' : ''}>${esc(almNombre(c))}</option>`).join('')}</select>`)
-      + campo('Realizado por', `<input value="${esc(S.u.nombre)}" readonly>`) + campo('Cédula', `<input value="${esc(S.u.cedula)}" readonly>`) + campo('Cargo', `<input value="${esc(S.u.cargo)}" readonly>`);
+      + campo('Realizado por', `<input value="${esc(S.u.nombre)}" readonly>`) + campo('Cédula', `<input value="${esc(S.u.cedula)}" readonly>`) + campo('Cargo', `<input value="${esc(S.u.cargo)}" readonly>`)
+      + campo('Quién despacha', `<input id="fDespacha" ${ro} placeholder="Quién despacha" value="${esc(F.despacha || S.u.nombre)}">`)
+      + campo('Responsable custodio', `<input id="fResp" ${ro} autocomplete="off" placeholder="Escriba el nombre o la cédula" value="${esc(F.resp ? F.resp.nombre : '')}">`)
+      + campo('Cédula', `<input id="fCed" readonly value="${esc(F.resp ? F.resp.cedula : '')}" placeholder="Se completa al elegir el responsable">`)
+      + campo('Cargo', `<input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Se completa al elegir el responsable">`)
+      + campo('Cuenta auxiliar', `<input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Se completa al elegir el proyecto">`)
+      + campo('Proyecto / Orden de trabajo', `<input id="fProy" ${ro} autocomplete="off" placeholder="Escriba el proyecto u OT" value="${esc(F.proyecto)}">`)
+      + campo('Supervisor autoriza', `<input id="fSup" list="dlPersonal" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`);
   } else if (t === 'PRH' || t === 'ASI') {
     cabecera += campo('Almacén destino', `<select id="fDestino" ${ro}>${DB.almacenes.map(a => `<option value="${a.c}" ${a.c === F.destino ? 'selected' : ''}>${esc(a.n)}</option>`).join('')}</select>`);
   } else {
@@ -1401,7 +1696,7 @@ function pintarFormulario() {
       </div>
     </div>${datalistPersonal()}`;
   if (!bloqueado) {
-    if (t !== 'TRF' && !F.valeRef) {
+    if (!F.valeRef) {
       bindResponsableProyecto();
     }
     if (!F.valeRef) bindCaptura();
@@ -1412,6 +1707,7 @@ function valesConSaldo(alm) { return DB.vales.filter(v => (v.tipo === 'PRH' || v
 function leerCabecera() {
   const g = id => $(id) ? $(id).value : undefined;
   if (g('fDestino') !== undefined) F.destino = g('fDestino');
+  if (g('fDespacha') !== undefined) F.despacha = g('fDespacha').trim();
   if (g('fSup') !== undefined) F.sup = g('fSup').trim();
   if (g('fFReq') !== undefined) F.fechaReq = g('fFReq');
   if (g('fFDev') !== undefined) F.fechaDev = g('fFDev');
@@ -1579,7 +1875,17 @@ function finalizarFormulario(finalizar) {
       toast(finalizar ? `Solicitud ${s.num} finalizada y enviada a aprobación de: ${aprobadoresDe(s.origen).join(', ') || 'supervisor autorizado'}.` : `Solicitud ${s.num} guardada como NO FINALIZADO.`, 'ok');
       ir('sol', { sel: s.num });
     } else if (t === 'TRF') {
-      const v = crearTransferencia({ origen: F.origen, destino: F.destino, obs: F.obs, lineas: F.lineas });
+      const v = crearTransferencia({
+        origen: F.origen,
+        destino: F.destino,
+        resp: F.resp,
+        sup: F.sup,
+        proyecto: F.proyecto,
+        cuenta: F.cuenta,
+        despacha: F.despacha || S.u.nombre,
+        obs: F.obs,
+        lineas: F.lineas
+      });
       F.hecho = v.num; toast(`Transferencia ${v.num} registrada. Pendiente de recepción en ${almNombre(v.destino)}.`, 'ok'); pintarMenu(); pintarFormulario();
     } else {
       const lineas = F.valeRef ? F.lineas.filter(l => l.cant > 0) : F.lineas;
@@ -1664,7 +1970,7 @@ function pintarEntrada() {
     + (E.hecho ? `<div class="franja-est verde"><span>Entrada <b>${E.hecho}</b> registrada. Los ítems ya aparecen en el catálogo de ${esc(almNombre(S.ctx))}.</span><span><button class="btn btn-claro btn-mini" onclick="ir('cCatAlm')">Ver catálogo</button></span></div>` : '')
     + `<div class="form-reg"><div class="f3">
       ${campo('Almacén', `<input value="${esc(almNombre(S.ctx))}" readonly>`)}${campo('Fecha', `<input value="${fF(nowISO())}" readonly>`)}${campo('Registrado por', `<input value="${esc(S.u.nombre)}" readonly>`)}
-      ${campo('Documento soporte (factura, guía u orden)', `<input id="enSop" ${ro} placeholder="Ej. Factura 000123">`)}${campo('Proveedor / procedencia', `<input id="enProv" ${ro} placeholder="Opcional">`)}${campo('Observación', `<input id="enObs" ${ro} placeholder="Opcional">`)}
+      ${campo('Observación', `<input id="enObs" ${ro} placeholder="Opcional">`)}
     </div>
     <div class="carga"><div class="carga-h">ÍTEM A INGRESAR</div>
       ${bloq ? '' : `<div style="padding:12px;border-bottom:1px solid var(--borde)"><div class="f3" style="grid-template-columns:repeat(6,1fr)">
@@ -1722,7 +2028,7 @@ function pintarLineasEntrada() {
   $('eTot').innerHTML = `Total de líneas: <b>${E.lineas.length}</b> · Total de unidades: <b>${E.lineas.reduce((a, l) => a + l.cant, 0)}</b>${E.lineas.length && !bloq ? ' · Seleccione una línea para eliminarla' : ''}`;
 }
 function registrarEntradaUI() {
-  run(() => { const v = registrarEntrada({ origen: S.ctx, lineas: E.lineas, soporte: $('enSop').value.trim(), proveedor: $('enProv').value.trim(), obs: $('enObs').value.trim() });
+  run(() => { const v = registrarEntrada({ origen: S.ctx, lineas: E.lineas, obs: $('enObs') ? $('enObs').value.trim() : '' });
     E.hecho = v.num; toast(`Entrada ${v.num} registrada.`, 'ok'); pintarEntrada(); });
 }
 
@@ -1743,8 +2049,15 @@ VISTAS.doc = p => {
   const R = (lbl, v) => campo(lbl, `<input value="${esc(v ?? '')}" readonly>`);
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
     + R('Almacén origen', almNombre(d.origen)) + R('Almacén destino', almNombre(d.destino));
-  if (t === 'TRF') c += R('Realizado por', d.realizadoPor.nombre) + R('Cédula', d.realizadoPor.cedula) + R('Cargo', d.realizadoPor.cargo) + '<div></div>';
-  else if (t === 'ENT') c += R('Registrado por', d.realizadoPor.nombre) + R('Documento soporte', d.extra.soporte) + R('Proveedor / procedencia', d.extra.proveedor);
+  if (t === 'TRF') {
+    c += R('Realizado por', d.realizadoPor.nombre) + R('Cédula', d.realizadoPor.cedula) + R('Cargo', d.realizadoPor.cargo);
+    if (d.despacha) c += R('Quién despacha', d.despacha);
+    if (d.resp) c += R('Responsable custodio', d.resp.nombre) + R('Cédula', d.resp.cedula) + R('Cargo', d.resp.cargo);
+    if (d.cuenta) c += R('Cuenta auxiliar', d.cuenta);
+    if (d.proyecto) c += R('Proyecto / OT', d.proyecto);
+    if (d.sup) c += R('Supervisor autoriza', d.sup);
+  }
+  else if (t === 'ENT') c += R('Registrado por', d.realizadoPor.nombre) + (d.obs ? R('Observación', d.obs) : '');
   else {
     c += R(esSol ? 'Generado por' : 'Registrado por', esSol ? d.generadoPor.nombre : d.realizadoPor.nombre);
     if (d.resp) c += R('Responsable custodio', d.resp.nombre) + R('Cédula', d.resp.cedula) + R('Cargo', d.resp.cargo);
@@ -1900,7 +2213,12 @@ function accionAnular(n) { pedirTexto('Anular solicitud ' + n, 'Motivo de anulac
    ===================================================================== */
 const colsTrf = (recibidas) => [{ t: 'N° vale', k: 'num' }, { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
-  { t: 'Realizado por', v: r => r.realizadoPor.nombre }, { t: 'Líneas', v: r => r.lineas.length, cls: 'num' }, { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
+  { t: 'Realizado por', v: r => r.realizadoPor.nombre },
+  { t: 'Quién despacha', v: r => r.despacha || r.realizadoPor.nombre },
+  { t: 'Responsable', v: r => r.resp ? r.resp.nombre : '—' },
+  { t: 'Proyecto / OT', v: r => r.proyecto || '—' },
+  { t: 'Supervisor', v: r => r.sup || '—' },
+  { t: 'Líneas', v: r => r.lineas.length, cls: 'num' }, { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
   { t: 'Tiempo restante', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
   { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) },
   { t: 'Procesado por', v: r => r.procesadoPor ? r.procesadoPor.nombre : '' }, { t: 'Fecha procesamiento', v: r => r.procesadoEn ? fFH(r.procesadoEn) : '', s: r => r.procesadoEn || '' },
@@ -2003,15 +2321,82 @@ function hechoDoc(v, volver) {
 VISTAS.plz = p => {
   const vales = valesConSaldo(S.ctx).filter(v => v.tipo === 'PRH');
   const sel = p && p.vale ? p.vale : ''; const v = sel ? valeDe(sel) : null;
-  $('area').innerHTML = cab('Extender plazo de préstamo', 'Registra una nueva fecha de devolución, conservando la fecha anterior y el conteo de extensiones.')
+  const esSupervisor = S.u.admin || puede('aprobar', S.ctx);
+  $('area').innerHTML = cab('Extender plazo de préstamo', 'Solicite o apruebe una prórroga para la fecha de devolución del material en préstamo.')
     + `<div class="form-reg"><div class="f3">
       ${campo('Préstamo vigente', `<select onchange="ir('plz',{vale:this.value})"><option value="">Seleccione…</option>${vales.map(x => `<option value="${x.num}" ${x.num === sel ? 'selected' : ''}>${x.num} · ${esc(x.resp.nombre)} · devuelve ${fF(x.fechaDev)}</option>`).join('')}</select>`)}
       ${campo('Responsable', `<input value="${v ? esc(v.resp.nombre) : ''}" readonly>`)}${campo('Proyecto / OT', `<input value="${v ? esc(v.proyecto) : ''}" readonly>`)}
       ${campo('Fecha de devolución actual', `<input value="${v ? fF(v.fechaDev) : ''}" readonly>`)}${campo('Extensiones anteriores', `<input value="${v ? (v.extensiones || 0) : ''}" readonly>`)}${campo('Estado', `<div style="padding-top:6px">${v ? estB(estadoVale(v)) : ''}</div>`)}
-      ${campo('Nueva fecha de devolución', `<input type="date" id="plNueva" ${v ? '' : 'disabled'} value="${v ? sumarDias(v.fechaDev > hoy() ? v.fechaDev : hoy(), 7) : ''}">`)}
+      ${campo('Nueva fecha de devolución solicitada', `<input type="date" id="plNueva" ${v ? '' : 'disabled'} value="${v ? sumarDias(v.fechaDev > hoy() ? v.fechaDev : hoy(), 7) : ''}">`)}
       ${campo('Supervisor autoriza', `<input id="plSup" list="dlPersonal" ${v ? '' : 'disabled'} value="${v ? esc(v.sup) : ''}">`)}
-      ${campo('Motivo', `<input id="plMot" ${v ? '' : 'disabled'} placeholder="Motivo de la extensión">`)}
-    </div><div class="pie-form"><div></div><div class="der"><button class="btn btn-verde" ${v ? '' : 'disabled'} onclick="run(()=>{const x=extenderPlazo('${sel}',$('plNueva').value,$('plSup').value.trim(),$('plMot').value);toast('Extensión '+x.num+' registrada.','ok');hechoDoc(x,'plz')})">Registrar extensión</button></div></div></div>${datalistPersonal()}`;
+      ${campo('Motivo', `<input id="plMot" ${v ? '' : 'disabled'} placeholder="Motivo de la prórroga o extensión">`)}
+    </div>
+    <div class="pie-form">
+      <div>${esSupervisor ? '<span style="color:#16a34a;font-weight:700">✔ Modo Supervisor: Puede aprobar y extender directamente o solicitar para la bandeja de aprobación.</span>' : '<span style="color:var(--texto-3)">Al registrar, la solicitud se enviará a la bandeja de aprobación del supervisor.</span>'}</div>
+      <div class="der">
+        <button class="btn btn-claro" onclick="ir('dash')">Cancelar</button>
+        <button class="btn btn-azul" ${v ? '' : 'disabled'} onclick="run(()=>{const ext=solicitarExtension('${sel}',$('plNueva').value,$('plSup').value.trim(),$('plMot').value);toast('Solicitud de extensión '+ext.id+' enviada al supervisor.','ok');ir('aprobarPlz')})">📝 Solicitar al supervisor</button>
+        ${esSupervisor ? `<button class="btn btn-verde" ${v ? '' : 'disabled'} onclick="run(()=>{const x=extenderPlazo('${sel}',$('plNueva').value,$('plSup').value.trim(),$('plMot').value);toast('Extensión '+x.num+' registrada y aprobada.','ok');hechoDoc(x,'plz')})">✔ Aprobar y extender directamente</button>` : ''}
+      </div>
+    </div></div>${datalistPersonal()}`;
+};
+
+VISTAS.aprobarPlz = () => {
+  if (!puede('aprobar', S.ctx) && !S.u.admin) {
+    $('area').innerHTML = cab('Aprobar extensiones de plazo') + avisoSinPermiso('Su usuario no tiene permiso de aprobación en ' + almNombre(S.ctx) + '.');
+    return;
+  }
+  DB.extSol = DB.extSol || [];
+  const pendientes = DB.extSol.filter(x => (x.alm === S.ctx || S.u.admin) && x.estatus === 'PENDIENTE');
+
+  const cols = [
+    { t: 'N° Solicitud', k: 'id' },
+    { t: 'Vale préstamo', k: 'valeRef' },
+    { t: 'Fecha solicitud', v: r => fFH(r.fechaSol), s: r => r.fechaSol },
+    { t: 'Solicitado por', v: r => r.solicitadoPor ? r.solicitadoPor.nombre : '—' },
+    { t: 'Devolución actual', v: r => fF(r.fechaDevActual) },
+    { t: 'Nueva fecha propuesta', v: r => fF(r.nuevaFecha), td: 'col-prest' },
+    { t: 'Días adicionales', v: r => diasEntre(r.fechaDevActual, r.nuevaFecha), cls: 'cen' },
+    { t: 'Supervisor indicado', k: 'supervisor' },
+    { t: 'Motivo', k: 'motivo' },
+    { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }
+  ];
+
+  $('area').innerHTML = cab('Aprobar extensiones de plazo', `Solicitudes de prórroga pendientes de aprobación del supervisor en ${esc(almNombre(S.ctx))}.`)
+    + `<div class="franja-est ${pendientes.length ? 'naranja' : 'verde'}"><span>Hay <b>${pendientes.length}</b> extensión(es) de plazo pendiente(s) de aprobación.</span></div>`
+    + grid('gExt', cols, pendientes, { pag: 15, onSel: r => tiraExt(r), vacio: 'No hay solicitudes de extensión pendientes en este almacén.' })
+    + `<div class="sel-strip"><span class="lbl">Extensión seleccionada</span><span class="box" id="exId"></span><span class="box" id="exInfo" style="flex:1"></span></div>
+      <div class="barra-btn">
+        <button class="btn-sip" id="exVer" disabled onclick="ir('doc',{num:selDe('gExt').valeRef,back:'aprobarPlz'})">Ver vale de préstamo</button>
+        <button class="btn-sip" id="exAp" disabled onclick="accionAprobarExt(selDe('gExt').id)">✔ Aprobar extensión</button>
+        <button class="btn-sip" id="exRe" disabled onclick="accionRechazarExt(selDe('gExt').id)">✖ Rechazar extensión</button>
+      </div>`;
+};
+
+function tiraExt(r) {
+  $('exId').textContent = r.id;
+  $('exInfo').textContent = `${r.valeRef} · Nueva fecha: ${fF(r.nuevaFecha)} · ${r.motivo}`;
+  $('exVer').disabled = false;
+  $('exAp').disabled = false;
+  $('exRe').disabled = false;
+}
+
+function accionAprobarExt(id) {
+  confirmar(`¿Aprobar la extensión de plazo <b>${id}</b>? La fecha de devolución del préstamo quedará actualizada en el sistema.`, () => {
+    aprobarExtension(id);
+    toast(`Extensión ${id} aprobada con éxito.`, 'ok');
+    pintarMenu();
+    refrescar();
+  }, 'Aprobar extensión');
+}
+
+function accionRechazarExt(id) {
+  pedirTexto(`Rechazar extensión ${id}`, 'Motivo del rechazo de la extensión (obligatorio)', mot => {
+    rechazarExtension(id, mot);
+    toast(`Extensión ${id} rechazada.`, 'ok');
+    pintarMenu();
+    refrescar();
+  }, 'Rechazar extensión', 'btn-rojo', true);
 };
 
 /* =====================================================================
@@ -2218,15 +2603,25 @@ function vistaPrestamos(tit, sub, tipo, estado, id) {
   if (estado === 'ABIERTOS') rows = rows.filter(r => ['VIGENTE', 'VENCIDO', 'DEVOLUCIÓN PARCIAL'].includes(r.est));
   else if (estado) rows = rows.filter(r => r.est === estado);
   rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha));
-  const cols = [{ t: 'Vale', v: r => r.v.num }, { t: 'Tipo', v: r => TIPOS[r.v.tipo].n }, { t: 'Fecha', v: r => fF(r.v.fecha), s: r => r.v.fecha }, { t: 'Responsable', v: r => r.v.resp.nombre }, { t: 'Cédula', v: r => r.v.resp.cedula },
-    { t: 'Cargo', v: r => r.v.resp.cargo }, { t: 'Proyecto / OT', v: r => r.v.proyecto }, { t: 'Supervisor', v: r => r.v.sup },
-    { t: 'Fecha devolución', v: r => r.v.fechaDev ? fF(r.v.fechaDev) : 'Indefinida', s: r => r.v.fechaDev || '9999' },
+  const cols = [
+    { t: 'N° de vale', v: r => r.v.num },
+    { t: 'Tipo de movimiento', v: r => `${r.v.tipo} - ${TIPOS[r.v.tipo].n}` },
+    { t: 'Fecha y hora', v: r => fFH(r.v.fecha), s: r => r.v.fecha },
+    { t: 'Cuenta auxiliar', v: r => r.v.cuenta || '—' },
+    { t: 'Descripción del proyecto', v: r => r.v.proyecto || '—' },
+    { t: 'Responsable', v: r => r.v.resp ? r.v.resp.nombre : '—' },
+    { t: 'Cédula', v: r => r.v.resp ? r.v.resp.cedula : '—' },
+    { t: 'Cargo', v: r => r.v.resp ? r.v.resp.cargo : '—' },
+    { t: 'Supervisor', v: r => r.v.sup || '—' },
+    { t: 'Fecha de devolución', v: r => r.v.fechaDev ? fF(r.v.fechaDev) : (r.v.tipo === 'ASI' ? 'Indefinida' : '—'), s: r => r.v.fechaDev || '9999' },
     { t: 'Días de atraso', v: r => r.v.tipo === 'PRH' && r.est === 'VENCIDO' ? diasEntre(r.v.fechaDev, hoy()) : 0, cls: 'cen', td: 'col-dan' },
-    { t: 'Extensiones', v: r => r.v.extensiones || 0, cls: 'num' }, { t: 'Ítems', v: r => r.v.lineas.map(l => `${l.cod}${l.serial ? ' (' + l.serial + ')' : ''} x${l.cant}`).join(', ') }, { t: 'Saldo', v: r => saldoVale(r.v), cls: 'cen', td: 'col-prest' },
-    { t: 'Estado', v: r => r.est, f: r => estB(r.est) }];
+    { t: 'Extensiones', v: r => r.v.extensiones || 0, cls: 'cen' },
+    { t: 'Saldo', v: r => saldoVale(r.v), cls: 'cen', td: 'col-prest' },
+    { t: 'Estado', v: r => r.est, f: r => estB(r.est) }
+  ];
   $('area').innerHTML = cab(tit, sub, botonesExport('gPr', tit + ' ' + almNombre(S.ctx)))
     + `<div class="fila-filtros">${id === 'cAsig' ? '' : campo('Tipo', `<select onchange="ir('${id}',{tipo:this.value,est:'${estado}'})"><option value="">Préstamos y asignaciones</option>${opciones([['PRH', 'Préstamos'], ['ASI', 'Asignaciones']], tipo)}</select>`)}
-      ${campo('Estado', `<select onchange="ir('${id}',{tipo:'${tipo}',est:this.value})">${opciones([['ABIERTOS', 'Con saldo pendiente'], ['VIGENTE', 'Vigentes'], ['VENCIDO', 'Vencidos'], ['DEVOLUCIÓN PARCIAL', 'Devolución parcial'], ['CERRADO', 'Cerrados'], ['ENTREGADO', 'EPP entregado'], ['', 'Todos']], estado)}</select>`)}${buscador('gPr', 'Buscar responsable, cédula, código…')}</div>`
+      ${campo('Estado', `<select onchange="ir('${id}',{tipo:'${tipo}',est:this.value})">${opciones([['ABIERTOS', 'Con saldo pendiente'], ['VIGENTE', 'Vigentes'], ['VENCIDO', 'Vencidos'], ['DEVOLUCIÓN PARCIAL', 'Devolución parcial'], ['CERRADO', 'Cerrados'], ['ENTREGADO', 'EPP entregado'], ['', 'Todos']], estado)}</select>`)}${buscador('gPr', 'Buscar responsable, cédula, código, proyecto…')}</div>`
     + grid('gPr', cols, rows, { pag: 15, onSel: r => tiraPr(r.v) })
     + `<div class="sel-strip"><span class="lbl">Vale seleccionado</span><span class="box" id="tpNum"></span><span class="box" id="tpInfo" style="flex:1"></span></div>
     <div class="barra-btn"><button class="btn-sip" id="pVer" disabled onclick="ir('doc',{num:selDe('gPr').v.num,back:'${id}'})">Visualizar vale</button>
@@ -2234,7 +2629,7 @@ function vistaPrestamos(tit, sub, tipo, estado, id) {
       <button class="btn-sip" id="pDev" disabled onclick="ir('dev',{vale:selDe('gPr').v.num})">Registrar devolución</button>
       <button class="btn-sip" id="pPlz" disabled onclick="ir('plz',{vale:selDe('gPr').v.num})">Extender plazo</button></div>`;
 }
-function tiraPr(v) { $('tpNum').textContent = v.num; $('tpInfo').textContent = `${v.resp.nombre} · ${v.proyecto}`; $('pVer').disabled = false; $('pImp').disabled = false; $('pDev').disabled = saldoVale(v) === 0; $('pPlz').disabled = !(v.tipo === 'PRH' && saldoVale(v) > 0); }
+function tiraPr(v) { $('tpNum').textContent = v.num; $('tpInfo').textContent = `${v.resp ? v.resp.nombre : ''} · ${v.proyecto || ''}`; $('pVer').disabled = false; $('pImp').disabled = false; $('pDev').disabled = saldoVale(v) === 0; $('pPlz').disabled = !(v.tipo === 'PRH' && saldoVale(v) > 0); }
 VISTAS.cPrest = p => vistaPrestamos('Préstamos vigentes', 'Préstamos y asignaciones con saldo pendiente de devolución.', p ? p.tipo ?? 'PRH' : 'PRH', p ? p.est ?? 'ABIERTOS' : 'ABIERTOS', 'cPrest');
 VISTAS.cVenc = p => vistaPrestamos('Préstamos vencidos', 'Préstamos con fecha de devolución vencida y saldo pendiente.', 'PRH', p ? p.est ?? 'VENCIDO' : 'VENCIDO', 'cVenc');
 VISTAS.cAsig = p => vistaPrestamos('Asignaciones por persona', 'Herramientas asignadas y EPP entregado por trabajador.', 'ASI', p ? p.est ?? '' : '', 'cAsig');
@@ -2849,13 +3244,15 @@ function imprimirVale(n) {
   v.impresiones = (v.impresiones || 0) + 1;
   bit(reimpresion ? 'REIMPRESIÓN DE VALE' : 'IMPRESIÓN DE VALE', n); guardar();
   const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT';
-  const izq = esTrf || esEnt
+  const izq = esEnt
     ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)}</div><div><b>Cédula:</b> ${esc(v.realizadoPor.cedula)}</div><div><b>Cargo:</b> ${esc(v.realizadoPor.cargo)}</div>`
+    : esTrf
+    ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)} (${esc(v.realizadoPor.cargo)})</div><div><b>Despachado por:</b> ${esc(v.despacha || v.realizadoPor.nombre)}</div>${v.resp ? `<div><b>Responsable / Custodio:</b> ${esc(v.resp.nombre)} (C.I. ${esc(v.resp.cedula)})</div><div><b>Cargo:</b> ${esc(v.resp.cargo)}</div>` : ''}`
     : `<div><b>Responsable:</b> ${esc(v.resp ? v.resp.nombre : '')}</div><div><b>Cédula:</b> ${esc(v.resp ? v.resp.cedula : '')}</div><div><b>Cargo / Supervisor:</b> ${esc(v.resp ? v.resp.cargo : '')} / ${esc(v.sup)}</div><div><b>Cuenta Auxiliar:</b> ${esc(v.cuenta)}</div>`;
   const der = esEnt
-    ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())}</div><div><b>Documento soporte:</b> ${esc(v.extra.soporte || '—')}</div><div><b>Proveedor / procedencia:</b> ${esc(v.extra.proveedor || '—')}</div>`
+    ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())}</div>`
     : esTrf
-    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div><div><b>Estatus de recepción:</b> ${esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}`
+    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor autoriza:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}`
     : `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div><div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div><div><b>Tipo A / Aprobación:</b> ${v.lineas.some(l => item(l.id).tipoA) ? 'SI · N° ' + esc(v.aprobGer || '—') : 'NO'}</div>${v.ref ? `<div><b>Vale de referencia:</b> ${esc(v.ref)}</div>` : ''}`;
   let extra = '';
   if (t === 'PRH') extra = `<b>Fecha requerida:</b> ${fF(v.fechaReq)} &nbsp;·&nbsp; <b>Fecha de devolución:</b> ${fF(v.fechaDev)}${v.extensiones ? ` &nbsp;·&nbsp; <b>Extensiones:</b> ${v.extensiones}` : ''}`;
@@ -2865,9 +3262,9 @@ function imprimirVale(n) {
   if (t === 'EXT') extra = `<b>Descripción de la incidencia:</b> ${esc(v.extra.detalle)}`;
   if (t === 'PLZ') extra = `<b>Vale de referencia:</b> ${esc(v.ref)} &nbsp;·&nbsp; <b>Fecha anterior:</b> ${fF(v.extra.anterior)} &nbsp;·&nbsp; <b>Nueva fecha:</b> ${fF(v.extra.nueva)}${v.extra.motivo ? '<br><b>Motivo:</b> ' + esc(v.extra.motivo) : ''}`;
   if (v.obs) extra += (extra ? '<br>' : '') + `<b>Observación:</b> ${esc(v.obs)}`;
-  const firmas = esEnt ? [['Entrega (proveedor / origen)', 'Firma', ''], ['Recibe (almacenista)', 'Firma y Sello', v.realizadoPor.nombre], ['Supervisor Autoriza', 'Firma y Sello', '']]
+  const firmas = esEnt ? [['Entrega', 'Firma', ''], ['Recibe (almacenista)', 'Firma y Sello', v.realizadoPor.nombre], ['Supervisor', 'Firma y Sello', '']]
     : esTrf
-    ? [['Despacha (' + almNombre(v.origen).replace('Almacén ', '') + ')', 'Firma y Sello', v.realizadoPor.nombre], ['Recibe (' + almNombre(v.destino).replace('Almacén ', '') + ')', 'Firma y Sello', v.estatus === 'RECIBIDA' ? v.procesadoPor.nombre : ''], ['Supervisor Autoriza', 'Firma y Sello', '']]
+    ? [['Despacha (' + almNombre(v.origen).replace('Almacén ', '') + ')', 'Firma y Sello', v.despacha || v.realizadoPor.nombre], ['Recibe (' + almNombre(v.destino).replace('Almacén ', '') + ')', 'Firma y Sello', v.estatus === 'RECIBIDA' ? v.procesadoPor.nombre : ''], ['Supervisor Autoriza', 'Firma y Sello', v.sup || '']]
     : [['Responsable / Recibe', 'Firma y Cédula', ''], ['Almacenista / Despacha', 'Firma y Sello', ''], ['Supervisor Autoriza', 'Firma y Sello', v.aprobadoPor ? v.aprobadoPor.nombre : '']];
   $('hojaImpresion').innerHTML = `
     <div class="vale-enc">
@@ -2903,6 +3300,7 @@ function iniciar() {
   cargarDatos();
   procesarVencimientos();
   pintarUsuariosDemo();
+  actualizarCampanaNotif();
   // Revisión periódica de vencimientos (en el servidor: APScheduler)
   setInterval(tickCronos, 1000);
   setInterval(() => { if (procesarVencimientos() && S.u) { toast('Una transferencia venció y su material regresó al almacén de origen.'); pintarMenu(); } }, 60000);
