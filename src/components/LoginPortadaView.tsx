@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UsuarioSistema, USUARIOS_INICIALES_TIMACA } from '../types/usuarios';
 import { TimacaLogo } from './TimacaLogo';
 import { 
@@ -17,7 +17,9 @@ import {
   Layers,
   CheckCircle2,
   HardHat,
-  Award
+  Award,
+  Clock,
+  Calendar
 } from 'lucide-react';
 
 interface LoginPortadaViewProps {
@@ -55,6 +57,28 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [recordarSesion, setRecordarSesion] = useState(true);
+
+  // Reloj y fecha en vivo (Venezuela)
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentDateTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = currentDateTime.toLocaleTimeString('es-VE', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit',
+    hour12: true 
+  });
+
+  const formattedDate = currentDateTime.toLocaleDateString('es-VE', { 
+    weekday: 'short', 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  });
 
   // Manejar cambio de entorno primario
   const handleCambiarEntorno = (nuevoEntorno: 'externos' | 'internos') => {
@@ -137,18 +161,33 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
 
       {/* Barra superior de estado */}
-      <header className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+      <header className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/20 shadow-md">
           <TimacaLogo size="md" />
         </div>
         
-        <div className={`flex items-center gap-2 text-xs font-mono backdrop-blur-md border px-3 py-1.5 rounded-lg shadow-sm transition-colors ${
-          esInternos 
-            ? 'bg-slate-800/90 border-slate-700 text-sky-300' 
-            : 'bg-slate-900/80 border-slate-700/60 text-slate-300'
-        }`}>
-          <span className={`w-2 h-2 rounded-full animate-pulse ${esInternos ? 'bg-sky-400' : 'bg-emerald-400'}`} />
-          <span>{esInternos ? 'MÓDULO INTERNO · PLANTA & FLOTA' : 'SISTEMA AUDITADO · OBRAS EXTERNAS'}</span>
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Reloj y Fecha en tiempo real (Venezuela) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-xs font-mono shadow-md select-none">
+            <div className="flex items-center gap-1.5 text-sky-400 font-bold">
+              <Clock className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+              <span>{formattedTime}</span>
+            </div>
+            <span className="text-slate-600 hidden sm:inline">|</span>
+            <div className="hidden sm:flex items-center gap-1.5 text-slate-300 font-medium">
+              <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span>{formattedDate}</span>
+            </div>
+          </div>
+
+          <div className={`hidden sm:flex items-center gap-2 text-xs font-mono backdrop-blur-md border px-3 py-1.5 rounded-lg shadow-sm transition-colors ${
+            esInternos 
+              ? 'bg-slate-800/90 border-slate-700 text-sky-300' 
+              : 'bg-slate-900/80 border-slate-700/60 text-slate-300'
+          }`}>
+            <span className={`w-2 h-2 rounded-full animate-pulse ${esInternos ? 'bg-sky-400' : 'bg-emerald-400'}`} />
+            <span>{esInternos ? 'MÓDULO INTERNO · PLANTA & FLOTA' : 'SISTEMA AUDITADO · OBRAS EXTERNAS'}</span>
+          </div>
         </div>
       </header>
 

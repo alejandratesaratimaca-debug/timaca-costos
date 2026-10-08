@@ -44,9 +44,10 @@ const ENTORNO_STORAGE_KEY = 'TIMACA_ENTORNO_ACTIVO';
 const MODULO_STORAGE_KEY = 'TIMACA_MODULO_SUITE_ACTIVO';
 
 function AppContent() {
-  // Estado del Menú Lateral (Sidebar)
+  // Estado del Menú Lateral (Sidebar): Inicia comprimido por defecto al entrar al sistema
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
-    return localStorage.getItem('TIMACA_SIDEBAR_COLLAPSED') === 'true';
+    const saved = localStorage.getItem('TIMACA_SIDEBAR_COLLAPSED');
+    return saved !== null ? saved === 'true' : true;
   });
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -153,6 +154,10 @@ function AppContent() {
     }
     setEntornoActivoState(chosen);
     localStorage.setItem(ENTORNO_STORAGE_KEY, chosen);
+
+    // Iniciar con el menú comprimido según requerimiento
+    setSidebarCollapsed(true);
+    localStorage.setItem('TIMACA_SIDEBAR_COLLAPSED', 'true');
 
     if (user.rol === 'Analista de Costos Internos') {
       setActiveTab('internos-dashboard');

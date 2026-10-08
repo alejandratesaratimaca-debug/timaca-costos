@@ -54,9 +54,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   mobileOpen,
   setMobileOpen
 }) => {
-  // Estados de expansión: Departamento de costos colapsado por defecto según requerimiento
+  // Estados de expansión: Menú de costos completamente comprimido por defecto
   const [costosExpanded, setCostosExpanded] = useState(false);
-  const [externosExpanded, setExternosExpanded] = useState(true);
+  const [externosExpanded, setExternosExpanded] = useState(false);
   const [internosExpanded, setInternosExpanded] = useState(false);
 
   const esInternos = entornoActivo === 'internos';
@@ -64,7 +64,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleSelectModulo = (modulo: SuiteModulo) => {
     onCambiarModulo(modulo);
     if (modulo === 'costos') {
-      setCostosExpanded(true);
       if (entornoActivo === 'internos') {
         setActiveTab('internos-dashboard');
       } else {
@@ -99,58 +98,54 @@ export const Sidebar: React.FC<SidebarProps> = ({
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        {/* ================= HEADER DEL SIDEBAR ================= */}
-        <div className="p-3.5 border-b border-slate-700/80 shrink-0 bg-[#0c1829]">
+        {/* ================= HEADER DEL SIDEBAR: BLANCO CON LOGO CENTRADO ================= */}
+        <div className="border-b border-slate-200 shrink-0 bg-white transition-colors relative">
           {!isCollapsed ? (
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between gap-2">
-                {/* Logo Institucional TIMACA en tarjeta limpia */}
-                <div className="bg-white px-3 py-1.5 rounded-xl shadow-xs inline-flex items-center justify-center">
-                  <TimacaLogo size="sm" showSubtitle={false} showRif={false} />
-                </div>
+            <div className="p-3.5 flex flex-col items-center text-center relative">
+              {/* Botón Plegar / Comprimir Sidebar en la esquina superior derecha */}
+              <button
+                onClick={() => setIsCollapsed(true)}
+                className="hidden md:flex absolute top-2.5 right-2.5 p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                title="Comprimir menú lateral"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
 
-                {/* Botón Plegar Sidebar (Desktop) */}
-                <button
-                  onClick={() => setIsCollapsed(!isCollapsed)}
-                  className="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
-                  title="Colapsar menú lateral"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
+              {/* Logo Institucional TIMACA Centrado para máxima visibilidad */}
+              <div className="py-1 flex items-center justify-center">
+                <TimacaLogo size="md" showSubtitle={false} showRif={false} />
               </div>
 
               {/* Título Oficial de la Suite de Costos */}
-              <div className="flex items-center justify-between pt-0.5">
-                <div>
-                  <span className="font-heading font-black text-sm text-white tracking-wide block">
-                    CONTROL DE COSTOS
-                  </span>
-                  <span className="text-[10px] text-sky-300 font-mono flex items-center gap-1.5 mt-0.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <div className="mt-2 flex flex-col items-center">
+                <span className="font-heading font-black text-sm text-slate-900 tracking-wider block">
+                  CONTROL DE COSTOS
+                </span>
+                <div className="flex items-center justify-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                  <span className="text-[10px] text-slate-500 font-mono">
                     Modelo Estrella · Puerto Ordaz
                   </span>
+                  <span className="text-[9px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.2 rounded ml-1">
+                    2026
+                  </span>
                 </div>
-                <span className="text-[9px] font-mono font-bold bg-blue-900/80 text-blue-200 border border-blue-600/50 px-2 py-0.5 rounded-md">
-                  2026
-                </span>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2 py-1">
-              {/* Isotipo Monograma TIMACA (TM) elegante cuando está colapsado */}
+            <div className="p-2.5 flex flex-col items-center gap-2">
+              {/* Isotipo / Logo TIMACA Centrado cuando está colapsado */}
               <div 
-                className="w-10 h-10 rounded-xl bg-white p-1 shadow-md flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-sky-400 transition-all"
+                className="w-11 h-11 rounded-xl bg-white p-1 border border-slate-200 shadow-xs flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
                 title="Expandir: Control de Costos TIMACA"
                 onClick={() => setIsCollapsed(false)}
               >
-                <div className="w-full h-full rounded-lg bg-[#0b2545] flex items-center justify-center font-heading font-black text-white text-xs tracking-tighter">
-                  TM
-                </div>
+                <TimacaLogo size="sm" showSubtitle={false} showRif={false} />
               </div>
               
               <button
-                onClick={() => setIsCollapsed(!isCollapsed)}
-                className="hidden md:flex p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                onClick={() => setIsCollapsed(false)}
+                className="hidden md:flex p-1 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
                 title="Expandir menú lateral"
               >
                 <ChevronRight className="w-4 h-4" />

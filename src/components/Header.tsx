@@ -204,22 +204,22 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Pastilla de Usuario Activo con Hora y Fecha al lado */}
             <div className="flex items-center gap-2">
-              {/* Reloj y Fecha en tiempo real al lado del nombre */}
+              {/* Reloj y Fecha en tiempo real al lado del nombre (Siempre visible) */}
               <div 
-                className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-mono shadow-2xs select-none transition-colors ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-mono shadow-xs select-none transition-colors ${
                   esInternos 
-                    ? 'bg-slate-800/90 border-slate-700 text-slate-200' 
-                    : 'bg-slate-50 border-slate-200 text-slate-800'
+                    ? 'bg-slate-800 border-slate-700 text-slate-200' 
+                    : 'bg-blue-50/90 border-blue-200 text-slate-800'
                 }`}
                 title="Hora oficial de Venezuela y fecha actual"
               >
-                <div className="flex items-center gap-1.5 font-bold text-sky-600">
-                  <Clock className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                <div className="flex items-center gap-1.5 font-bold text-blue-700">
+                  <Clock className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                   <span>{formattedTime}</span>
                 </div>
-                <span className="text-slate-300">|</span>
-                <div className="flex items-center gap-1.5 font-medium text-slate-600">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span className="text-slate-300 hidden sm:inline">|</span>
+                <div className="hidden sm:flex items-center gap-1.5 font-semibold text-slate-600">
+                  <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                   <span>{formattedDate}</span>
                 </div>
               </div>
