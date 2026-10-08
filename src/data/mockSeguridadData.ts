@@ -2,7 +2,7 @@ export interface PermisoAltoRiesgo {
   id: string;
   numeroPTAR: string; // PTAR-2026-0089
   tipo: 'Trabajo en Altura' | 'Trabajo en Caliente' | 'Espacio Confinado' | 'Izaje Crítico' | 'Energías Peligrosas / Eléctrico';
-  frenteTrabajo: string; // Muelle de Carga Palúa, Taller Central, Planta de Pellas, etc.
+  frenteTrabajo: string; // Muelle de Carga PMH, Taller Central, Planta de Pellas, etc.
   equipoIntervenido: string;
   solicitanteNombre: string;
   solicitanteCargo: string;
@@ -60,7 +60,7 @@ export const MOCK_PERMISOS_ALTO_RIESGO: PermisoAltoRiesgo[] = [
     id: 'ptar-001',
     numeroPTAR: 'PTAR-2026-0089',
     tipo: 'Izaje Crítico',
-    frenteTrabajo: 'Muelle de Carga Palúa (Ship Loader)',
+    frenteTrabajo: 'Muelle de Carga PMH (Ship Loader)',
     equipoIntervenido: 'Grúa GR17 Liebherr (160T) + Grúa GR15 Grove (70T)',
     solicitanteNombre: 'Nelson Rondón',
     solicitanteCargo: 'Operador Especialista de Grúas Pesadas',
@@ -126,7 +126,7 @@ export const MOCK_PERMISOS_ALTO_RIESGO: PermisoAltoRiesgo[] = [
     id: 'ptar-004',
     numeroPTAR: 'PTAR-2026-0092',
     tipo: 'Trabajo en Altura',
-    frenteTrabajo: 'Torre de Transferencia TT-201 (Palúa)',
+    frenteTrabajo: 'Torre de Transferencia TT-201 (PMH)',
     equipoIntervenido: 'Plataforma Superior y Cabezal de Descarga Correa CV-01',
     solicitanteNombre: 'Juan Carlos Brito',
     solicitanteCargo: 'Técnico Montador Estructural',
@@ -200,8 +200,8 @@ export const MOCK_BLOQUEOS_LOTOTO: BloqueoSeguridadLOTOTO[] = [
     id: 'loto-003',
     numeroTarjeta: 'LOTOTO-2026-040',
     puntoBloqueo: 'Desconectador de Cuchillas Alimentación Tambor Motriz CV-02',
-    ubicacion: 'Muelle Palúa - Pasarela Ship Loader',
-    equipoAfectado: 'Correa Transportadora de Mineral CV-02 (Palúa)',
+    ubicacion: 'Muelle PMH - Pasarela Ship Loader',
+    equipoAfectado: 'Correa Transportadora de Mineral CV-02 (PMH)',
     responsableBloqueo: 'Juan Carlos Brito',
     cargo: 'Técnico Montador',
     fechaBloqueo: '2026-10-04',
@@ -217,7 +217,7 @@ export const MOCK_CHARLAS_TDS: CharlaSeguridadTDS[] = [
     id: 'tds-001',
     numeroActa: 'TDS-2026-145',
     fecha: '2026-10-06',
-    frenteTrabajo: 'Muelle de Carga Palúa (Frente PMH)',
+    frenteTrabajo: 'Muelle de Carga PMH (Frente PMH)',
     temaTratado: 'Procedimiento de Izaje Crítico Tándem y Comunicación Radial con Operador de Grúa',
     facilitador: 'Ing. Carlos Mendoza',
     cargoFacilitador: 'Inspector de Seguridad Industrial HSE',
@@ -275,7 +275,7 @@ export const MOCK_INSPECCIONES_HSE: InspeccionHSE[] = [
     id: 'insp-003',
     numeroInspeccion: 'INSP-2026-066',
     fecha: '2026-10-03',
-    frenteTrabajo: 'Muelle Palúa y Torres de Transferencia',
+    frenteTrabajo: 'Muelle PMH y Torres de Transferencia',
     tipo: 'Arneses y Líneas de Vida',
     inspector: 'Ing. Carlos Mendoza',
     resultado: 'Con Observaciones',

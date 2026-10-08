@@ -309,7 +309,7 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
                 <div className="p-3 rounded-xl bg-slate-800/70 border border-slate-700/80 shadow-xs">
                   <div className="text-xs font-bold text-amber-300 flex items-center gap-1.5 mb-1">
                     <HardHat className="w-4 h-4 text-amber-400" />
-                    <span>[PMH] SIP de Campo Palúa / Pellas</span>
+                    <span>[PMH] SIP de Campo PMH / Pellas</span>
                   </div>
                   <div className="text-[11px] text-slate-400 leading-relaxed">
                     Vales digitales de almacén en frente de muelle y tolvas con cola offline y sincronización.

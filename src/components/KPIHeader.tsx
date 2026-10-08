@@ -332,7 +332,7 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
           {/* Footer */}
           <div className="bg-neutral-50 p-3.5 border-t border-neutral-200 flex items-center justify-between">
             <span className="text-xs text-neutral-500">
-              Total acumulado 8 meses: <strong>${TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0).toLocaleString('de-DE')} USD</strong>
+              Total acumulado 9 meses (Ene - Sep 2026): <strong>${TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0).toLocaleString('de-DE')} USD</strong>
             </span>
             <div className="flex items-center gap-2">
               <button

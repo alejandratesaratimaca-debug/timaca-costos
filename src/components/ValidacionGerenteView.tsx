@@ -56,7 +56,7 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [salidaParaObservar, setSalidaParaObservar] = useState<SalidaCosto | null>(null);
   const [tipoDiscrepancia, setTipoDiscrepancia] = useState('Material pertenece a otro proyecto');
-  const [proyectoCorrectoSugerido, setProyectoCorrectoSugerido] = useState('TTE-C-0671 · Segunda Línea PMH Palúa');
+  const [proyectoCorrectoSugerido, setProyectoCorrectoSugerido] = useState('TTE-C-0671 · Segunda Línea PMH');
   const [comentarioGerente, setComentarioGerente] = useState('');
   const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
 
@@ -229,7 +229,7 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
   const handleAbrirObservacion = (salida: SalidaCosto) => {
     setSalidaParaObservar(salida);
     setTipoDiscrepancia('Material pertenece a otro proyecto');
-    setProyectoCorrectoSugerido('TTE-C-0671 · Segunda Línea PMH Palúa');
+    setProyectoCorrectoSugerido('TTE-C-0671 · Segunda Línea PMH');
     setComentarioGerente(salida.observacionGerente || `MALA IMPUTACIÓN: Este material no fue recibido ni consumido en el frente ${salida.proyecto}.`);
     setModalOpen(true);
   };
@@ -956,7 +956,7 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
                     onChange={(e) => setProyectoCorrectoSugerido(e.target.value)}
                     className="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-medium text-slate-800 text-xs focus:ring-2 focus:ring-red-500"
                   >
-                    <option value="TTE-C-0671 · Segunda Línea PMH Palúa">TTE-C-0671 · Segunda Línea PMH Palúa</option>
+                    <option value="TTE-C-0671 · Segunda Línea PMH">TTE-C-0671 · Segunda Línea PMH</option>
                     <option value="TTE-C-0656 · Rehabilitación Bandas PMH">TTE-C-0656 · Rehabilitación Bandas PMH</option>
                     <option value="TTE-C-0706 · Recuperación Línea 1 Pellas">TTE-C-0706 · Recuperación Línea 1 Pellas</option>
                     <option value="TTE-C-0676 · 2da Línea Pellas">TTE-C-0676 · 2da Línea Pellas</option>

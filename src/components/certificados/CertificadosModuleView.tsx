@@ -179,7 +179,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
               <span>Sistema de Capacitación y Competencias Técnicas TIMACA</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed mt-1">
-              Base de datos integral de 879 trabajadores de TIMACA, Palúa (PMH), Pellas y Briquetas. Seguimiento de los 10 cursos obligatorios de seguridad, habilitación operacional y 169 certificados verificados con respaldo en Google Drive.
+              Base de datos integral de 879 trabajadores de TIMACA, PMH, Pellas y Briquetas. Seguimiento de los 10 cursos obligatorios de seguridad, habilitación operacional y 169 certificados verificados con respaldo en Google Drive.
             </p>
           </div>
 
@@ -838,7 +838,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                   <td className="p-3 font-bold text-slate-900">Trabajo en Altura</td>
                   <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
                   <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Montadores, andamieros, soldadores, cuadrillas de muelle Palúa (PMH) y línea de pellas</td>
+                  <td className="p-3 text-slate-700">Montadores, andamieros, soldadores, cuadrillas de Muelle PMH (PMH) y línea de pellas</td>
                 </tr>
               </tbody>
             </table>

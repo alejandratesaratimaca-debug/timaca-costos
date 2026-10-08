@@ -193,11 +193,11 @@ export const USUARIOS_INICIALES_TIMACA: UsuarioSistema[] = [
     nombre: 'Ing. Roberto Valdivieso',
     correo: 'rvaldivieso@timaca.com.ve',
     usuario: 'rvaldivieso',
-    cargo: 'Ingeniero de Pruebas - Manejo Mineral PMH Palúa (Observador)',
+    cargo: 'Ingeniero de Pruebas - Manejo Mineral PMH (Observador)',
     departamento: 'Gerencia de Operaciones & Proyectos',
     rol: 'Observador',
     cuentasAsignadas: ['TTE-C-0671', 'TTE-C-0656'],
-    proyectosNombres: ['Segunda Línea PMH Palúa (Lectura)', 'Rehabilitación Bandas PMH'],
+    proyectosNombres: ['Segunda Línea PMH (Lectura)', 'Rehabilitación Bandas PMH'],
     estado: 'Activo',
     permisos: {
       canEditSalidas: false,

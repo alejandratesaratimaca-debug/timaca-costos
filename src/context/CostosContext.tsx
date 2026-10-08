@@ -13,7 +13,7 @@ import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual
 import { parseFechaToDetails } from '../utils/dateHelpers';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 
-const STORAGE_KEY = 'TIMACA_COSTOS_V130_AUDITORIA_SEPTIEMBRE_COMPLETO';
+const STORAGE_KEY = 'TIMACA_COSTOS_V133_PMH_SEPTIEMBRE_CUADRADO_LEGIBLE';
 
 interface CostosContextType {
   salidas: SalidaCosto[];
@@ -85,13 +85,13 @@ const DEFAULT_VALIDACIONES: Record<string, {
 }> = {
   'DP0037159': {
     estadoValidacion: 'Observado',
-    observacionGerente: 'MALA IMPUTACIÓN: Este material (2.783 kg de plancha ASTM A-36, $3.924,69 USD) fue despachado para la 2da Línea PMH Palúa (TTE-C-0671) según motivo textual del almacén. No pertenece a Planta de Pellas.',
+    observacionGerente: 'MALA IMPUTACIÓN: Este material (2.783 kg de plancha ASTM A-36, $3.924,69 USD) fue despachado para la 2da Línea PMH (TTE-C-0671) según motivo textual del almacén. No pertenece a Planta de Pellas.',
     fechaValidacion: '2026-10-05 09:30',
     validadoPor: 'Ing. Carlos Mendoza (Gerente Pellas)'
   },
   'REAL-AGO-2026-5148': {
     estadoValidacion: 'Observado',
-    observacionGerente: 'MALA IMPUTACIÓN: Este material (2.783 kg de plancha ASTM A-36, $3.924,69 USD) fue despachado para la 2da Línea PMH Palúa (TTE-C-0671) según motivo textual del almacén. No pertenece a Planta de Pellas.',
+    observacionGerente: 'MALA IMPUTACIÓN: Este material (2.783 kg de plancha ASTM A-36, $3.924,69 USD) fue despachado para la 2da Línea PMH (TTE-C-0671) según motivo textual del almacén. No pertenece a Planta de Pellas.',
     fechaValidacion: '2026-10-05 09:30',
     validadoPor: 'Ing. Carlos Mendoza (Gerente Pellas)'
   },
@@ -273,9 +273,9 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     fechaFin
   ]);
 
-  // Totales Globales Oficiales 2026 (8 Meses Consolidados)
+  // Totales Globales Oficiales 2026 (9 Meses Consolidados: Enero - Septiembre: $13.020.430 USD)
   const totalMontoGlobal = useMemo(() => {
-    return TOTALES_MESES_PPT.reduce((acc, curr) => acc + curr.total, 0); // $11.809.472 USD consolidado
+    return TOTALES_MESES_PPT.reduce((acc, curr) => acc + curr.total, 0); // $13.020.430 USD consolidado
   }, []);
 
   const totalSalidasGlobal = 48553; // 48.553 despachos reales de proyectos externos en 2026

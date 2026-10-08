@@ -136,10 +136,10 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   // Total gasto in the selected period (Oficial TIMACA 2026)
   const totalGastoPeriodo = useMemo(() => {
     if (selectedMesNum === 0) {
-      return TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0); // Total consolidado 9 meses oficiales 2026 (Ene-Sep: $12.478.718 USD)
+      return TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0); // Total consolidado 9 meses oficiales 2026 (Ene-Sep: $13.020.430 USD)
     }
     if (selectedMesNum >= 1 && selectedMesNum <= 9) {
-      return TOTALES_MESES_PPT[selectedMesNum - 1]?.total || 1097082;
+      return TOTALES_MESES_PPT[selectedMesNum - 1]?.total || 1215432;
     }
     return salidasFiltradasMes.reduce((sum, s) => sum + s.montoTotal, 0);
   }, [salidasFiltradasMes, selectedMesNum]);

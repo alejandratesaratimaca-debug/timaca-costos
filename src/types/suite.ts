@@ -19,7 +19,7 @@ export interface Herramienta {
   nombre: string;
   marcaModelo: string;
   categoria: CategoriaHerramienta;
-  ubicacion: string; // Taller Central, Frente Palúa PMH, Frente Pellas, Pañol Central
+  ubicacion: string; // Taller Central, Frente PMH, Frente Pellas, Pañol Central
   estado: EstadoHerramienta;
   responsableActual?: string;
   cuadrilla?: string;
@@ -89,7 +89,7 @@ export interface EntregaDotacionRegistro {
   cedula: string;
   cargo: string;
   departamento: string;
-  frenteAsignado: string; // Taller Central, Muelle Palúa PMH, Pellas, Flota Grúas
+  frenteAsignado: string; // Taller Central, Muelle PMH, Pellas, Flota Grúas
   fechaEntrega: string;
   fechaProximaRenovacion: string;
   diasParaRenovacion: number;
@@ -108,10 +108,10 @@ export interface EntregaDotacionRegistro {
 }
 
 // ==========================================
-// 3. SIP DE PMH (PALÚA EN CAMPO)
+// 3. SIP DE PMH (EN CAMPO)
 // ==========================================
 export type FrenteTrabajoPMH = 
-  | 'Muelle de Carga Palúa (Ship Loader)' 
+  | 'Muelle de Carga PMH (Ship Loader)' 
   | 'Torre de Transferencia TT-201' 
   | 'Línea de Pellas - Secador L1' 
   | 'Línea de Pellas - Horno L2' 

@@ -93,8 +93,8 @@ export const SeguridadModuleView: React.FC<SeguridadModuleViewProps> = ({
   // Modal Nuevo Plan de Control
   const [isNuevoPlanOpen, setIsNuevoPlanOpen] = useState(false);
   const [formNuevoPlan, setFormNuevoPlan] = useState({
-    idRiesgo: 'RSG-PALUA-001',
-    area: 'Muelle Palúa (PMH)',
+    idRiesgo: 'RSG-PMH-001',
+    area: 'Muelle PMH (PMH)',
     puestoActividad: 'Operación de Izaje Tándem y Maniobra en Muelle',
     peligro: 'Caída de persona a distinto nivel durante acceso a pluma y cabina',
     nrInicial: 1080,
@@ -306,7 +306,7 @@ export const SeguridadModuleView: React.FC<SeguridadModuleViewProps> = ({
               Tablero de Control de Riesgos & Matriz IPER TIMACA
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
-              Sistema integral de evaluación de riesgos, planes de control jerarquizados y seguimiento normativo para Muelle Palúa (PMH), Planta de Pellas, Taller Central y Flota de Grúas.
+              Sistema integral de evaluación de riesgos, planes de control jerarquizados y seguimiento normativo para Muelle PMH (PMH), Planta de Pellas, Taller Central y Flota de Grúas.
             </p>
           </div>
 
@@ -655,7 +655,7 @@ export const SeguridadModuleView: React.FC<SeguridadModuleViewProps> = ({
                 className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="TODAS">Todas las Áreas Operativas</option>
-                <option value="Muelle Palúa (PMH)">Muelle Palúa (PMH)</option>
+                <option value="Muelle PMH (PMH)">Muelle PMH (PMH)</option>
                 <option value="Planta de Pellas - Horno L2">Planta de Pellas - Horno L2</option>
                 <option value="Planta de Pellas - Secador L1">Planta de Pellas - Secador L1</option>
                 <option value="Taller Central TIMACA (Bahía 1)">Taller Central (Bahía 1)</option>
@@ -1102,7 +1102,7 @@ export const SeguridadModuleView: React.FC<SeguridadModuleViewProps> = ({
                   onChange={(e) => setFormNuevoPlan({ ...formNuevoPlan, area: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-800"
                 >
-                  <option value="Muelle Palúa (PMH)">Muelle Palúa (PMH)</option>
+                  <option value="Muelle PMH (PMH)">Muelle PMH (PMH)</option>
                   <option value="Planta de Pellas - Horno L2">Planta de Pellas - Horno L2</option>
                   <option value="Planta de Pellas - Secador L1">Planta de Pellas - Secador L1</option>
                   <option value="Taller Central TIMACA (Bahía 1)">Taller Central (Bahía 1)</option>

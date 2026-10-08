@@ -724,7 +724,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
 
                   <div className="p-2.5 rounded-xl bg-neutral-50 border border-neutral-200 text-center">
                     <span className="font-mono text-[10px] text-neutral-500 block">TTE-C-0671</span>
-                    <span className="font-bold text-neutral-900 text-xs truncate block" title="Segunda Línea PMH Palúa">2da PMH Palúa</span>
+                    <span className="font-bold text-neutral-900 text-xs truncate block" title="Segunda Línea PMH">2da PMH</span>
                     <span className="font-mono font-black text-blue-700 text-xs block mt-0.5">$157.206 USD</span>
                     <span className="text-[10px] text-neutral-500 font-semibold">18,4%</span>
                   </div>

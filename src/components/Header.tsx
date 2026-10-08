@@ -152,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {moduloActivo === 'rrhh' && 'Recursos Humanos · Talento TIMACA'}
                     {moduloActivo === 'herramientas' && 'Herramientas & Taller (40 Cajas)'}
                     {moduloActivo === 'dotacion' && 'Dotación EPP & Uniformes'}
-                    {moduloActivo === 'sip-pmh' && 'SIP Campo Palúa · Despacho Muelle'}
+                    {moduloActivo === 'sip-pmh' && 'SIP Campo PMH · Despacho Muelle'}
                     {moduloActivo === 'seguridad' && 'Seguridad Industrial & HSE'}
                     {moduloActivo === 'certificados' && 'Certificados & Cursos Técnicos'}
                   </span>

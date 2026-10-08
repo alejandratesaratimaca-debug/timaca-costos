@@ -175,6 +175,67 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
     const isHorasMaquina = targetCat.includes('maquina') || targetCat.includes('máquina');
     const isServicios = targetCat.includes('servicio');
 
+    // CASO 1.5: SERVICIO INTEGRAL DE TRASLADO DE PERSONAL Y TRANSPORTE DE CUADRILLAS (TRANSVEN, TAXIS, BUSES)
+    if (isTrasladoPersonal) {
+      const matchedSalidas = salidas.filter(s => {
+        if (isNormalizacion(s)) return false;
+        const catS = (s.categoria || '').toLowerCase().trim();
+        const tipoS = (s.tipo || '').toLowerCase().trim();
+        const descS = (s.itemDescripcion || '').toLowerCase().trim();
+        const motS = (s.motivo || '').toLowerCase().trim();
+        const provS = (s.proveedorODestino || '').toLowerCase().trim();
+
+        // BLOQUEO ESTRICTO: Excluir terminantemente dotación / EPP (botas, cascos, lentes) e insumos físicos
+        if (catS.includes('proteccion') || catS.includes('seguridad') || catS.includes('material') ||
+            descS.includes('bota') || descS.includes('calzado') || descS.includes('guante') || 
+            descS.includes('casco') || descS.includes('lente') || descS.includes('chaleco') || descS.includes('braga')) {
+          return false;
+        }
+
+        const isServRecord = catS.includes('servicio') || tipoS.includes('servicio') || s.codigoSalida.startsWith('SC');
+        const isTransporte = descS.includes('traslado') || descS.includes('transporte') || descS.includes('taxi') || 
+                             motS.includes('traslado') || motS.includes('transporte') || motS.includes('transven') || provS.includes('transven');
+        return isServRecord && isTransporte;
+      });
+
+      if (matchedSalidas.length > 0) {
+        return matchedSalidas.map((s, idx) => {
+          const cta = s.cuentaAuxiliarCodigo || s.centroCosto || 'TTE-C-0706';
+          const pryInfo = CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026.find(c => c.cuentaAuxiliar === cta) || 
+                          CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === cta);
+          const pryNombre = CUENTAS_CORTAS_MAP[cta] || pryInfo?.proyectoCorto || s.cuentaAuxiliarNombre || s.proyecto;
+
+          let fStr = s.fecha;
+          if (fStr.includes('-')) {
+            const p = fStr.split('-');
+            if (p.length === 3) fStr = `${p[2]}/${p[1]}/${p[0]}`;
+          }
+
+          return {
+            id: s.id || `traslado-${idx}`,
+            tipo: 'Servicios',
+            almacen: s.responsable || 'Servicios y Transporte',
+            fecha: fStr,
+            numero: s.codigoSalida,
+            pedido: s.codigoSalida.startsWith('SC') ? `OC Aprobada (${s.codigoSalida})` : s.codigoSalida,
+            cuentaAux: cta,
+            proyectoNombre: pryNombre,
+            ceco: s.centroCosto || 'MON-3',
+            codigo: s.codigoSalida,
+            descripcion: s.itemDescripcion,
+            cantidad: s.cantidad || 1,
+            unidad: s.unidadMedida || 'USE',
+            solicitante: s.solicitante || 'ASTRID SILVA',
+            motivo: s.motivo || `Servicio de traslado de personal para ${pryNombre}`,
+            subcategoria: 'Servicio Integral de Traslado de Personal',
+            precioFinal: s.montoUnitario || s.montoTotal,
+            totalUSD: s.montoTotal,
+            mes: s.mes
+          };
+        });
+      }
+    }
+
     // CASO 2: MANO DE OBRA DIRECTA (2.579 Registros Reales de Nómina Diaria por Cargo, Cédula y Trabajador)
     if (isManoDeObra && (selectedMesFilter === '8' || selectedMesFilter === 'TODOS')) {
       const registrosMDO = REGISTROS_REALES_MANO_OBRA_AGOSTO_2026.filter(r => {
@@ -436,9 +497,14 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
 
       const matchCat = isMaterialesTarget
         ? isItemMaterial
-        : (catS.includes(firstCatWord) || targetCat.includes(firstCatWord) || tipoS.includes(firstCatWord));
+        : (catS.includes(firstCatWord) || tipoS.includes(firstCatWord));
 
       if (!matchCat) return false;
+
+      // Si la partida auditada es de Servicios, bloquear terminantemente EPP e insumos físicos de almacén
+      if (isServicios && (catS.includes('proteccion') || catS.includes('seguridad') || catS.includes('material') || tipoS.includes('material'))) {
+        return false;
+      }
 
       // 2. Coincidencia de concepto / subcategoría / familia oficial
       const subS = (s.subcategoria || '').toLowerCase().trim();
@@ -622,7 +688,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
       }
 
       // K. Palabras clave generales coincidentes
-      const palabras = targetSub.split(' ').filter(p => p.length > 3 && !['para', 'este', 'esta', 'unos', 'unas', 'cada'].includes(p));
+      const palabras = targetSub.split(' ').filter(p => p.length > 3 && !['para', 'este', 'esta', 'unos', 'unas', 'cada', 'personal', 'servicio', 'servicios', 'integral', 'cuadrillas'].includes(p));
       if (palabras.length > 0 && palabras.some(p => descS.includes(p) || catS.includes(p) || subS.includes(p))) {
         return true;
       }
@@ -1183,64 +1249,64 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                   className="hover:bg-blue-50/70 transition-colors cursor-pointer group"
                   title="Haz clic para ver el detalle contable completo y trazabilidad SIP"
                 >
-                  <td className="py-2.5 px-3 font-mono font-bold text-neutral-700">
-                    <span className="bg-neutral-100 px-1.5 py-0.5 rounded text-[11px] border border-neutral-200">
+                  <td className="py-3 px-3.5 font-mono font-bold text-slate-800">
+                    <span className="bg-slate-100 px-2 py-0.5 rounded text-xs border border-slate-200">
                       {it.almacen}
                     </span>
                   </td>
-                  <td className="py-2.5 px-3 font-mono text-neutral-600 whitespace-nowrap">
+                  <td className="py-3 px-3.5 font-mono text-xs font-medium text-slate-700 whitespace-nowrap">
                     {it.fecha}
                   </td>
-                  <td className="py-2.5 px-3 font-mono font-bold text-blue-700 whitespace-nowrap">
+                  <td className="py-3 px-3.5 font-mono text-xs font-bold text-blue-700 whitespace-nowrap">
                     {it.numero}
                   </td>
-                  <td className="py-2.5 px-3 font-mono text-neutral-800 whitespace-nowrap">
+                  <td className="py-3 px-3.5 font-mono text-xs text-slate-800 whitespace-nowrap">
                     {it.pedido}
                   </td>
-                  <td className="py-2.5 px-3.5">
-                    <span className="font-mono font-bold text-blue-800 block text-[11px]">
+                  <td className="py-3 px-3.5">
+                    <span className="font-mono font-bold text-blue-800 block text-xs">
                       {it.cuentaAux}
                     </span>
-                    <span className="text-[11px] text-neutral-600 block truncate max-w-[160px]" title={it.proyectoNombre}>
+                    <span className="text-xs text-slate-700 font-medium block truncate max-w-[180px]" title={it.proyectoNombre}>
                       {it.proyectoNombre}
                     </span>
                   </td>
-                  <td className="py-2.5 px-2.5 font-mono text-neutral-500 text-[11px]">
+                  <td className="py-3 px-3 font-mono text-slate-600 text-xs">
                     {it.ceco}
                   </td>
-                  <td className="py-2.5 px-3 font-mono text-neutral-700 text-[11px] whitespace-nowrap">
+                  <td className="py-3 px-3.5 font-mono text-slate-700 text-xs whitespace-nowrap">
                     {it.codigo}
                   </td>
-                  <td className="py-2.5 px-4 font-semibold text-neutral-900">
+                  <td className="py-3 px-4 font-semibold text-slate-900 text-sm">
                     <span className="block">{it.descripcion}</span>
                     {it.subcategoria && it.subcategoria !== concepto && (
-                      <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                      <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                         {it.subcategoria}
                       </span>
                     )}
                   </td>
-                  <td className="py-2.5 px-2.5 text-right font-mono font-bold tabular-nums text-neutral-800">
+                  <td className="py-3 px-3 text-right font-mono font-bold tabular-nums text-slate-900 text-xs">
                     {it.cantidad.toLocaleString('de-DE')}
                   </td>
-                  <td className="py-2.5 px-2 text-neutral-500 font-medium text-[11px]">
+                  <td className="py-3 px-2 text-slate-600 font-medium text-xs">
                     {it.unidad}
                   </td>
-                  <td className="py-2.5 px-3.5 text-neutral-800 text-[11px] font-semibold whitespace-nowrap">
+                  <td className="py-3 px-3.5 text-slate-800 text-xs font-semibold whitespace-nowrap">
                     {it.solicitante}
                   </td>
-                  <td className="py-2.5 px-4 text-neutral-600 text-[11px] leading-relaxed">
-                    <span className="truncate block max-w-xs" title={it.motivo}>
+                  <td className="py-3 px-4 text-slate-600 text-xs leading-relaxed">
+                    <span className="truncate block max-w-sm" title={it.motivo}>
                       {it.motivo}
                     </span>
                   </td>
-                  <td className="py-2.5 px-3 text-right font-mono tabular-nums text-neutral-700">
+                  <td className="py-3 px-3 text-right font-mono tabular-nums text-slate-800 text-xs">
                     ${it.precioFinal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
-                  <td className="py-2.5 px-3.5 text-right font-mono font-black tabular-nums text-blue-950 bg-blue-50/40 text-sm">
+                  <td className="py-3 px-3.5 text-right font-mono font-black tabular-nums text-blue-950 bg-blue-50/50 text-sm">
                     ${it.totalUSD.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
-                  <td className="py-2.5 px-3 text-center">
-                    <span className="text-[10px] font-bold text-blue-700 bg-blue-50 group-hover:bg-blue-600 group-hover:text-white border border-blue-200 px-2 py-0.5 rounded transition-all">
+                  <td className="py-3 px-3 text-center">
+                    <span className="text-xs font-bold text-blue-700 bg-blue-50 group-hover:bg-blue-600 group-hover:text-white border border-blue-200 px-2.5 py-1 rounded-lg transition-all">
                       Ver &gt;
                     </span>
                   </td>

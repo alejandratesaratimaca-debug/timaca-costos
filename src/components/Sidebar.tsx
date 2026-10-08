@@ -527,7 +527,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </button>
 
-            {/* SIP CAMPO PALÚA */}
+            {/* SIP Campo PMH */}
             <button
               onClick={() => handleSelectModulo('sip-pmh')}
               className={`w-full flex items-center p-2 rounded-xl text-left transition-all cursor-pointer ${
@@ -535,7 +535,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   ? 'bg-amber-600 text-slate-950 shadow-md ring-1 ring-amber-300 font-bold'
                   : 'text-slate-200 hover:text-white hover:bg-slate-700/50'
               }`}
-              title="SIP de PMH Palúa: Vales de Campo y Despachos Muelle"
+              title="SIP de PMH: Vales de Campo y Despachos Muelle"
             >
               <div className="flex items-center gap-2.5 min-w-0 flex-1">
                 <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded shrink-0 ${
@@ -545,7 +545,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
                 {!isCollapsed && (
                   <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-xs text-white truncate">SIP Campo Palúa</span>
+                    <span className="font-bold text-xs text-white truncate">SIP Campo PMH</span>
                     <span className="text-[10px] text-slate-400">Offline / Muelle</span>
                   </div>
                 )}

@@ -482,7 +482,7 @@ export const RRHHModuleView: React.FC<RRHHModuleViewProps> = ({
               <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/70 space-y-1">
                 <span className="text-xs font-bold text-amber-900 block">7 Contratos por Vencer sin Respuesta</span>
                 <p className="text-[11px] text-amber-700 leading-relaxed">
-                  Los supervisores de obra de Palúa y Pellas no han emitido criterio de renovación para el lote de fin de mes.
+                  Los supervisores de obra de PMH y Pellas no han emitido criterio de renovación para el lote de fin de mes.
                 </p>
                 <button
                   onClick={() => { setSeccionActiva('contratos'); setFiltroTabContratos('por_responder'); }}

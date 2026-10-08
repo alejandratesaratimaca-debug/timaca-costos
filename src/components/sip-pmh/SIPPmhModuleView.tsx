@@ -53,7 +53,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
 
   // Formulario de emisión rápida de vale en campo
   const [nuevoValeForm, setNuevoValeForm] = useState({
-    frenteTrabajo: 'Muelle de Carga Palúa (Ship Loader)' as FrenteTrabajoPMH,
+    frenteTrabajo: 'Muelle de Carga PMH (Ship Loader)' as FrenteTrabajoPMH,
     cuentaAuxiliarCodigo: 'TTE-C-0706',
     equipoIntervenido: 'Cinta Transportadora CV-02 / Chute Central',
     solicitadoPor: currentUser.nombre,
@@ -202,11 +202,11 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
                 [PMH] SIP CAMPO OPERATIVO
               </span>
               <span className="text-slate-400 text-xs">·</span>
-              <span className="text-slate-300 text-xs font-medium">Muelle Palúa & Planta de Pellas Ferrominera</span>
+              <span className="text-slate-300 text-xs font-medium">Muelle PMH & Planta de Pellas Ferrominera</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
               <HardHat className="w-7 h-7 text-amber-400" />
-              <span>SIP de PMH Palúa · Despacho y Vales en Campo</span>
+              <span>SIP de PMH · Despacho y Vales en Campo</span>
             </h1>
             <p className="text-sm text-slate-300 max-w-2xl mt-1 leading-relaxed">
               Módulo de campo que resuelve la ausencia de terminales SIP en muelle y tolvas. Emisión digital de vales de salida con sincronización automática a los servidores centrales de TIMACA.
@@ -251,7 +251,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
           </div>
           <span>·</span>
           <div>
-            Frentes Cubiertos: <strong className="text-amber-300">Muelle Palúa, TT-201, Pellas L1 & L2</strong>
+            Frentes Cubiertos: <strong className="text-amber-300">Muelle PMH, TT-201, Pellas L1 & L2</strong>
           </div>
           <span>·</span>
           <div>
@@ -381,7 +381,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
-              <span>Cuentas de Frente Palúa / Pellas</span>
+              <span>Cuentas de Frente PMH / Pellas</span>
             </button>
 
             {canCreateVales && (
@@ -428,7 +428,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
                   className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:outline-none cursor-pointer"
                 >
                   <option value="TODOS">Todos los Frentes</option>
-                  <option value="Muelle de Carga Palúa (Ship Loader)">Muelle Palúa (Ship Loader)</option>
+                  <option value="Muelle de Carga PMH (Ship Loader)">Muelle PMH (Ship Loader)</option>
                   <option value="Torre de Transferencia TT-201">Torre TT-201</option>
                   <option value="Línea de Pellas - Horno L2">Línea de Pellas Horno L2</option>
                   <option value="Sistema de Tolvas & Chutes">Sistema de Tolvas & Chutes</option>
@@ -440,7 +440,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
                   className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:outline-none cursor-pointer"
                 >
                   <option value="TODAS">Todas las Cuentas</option>
-                  <option value="TTE-C-0706">TTE-C-0706 (Cargador Palúa)</option>
+                  <option value="TTE-C-0706">TTE-C-0706 (Cargador PMH)</option>
                   <option value="TTE-C-0656">TTE-C-0656 (Tolvas & Chutes)</option>
                   <option value="TTE-C-0671">TTE-C-0671 (Parada Pellas)</option>
                   <option value="TTE-C-0714">TTE-C-0714 (Cintas CV)</option>
@@ -555,7 +555,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
                     className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none"
                     required
                   >
-                    <option value="Muelle de Carga Palúa (Ship Loader)">Muelle de Carga Palúa (Ship Loader)</option>
+                    <option value="Muelle de Carga PMH (Ship Loader)">Muelle de Carga PMH (Ship Loader)</option>
                     <option value="Torre de Transferencia TT-201">Torre de Transferencia TT-201</option>
                     <option value="Línea de Pellas - Horno L2">Línea de Pellas - Horno L2</option>
                     <option value="Línea de Pellas - Secador L1">Línea de Pellas - Secador L1</option>
@@ -708,7 +708,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
           </div>
         )}
 
-        {/* Tab 3: Cuentas de Frente Palúa / Pellas */}
+        {/* Tab 3: Cuentas de Frente PMH / Pellas */}
         {activeTab === 'cuentas' && (
           <div className="p-4 sm:p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -781,7 +781,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
               <div className="flex items-center justify-between border-b pb-3 border-slate-200">
                 <div>
                   <h4 className="font-black text-sm text-[#0b2545]">TALLER INDUSTRIAL METALÚRGICO ANTONIO, C.A.</h4>
-                  <p className="text-[10px] text-slate-500 font-mono">SISTEMA DE INFORMACIÓN DE PRODUCCIÓN (SIP) · FRENTE PALÚA / PELLAS</p>
+                  <p className="text-[10px] text-slate-500 font-mono">SISTEMA DE INFORMACIÓN DE PRODUCCIÓN (SIP) · Frente PMH / PELLAS</p>
                 </div>
                 <div className="text-right">
                   <span className="font-mono font-bold text-slate-900 bg-slate-200 px-2.5 py-1 rounded">

@@ -5,9 +5,9 @@ export const MOCK_VALES_SIP_PMH: ValeSIPPmh[] = [
     id: 'sip-001',
     numeroVale: 'VALE-PMH-2026-0412',
     fechaHora: '2026-10-05 08:30',
-    frenteTrabajo: 'Muelle de Carga Palúa (Ship Loader)',
+    frenteTrabajo: 'Muelle de Carga PMH (Ship Loader)',
     cuentaAuxiliarCodigo: 'TTE-C-0706',
-    cuentaAuxiliarNombre: 'Mantenimiento Mayor Cargador de Barcos Palúa',
+    cuentaAuxiliarNombre: 'Mantenimiento Mayor Cargador de Barcos PMH',
     equipoIntervenido: 'Cinta Transportadora Pluma Ship Loader CV-03',
     solicitadoPor: 'Alexander Guanipa',
     cargoSolicitante: 'Supervisor de Frente de Obra',
@@ -134,14 +134,14 @@ export const MOCK_VALES_SIP_PMH: ValeSIPPmh[] = [
     id: 'sip-004',
     numeroVale: 'VALE-PMH-2026-0415',
     fechaHora: '2026-10-06 09:10',
-    frenteTrabajo: 'Muelle de Carga Palúa (Ship Loader)',
+    frenteTrabajo: 'Muelle de Carga PMH (Ship Loader)',
     cuentaAuxiliarCodigo: 'TTE-C-0706',
-    cuentaAuxiliarNombre: 'Mantenimiento Mayor Cargador de Barcos Palúa',
+    cuentaAuxiliarNombre: 'Mantenimiento Mayor Cargador de Barcos PMH',
     equipoIntervenido: 'Sistema de Winche y Polipasto de Pluma',
     solicitadoPor: 'Luis Morillo',
     cargoSolicitante: 'Soldador Calificado 6G',
     supervisorAprobador: 'Alexander Guanipa',
-    despachadoPor: 'Caseta Muelle Palúa (Registro Offline)',
+    despachadoPor: 'Caseta Muelle PMH (Registro Offline)',
     estado: 'Pendiente Sincronización',
     esOffline: true,
     items: [
@@ -178,7 +178,7 @@ export const MOCK_VALES_SIP_PMH: ValeSIPPmh[] = [
     solicitadoPor: 'Enrique Vargas',
     cargoSolicitante: 'Pailero / Esmerilador',
     supervisorAprobador: 'Ing. Carlos Silva',
-    despachadoPor: 'Caseta Muelle Palúa (Registro Offline)',
+    despachadoPor: 'Caseta Muelle PMH (Registro Offline)',
     estado: 'Pendiente Sincronización',
     esOffline: true,
     items: [
@@ -207,7 +207,7 @@ export const MOCK_VALES_SIP_PMH: ValeSIPPmh[] = [
 ];
 
 export const CUENTAS_CAMPO_PMH = [
-  { codigo: 'TTE-C-0706', nombre: 'Mantenimiento Mayor Cargador de Barcos Palúa', responsable: 'Ing. Carlos Mendoza', presupuestoUsd: 184500 },
+  { codigo: 'TTE-C-0706', nombre: 'Mantenimiento Mayor Cargador de Barcos PMH', responsable: 'Ing. Carlos Mendoza', presupuestoUsd: 184500 },
   { codigo: 'TTE-C-0656', nombre: 'Reparación Estructural Chutes y Tolvas PMH', responsable: 'Ing. Roberto Valdivieso', presupuestoUsd: 95400 },
   { codigo: 'TTE-C-0671', nombre: 'Mantenimiento y Parada Planta de Pellas', responsable: 'Ing. Carlos Mendoza', presupuestoUsd: 320000 },
   { codigo: 'TTE-C-0714', nombre: 'Montaje de Cintas Transportadoras CV-01 / CV-02', responsable: 'Ing. Alexander Guanipa', presupuestoUsd: 142000 }

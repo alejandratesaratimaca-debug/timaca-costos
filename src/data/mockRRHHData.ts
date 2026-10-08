@@ -72,10 +72,10 @@ export const MOCK_UNIDADES_ORGANIGRAMA: UnidadOrganizativa[] = [
     oficiosPrincipales: ['Montaje Industrial', 'Soldadura 6G', 'Izaje de Cargas', 'Supervisión']
   },
   {
-    id: 'u-frente-palua',
+    id: 'u-frente-pmh',
     padreId: 'u-operaciones',
-    nombre: 'Frente de Obra Palúa (Muelle PMH)',
-    codigo: 'OBR-PALUA',
+    nombre: 'Frente de Obra PMH (Muelle PMH)',
+    codigo: 'OBR-PMH',
     nivel: 'frente',
     jefeNombre: 'Ing. Pedro Rivas',
     jefeCedula: 'V-14.890.312',
@@ -199,10 +199,10 @@ export const MOCK_EMPLEADOS_EXPEDIENTES: EmpleadoExpediente[] = [
     puestoCargo: 'Soldador Especialista 6G / TIG-SMAW',
     nivelJerarquico: 'Operativo Especializado',
     gerencia: 'Gerencia General de Operaciones & Obras',
-    departamento: 'Frente Palúa (Muelle PMH)',
+    departamento: 'Frente PMH (Muelle PMH)',
     sector: 'Muelle Fluvial',
-    sede: 'Palúa',
-    frente: 'Palúa PMH',
+    sede: 'PMH',
+    frente: 'PMH',
     proyectoCodigo: 'TTE-C-0706',
     jefeDirecto: 'Ing. Pedro Rivas',
     perteneceSindicato: true,
@@ -232,7 +232,7 @@ export const MOCK_EMPLEADOS_EXPEDIENTES: EmpleadoExpediente[] = [
     historialEventos: [
       { id: 'ev-1', fecha: '2021-02-15', tipo: 'ingreso', descripcion: 'Ingreso como Soldador 3G en Taller Central', registradoPor: 'Lic. Mariana Chacón' },
       { id: 'ev-2', fecha: '2022-06-01', tipo: 'cambio_puesto', descripcion: 'Promoción a Soldador 6G tras calificación técnica ASME IX', registradoPor: 'Ing. Carlos Mendoza' },
-      { id: 'ev-3', fecha: '2024-03-10', tipo: 'traslado', descripcion: 'Traslado al Frente Palúa para Obras de Modernización PMH', registradoPor: 'Ing. Pedro Rivas' }
+      { id: 'ev-3', fecha: '2024-03-10', tipo: 'traslado', descripcion: 'Traslado al Frente PMH para Obras de Modernización PMH', registradoPor: 'Ing. Pedro Rivas' }
     ],
     faltanDatos: []
   },
@@ -252,10 +252,10 @@ export const MOCK_EMPLEADOS_EXPEDIENTES: EmpleadoExpediente[] = [
     puestoCargo: 'Mecánico Montador / Alineador Láser',
     nivelJerarquico: 'Operativo Técnico',
     gerencia: 'Gerencia General de Operaciones & Obras',
-    departamento: 'Frente Palúa (Muelle PMH)',
+    departamento: 'Frente PMH (Muelle PMH)',
     sector: 'Tolvas y Galerías',
-    sede: 'Palúa',
-    frente: 'Palúa PMH',
+    sede: 'PMH',
+    frente: 'PMH',
     proyectoCodigo: 'TTE-C-0706',
     jefeDirecto: 'Ing. Pedro Rivas',
     perteneceSindicato: true,
@@ -268,13 +268,13 @@ export const MOCK_EMPLEADOS_EXPEDIENTES: EmpleadoExpediente[] = [
     sinCargasFamiliaresRegistradas: true,
     documentos: [
       { id: 'doc-6', tipo: 'Cedula', nombreArchivo: 'Cedula_Benitez_Carlos.pdf', fechaSubida: '2024-04-01', tamanioKb: 210 },
-      { id: 'doc-7', tipo: 'Contrato', nombreArchivo: 'Contrato_Determinado_Palua.pdf', fechaSubida: '2024-04-01', tamanioKb: 450 }
+      { id: 'doc-7', tipo: 'Contrato', nombreArchivo: 'Contrato_Determinado_PMH.pdf', fechaSubida: '2024-04-01', tamanioKb: 450 }
     ],
     cursosCharlas: [
-      { id: 'cur-4', tipo: 'charla_hse', nombre: 'Inspección Pre-uso de Herramientas Eléctricas y Neumáticas', fecha: '2026-09-25', duracionHoras: 1, facilitador: 'HSE Palúa' }
+      { id: 'cur-4', tipo: 'charla_hse', nombre: 'Inspección Pre-uso de Herramientas Eléctricas y Neumáticas', fecha: '2026-09-25', duracionHoras: 1, facilitador: 'HSE PMH' }
     ],
     historialEventos: [
-      { id: 'ev-4', fecha: '2024-04-01', tipo: 'ingreso', descripcion: 'Ingreso temporal para montaje mecánico en Palúa', registradoPor: 'Lic. Mariana Chacón' }
+      { id: 'ev-4', fecha: '2024-04-01', tipo: 'ingreso', descripcion: 'Ingreso temporal para montaje mecánico en PMH', registradoPor: 'Lic. Mariana Chacón' }
     ],
     faltanDatos: ['Examen Médico Ocupacional Anual']
   },
@@ -526,8 +526,8 @@ export const MOCK_ASISTENCIA_HOY: RegistroAsistenciaDiaria[] = [
     nombreCompleto: 'José Rafael Castillo Morales',
     cedula: '14.892.301',
     cargo: 'Soldador 6G',
-    cuadrillaNombre: 'Cuadrilla Palúa Montaje A',
-    frente: 'Palúa PMH',
+    cuadrillaNombre: 'Cuadrilla PMH Montaje A',
+    frente: 'PMH',
     obraProyecto: 'TTE-C-0706',
     fecha: '2026-10-07',
     turno: 'diurno',
@@ -540,8 +540,8 @@ export const MOCK_ASISTENCIA_HOY: RegistroAsistenciaDiaria[] = [
     nombreCompleto: 'Carlos Eduardo Benítez Rivas',
     cedula: '17.330.841',
     cargo: 'Mecánico Montador',
-    cuadrillaNombre: 'Cuadrilla Palúa Montaje A',
-    frente: 'Palúa PMH',
+    cuadrillaNombre: 'Cuadrilla PMH Montaje A',
+    frente: 'PMH',
     obraProyecto: 'TTE-C-0706',
     fecha: '2026-10-07',
     turno: 'diurno',
@@ -619,8 +619,8 @@ export const MOCK_REQUERIMIENTOS: RequerimientoPersonal[] = [
     cantidad: 4,
     contratados: 2,
     gerencia: 'Operaciones & Obras',
-    departamento: 'Frente Palúa (Muelle PMH)',
-    frenteObra: 'Muelle Palúa',
+    departamento: 'Frente PMH (Muelle PMH)',
+    frenteObra: 'Muelle PMH',
     motivo: 'crecimiento',
     solicitanteNombre: 'Ing. Pedro Rivas',
     creadoPorId: 'usr-privas',
@@ -642,7 +642,7 @@ export const MOCK_REQUERIMIENTOS: RequerimientoPersonal[] = [
     departamento: 'Frente Planta Pellas',
     frenteObra: 'Línea 1 Pellas',
     motivo: 'sustitucion',
-    sustituyeA: 'Carlos Benítez (traslado a Palúa)',
+    sustituyeA: 'Carlos Benítez (traslado a PMH)',
     solicitanteNombre: 'Ing. Roberto Silva',
     creadoPorId: 'usr-rsilva',
     fechaSolicitud: '2026-09-28',
@@ -775,7 +775,7 @@ export const MOCK_CANDIDATOS_PROCESO: CandidatoEnProceso[] = [
     cargoOpta: 'Soldador 6G Especialista',
     requerimientoCodigo: 'REQ-2026-051',
     gerencia: 'Operaciones & Obras',
-    departamento: 'Frente Palúa',
+    departamento: 'Frente PMH',
     etapaActual: 'por_ingresar',
     fechaInicioProceso: '2026-09-22',
     fechaIngresoPautada: '2026-10-13',
@@ -810,7 +810,7 @@ export const MOCK_CANDIDATOS_PROCESO: CandidatoEnProceso[] = [
     cargoOpta: 'Soldador 6G Especialista',
     requerimientoCodigo: 'REQ-2026-051',
     gerencia: 'Operaciones & Obras',
-    departamento: 'Frente Palúa',
+    departamento: 'Frente PMH',
     etapaActual: 'en_examen',
     fechaInicioProceso: '2026-09-24',
     tienePaseAcceso: false,
@@ -855,8 +855,8 @@ export const MOCK_CUADRILLAS_OBRA: CuadrillaProyecto[] = [
   {
     id: 'cua-01',
     proyectoId: 'TTE-C-0706',
-    proyectoNombre: 'Modernización Muelle Palúa (PMH Ferrominera)',
-    nombre: 'Cuadrilla Palúa Montaje Mecánico A',
+    proyectoNombre: 'Modernización Muelle PMH (PMH Ferrominera)',
+    nombre: 'Cuadrilla PMH Montaje Mecánico A',
     frente: 'Muelle Fluvial',
     coordinadorNombre: 'Ing. Pedro Rivas',
     operaSinMandosIntermedios: false,
@@ -870,8 +870,8 @@ export const MOCK_CUADRILLAS_OBRA: CuadrillaProyecto[] = [
   {
     id: 'cua-02',
     proyectoId: 'TTE-C-0706',
-    proyectoNombre: 'Modernización Muelle Palúa (PMH Ferrominera)',
-    nombre: 'Cuadrilla Palúa Soldadura Especializada B',
+    proyectoNombre: 'Modernización Muelle PMH (PMH Ferrominera)',
+    nombre: 'Cuadrilla PMH Soldadura Especializada B',
     frente: 'Vigas Cajón y Defensas',
     coordinadorNombre: 'Ing. Pedro Rivas',
     operaSinMandosIntermedios: false,

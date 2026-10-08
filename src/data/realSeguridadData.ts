@@ -431,9 +431,9 @@ export const CATALOGO_PELIGROS_OFICIAL: PeligroCatalogo[] = [
 
 export const MATRIZ_IPER_INICIAL: EvaluacionIPER[] = [
   {
-    id: 'RSG-PALUA-001',
+    id: 'RSG-PMH-001',
     fecha: '2026-09-15',
-    area: 'Muelle Palúa (PMH)',
+    area: 'Muelle PMH (PMH)',
     puestoActividad: 'Operación de Izaje Tándem y Maniobra en Muelle',
     tipo: 'No Rutinaria',
     expuestos: 8,
@@ -453,9 +453,9 @@ export const MATRIZ_IPER_INICIAL: EvaluacionIPER[] = [
     estadoPlan: 'Con Plan Asignado'
   },
   {
-    id: 'RSG-PALUA-002',
+    id: 'RSG-PMH-002',
     fecha: '2026-09-18',
-    area: 'Muelle Palúa (PMH)',
+    area: 'Muelle PMH (PMH)',
     puestoActividad: 'Montaje Estructural en Pasarela Ship Loader',
     tipo: 'Rutinaria',
     expuestos: 6,
@@ -611,8 +611,8 @@ export const MATRIZ_IPER_INICIAL: EvaluacionIPER[] = [
 export const PLANES_CONTROL_INICIALES: PlanControlRiesgo[] = [
   {
     idPlan: 'PLC-2026-001',
-    idRiesgo: 'RSG-PALUA-001',
-    area: 'Muelle Palúa (PMH)',
+    idRiesgo: 'RSG-PMH-001',
+    area: 'Muelle PMH (PMH)',
     puestoActividad: 'Operación de Izaje Tándem y Maniobra en Muelle',
     peligro: 'Caída de persona a distinto nivel durante acceso a pluma y cabina',
     nrInicial: 1080,
@@ -634,8 +634,8 @@ export const PLANES_CONTROL_INICIALES: PlanControlRiesgo[] = [
   },
   {
     idPlan: 'PLC-2026-002',
-    idRiesgo: 'RSG-PALUA-002',
-    area: 'Muelle Palúa (PMH)',
+    idRiesgo: 'RSG-PMH-002',
+    area: 'Muelle PMH (PMH)',
     puestoActividad: 'Montaje Estructural en Pasarela Ship Loader',
     peligro: 'Caída de objeto por desprendimiento durante izaje de vigas',
     nrInicial: 450,

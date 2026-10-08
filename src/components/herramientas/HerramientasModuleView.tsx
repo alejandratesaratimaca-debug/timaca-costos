@@ -92,7 +92,7 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
     trabajadorNombre: '',
     cedula: '',
     cargo: '',
-    frenteDestino: 'Frente Palúa PMH - Muelle',
+    frenteDestino: 'Frente PMH - Muelle',
     fechaDevolucionEstimada: '2026-10-31'
   });
   const [notificacion, setNotificacion] = useState<string | null>(null);

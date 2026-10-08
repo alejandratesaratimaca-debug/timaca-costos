@@ -285,7 +285,7 @@ function AppContent() {
           />
         )}
 
-        {/* ================= MÓDULO 3: SIP DE PMH PALÚA EN CAMPO ================= */}
+        {/* ================= MÓDULO 3: SIP DE PMH EN CAMPO ================= */}
         {moduloActivo === 'sip-pmh' && (
           <SIPPmhModuleView
             currentUser={currentUser}
