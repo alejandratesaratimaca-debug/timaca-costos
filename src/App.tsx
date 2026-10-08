@@ -197,10 +197,10 @@ function AppContent() {
   const esInternos = entornoActivo === 'internos';
 
   return (
-    <div className={`min-h-screen font-sans antialiased flex flex-row transition-colors duration-500 ${
+    <div className={`min-h-screen font-sans antialiased flex flex-row transition-colors duration-500 text-[13px] ${
       esInternos 
         ? 'bg-[#cbd5e1]/75 text-slate-900 selection:bg-sky-500 selection:text-white' 
-        : 'bg-neutral-100/70 text-neutral-900 selection:bg-blue-600 selection:text-white'
+        : 'bg-[#F8FAFC] text-[#1E293B] selection:bg-[#020C54] selection:text-white'
     }`}>
       {/* Menú Lateral (Sidebar Empresarial TIMACA) */}
       <Sidebar

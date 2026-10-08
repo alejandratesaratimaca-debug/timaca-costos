@@ -1,16 +1,55 @@
 @import "tailwindcss";
 
-body {
-  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  background-color: #f5f5f7;
+:root {
+  --navy: #020C54;
+  --navy-h: #0C1B7A;
+  --fondo-menu: #F0F4F9;
+  --borde: #CBD5E1;
+  --borde-suave: #E2E8F0;
+  --texto: #1E293B;
+  --texto-2: #475569;
+  --texto-3: #64748B;
+  --verde: #16A34A;
+  --verde-osc: #15803D;
+  --verde-bg: #DCFCE7;
+  --verde-tx: #166534;
+  --rojo: #DC2626;
+  --rojo-bg: #FEE2E2;
+  --rojo-tx: #991B1B;
+  --ambar: #D97706;
+  --ambar-bg: #FEF3C7;
+  --ambar-tx: #92400E;
+  --azul: #2563EB;
+  --azul-bg: #DBEAFE;
+  --azul-tx: #1E40AF;
 }
 
-h1, h2, h3, h4, .font-heading {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  letter-spacing: -0.015em;
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1E293B;
+  background-color: #F8FAFC;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+button, input, select, textarea {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 12.5px;
 }
 
 .font-mono, code, pre, .font-code {
-  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-feature-settings: "zero" 1;
 }
