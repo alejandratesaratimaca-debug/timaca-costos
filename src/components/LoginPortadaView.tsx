@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UsuarioSistema, USUARIOS_INICIALES_TIMACA } from '../types/usuarios';
 import { TimacaLogo } from './TimacaLogo';
+import { iniciarSesion } from '../lib/auth';
 import { 
   Lock, 
   User, 
@@ -86,56 +87,29 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
     localStorage.setItem('TIMACA_ENTORNO_ACTIVO', nuevoEntorno);
   };
 
-  // Intentar login
-  const handleSubmit = (e?: React.FormEvent) => {
+  // Inicio de sesión con Supabase Auth: correo y contraseña personales
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setErrorMsg(null);
+    const correo = identificador.trim().toLowerCase();
+    if (!correo || !password) {
+      setErrorMsg('Por favor ingresa tu correo y contraseña.');
+      return;
+    }
+    if (!correo.includes('@')) {
+      setErrorMsg('Ingresa tu correo electrónico.');
+      return;
+    }
     setIsLoading(true);
-
-    setTimeout(() => {
-      const q = identificador.trim().toLowerCase();
-      const pwd = password.trim();
-
-      if (!q || !pwd) {
-        setErrorMsg('Por favor ingresa tu usuario y contraseña.');
-        setIsLoading(false);
-        return;
-      }
-
-      // Buscar por usuario, correo o nombre
-      const usuarioEncontrado = usuariosDisponibles.find(u => {
-        const matchUser = (u.usuario && u.usuario.toLowerCase() === q);
-        const matchEmail = (u.correo && u.correo.toLowerCase() === q);
-        const matchNombre = u.nombre.toLowerCase().includes(q);
-        return matchUser || matchEmail || matchNombre;
-      });
-
-      if (!usuarioEncontrado) {
-        setErrorMsg('El usuario o correo no está registrado en el sistema.');
-        setIsLoading(false);
-        return;
-      }
-
-      // Validar contraseña
-      const passCorrecta = usuarioEncontrado.password || '1234';
-      const esValida = pwd === passCorrecta || pwd === '1234' || pwd === 'timaca2026' || pwd === 'admin2026' || pwd === '123456';
-
-      if (!esValida) {
-        setErrorMsg('Contraseña incorrecta. Por favor verifica tus credenciales.');
-        setIsLoading(false);
-        return;
-      }
-
-      if (usuarioEncontrado.estado === 'Inactivo') {
-        setErrorMsg('Este usuario se encuentra inactivo. Contacta a la Administradora.');
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(false);
+    try {
+      const usuario = await iniciarSesion(correo, password);
       localStorage.setItem('TIMACA_ENTORNO_ACTIVO', entorno);
-      onLoginSuccess(usuarioEncontrado, entorno);
-    }, 300);
+      onLoginSuccess(usuario, entorno);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'No se pudo iniciar sesión.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const esInternos = entorno === 'internos';
@@ -414,7 +388,7 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
                       type="text"
                       value={identificador}
                       onChange={(e) => setIdentificador(e.target.value)}
-                      placeholder="Usuario o correo electrónico"
+                      placeholder="Correo electrónico"
                       required
                       className="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-600 transition-all shadow-2xs"
                     />

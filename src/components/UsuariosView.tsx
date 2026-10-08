@@ -1,3 +1,5 @@
+import { listarPerfiles, guardarPerfil } from '../lib/auth';
+import { isSupabaseConfigured } from '../lib/supabaseClient';
 import React, { useState, useEffect } from 'react';
 import { UsuarioSistema, USUARIOS_INICIALES_TIMACA, RolUsuario } from '../types/usuarios';
 import { 
@@ -33,18 +35,9 @@ export const UsuariosView: React.FC<UsuariosViewProps> = ({
   setCurrentUser,
   onVolver
 }) => {
-  const [usuarios, setUsuarios] = useState<UsuarioSistema[]>(() => {
-    const saved = localStorage.getItem(USERS_STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 6) return parsed;
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return USUARIOS_INICIALES_TIMACA;
-  });
+  const [usuarios, setUsuarios] = useState<UsuarioSistema[]>(() =>
+    isSupabaseConfigured() ? [] : USUARIOS_INICIALES_TIMACA
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState<string>('todos');
@@ -72,10 +65,13 @@ export const UsuariosView: React.FC<UsuariosViewProps> = ({
     }
   });
 
-  // Save changes to localStorage
+  // Los perfiles viven en Supabase (public.sigma_perfiles); solo la administración puede editarlos.
   useEffect(() => {
-    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(usuarios));
-  }, [usuarios]);
+    if (!isSupabaseConfigured()) return;
+    listarPerfiles()
+      .then(setUsuarios)
+      .catch((err: Error) => setSuccessMsg(`Error: ${err.message}`));
+  }, []);
 
   const filteredUsuarios = usuarios.filter((u) => {
     const matchSearch = u.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -124,16 +120,27 @@ export const UsuariosView: React.FC<UsuariosViewProps> = ({
     setIsModalOpen(true);
   };
 
-  const handleSaveUser = (e: React.FormEvent) => {
+  const handleSaveUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.nombre || !formData.correo) return;
 
+    if (!editingUser) {
+      setIsModalOpen(false);
+      setSuccessMsg('Para crear un usuario, invítalo desde Supabase (Authentication, Users, Invite user). Su perfil aparecerá aquí para asignarle rol y permisos.');
+      setTimeout(() => setSuccessMsg(null), 8000);
+      return;
+    }
+
     if (editingUser) {
       // Update
-      const updated = usuarios.map(u => u.id === editingUser.id ? {
-        ...u,
-        ...formData
-      } : u);
+      const actualizado = { ...editingUser, ...formData, correo: editingUser.correo };
+      try {
+        await guardarPerfil(actualizado);
+      } catch (err) {
+        setSuccessMsg(`Error: ${(err as Error).message}`);
+        return;
+      }
+      const updated = usuarios.map(u => u.id === editingUser.id ? actualizado : u);
       setUsuarios(updated);
       if (currentUser.id === editingUser.id) {
         setCurrentUser({ ...currentUser, ...formData });
@@ -154,22 +161,23 @@ export const UsuariosView: React.FC<UsuariosViewProps> = ({
     setTimeout(() => setSuccessMsg(null), 3500);
   };
 
-  const handleToggleEstado = (userId: string) => {
-    const updated = usuarios.map(u => {
-      if (u.id === userId) {
-        const nuevoEstado = u.estado === 'Activo' ? 'Inactivo' : 'Activo';
-        return { ...u, estado: nuevoEstado as 'Activo' | 'Inactivo' };
-      }
-      return u;
-    });
-    setUsuarios(updated);
+  const handleToggleEstado = async (userId: string) => {
+    const usuario = usuarios.find(u => u.id === userId);
+    if (!usuario) return;
+    const nuevoEstado: 'Activo' | 'Inactivo' = usuario.estado === 'Activo' ? 'Inactivo' : 'Activo';
+    try {
+      await guardarPerfil({ ...usuario, estado: nuevoEstado });
+    } catch (err) {
+      setSuccessMsg(`Error: ${(err as Error).message}`);
+      return;
+    }
+    setUsuarios(usuarios.map(u => (u.id === userId ? { ...u, estado: nuevoEstado } : u)));
   };
 
   const handleSimularUsuario = (user: UsuarioSistema) => {
-    setCurrentUser(user);
-    localStorage.setItem(ACTIVE_USER_STORAGE_KEY, user.id);
-    setSuccessMsg(`Has cambiado de sesión activa a: ${user.nombre} (${user.rol})`);
-    setTimeout(() => setSuccessMsg(null), 3000);
+    // Por seguridad ya no se puede entrar como otra persona: cada quien inicia sesión con su correo.
+    setSuccessMsg(`Para ver SIGMA como ${user.nombre}, esa persona debe iniciar sesión con su propio correo.`);
+    setTimeout(() => setSuccessMsg(null), 4000);
   };
 
   const applyRolePreset = (role: RolUsuario) => {

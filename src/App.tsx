@@ -34,6 +34,7 @@ import { SalidaCosto } from './types/costos';
 import { UsuarioSistema, USUARIOS_INICIALES_TIMACA } from './types/usuarios';
 import { SuiteModulo } from './types/suite';
 import { FolderCheck, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { restaurarSesion, cerrarSesion } from './lib/auth';
 
 const AUTH_STATE_STORAGE_KEY = 'TIMACA_AUTH_STATE_ACTIVE_V1';
 const ACTIVE_USER_STORAGE_KEY = 'TIMACA_ACTIVE_USER_ID_V7_PERMISOS_HSE';
@@ -139,14 +140,31 @@ function AppContent() {
 
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem(AUTH_STATE_STORAGE_KEY) === 'true';
+    return false;
   });
+
+  // La sesión real la guarda Supabase Auth: al abrir SIGMA se valida y se carga el perfil.
+  const [verificandoSesion, setVerificandoSesion] = useState(true);
+  useEffect(() => {
+    let activo = true;
+    restaurarSesion()
+      .then((usuario) => {
+        if (activo && usuario) {
+          setCurrentUser(usuario);
+          setIsAuthenticated(true);
+        }
+      })
+      .finally(() => {
+        if (activo) setVerificandoSesion(false);
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
 
   const handleLoginSuccess = (user: UsuarioSistema, entorno?: 'externos' | 'internos') => {
     setCurrentUser(user);
     setIsAuthenticated(true);
-    localStorage.setItem(AUTH_STATE_STORAGE_KEY, 'true');
-    localStorage.setItem(ACTIVE_USER_STORAGE_KEY, user.id);
     
     let chosen = entorno || entornoActivo;
     if (user.rol === 'Analista de Costos Internos') {
@@ -169,6 +187,7 @@ function AppContent() {
   };
 
   const handleLogout = () => {
+    void cerrarSesion();
     setIsAuthenticated(false);
     localStorage.removeItem(AUTH_STATE_STORAGE_KEY);
     setActiveTab(entornoActivo === 'internos' ? 'internos-dashboard' : 'dashboard');
@@ -183,6 +202,14 @@ function AppContent() {
     setSalidaToEdit(salida);
     setIsFormOpen(true);
   };
+
+  if (verificandoSesion) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#020C54] text-white text-sm">
+        Verificando sesión…
+      </div>
+    );
+  }
 
   // Si no está autenticado, mostrar Portada con Separación Primaria
   if (!isAuthenticated) {

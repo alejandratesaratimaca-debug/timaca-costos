@@ -4,6 +4,14 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/dotacion/:path*",
+      "destination": "https://sigma-dotacion.vercel.app/dotacion/:path*"
+    },
+    {
+      "source": "/dotacion",
+      "destination": "https://sigma-dotacion.vercel.app/dotacion/"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
