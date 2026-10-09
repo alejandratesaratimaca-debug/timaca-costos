@@ -256,7 +256,7 @@ export const SemanaSemanaView: React.FC<SemanaSemanaViewProps> = ({ onVolver }) 
                           {s.itemDescripcion}
                         </td>
                         <td className="py-2.5 px-4 text-right whitespace-nowrap font-mono tabular-nums text-neutral-700">
-                          {formatNumber(s.cantidad)} {s.unidadMedida}
+                          {formatNumber(s.cantidad)} {s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida}
                         </td>
                         <td className="py-2.5 px-4 text-right whitespace-nowrap font-mono tabular-nums text-neutral-600">
                           {formatCurrency(s.montoUnitario)}

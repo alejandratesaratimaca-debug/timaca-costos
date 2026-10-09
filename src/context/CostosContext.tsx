@@ -143,20 +143,32 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         localStorage.setItem(VALIDACIONES_STORAGE_KEY, JSON.stringify(DEFAULT_VALIDACIONES));
       }
       return initialList.map(s => {
+        const u = (s.unidadMedida || '').trim().toUpperCase();
+        const normalizedUm = u === 'USE' ? 'SERV' : (s.unidadMedida || 'UND');
         const val = valMap[s.codigoSalida] || valMap[s.id];
         if (val) {
           return {
             ...s,
+            unidadMedida: normalizedUm,
             estadoValidacion: val.estadoValidacion,
             observacionGerente: val.observacionGerente,
             fechaValidacion: val.fechaValidacion,
             validadoPor: val.validadoPor
           };
         }
-        return s;
+        return {
+          ...s,
+          unidadMedida: normalizedUm
+        };
       });
     } catch {
-      return initialList;
+      return initialList.map(s => {
+        const u = (s.unidadMedida || '').trim().toUpperCase();
+        return {
+          ...s,
+          unidadMedida: u === 'USE' ? 'SERV' : (s.unidadMedida || 'UND')
+        };
+      });
     }
   });
 

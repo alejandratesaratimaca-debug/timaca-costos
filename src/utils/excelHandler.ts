@@ -404,7 +404,7 @@ export function parseExcelFile(file: File): Promise<ParseResult> {
               itemDescripcion: String(rawDesc).trim(),
               proveedorODestino: String(rawProv).trim(),
               cantidad: rawCant,
-              unidadMedida: rawUm,
+              unidadMedida: String(rawUm).trim().toUpperCase() === 'USE' ? 'SERV' : rawUm,
               montoUnitario: rawPUnit,
               montoTotal: rawMontoTotal,
               moneda: 'USD',
@@ -504,7 +504,7 @@ export function exportSalidasToExcel(
     'Descripción del Ítem': s.itemDescripcion,
     'Proveedor / Destino': s.proveedorODestino,
     'Cantidad': s.cantidad,
-    'U.M.': s.unidadMedida,
+    'U.M.': s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida,
     'Precio Unitario (USD)': s.montoUnitario,
     'Monto Total (USD)': s.montoTotal,
     'Responsable': s.responsable,
@@ -682,7 +682,7 @@ export function exportCategoriaToExcel(
       'Descripción Material / Servicio': s.itemDescripcion,
       'Proveedor / Destino': s.proveedorODestino,
       'Cantidad': s.cantidad,
-      'Unidad': s.unidadMedida,
+      'Unidad': s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida,
       'Monto Total (USD)': s.montoTotal,
       'Responsable': s.responsable
     }));

@@ -1568,9 +1568,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
         <div className="border border-neutral-300 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto max-h-[580px] overflow-y-auto">
             <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 z-10 bg-slate-700 text-white font-bold">
-                <tr>
-                  <th className="py-2.5 px-4 min-w-[280px]">
+              <thead className="sticky top-0 z-10 bg-slate-800 text-white font-bold">
+                <tr className="text-white">
+                  <th className="py-2.5 px-4 min-w-[280px] text-white font-bold">
                     {selectedCat === 'Costos Indirectos'
                       ? (modoIndirectos === 'categorias' ? 'Categoría / Rubro de Costo Indirecto' : 'Cuenta Auxiliar Activa / Proyecto')
                       : selectedCat === 'Servicios'
@@ -1584,36 +1584,36 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                       : 'Concepto'}
                   </th>
                   {selectedCat === 'Costos Indirectos' && modoIndirectos === 'cuentas' && (
-                    <th className="py-2.5 px-3 text-right min-w-[90px]">% Prorrateo</th>
+                    <th className="py-2.5 px-3 text-right min-w-[90px] text-white font-bold">% Prorrateo</th>
                   )}
                   {is8Months && (filtroMesMatriz === 'todos' || filtroMesMatriz === '1') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '1' ? 'bg-blue-600 text-white' : ''}`}>enero</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '1' ? 'bg-blue-600' : ''}`}>Enero</th>
                   )}
                   {is8Months && (filtroMesMatriz === 'todos' || filtroMesMatriz === '2') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '2' ? 'bg-blue-600 text-white' : ''}`}>febrero</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '2' ? 'bg-blue-600' : ''}`}>Febrero</th>
                   )}
                   {is8Months && (filtroMesMatriz === 'todos' || filtroMesMatriz === '3') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '3' ? 'bg-blue-600 text-white' : ''}`}>marzo</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '3' ? 'bg-blue-600' : ''}`}>Marzo</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '4') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '4' ? 'bg-blue-600 text-white' : ''}`}>abril</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '4' ? 'bg-blue-600' : ''}`}>Abril</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '5') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '5' ? 'bg-blue-600 text-white' : ''}`}>mayo</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '5' ? 'bg-blue-600' : ''}`}>Mayo</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '6') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '6' ? 'bg-blue-600 text-white' : ''}`}>junio</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '6' ? 'bg-blue-600' : ''}`}>Junio</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '7') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '7' ? 'bg-blue-600 text-white' : ''}`}>julio</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '7' ? 'bg-blue-600' : ''}`}>Julio</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '8') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '8' ? 'bg-blue-600 text-white' : ''}`}>agosto</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '8' ? 'bg-blue-600' : ''}`}>Agosto</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '9') && (
-                    <th className={`py-2.5 px-3 text-right ${filtroMesMatriz === '9' ? 'bg-blue-600 text-white' : ''}`}>septiembre</th>
+                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '9' ? 'bg-blue-600' : ''}`}>Septiembre</th>
                   )}
-                  <th className="py-2.5 px-4 text-right bg-slate-800 min-w-[110px]">
+                  <th className="py-2.5 px-4 text-right bg-slate-900 text-white font-bold min-w-[110px]">
                     {filtroMesMatriz === 'todos' ? 'Total general' : 'Total acumulado'}
                   </th>
                 </tr>
@@ -2061,9 +2061,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
         {/* Table of Imputed Projects */}
         <div className="border border-neutral-200 rounded-xl overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-700 text-white font-bold">
-              <tr>
-                <th className="py-2.5 px-3 w-8">#</th>
+            <thead className="bg-slate-800 text-white font-bold">
+              <tr className="text-white">
+                <th className="py-2.5 px-3 w-8 text-white font-bold">#</th>
                 <th className="py-2.5 px-3 min-w-[240px]">Proyecto Externo / Orden de Trabajo (OT)</th>
                 <th className="py-2.5 px-3 min-w-[150px]">Cliente / Destino</th>
                 <th className="py-2.5 px-3 text-right">
@@ -2204,7 +2204,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                                         'Subcategoría': s.subcategoria,
                                         'Descripción del Material': s.itemDescripcion,
                                         'Cantidad': s.cantidad,
-                                        'Unidad Medida': s.unidadMedida,
+                                        'Unidad Medida': s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida,
                                         'Precio Unitario ($ USD)': s.montoUnitario,
                                         'Monto Total ($ USD)': s.montoTotal,
                                         'Solicitante': s.solicitante || s.responsable,
@@ -2489,7 +2489,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                                                     {formatNumber(s.cantidad)}
                                                   </td>
                                                   <td className="py-2 px-2 text-slate-500 uppercase text-[10px] font-bold">
-                                                    {s.unidadMedida}
+                                                    {s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida}
                                                   </td>
                                                   <td className="py-2 px-2.5 text-right font-mono tabular-nums text-slate-700">
                                                     ${Math.round(s.montoUnitario).toLocaleString('de-DE')}

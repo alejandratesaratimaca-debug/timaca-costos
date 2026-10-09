@@ -94,10 +94,20 @@ table {
 table thead th {
   font-size: 12.5px !important;
   font-weight: 800 !important;
-  color: #1e293b !important;
   padding-top: 0.65rem !important;
   padding-bottom: 0.65rem !important;
   letter-spacing: 0.02em;
+}
+
+/* Encabezados oscuros: texto en blanco nítido y legible */
+table thead.text-white th,
+table thead[class*="text-white"] th,
+th.text-white,
+table thead[class*="bg-slate-7"] th,
+table thead[class*="bg-slate-8"] th,
+table thead[class*="bg-slate-9"] th,
+table thead[class*="bg-[#"] th {
+  color: #ffffff !important;
 }
 
 table tbody td {

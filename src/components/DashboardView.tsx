@@ -244,7 +244,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         'Tipo de Material': getTipoMaterialDisplay(s),
         'Descripción del Ítem': s.itemDescripcion,
         'Cantidad': s.cantidad,
-        'Unidad': s.unidadMedida,
+        'Unidad': s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida,
         'Precio Unitario (USD)': s.montoUnitario,
         'Monto Total (USD)': s.montoTotal,
         'Motivo': s.motivo || s.observaciones || '-',
@@ -1185,7 +1185,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 const motivoDisplay = s.motivo || s.observaciones || 'Despacho operativo';
                 const solicitanteDisplay = s.solicitante || s.responsable || 'Almacén Central SIP';
                 const cantDisplay = formatNumber(s.cantidad);
-                const unidadDisplay = s.unidadMedida;
+                const unidadDisplay = s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida;
                 const pUnitVal = s.montoUnitario;
 
                 return (
@@ -1456,7 +1456,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                   <span className="text-neutral-500 block text-[11px]">Cantidad</span>
                   <span className="font-mono font-bold text-neutral-900 text-sm">
-                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida}
+                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida}
                   </span>
                 </div>
                 <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
@@ -1479,7 +1479,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   Cálculo:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
+                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>

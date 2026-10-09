@@ -925,7 +925,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
         'Descripción Material / Servicio': s.itemDescripcion,
         'Destino / Proveedor': s.proveedorODestino,
         'Cantidad': s.cantidad,
-        'Unidad': s.unidadMedida,
+        'Unidad': s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida,
         'Precio Unitario (USD)': s.montoUnitario,
         'Monto Total (USD)': s.montoTotal,
         'Responsable / Origen': s.responsable,
@@ -2174,7 +2174,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                             {s.cantidad.toLocaleString('de-DE')}
                           </td>
                           <td className="py-2.5 px-2 text-neutral-500 font-medium text-[11px]">
-                            {s.unidadMedida}
+                            {s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida}
                           </td>
                           <td className="py-2.5 px-3 text-neutral-800 text-[11px] font-semibold whitespace-nowrap">
                             {s.solicitante || 'Jesús Valdez'}
@@ -2281,7 +2281,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Cantidad</span>
                   <span className="font-mono font-bold text-neutral-900 text-sm">
-                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida}
+                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida}
                   </span>
                 </div>
                 <div>
@@ -2304,7 +2304,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                   Cálculo:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
+                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>

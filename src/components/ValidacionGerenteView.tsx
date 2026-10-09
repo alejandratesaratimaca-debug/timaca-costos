@@ -798,7 +798,7 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
 
                         {/* Cantidad */}
                         <td className="py-2.5 px-3 text-right whitespace-nowrap font-mono tabular-nums text-neutral-700">
-                          {s.cantidad?.toLocaleString('de-DE')} <span className="text-[10px] text-neutral-400">{s.unidadMedida}</span>
+                          {s.cantidad?.toLocaleString('de-DE')} <span className="text-[10px] text-neutral-400">{s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida}</span>
                         </td>
 
                         {/* Monto USD */}

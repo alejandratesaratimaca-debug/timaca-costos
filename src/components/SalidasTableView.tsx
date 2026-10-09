@@ -114,7 +114,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
         'Categoría': s.subcategoria || 'General',
         'Descripción del Ítem': s.itemDescripcion,
         'Cantidad': s.cantidad,
-        'Unidad': s.unidadMedida,
+        'Unidad': s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida,
         'Precio Unitario (USD)': s.montoUnitario,
         'Monto Total (USD)': s.montoTotal,
         'Motivo': s.motivo || s.observaciones || '-',
@@ -440,7 +440,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                   const motivoDisplay = s.motivo || s.observaciones || '-';
                   const solicitanteDisplay = s.solicitante || s.responsable || '-';
                   const cantDisplay = formatNumber(s.cantidad);
-                  const unidadDisplay = s.unidadMedida;
+                  const unidadDisplay = s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida;
                   const pUnitVal = s.montoUnitario;
 
                   return (
@@ -857,7 +857,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Cantidad Despachada</span>
                   <span className="font-mono font-bold text-neutral-900 text-sm">
-                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida}
+                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida}
                   </span>
                 </div>
                 <div>
@@ -881,7 +881,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                     Cálculo Auditado (Master Unificado):
                   </span>
                   <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
+                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
                   </span>
                 </div>
 
@@ -891,7 +891,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                       <div>
                         <span className="font-bold text-[10px] uppercase block text-amber-800">Costo Registrado en SIP (1 Base Central Inputs):</span>
                         <span className="font-mono font-semibold">
-                          ${Math.round(salidaAuditoria.precioSIP).toLocaleString('de-DE')} USD / {salidaAuditoria.unidadMedida} · Total SIP: ${Math.round(((salidaAuditoria.totalSIP ?? (salidaAuditoria.cantidad * salidaAuditoria.precioSIP)))).toLocaleString('de-DE')} USD
+                          ${Math.round(salidaAuditoria.precioSIP).toLocaleString('de-DE')} USD / {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} · Total SIP: ${Math.round(((salidaAuditoria.totalSIP ?? (salidaAuditoria.cantidad * salidaAuditoria.precioSIP)))).toLocaleString('de-DE')} USD
                         </span>
                       </div>
                       <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded border border-amber-300">

@@ -106,7 +106,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
       'Categoría': item.categoria,
       'Rubro Contable': item.rubro || '',
       'Cantidad': item.cantidad || '',
-      'Unidad': item.unidadMedida || '',
+      'Unidad': item.unidadMedida === 'USE' ? 'SERV' : (item.unidadMedida || ''),
       'Precio Unitario ($)': item.montoUnitario || '',
       'Total USD ($)': item.montoTotal,
       'Proveedor / Destino': item.proveedor || '',
@@ -1244,7 +1244,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                             </span>
                           </td>
                           <td className="py-2.5 px-2 text-right font-mono text-slate-700">
-                            {item.cantidad ? `${formatNumber(item.cantidad)} ${item.unidadMedida || ''}` : '-'}
+                            {item.cantidad ? `${formatNumber(item.cantidad)} ${item.unidadMedida === 'USE' ? 'SERV' : (item.unidadMedida || '')}` : '-'}
                           </td>
                           <td className="py-2.5 px-2 text-right font-mono text-slate-600">
                             {item.montoUnitario ? `$${formatNumber(item.montoUnitario)}` : '-'}

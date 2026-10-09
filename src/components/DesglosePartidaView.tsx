@@ -228,7 +228,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
             codigo: s.codigoSalida,
             descripcion: s.itemDescripcion,
             cantidad: s.cantidad || 1,
-            unidad: s.unidadMedida || 'USE',
+            unidad: s.unidadMedida === 'USE' ? 'SERV' : (s.unidadMedida || 'SERV'),
             solicitante: s.solicitante || 'ASTRID SILVA',
             motivo: s.motivo || `Servicio de traslado de personal para ${pryNombre}`,
             subcategoria: 'Servicio Integral de Traslado de Personal',
@@ -813,11 +813,12 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
   }, [filasFiltradas]);
 
   const precioPromedio = totalCantidad > 0 ? Math.round((totalMonto / totalCantidad) * 100) / 100 : 0;
-  const unidadPrincipal = filasFiltradas[0]?.unidad || 'UND';
+  const rawUp = filasFiltradas[0]?.unidad || 'UND';
+  const unidadPrincipal = rawUp === 'USE' ? 'SERV' : rawUp;
 
   const formatUnidadLegible = (u: string) => {
     const raw = (u || '').toUpperCase().trim();
-    if (raw === 'USE') return 'servicio';
+    if (raw === 'USE' || raw === 'SERV' || raw === 'SRV') return 'servicio';
     if (raw === 'UND' || raw === 'UNID') return 'unidad';
     if (raw === 'HRS' || raw === 'HR') return 'hora';
     if (raw === 'MTR' || raw === 'MTS' || raw === 'M') return 'metro';
@@ -1255,7 +1256,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                     {it.cantidad.toLocaleString('de-DE')}
                   </td>
                   <td className="py-3 px-2 text-slate-600 font-medium text-xs">
-                    {it.unidad}
+                    {it.unidad === 'USE' ? 'SERV' : it.unidad}
                   </td>
                   <td className="py-3 px-3.5 text-slate-800 text-xs font-semibold whitespace-nowrap">
                     {it.solicitante}
@@ -1379,7 +1380,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Cantidad</span>
                   <span className="font-mono font-bold text-neutral-900 text-sm">
-                    {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad}
+                    {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad === 'USE' ? 'SERV' : modalItem.unidad}
                   </span>
                 </div>
                 <div>
@@ -1402,7 +1403,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                   CÁLCULO:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-bold text-blue-900">
-                  {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad} × ${Math.round(modalItem.precioFinal).toLocaleString('de-DE')} = ${Math.round(modalItem.totalUSD).toLocaleString('de-DE')} USD
+                  {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad === 'USE' ? 'SERV' : modalItem.unidad} × ${Math.round(modalItem.precioFinal).toLocaleString('de-DE')} = ${Math.round(modalItem.totalUSD).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>
