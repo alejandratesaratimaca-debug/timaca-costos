@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { ItemPartidaDetalle, obtenerDesgloseSubconcepto } from '../data/mockDesglosePartidasDetalle';
 import { getConsolidadoCategoria, HORAS_MAQUINA_CONSOLIDADO_OFICIAL_8_MESES } from '../data/mockDesgloseCategorias';
 import { formatCurrency, formatNumber } from '../utils/dateHelpers';
-import { CUENTAS_CORTAS_MAP, CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026 } from '../data/mockCostosTimaca';
+import { CUENTAS_CORTAS_MAP, CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 } from '../data/mockCostosTimaca';
 import { useCostos } from '../context/CostosContext';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 import { 
@@ -82,6 +82,11 @@ function normalizeText(t: string): string {
     .trim();
 }
 
+function getProyectoAuxiliarInfo(cta: string) {
+  return CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026.find(c => c.cuentaAuxiliar === cta) ||
+         CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === cta);
+}
+
 interface DesglosePartidaViewProps {
   concepto: string;
   categoria: string;
@@ -142,7 +147,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
     // CASO 1: EPP EN CORTE OFICIAL AGOSTO 2026 (100% de datos reales extraídos de 4 Master Unificado.xlsx)
     if (isEPP && (selectedMesFilter === '8' || selectedMesFilter === 'TODOS')) {
       return DESPACHOS_REALES_EPP_AGOSTO.map((r, idx) => {
-        const pryInfo = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === r.cuentaAux);
+        const pryInfo = getProyectoAuxiliarInfo(r.cuentaAux);
         const pryNombre = CUENTAS_CORTAS_MAP[r.cuentaAux] || pryInfo?.proyectoCorto || pryInfo?.proyecto || r.cuentaAux;
 
         return {
@@ -201,8 +206,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
       if (matchedSalidas.length > 0) {
         return matchedSalidas.map((s, idx) => {
           const cta = s.cuentaAuxiliarCodigo || s.centroCosto || 'TTE-C-0706';
-          const pryInfo = CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026.find(c => c.cuentaAuxiliar === cta) || 
-                          CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === cta);
+          const pryInfo = getProyectoAuxiliarInfo(cta);
           const pryNombre = CUENTAS_CORTAS_MAP[cta] || pryInfo?.proyectoCorto || s.cuentaAuxiliarNombre || s.proyecto;
 
           let fStr = s.fecha;
@@ -246,7 +250,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
 
       if (registrosMDO.length > 0) {
         return registrosMDO.map((r, idx) => {
-          const pryInfo = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === r.cuentaAuxiliar);
+          const pryInfo = getProyectoAuxiliarInfo(r.cuentaAuxiliar);
           const pryNombre = CUENTAS_CORTAS_MAP[r.cuentaAuxiliar] || pryInfo?.proyectoCorto || r.proyectoCorto || r.cuentaAuxiliar;
 
           let fStr = r.fecha;
@@ -346,7 +350,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
       if (matchedSalidas.length > 0) {
         return matchedSalidas.map((s, idx) => {
           const cta = s.cuentaAuxiliarCodigo || s.centroCosto || 'TTE-C-0706';
-          const pryInfo = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === cta);
+          const pryInfo = getProyectoAuxiliarInfo(cta);
           const pryNombre = CUENTAS_CORTAS_MAP[cta] || pryInfo?.proyectoCorto || s.cuentaAuxiliarNombre || s.proyecto;
 
           let fStr = s.fecha;
@@ -448,7 +452,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
       if (matchedSalidas.length > 0) {
         return matchedSalidas.map((s, idx) => {
           const cta = s.cuentaAuxiliarCodigo || s.centroCosto || 'TTE-C-0706';
-          const pryInfo = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === cta);
+          const pryInfo = getProyectoAuxiliarInfo(cta);
           const pryNombre = CUENTAS_CORTAS_MAP[cta] || pryInfo?.proyectoCorto || s.cuentaAuxiliarNombre || s.proyecto;
 
           let fStr = s.fecha;
@@ -701,7 +705,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
     if (matchedSalidas.length > 0) {
       return matchedSalidas.map((s, idx) => {
         const cta = s.cuentaAuxiliarCodigo || s.centroCosto || 'TTE-C-0706';
-        const pryInfo = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === cta);
+        const pryInfo = getProyectoAuxiliarInfo(cta);
         const pryNombre = CUENTAS_CORTAS_MAP[cta] || pryInfo?.proyectoCorto || s.cuentaAuxiliarNombre || s.proyecto;
 
         // Parse format date
@@ -1156,7 +1160,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
             >
               <option value="TODOS">TODOS · Todos los Proyectos Imputados ({proyectosUnicos.length})</option>
               {proyectosUnicos.map(cod => {
-                const pryInfo = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === cod);
+                const pryInfo = getProyectoAuxiliarInfo(cod);
                 const nombreCorto = CUENTAS_CORTAS_MAP[cod] || pryInfo?.proyectoCorto || '';
                 return (
                   <option key={cod} value={cod}>
