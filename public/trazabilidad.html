@@ -384,15 +384,15 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
   <div class="login-wrap">
     <div class="login-card">
       <div class="lc-logo">
-        <img data-logo src="" alt="TIMACA">
+        <img data-logo src="/timaca-logo.png" alt="TIMACA" onerror="if(typeof LOGO!=='undefined')this.src=LOGO" style="max-height:55px;object-fit:contain">
         <p>Sistema de Trazabilidad de Herramientas, Cilindros y EPP</p>
       </div>
       <div class="lc-body">
         <div class="login-err" id="loginErr"></div>
         <div class="campo"><label for="lgUsuario">Usuario</label>
-          <input id="lgUsuario" autocomplete="username" oninput="actualizarAccesosLogin()"></div>
+          <input id="lgUsuario" autocomplete="username" placeholder="drivero (o su correo)" oninput="actualizarAccesosLogin()"></div>
         <div class="campo"><label for="lgClave">Clave</label>
-          <input id="lgClave" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
+          <input id="lgClave" type="password" autocomplete="current-password" placeholder="1234" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
         <div class="campo"><label for="lgAcceso">Acceso</label>
           <select id="lgAcceso"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
         <button class="btn-entrar" onclick="iniciarSesion()">Ingresar</button>
@@ -401,8 +401,7 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
     <div class="demo-card">
       <h3>Usuarios de prueba <span class="chip-demo">SOLO DEMOSTRACIÓN</span></h3>
       <table><thead><tr><th>Usuario</th><th>Clave</th><th>Perfil</th></tr></thead><tbody id="tablaDemoUsuarios"></tbody></table>
-      <div class="nota">Haga clic en un usuario para llenar los datos. Esta tabla no existirá en la versión definitiva.
-        Los datos de la demostración se guardan en este navegador; puede restablecerlos desde Administración.</div>
+      <div class="nota">Haga clic en un usuario para llenar los datos automáticamente. Clave general de prueba: <b>1234</b>.</div>
     </div>
   </div>
 </section>
@@ -412,7 +411,7 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
   <header class="topbar">
     <div class="tb-izq">
       <button class="btn-tb" id="btnMenuMovil" style="display:none" onclick="document.getElementById('menu').classList.toggle('abierto')">☰</button>
-      <div class="tb-logo"><img data-logo src="" alt="TIMACA"></div>
+      <div class="tb-logo"><img data-logo src="/timaca-logo.png" alt="TIMACA" onerror="if(typeof LOGO!=='undefined')this.src=LOGO" style="max-height:36px;object-fit:contain"></div>
       <span class="tb-sistema">Sistema de Trazabilidad</span>
       <span class="tb-ctx" id="tbCtx" onclick="abrirCambioAcceso()" title="Cambiar de almacén"></span>
     </div>
@@ -524,11 +523,12 @@ function asegurarUsuariosClave() {
   // Asegurar Daniela Riveros (Supervisora en todos los almacenes, clave 1234)
   let uDan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
   if (!uDan) {
-    uDan = { usuario: 'drivero', alias: 'daniela', clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
     DB.usuarios.unshift(uDan);
   } else {
     uDan.usuario = 'drivero';
     uDan.alias = 'daniela';
+    uDan.correos = ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'];
     uDan.clave = '1234';
     uDan.nombre = 'Daniela Riveros';
     uDan.cargo = 'Supervisora de Herramientas & Almacenes';
@@ -542,11 +542,12 @@ function asegurarUsuariosClave() {
   // Asegurar Jessica Navarro (Acceso a todos los almacenes, clave 1234)
   let uJes = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro' || x.usuario.toLowerCase() === 'jessica');
   if (!uJes) {
-    uJes = { usuario: 'jnavarro', alias: 'jessica', clave: '1234', nombre: 'Jessica Navarro', cedula: 'V-19.876.543', cargo: 'Coordinadora HSE & Seguridad Industrial', activo: true, admin: false, maestro: true, editaCostos: false, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: [], transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    uJes = { usuario: 'jnavarro', alias: 'jessica', correos: ['jnavarro@timaca.com.ve', 'jessicanavarro@timaca.com.ve'], clave: '1234', nombre: 'Jessica Navarro', cedula: 'V-19.876.543', cargo: 'Coordinadora HSE & Seguridad Industrial', activo: true, admin: false, maestro: true, editaCostos: false, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: [], transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
     DB.usuarios.splice(1, 0, uJes);
   } else {
     uJes.usuario = 'jnavarro';
     uJes.alias = 'jessica';
+    uJes.correos = ['jnavarro@timaca.com.ve', 'jessicanavarro@timaca.com.ve'];
     uJes.clave = '1234';
     uJes.nombre = 'Jessica Navarro';
     uJes.cargo = 'Coordinadora HSE & Seguridad Industrial';
@@ -559,11 +560,12 @@ function asegurarUsuariosClave() {
   // Asegurar Alejandra Tesara (Administradora con acceso a todos los almacenes, clave 1234)
   let uAle = DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
   if (!uAle) {
-    uAle = { usuario: 'atesara', alias: 'alejandra', clave: '1234', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos / Administradora', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: '1234', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos / Administradora', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
     DB.usuarios.splice(2, 0, uAle);
   } else {
     uAle.usuario = 'atesara';
     uAle.alias = 'alejandra';
+    uAle.correos = ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'];
     uAle.clave = '1234';
     uAle.nombre = 'Alejandra Tesara';
     uAle.cargo = 'Analista Principal de Costos / Administradora';
@@ -787,15 +789,18 @@ function cargarDatos() {
   try {
     const r = localStorage.getItem(LS_KEY);
     if (r) {
-      DB = JSON.parse(r);
-      asegurarUsuariosClave();
-      asegurarPersonalOficial();
-      limpiarModuloCajasViejo();
-      asegurarPlanificacionCajas();
-      guardar();
-      return;
+      const parsed = JSON.parse(r);
+      if (parsed && Array.isArray(parsed.usuarios) && parsed.usuarios.length && Array.isArray(parsed.vales) && Array.isArray(parsed.catalogo) && Array.isArray(parsed.almacenes)) {
+        DB = parsed;
+        asegurarUsuariosClave();
+        asegurarPersonalOficial();
+        limpiarModuloCajasViejo();
+        asegurarPlanificacionCajas();
+        guardar();
+        return;
+      }
     }
-  } catch (e) { }
+  } catch (e) { console.warn('Regenerando base de datos TIMACA...'); }
   DB = semilla();
   asegurarUsuariosClave();
   asegurarPersonalOficial();
@@ -811,7 +816,25 @@ const almNombre = c => (DB.almacenes.find(a => a.c === c) || { n: c }).n;
 const item = id => DB.catalogo.find(i => i.id === id);
 const valeDe = n => DB.vales.find(v => v.num === n);
 const solDe = n => DB.solicitudes.find(s => s.num === n);
-const userDe = u => DB.usuarios.find(x => x.usuario.toLowerCase() === String(u || '').toLowerCase() || (x.alias && x.alias.toLowerCase() === String(u || '').toLowerCase()));
+const userDe = u => {
+  if (!DB || !Array.isArray(DB.usuarios)) return null;
+  const q = String(u || '').trim().toLowerCase();
+  if (!q) return null;
+  if (q === 'danielariveros.c2021@gmail.com' || q === 'drivero@timaca.com.ve') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
+  }
+  if (q === 'alejandratesara.timaca@gmail.com' || q === 'atesara@timaca.com.ve') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
+  }
+  if (q === 'jessicanavarro@timaca.com.ve' || q === 'jnavarro@timaca.com.ve') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro' || x.usuario.toLowerCase() === 'jessica');
+  }
+  return DB.usuarios.find(x => 
+    x.usuario.toLowerCase() === q || 
+    (x.alias && x.alias.toLowerCase() === q) ||
+    (Array.isArray(x.correos) && x.correos.some(c => c.toLowerCase() === q))
+  );
+};
 function exi(alm, id) {
   DB.exi[alm] = DB.exi[alm] || {};
   if (!DB.exi[alm][id]) DB.exi[alm][id] = { disp: 0, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
@@ -1089,19 +1112,21 @@ function rechazarTransferencia(n, motivo) {
 }
 /* Tarea programada: en el servidor la ejecuta APScheduler cada pocos minutos y al iniciar */
 function procesarVencimientos() {
+  if (!DB || !Array.isArray(DB.vales)) return 0;
   let n = 0;
-  DB.vales.filter(v => v.tipo === 'TRF' && v.estatus === 'PENDIENTE DE RECEPCIÓN' && new Date(v.vence) <= ahora()).forEach(v => {
+  DB.vales.filter(v => v && v.tipo === 'TRF' && v.estatus === 'PENDIENTE DE RECEPCIÓN' && v.vence && new Date(v.vence) <= ahora()).forEach(v => {
     cerrarTransferencia(v, false, '', true, v.vence);
+    if (!Array.isArray(DB.bit)) DB.bit = [];
     DB.bit.push({ fecha: v.vence, usr: 'SISTEMA', acc: 'TRANSFERENCIA VENCIDA', det: v.num });
     n++;
   });
   // Vencimiento automático de cajas de herramientas en custodia
   const h = hoy();
   (DB.cajas || []).forEach(cx => {
-    if (cx.estatus === 'EN CUSTODIA' && cx.fechaDevPrev && cx.fechaDevPrev < h) {
+    if (cx && cx.estatus === 'EN CUSTODIA' && cx.fechaDevPrev && cx.fechaDevPrev < h) {
       cx.estatus = 'VENCIDA';
       n++;
-    } else if (cx.estatus === 'VENCIDA' && cx.fechaDevPrev && cx.fechaDevPrev >= h) {
+    } else if (cx && cx.estatus === 'VENCIDA' && cx.fechaDevPrev && cx.fechaDevPrev >= h) {
       cx.estatus = 'EN CUSTODIA';
       n++;
     }
@@ -1861,17 +1886,30 @@ function encabezadoReporte(titulo, ctxTxt, filtros) {
    INICIO DE SESIÓN
    ===================================================================== */
 function pintarUsuariosDemo() {
+  const el = $('tablaDemoUsuarios');
+  if (!el) return;
+  if (!DB || !Array.isArray(DB.usuarios) || !DB.usuarios.length) {
+    cargarDatos();
+  }
   const perfil = u => {
+    if (!u) return '';
     if (u.usuario === 'drivero' || u.usuario === 'daniela') return 'Supervisora (Todos los Almacenes: Central, Pellas, Boca Grande, PMH, Briquetas, ECO, SMB, Fabricación)';
     if (u.usuario === 'atesara' || u.usuario === 'alejandra') return 'Administradora (Todos los Almacenes + Maestro)';
     if (u.usuario === 'jnavarro' || u.usuario === 'jessica') return 'HSE & Seguridad (Todos los Almacenes)';
     if (u.admin) return 'Administrador (todo, incluido Maestro)';
+    const alms = Array.isArray(u.almacenes) ? u.almacenes : [];
+    const perm = u.perm || {};
     return [
-      u.almacenes.length ? (u.almacenes.length === DB.almacenes.length ? 'Todos los almacenes' : u.almacenes.map(almNombre).join(', ')) : '',
-      u.perm.aprobar.length ? 'aprueba solicitudes (Supervisor)' : '', u.perm.transferir.length ? 'transfiere' : '', u.perm.recibir.length ? 'recibe' : '',
-      u.maestro ? 'Maestro' + (u.editaCostos ? ' (edita costos)' : ' (solo consulta de costos)') : ''].filter(Boolean).join(' · ');
+      alms.length ? (DB.almacenes && alms.length === DB.almacenes.length ? 'Todos los almacenes' : alms.map(almNombre).join(', ')) : '',
+      (perm.aprobar && perm.aprobar.length) ? 'aprueba solicitudes (Supervisor)' : '', 
+      (perm.transferir && perm.transferir.length) ? 'transfiere' : '', 
+      (perm.recibir && perm.recibir.length) ? 'recibe' : '',
+      u.maestro ? 'Maestro' + (u.editaCostos ? ' (edita costos)' : ' (solo consulta de costos)') : ''
+    ].filter(Boolean).join(' · ');
   };
-  $('tablaDemoUsuarios').innerHTML = DB.usuarios.filter(u => u.activo).map(u => `<tr class="clic" onclick="llenarDemo('${u.usuario}')"><td><b>${esc(u.usuario)}</b></td><td><b>${esc(u.clave)}</b></td><td><b>${esc(u.nombre)}</b><br><span style="color:#0284c7;font-weight:700">${esc(perfil(u))}</span></td></tr>`).join('');
+  el.innerHTML = (DB.usuarios || []).filter(u => u && u.activo).map(u => 
+    `<tr class="clic" onclick="llenarDemo('${u.usuario}')"><td><b>${esc(u.usuario)}</b></td><td><b>${esc(u.clave)}</b></td><td><b>${esc(u.nombre)}</b><br><span style="color:#0284c7;font-weight:700">${esc(perfil(u))}</span></td></tr>`
+  ).join('');
 }
 function llenarDemo(usr) { const u = userDe(usr); $('lgUsuario').value = u.usuario; $('lgClave').value = u.clave; actualizarAccesosLogin(); $('lgClave').focus(); }
 function opcionesAcceso(u) {
@@ -5272,15 +5310,20 @@ function ayuda(k) {
    INICIO
    ===================================================================== */
 function iniciar() {
-  document.querySelectorAll('img[data-logo]').forEach(i => i.src = LOGO);
-  cargarDatos();
-  procesarVencimientos();
-  pintarUsuariosDemo();
-  actualizarCampanaNotif();
+  try {
+    document.querySelectorAll('img[data-logo]').forEach(i => {
+      if (!i.src || i.src.endsWith('/')) i.src = '/timaca-logo.png';
+      i.onerror = () => { if (typeof LOGO !== 'undefined') i.src = LOGO; };
+    });
+  } catch (e) { }
+  try { cargarDatos(); } catch (e) { console.error('Error cargarDatos:', e); }
+  try { procesarVencimientos(); } catch (e) { console.error('Error procesarVencimientos:', e); }
+  try { pintarUsuariosDemo(); } catch (e) { console.error('Error pintarUsuariosDemo:', e); }
+  try { actualizarCampanaNotif(); } catch (e) { }
   // Revisión periódica de vencimientos (en el servidor: APScheduler)
-  setInterval(tickCronos, 1000);
-  setInterval(() => { if (procesarVencimientos() && S.u) { toast('Una transferencia venció y su material regresó al almacén de origen.'); pintarMenu(); } }, 60000);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('vistaImpresion').style.display === 'block') cerrarImpresion(); else cerrarModal(); } });
+  try { setInterval(tickCronos, 1000); } catch (e) { }
+  try { setInterval(() => { if (procesarVencimientos() && S.u) { toast('Una transferencia venció y su material regresó al almacén de origen.'); pintarMenu(); } }, 60000); } catch (e) { }
+  try { document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('vistaImpresion').style.display === 'block') cerrarImpresion(); else cerrarModal(); } }); } catch (e) { }
 }
 iniciar();
 
