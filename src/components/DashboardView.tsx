@@ -336,10 +336,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <button
                 type="button"
                 onClick={() => setAdminBannerExpanded(!adminBannerExpanded)}
-                className="text-[11px] font-mono text-slate-500 hover:text-blue-700 bg-white px-2 py-0.5 rounded border border-slate-200 cursor-pointer hidden sm:flex items-center gap-1 transition-colors"
-                title={adminBannerExpanded ? "Ocultar detalles técnicos" : "Ver detalles técnicos de base de datos"}
+                className="text-[11px] font-mono text-slate-500 hover:text-blue-700 bg-white px-2 py-0.5 rounded border border-slate-200 cursor-pointer hidden sm:flex items-center gap-1 transition-colors shadow-2xs"
+                title={adminBannerExpanded ? "Comprimir panel (ocultar MOD diaria, informe PPT y BD)" : "Expandir todas las opciones (Auditar MOD diaria, informe PPT y BD)"}
               >
-                <span>{adminBannerExpanded ? "Ocultar BD" : "BD Conectada"}</span>
+                <span>{adminBannerExpanded ? "Comprimir" : "Más opciones"}</span>
                 {adminBannerExpanded ? <ChevronUp className="w-3 h-3 text-slate-400" /> : <ChevronDown className="w-3 h-3 text-slate-400" />}
               </button>
             )}
@@ -347,16 +347,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Lado derecho: Botones de acción compactos */}
           <div className="flex flex-wrap items-center gap-2 shrink-0">
-            {onGoToManoObra && (
+            {/* Auditar MOD Diaria: solo visible cuando el panel está expandido */}
+            {adminBannerExpanded && onGoToManoObra && (
               <button
                 onClick={onGoToManoObra}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-2xs cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-2xs cursor-pointer animate-fade-in"
                 title="Auditoría de Mano de Obra Directa por cuadrillas"
               >
                 <Clock className="w-3.5 h-3.5" />
                 <span>Auditar MOD Diaria</span>
               </button>
             )}
+
+            {/* Validación Gerencial: siempre visible (tanto comprimido como expandido) */}
             {onGoToValidacion && (
               <button
                 onClick={onGoToValidacion}
@@ -367,14 +370,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <span>Validación Gerencial</span>
               </button>
             )}
-            <button
-              onClick={onGoToInforme}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors whitespace-nowrap shadow-2xs cursor-pointer"
-              title="Informe Mensual y láminas ejecutivas"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Informe Mensual PPT</span>
-            </button>
+
+            {/* Informe Mensual PPT: solo visible cuando el panel está expandido */}
+            {adminBannerExpanded && (
+              <button
+                onClick={onGoToInforme}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors whitespace-nowrap shadow-2xs cursor-pointer animate-fade-in"
+                title="Informe Mensual y láminas ejecutivas"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Informe Mensual PPT</span>
+              </button>
+            )}
+
+            {/* Cargar Archivos: siempre visible (tanto comprimido como expandido) */}
             <button
               onClick={onOpenImport}
               className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors whitespace-nowrap shadow-2xs cursor-pointer"
