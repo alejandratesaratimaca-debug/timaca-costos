@@ -301,10 +301,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         ? 'bg-blue-600 text-white font-bold shadow-xs'
                         : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                     }`}
-                    title="20 Cuentas Auxiliares & 77 Presupuestos"
+                    title="Cuentas Auxiliares & Presupuestos"
                   >
                     <Briefcase className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>20 Cuentas Auxiliares</span>}
+                    {!isCollapsed && <span>Cuentas Auxiliares</span>}
                   </button>
 
                   <button
