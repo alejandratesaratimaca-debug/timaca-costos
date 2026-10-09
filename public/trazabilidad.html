@@ -69,14 +69,25 @@ header.topbar{background:var(--navy);color:#fff;height:62px;display:flex;align-i
 .btn-tb.azul{background:#0284C7;border-color:#0369A1}.btn-tb.azul:hover{background:#0369A1}
 .btn-tb.rojo{background:#991B1B;border-color:#7F1D1D}.btn-tb.rojo:hover{background:#7F1D1D}
 .cuerpo{display:flex;flex:1;min-height:0}
-aside.menu{width:252px;flex-shrink:0;background:var(--fondo-menu);border-right:1px solid var(--borde);overflow-y:auto;padding:16px 12px 30px}
-.m-grupo{font-size:11px;font-weight:800;color:var(--texto-3);text-transform:uppercase;letter-spacing:.5px;padding:0 8px;margin:18px 0 6px}
-.m-grupo:first-child{margin-top:2px}
-.m-item{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;border:none;border-radius:6px;padding:8px 10px;font-size:13px;font-weight:600;color:#334155;cursor:pointer;margin-bottom:2px;transition:background .15s}
+aside.menu{width:256px;flex-shrink:0;background:var(--fondo-menu);border-right:1px solid var(--borde);overflow-y:auto;padding:14px 10px 30px}
+.m-mod-bloque{margin-bottom:3px}
+.m-mod-header{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;background:none;border:none;border-radius:6px;padding:7px 9px;font-size:12px;font-weight:800;color:var(--navy);cursor:pointer;margin-bottom:2px;transition:all .15s;user-select:none}
+.m-mod-header:hover{background:#E2E8F0;color:#0F172A}
+.m-mod-header.abierto{background:#F1F5F9}
+.m-mod-header.tiene-activo{background:#EEF2F6;border-left:3px solid var(--navy);padding-left:7px}
+.m-mod-tit{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.m-mod-tit .mod-ico{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.m-mod-tit .mod-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.m-mod-der{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.m-mod-der .flecha{font-size:9px;color:var(--texto-3);transition:transform .2s ease;display:inline-block}
+.m-mod-header.abierto .flecha{transform:rotate(90deg)}
+.m-mod-sub{display:none;margin-left:14px;padding-left:8px;border-left:2px solid #CBD5E1;margin-top:2px;margin-bottom:4px}
+.m-mod-sub.abierto{display:block}
+.m-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:none;border-radius:6px;padding:6px 8px;font-size:12px;font-weight:600;color:#334155;cursor:pointer;margin-bottom:2px;transition:background .15s}
 .m-item:hover{background:#E2E8F0;color:#0F172A}
-.m-item.activo{background:var(--navy);color:#fff;font-weight:800}
-.m-item .ico{width:20px;text-align:center;flex-shrink:0}
-.m-item .cnt{margin-left:auto;background:var(--navy);color:#fff;border-radius:10px;padding:0 7px;font-size:10.5px;line-height:18px;font-weight:800}
+.m-item.activo{background:var(--navy);color:#fff;font-weight:700}
+.m-item .ico{width:18px;text-align:center;flex-shrink:0;font-size:13px}
+.m-item .cnt{margin-left:auto;background:var(--navy);color:#fff;border-radius:10px;padding:0 6px;font-size:10px;line-height:16px;font-weight:800}
 .m-item.activo .cnt{background:#fff;color:var(--navy)}
 .m-item .cnt.rojo{background:var(--rojo);color:#fff}
 main#area{flex:1;min-width:0;overflow:auto;padding:24px 30px 44px;background:#fff}
@@ -113,6 +124,7 @@ table.grid tbody tr.sel td{background:#DBEAFE!important}
 table.grid td.num,table.grid th.num{text-align:right}
 table.grid td.cen,table.grid th.cen{text-align:center}
 td.col-disp{background:#F0FDF4;color:#166534;font-weight:800;text-align:center!important}
+td.col-cajas{background:#F5F3FF;color:#6D28D9;font-weight:800;text-align:center!important}
 td.col-vac{background:#ECFEFF;color:#0E7490;font-weight:800;text-align:center!important}
 td.col-prest{background:#FFFBEB;color:#B45309;font-weight:800;text-align:center!important}
 td.col-asig{background:#EFF6FF;color:#1D4ED8;font-weight:800;text-align:center!important}
@@ -167,6 +179,11 @@ td.col-usd{font-weight:800;color:#0F172A;text-align:right!important}
 /* Tarjetas */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
 .card{border:1px solid var(--borde);border-radius:10px;padding:15px 14px;background:#fff;border-top:4px solid var(--navy);text-align:center}
+.card-click{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease}
+.card-click:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.card-click.activa{box-shadow:0 0 0 2px var(--navy);border-color:var(--navy);background:#F8FAFC}
+.tl-ev.azul::before{background:var(--azul);box-shadow:0 0 0 1px var(--azul)}
+.tl-ev.gris::before{background:#94A3B8;box-shadow:0 0 0 1px #94A3B8}
 .card .c-lbl{font-size:11px;color:var(--texto-3);font-weight:800;text-transform:uppercase;letter-spacing:.2px}
 .card .c-num{font-size:30px;font-weight:900;color:var(--navy);margin-top:6px;font-variant-numeric:tabular-nums;line-height:1.1}
 .card .c-sub{font-size:11px;color:var(--texto-3);margin-top:4px}
@@ -448,7 +465,7 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAb4AAABDCAYAAADj9mCa
    estas mismas reglas se ejecutan en el servidor.
    ===================================================================== */
 
-const LS_KEY = 'timaca_trazabilidad_demo_v5';
+const LS_KEY = 'timaca_trazabilidad_demo_v6';
 let DB = null;
 const S = { u: null, ctx: null, vista: null, param: null };
 let NOW_FIX = null;
@@ -485,7 +502,7 @@ const TIPOS = {
   EXT: { n: 'Robo / Extravío', titulo: 'REPORTE DE ROBO / EXTRAVÍO' },
   PLZ: { n: 'Extensión de plazo', titulo: 'EXTENSIÓN DE PLAZO' },
   ENT: { n: 'Entrada al catálogo', titulo: 'VALE DE ENTRADA' },
-  INI: { n: 'Inventario inicial', titulo: 'INVENTARIO INICIAL' }
+  INI: { n: 'Inventario inicial', titulo: 'INVENTARIO INICIAL' },
 };
 const MODULOS = { HERRAMIENTA: 'Herramientas', CILINDRO: 'Cilindros y gases', EPP: 'EPP' };
 const EST_COLOR = {
@@ -494,7 +511,8 @@ const EST_COLOR = {
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
   'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris',
   'EN INVESTIGACIÓN': 'naranja', 'RECUPERADO': 'verde', 'ACTIVO': 'verde', 'INACTIVO': 'gris',
-  'DISPONIBLE': 'verde', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'gris'
+  'DISPONIBLE': 'verde', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
+  'SUFICIENTE': 'verde', 'LIMITANTE': 'naranja', 'NO EXISTE': 'gris'
 };
 const estB = e => `<span class="est est-${EST_COLOR[e] || 'gris'}">${esc(e)}</span>`;
 
@@ -667,11 +685,126 @@ function marcarTodasNotifLeidas() {
 }
 
 function guardar() { try { localStorage.setItem(LS_KEY, JSON.stringify(DB)); } catch (e) { /* sin almacenamiento disponible */ } }
+
+function limpiarModuloCajasViejo() {
+  if (!DB) return;
+  // 1. Revertir existencias retenidas en "cajas" devolviéndolas a disponible en Almacén Central
+  if (DB.exi) {
+    Object.keys(DB.exi).forEach(alm => {
+      Object.keys(DB.exi[alm]).forEach(id => {
+        const e = DB.exi[alm][id];
+        if (e.cajas) {
+          e.disp = (e.disp || 0) + (e.cajas || 0);
+        }
+        delete e.cajas;
+      });
+    });
+  }
+  // 2. Limpiar movimientos de Kardex generados para demostración de cajas operativas
+  if (DB.movs) {
+    DB.movs = DB.movs.filter(m => {
+      if (m.cajaId) return false;
+      if (['REPCH', 'ARMADO'].includes(m.tipo)) return false;
+      if (m.doc && (m.doc.startsWith('PRHCH-') || m.doc.startsWith('DEVCH-') || m.doc.startsWith('REACH-') || m.doc.startsWith('CH-'))) return false;
+      return true;
+    });
+  }
+  // 3. Limpiar vales de cajas anteriores
+  if (DB.vales) {
+    DB.vales = DB.vales.filter(v => {
+      if (v.cajaId) return false;
+      if (['REPCH'].includes(v.tipo)) return false;
+      if (v.num && (v.num.startsWith('PRHCH-') || v.num.startsWith('DEVCH-') || v.num.startsWith('REACH-'))) return false;
+      return true;
+    });
+  }
+  // 4. Limpiar incidencias generadas por devolución de cajas de demo
+  if (DB.incid) {
+    DB.incid = DB.incid.filter(i => !(i.valeRef && (i.valeRef.startsWith('DEVCH-') || i.valeRef.startsWith('PRHCH-'))));
+  }
+  // 5. Eliminar entidades obsoletas
+  delete DB.cajas;
+  delete DB.frentes;
+  delete DB.cuadrillas;
+  if (DB.corr) {
+    delete DB.corr.CH;
+    delete DB.corr.PRHCH;
+    delete DB.corr.DEVCH;
+    delete DB.corr.REACH;
+    delete DB.corr.REPCH;
+  }
+}
+
+function asegurarPlanificacionCajas() {
+  if (!DB) return;
+  DB.cajasTipos = DB.cajasTipos || [];
+  // Asegurar los 3 tipos de caja de demostración si aún no están inicializados
+  if (!DB.cajasTipos.length || !DB.cajasTipos.some(t => t.id === 'CH-01')) {
+    DB.cajasTipos = [
+      {
+        id: 'CH-01',
+        nombre: 'Caja Cuadrilla Mecánica Pesada',
+        desc: 'Kit completo de ajuste, apriete y medición para cuadrillas mecánicas en frentes de taller y planta.',
+        activo: true,
+        items: [
+          { cod: 'HE000101', desc: 'Llave combinada 3/4"', umb: 'UND', cantReq: 2 },
+          { cod: 'HE000102', desc: 'Llave combinada 1/2"', umb: 'UND', cantReq: 2 },
+          { cod: 'HE000120', desc: 'Alicate universal 8"', umb: 'UND', cantReq: 1 },
+          { cod: 'HE000140', desc: 'Martillo de bola 2 lb', umb: 'UND', cantReq: 1 },
+          { cod: 'HE000180', desc: 'Cinta métrica 8 m', umb: 'UND', cantReq: 1 }
+        ]
+      },
+      {
+        id: 'CH-02',
+        nombre: 'Caja Cuadrilla Soldadura y Calderería',
+        desc: 'Kit de herramientas auxiliares de izaje menor y ajuste para montaje y calderería en sitio.',
+        activo: true,
+        items: [
+          { cod: 'HE000130', desc: 'Llave ajustable 12"', umb: 'UND', cantReq: 1 },
+          { cod: 'HE000160', desc: 'Arco de segueta 12"', umb: 'UND', cantReq: 1 },
+          { cod: 'HE000170', desc: 'Nivel de aluminio 24"', umb: 'UND', cantReq: 1 },
+          { cod: 'HE000110', desc: 'Señorita de cadena 1 ton', umb: 'UND', cantReq: 2 }
+        ]
+      },
+      {
+        id: 'CH-03',
+        nombre: 'Caja Cuadrilla Mantenimiento e Instrumentación',
+        desc: 'Kit especializado para montaje y mantenimiento eléctrico e instrumental de precisión.',
+        activo: true,
+        items: [
+          { cod: 'HE000150', desc: 'Juego de destornilladores 6 piezas', umb: 'JGO', cantReq: 1 },
+          { cod: 'HE000120', desc: 'Alicate universal 8"', umb: 'UND', cantReq: 1 },
+          { cod: 'HE000600', desc: 'Taladro percutor 1/2"', umb: 'UND', cantReq: 1 }
+        ]
+      }
+    ];
+  }
+}
+
+function tipoCajaDe(id) { return (DB.cajasTipos || []).find(c => c.id === id); }
+
 function cargarDatos() {
-  try { const r = localStorage.getItem(LS_KEY); if (r) { DB = JSON.parse(r); asegurarUsuariosClave(); asegurarPersonalOficial(); guardar(); return; } } catch (e) { }
-  DB = semilla(); asegurarUsuariosClave(); asegurarPersonalOficial(); guardar();
+  try {
+    const r = localStorage.getItem(LS_KEY);
+    if (r) {
+      DB = JSON.parse(r);
+      asegurarUsuariosClave();
+      asegurarPersonalOficial();
+      limpiarModuloCajasViejo();
+      asegurarPlanificacionCajas();
+      guardar();
+      return;
+    }
+  } catch (e) { }
+  DB = semilla();
+  asegurarUsuariosClave();
+  asegurarPersonalOficial();
+  limpiarModuloCajasViejo();
+  asegurarPlanificacionCajas();
+  guardar();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
+function sigNum5(pref) { DB.corr = DB.corr || {}; DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(5, '0')}`; }
 
 /* ----------------------------- Accesores ----------------------------- */
 const almNombre = c => (DB.almacenes.find(a => a.c === c) || { n: c }).n;
@@ -962,6 +1095,17 @@ function procesarVencimientos() {
     DB.bit.push({ fecha: v.vence, usr: 'SISTEMA', acc: 'TRANSFERENCIA VENCIDA', det: v.num });
     n++;
   });
+  // Vencimiento automático de cajas de herramientas en custodia
+  const h = hoy();
+  (DB.cajas || []).forEach(cx => {
+    if (cx.estatus === 'EN CUSTODIA' && cx.fechaDevPrev && cx.fechaDevPrev < h) {
+      cx.estatus = 'VENCIDA';
+      n++;
+    } else if (cx.estatus === 'VENCIDA' && cx.fechaDevPrev && cx.fechaDevPrev >= h) {
+      cx.estatus = 'EN CUSTODIA';
+      n++;
+    }
+  });
   if (n) guardar();
   return n;
 }
@@ -1169,7 +1313,7 @@ function estadoCatalogo(e, it) {
   if (it && !it.activo) return 'INACTIVO';
   if (e.disp > 0) return 'DISPONIBLE';
   if (e.vacio > 0) return 'VACÍO (POR RECARGAR)';
-  if (e.prest + e.asig > 0) return 'SIN DISPONIBILIDAD';
+  if (e.prest + e.asig + (e.cajas || 0) > 0) return 'SIN DISPONIBILIDAD';
   if (e.dan + e.rep + e.ext > 0) return 'FUERA DE SERVICIO';
   return 'SIN EXISTENCIA';
 }
@@ -1382,7 +1526,8 @@ function semilla() {
       { c: 'SMB', n: 'Almacén SMB', t: 'SATÉLITE' },
       { c: 'FABRICACION', n: 'Almacén Fabricación', t: 'SATÉLITE' }
     ],
-    usuarios: [], personal: [], proyectos: [], catalogo: []
+    usuarios: [], personal: [], proyectos: [], catalogo: [],
+    cajasTipos: []
   };
   const ALMS_TODOS = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
   const U = (usuario, clave, nombre, cedula, cargo, o) => DB.usuarios.push(Object.assign({ usuario, clave, nombre, cedula, cargo, activo: true, admin: false, maestro: false, editaCostos: false, almacenes: [], perm: { aprobar: [], transferir: [], recibir: [] } }, o, { perm: Object.assign({ aprobar: [], transferir: [], recibir: [] }, (o || {}).perm) }));
@@ -1800,14 +1945,22 @@ function abrirCambioAcceso() {
 function menuDef() {
   if (enMaestro()) {
     return [['Módulo Maestro', [['mRes', 'Resumen general'], ['mKpi', 'Indicadores (KPI)'], ['mComp', 'Comparativo por almacén'], ['mExp', 'Explorador de base de datos'],
-      ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
+      ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
   }
   const c = S.ctx;
   const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus === 'FINALIZADO').length;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
   const pendExt = (DB.extSol || []).filter(x => x.alm === c && x.estatus === 'PENDIENTE').length;
   const m = [
-    ['Inicio', [['dash', 'Dashboard del almacén']]],
+    ['Inicio', [['dash', 'Dashboard del almacén']]]
+  ];
+  if (c === 'CENTRAL') {
+    m.push(['Planificación de cajas', [
+      ['cajasPlan', 'Planificación de cajas'],
+      ['cajasTipos', 'Tipos de caja']
+    ]]);
+  }
+  m.push(
     ['Solicitudes', [['solNueva', 'Crear solicitud'], ['sol', 'Solicitudes del almacén']]],
     ['Aprobación', [['aprobar', 'Aprobar solicitudes', pendAprob], ['aprobarPlz', 'Aprobar extensiones', pendExt]]],
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
@@ -1815,28 +1968,1138 @@ function menuDef() {
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
     ['Consultas y kárdex', [ ['cPrest', 'Préstamos vigentes'], ['cVenc', 'Préstamos vencidos'], ['cAsig', 'Asignaciones por persona'],
       ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cKardex', 'Kardex por código'], ['cEpp', 'Historial de EPP'], ['cCil', 'Cilindros por serial']]]
-  ];
+  );
   if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aPers', 'Responsables y supervisores'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
   return m;
 }
+const ICONOS_MOD = {
+  'Inicio': '📊',
+  'Planificación de cajas': '🧰',
+  'Solicitudes': '📝',
+  'Aprobación': '✅',
+  'Transferencias': '🚚',
+  'Catálogo': '📦',
+  'Movimientos': '🔁',
+  'Consultas y kárdex': '📜',
+  'Administración': '⚙️',
+  'Módulo Maestro': '🏢'
+};
+
 const ICONOS = { cCatAlm: '📦', ent: '➕', mov: '🔁', dash: '📊', solNueva: '📝', sol: '📑', aprobar: '✅', aprobarPlz: '⏳', trfNueva: '🚚', trfRec: '📥', trfEnv: '📤', dev: '↩️', dan: '⚠️', ext: '🚨', plz: '⏱️',
   cExist: '🗃️', cPrest: '🔧', cVenc: '⏰', cAsig: '👷', cIncid: '🛠️', cVales: '🧾', cKardex: '📜', cEpp: '🦺', cCil: '🔥',
+  cajasPlan: '🧰', cajasTipos: '📋', mCajas: '🧰',
   aUsr: '👥', aPers: '🪪', aProy: '📁', aCat: '📚', aIni: '🏁', aConf: '⚙️', aBit: '📒', aResp: '💾',
   mRes: '⭐', mKpi: '📈', mComp: '🏭', mExp: '🗄️', mTraz: '🔍', mAlert: '🔔', mCost: '💲', mAcc: '🔐' };
+
+let MENU_GRUPOS_ABIERTOS = {};
+
+function toggleGrupoMenu(g) {
+  const def = menuDef();
+  const grupo = def.find(([nombre]) => nombre === g);
+  const esActivo = grupo && grupo[1].some(it => it && it[0] === S.vista);
+  const estadoActual = MENU_GRUPOS_ABIERTOS[g] !== undefined ? MENU_GRUPOS_ABIERTOS[g] : esActivo;
+  MENU_GRUPOS_ABIERTOS[g] = !estadoActual;
+  pintarMenu();
+}
+
+function expandirTodoMenu(exp) {
+  menuDef().forEach(([g]) => {
+    MENU_GRUPOS_ABIERTOS[g] = !!exp;
+  });
+  pintarMenu();
+}
+
 function pintarMenu() {
-  $('menu').innerHTML = menuDef().map(([g, items]) => `<div class="m-grupo">${esc(g)}</div>` + items.map(([id, t, cnt]) =>
-    `<button class="m-item ${S.vista === id ? 'activo' : ''}" onclick="ir('${id}')"><span class="ico" aria-hidden="true">${ICONOS[id] || '•'}</span><span>${esc(t)}</span>${cnt ? `<span class="cnt ${id === 'mAlert' ? 'rojo' : ''}">${cnt}</span>` : ''}</button>`).join('')).join('');
+  const def = menuDef();
+  const grupoActivo = def.find(([g, items]) => items.some(it => it && it[0] === S.vista));
+
+  const htmlGrupos = def.map(([g, items]) => {
+    const esActivo = grupoActivo && grupoActivo[0] === g;
+    const abierto = MENU_GRUPOS_ABIERTOS[g] !== undefined
+      ? !!MENU_GRUPOS_ABIERTOS[g]
+      : esActivo;
+
+    const tieneActivo = items.some(it => it && it[0] === S.vista);
+    const badgeTotal = items.reduce((sum, it) => sum + (it && it[2] ? it[2] : 0), 0);
+    const esRojo = items.some(it => it && it[0] === 'mAlert' && it[2] > 0);
+    const ico = ICONOS_MOD[g] || '📁';
+
+    const header = `
+      <button type="button" class="m-mod-header ${abierto ? 'abierto' : ''} ${tieneActivo ? 'tiene-activo' : ''}" onclick="toggleGrupoMenu('${esc(g)}')" title="Clic para ${abierto ? 'comprimir' : 'desplegar'} el módulo ${esc(g)}">
+        <div class="m-mod-tit">
+          <span class="mod-ico" aria-hidden="true">${ico}</span>
+          <span class="mod-txt">${esc(g)}</span>
+        </div>
+        <div class="m-mod-der">
+          ${badgeTotal ? `<span class="cnt ${esRojo ? 'rojo' : ''}" style="margin:0">${badgeTotal}</span>` : ''}
+          <span class="flecha" aria-hidden="true">▶</span>
+        </div>
+      </button>
+    `;
+
+    const subitems = `
+      <div class="m-mod-sub ${abierto ? 'abierto' : ''}">
+        ${items.map(([id, t, cnt]) => `
+          <button type="button" class="m-item ${S.vista === id ? 'activo' : ''}" onclick="ir('${id}')">
+            <span class="ico" aria-hidden="true">${ICONOS[id] || '•'}</span>
+            <span>${esc(t)}</span>
+            ${cnt ? `<span class="cnt ${id === 'mAlert' ? 'rojo' : ''}">${cnt}</span>` : ''}
+          </button>
+        `).join('')}
+      </div>
+    `;
+
+    return `<div class="m-mod-bloque">${header}${subitems}</div>`;
+  }).join('');
+
+  $('menu').innerHTML = htmlGrupos;
 }
 const VISTAS = {};
+
+/* =====================================================================
+   MÓDULO CAJAS DE HERRAMIENTAS · PARTE 1 (ESTRUCTURA BASE)
+   ===================================================================== */
+
+/* =====================================================================
+   MÓDULO DE PLANIFICACIÓN DE CAJAS DE HERRAMIENTAS
+   (Solo consulta y simulación reactiva · Sin movimientos ni vales)
+   ===================================================================== */
+
+// Disponibilidad acumulada en Central agrupada por código (suma todas las marcas, modelos y seriales)
+function disponibleCentralPorCodigo(cod) {
+  if (!cod || !DB || !DB.catalogo || !DB.exi || !DB.exi['CENTRAL']) return 0;
+  const cUpper = String(cod).trim().toUpperCase();
+  const items = DB.catalogo.filter(it => (it.cod || '').toUpperCase() === cUpper);
+  if (!items.length) return 0;
+  return items.reduce((sum, it) => {
+    const e = DB.exi['CENTRAL'][it.id];
+    return sum + (e ? (e.disp || 0) : 0);
+  }, 0);
+}
+
+// Cálculo del plan de armado para un tipo de caja
+function calcularPlanTipoCaja(tipo) {
+  const items = (tipo.items || []).map(linea => {
+    const codUpper = String(linea.cod || '').trim().toUpperCase();
+    const itCat = DB.catalogo.find(c => (c.cod || '').toUpperCase() === codUpper);
+    const disp = disponibleCentralPorCodigo(codUpper);
+    const cantReq = Math.max(1, Number(linea.cantReq) || 1);
+    const noExiste = !itCat;
+    const rinde = noExiste ? 0 : Math.floor(disp / cantReq);
+    const costoUnit = itCat ? (itCat.costo || 0) : 0;
+    return {
+      cod: linea.cod,
+      desc: linea.desc || (itCat ? itCat.desc : 'No existe en el catálogo'),
+      umb: linea.umb || (itCat ? itCat.umb : 'UND'),
+      marca: itCat ? (itCat.marca || '—') : '—',
+      cantReq,
+      disp,
+      rinde,
+      costoUnit,
+      noExiste
+    };
+  });
+
+  const cajasPosibles = items.length ? Math.min(...items.map(it => it.rinde)) : 0;
+
+  items.forEach(it => {
+    if (it.noExiste) {
+      it.estado = 'NO EXISTE';
+      it.esLimitante = true;
+    } else if (it.disp === 0) {
+      it.estado = 'SIN EXISTENCIA';
+      it.esLimitante = (cajasPosibles === 0);
+    } else if (it.rinde === cajasPosibles) {
+      it.estado = 'LIMITANTE';
+      it.esLimitante = true;
+    } else {
+      it.estado = 'SUFICIENTE';
+      it.esLimitante = false;
+    }
+  });
+
+  const limitantes = items.filter(it => it.esLimitante);
+  const piezasPorCaja = items.reduce((acc, it) => acc + it.cantReq, 0);
+  const costoPorCaja = items.reduce((acc, it) => acc + (it.cantReq * it.costoUnit), 0);
+
+  return {
+    tipo,
+    items,
+    cajasPosibles,
+    limitantes,
+    piezasPorCaja,
+    costoPorCaja
+  };
+}
+
+let PLAN_FILTRO_Q = '';
+
+/* ---------- VISTA: PLANIFICACIÓN DE CAJAS (Pantalla Principal) ---------- */
+VISTAS.cajasPlan = p => {
+  const esMaestro = enMaestro();
+  const tipos = (DB.cajasTipos || []).filter(t => t.activo !== false);
+  const planes = tipos.map(t => calcularPlanTipoCaja(t));
+
+  // KPIs
+  const totTipos = tipos.length;
+  const totPosibles = planes.reduce((acc, pl) => acc + pl.cajasPosibles, 0);
+  const mejor = planes.slice().sort((a, b) => b.cajasPosibles - a.cajasPosibles)[0];
+  const totLimitantes = planes.reduce((acc, pl) => acc + pl.limitantes.length, 0);
+  const valorTotalKitsUSD = planes.reduce((acc, pl) => acc + (pl.cajasPosibles * pl.costoPorCaja), 0);
+
+  // Filtrado por buscador único (código, nombre o herramienta contenida)
+  const q = normTexto(PLAN_FILTRO_Q || '');
+  const planesFiltrados = planes.filter(pl => {
+    if (!q) return true;
+    const matchId = normTexto(pl.tipo.id).includes(q);
+    const matchNom = normTexto(pl.tipo.nombre).includes(q);
+    const matchDesc = normTexto(pl.tipo.desc || '').includes(q);
+    const matchHerr = (pl.items || []).some(h => normTexto(h.cod).includes(q) || normTexto(h.desc).includes(q));
+    return matchId || matchNom || matchDesc || matchHerr;
+  });
+
+  // Gráfico de barras: Cajas posibles por tipo
+  const chartBarras = planes.length > 0
+    ? gBarras(planes.map(p => p.tipo.id), [{ n: 'Cajas posibles', c: COL.verde, vals: planes.map(p => p.cajasPosibles) }], null, 180)
+    : '<div class="ayuda-txt">Sin tipos de caja definidos.</div>';
+
+  const btnAdmin = !esMaestro ? '<button class="btn btn-claro btn-mini" onclick="ir(\'cajasTipos\')">📋 Administrar tipos</button>' : '';
+  const btnMaestroKpi = esMaestro ? cardC('Valorización kits factibles', usd(valorTotalKitsUSD), 'verde', 'Calculado con costos del catálogo') : '';
+
+  $('area').innerHTML = cab(
+    '🧰 Planificación de cajas de herramientas',
+    'Cálculo en tiempo real de cajas factibles a partir de la existencia DISPONIBLE de Almacén Central. Consulta analítica sin movimientos de inventario.',
+    `<div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${btnAdmin}
+      <button class="btn btn-navy btn-mini" onclick="modalSimularMultiCaja()">🧮 Simular varias cajas</button>
+      ${botonesExport('gCajPlan', 'Planificacion_Cajas')}
+      <button class="btn btn-claro btn-mini" onclick="refrescar()">🔄 Recalcular</button>
+    </div>`
+  )
+  + `<div class="cards">
+      ${cardC('Tipos de caja', num(totTipos), '', 'Modelos activos')}
+      ${cardC('Total cajas posibles', num(totPosibles), totPosibles > 0 ? 'verde' : 'rojo', 'Sumando todos los tipos')}
+      ${cardC('Mayor disponibilidad', mejor ? `${mejor.tipo.id} (${mejor.cajasPosibles})` : '—', 'azul', mejor ? mejor.tipo.nombre : '')}
+      ${cardC('Ítems limitantes', num(totLimitantes), totLimitantes > 0 ? 'naranja' : 'verde', 'Cuellos de botella detectados')}
+      ${btnMaestroKpi}
+    </div>`
+  + `<div class="panel" style="margin-bottom:16px">
+      <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Disponibilidad comparativa de ensamblaje en Almacén Central</span>
+        <span style="font-size:11px;color:var(--texto-3)">Basado exclusivamente en stock disponible (excluye préstamos y satélites)</span>
+      </div>
+      <div class="panel-b">${chartBarras}</div>
+    </div>`
+  + `<div class="fila-filtros" style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+      ${campo('Buscar tipo o herramienta contenida', `<input id="planQ" value="${esc(PLAN_FILTRO_Q)}" placeholder="Ej. CH-01, Mecánica, HE000101, señorita, alicate…" oninput="PLAN_FILTRO_Q=this.value;ir('cajasPlan')" style="min-width:320px">`)}
+      ${PLAN_FILTRO_Q ? '<button class="btn btn-claro btn-mini" onclick="PLAN_FILTRO_Q=\'\';ir(\'cajasPlan\')">Limpiar búsqueda</button>' : ''}
+      <span style="margin-left:auto;font-size:12px;font-weight:700;color:var(--texto-2)">Mostrando ${planesFiltrados.length} de ${planes.length} tipos</span>
+    </div>`
+  + `<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));gap:16px">
+      ${planesFiltrados.map(pl => {
+        const lim = pl.limitantes[0];
+        const sinStock = pl.items.find(it => it.disp === 0);
+        return `
+          <div class="panel" style="display:flex;flex-direction:column;justify-content:space-between;border-top:4px solid ${pl.cajasPosibles > 0 ? 'var(--verde)' : 'var(--rojo)'}">
+            <div class="panel-b" style="padding:16px">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+                <div>
+                  <span class="chip-mod m-HERRAMIENTA" style="font-weight:800">${pl.tipo.id}</span>
+                  <h3 style="margin:6px 0 2px;font-size:16px;color:var(--navy)">${esc(pl.tipo.nombre)}</h3>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:36px;font-weight:900;line-height:1;color:${pl.cajasPosibles > 0 ? 'var(--verde)' : 'var(--rojo)'}">${pl.cajasPosibles}</div>
+                  <div style="font-size:10px;font-weight:800;letter-spacing:0.5px;color:var(--texto-3)">CAJAS POSIBLES</div>
+                </div>
+              </div>
+
+              <p style="font-size:12px;color:var(--texto-2);margin:6px 0 12px;line-height:1.4">${esc(pl.tipo.desc || 'Sin descripción.')}</p>
+
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-top:1px dashed var(--borde);border-bottom:1px dashed var(--borde);margin-bottom:10px">
+                <span><b>Contenido:</b> ${pl.piezasPorCaja} piezas (${pl.items.length} herramientas)</span>
+                ${esMaestro ? `<span style="color:var(--verde);font-weight:800">Costo kit: ${usd(pl.costoPorCaja)}</span>` : ''}
+              </div>
+
+              ${pl.cajasPosibles === 0 && sinStock ? `
+                <div style="background:#FEE2E2;border:1px solid #FCA5A5;color:#991B1B;padding:8px 10px;border-radius:6px;font-size:11px;margin-bottom:12px">
+                  <b>🚨 Sin existencia en Central:</b> ${esc(sinStock.desc)} (Disp: 0 · Requiere: ${sinStock.cantReq} ${sinStock.umb})
+                </div>
+              ` : lim ? `
+                <div style="background:#FEF3C7;border:1px solid #FCD34D;color:#92400E;padding:8px 10px;border-radius:6px;font-size:11px;margin-bottom:12px">
+                  <b>⚠️ Ítem limitante:</b> ${esc(lim.desc)}<br>
+                  <span style="color:var(--texto-2)">Disp. Central: <b>${lim.disp} ${lim.umb}</b> · Requiere: <b>${lim.cantReq} ${lim.umb}</b> por caja (rinde ${lim.rinde} cajas)</span>
+                </div>
+              ` : `
+                <div style="background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;padding:8px 10px;border-radius:6px;font-size:11px;margin-bottom:12px">
+                  <b>✅ Stock suficiente:</b> Todo el contenido disponible en Central.
+                </div>
+              `}
+
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="btn btn-navy btn-mini" style="flex:1" onclick="ir('cajasTipoDetalle', { id: '${pl.tipo.id}' })">🔍 Detalle y Faltantes</button>
+                ${!esMaestro ? `<button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${pl.tipo.id}')">✏️ Editar</button>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>`;
+};
+
+/* ---------- VISTA: DETALLE DE TIPO DE CAJA Y CÁLCULO DE FALTANTES ---------- */
+let DETALLE_CAJAS_DESEADAS = 1;
+
+VISTAS.cajasTipoDetalle = p => {
+  const esMaestro = enMaestro();
+  const id = (p && p.id) || (DB.cajasTipos && DB.cajasTipos[0] ? DB.cajasTipos[0].id : '');
+  const tipo = tipoCajaDe(id);
+  if (!tipo) {
+    toast('Tipo de caja no encontrado.', 'err');
+    ir(esMaestro ? 'mCajas' : 'cajasPlan');
+    return;
+  }
+
+  const plan = calcularPlanTipoCaja(tipo);
+  if (p && p.deseadas !== undefined) DETALLE_CAJAS_DESEADAS = Math.max(1, parseInt(p.deseadas) || 1);
+  const deseadas = DETALLE_CAJAS_DESEADAS;
+
+  // Cálculo de requerimientos y faltantes para la cantidad deseada
+  const analisis = plan.items.map(it => {
+    const totalReq = deseadas * it.cantReq;
+    const faltante = Math.max(0, totalReq - it.disp);
+    const costoFaltante = faltante * it.costoUnit;
+    return {
+      ...it,
+      totalReq,
+      faltante,
+      costoFaltante
+    };
+  });
+
+  const faltantes = analisis.filter(a => a.faltante > 0);
+  const totPiezasFaltantes = faltantes.reduce((sum, f) => sum + f.faltante, 0);
+  const totCostoFaltantesUSD = faltantes.reduce((sum, f) => sum + f.costoFaltante, 0);
+
+  const cols = [
+    { t: 'Código', k: 'cod', f: r => `<b>${esc(r.cod)}</b>` },
+    { t: 'Descripción de la herramienta', v: r => r.desc, td: 'wrap' },
+    { t: 'Unidad', k: 'umb', cls: 'cen' },
+    { t: 'Por caja', k: 'cantReq', cls: 'cen' },
+    { t: 'Disp. Central', k: 'disp', cls: 'cen', td: r => r.disp > 0 ? 'col-disp' : 'col-dan' },
+    { t: 'Rinde', v: r => `${r.rinde} cajas`, cls: 'cen' },
+    { t: 'Estado', v: r => r.estado, f: r => estB(r.estado) },
+    { t: `Req. (${deseadas} cajas)`, k: 'totalReq', cls: 'num' },
+    { t: 'Faltante', k: 'faltante', cls: 'num', f: r => r.faltante > 0 ? `<b style="color:var(--rojo)">${r.faltante}</b>` : '<span style="color:var(--verde)">0</span>' },
+    ...(esMaestro ? [
+      { t: 'Costo unit. USD', v: r => usd(r.costoUnit), cls: 'num' },
+      { t: 'Costo faltante USD', v: r => r.faltante > 0 ? usd(r.costoFaltante) : '$0.00', cls: 'num' }
+    ] : [])
+  ];
+
+  const btnVolver = `<button class="btn btn-claro btn-mini" onclick="ir('${esMaestro ? 'mCajas' : 'cajasPlan'}')">← Volver al panel</button>`;
+  const btnEditarTipo = !esMaestro ? `<button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${tipo.id}')">✏️ Editar tipo</button>` : '';
+
+  $('area').innerHTML = cab(
+    `🧰 ${tipo.id} · ${esc(tipo.nombre)}`,
+    'Composición del kit, balance de existencia y simulador de compras/reposición para armar la cantidad deseada.',
+    `<div style="display:flex;gap:6px">
+      ${btnVolver}
+      ${btnEditarTipo}
+      ${botonesExport('gDetCaj', `Plan_${tipo.id}`)}
+    </div>`
+  )
+  + `<div class="dos-col" style="margin-bottom:16px">
+      <div class="panel">
+        <div class="panel-h">Ficha técnica del kit</div>
+        <div class="panel-b">
+          <p style="margin:0 0 8px;font-size:13px;color:var(--texto-2)">${esc(tipo.desc || 'Sin descripción.')}</p>
+          <div style="display:flex;gap:20px;margin-top:12px;font-size:12px">
+            <div><b>Piezas por caja:</b> ${plan.piezasPorCaja}</div>
+            <div><b>Líneas de herramientas:</b> ${plan.items.length}</div>
+            ${esMaestro ? `<div style="color:var(--verde);font-weight:800"><b>Costo estimado:</b> ${usd(plan.costoPorCaja)}</div>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="border:2px solid var(--navy)">
+        <div class="panel-h" style="background:var(--navy);color:#fff">Simulador interactivo: ¿Cuántas cajas quiero armar?</div>
+        <div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <label style="font-weight:800;font-size:13px;color:var(--navy)">Cantidad de cajas objetivo:</label>
+            <input type="number" min="1" max="999" id="cantObj" value="${deseadas}" style="width:100px;font-size:18px;font-weight:900;text-align:center"
+              oninput="DETALLE_CAJAS_DESEADAS=Math.max(1,parseInt(this.value)||1);ir('cajasTipoDetalle',{id:'${tipo.id}',deseadas:DETALLE_CAJAS_DESEADAS})">
+            <span style="font-size:12px;color:var(--texto-3)">Factibles actualmente con stock: <b>${plan.cajasPosibles}</b></span>
+          </div>
+
+          ${faltantes.length === 0 ? `
+            <div style="background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;padding:10px 12px;border-radius:6px;font-size:12px">
+              <b>🎉 ¡Inventario suficiente en Central!</b> Se pueden armar las <b>${deseadas} cajas</b> solicitadas sin compras adicionales.
+            </div>
+          ` : `
+            <div style="background:#FEF2F2;border:1px solid #FCA5A5;color:#991B1B;padding:10px 12px;border-radius:6px;font-size:12px">
+              <b>⚠️ Se detectaron faltantes:</b> Requiere reponer <b>${totPiezasFaltantes} piezas</b> en <b>${faltantes.length} herramientas</b> para alcanzar la meta.
+              ${esMaestro ? `<br><b>Presupuesto estimado de compra:</b> ${usd(totCostoFaltantesUSD)}` : ''}
+            </div>
+          `}
+        </div>
+      </div>
+    </div>`
+  + (faltantes.length > 0 ? `
+      <div class="panel" style="margin-bottom:16px;border:1px solid var(--rojo)">
+        <div class="panel-h" style="background:#FEF2F2;color:#991B1B;display:flex;justify-content:space-between;align-items:center">
+          <span>📋 Lista de faltantes para solicitud de compra o reposición (${deseadas} cajas)</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-rojo btn-mini" onclick="copiarFaltantesAlPortapapeles('${tipo.id}', ${deseadas})">📋 Copiar faltantes</button>
+            <button class="btn btn-claro btn-mini" onclick="exportarFaltantesExcel('${tipo.id}', ${deseadas})">📥 Exportar faltantes Excel</button>
+            <button class="btn btn-claro btn-mini" onclick="imprimirSolicitudFaltantes('${tipo.id}', ${deseadas})">🖨️ Imprimir solicitud TIMACA</button>
+          </div>
+        </div>
+        <div class="panel-b" style="padding:0">
+          ${grid('gFaltDet', [
+            { t: 'Código', k: 'cod', f: r => `<b>${esc(r.cod)}</b>` },
+            { t: 'Descripción de la herramienta', v: r => r.desc, td: 'wrap' },
+            { t: 'Unidad', k: 'umb', cls: 'cen' },
+            { t: 'Requerido total', k: 'totalReq', cls: 'num' },
+            { t: 'Disponible Central', k: 'disp', cls: 'num' },
+            { t: 'Faltante neto', k: 'faltante', cls: 'num', f: r => `<b style="color:var(--rojo)">${r.faltante}</b>` },
+            ...(esMaestro ? [
+              { t: 'Costo unit. USD', v: r => usd(r.costoUnit), cls: 'num' },
+              { t: 'Total USD', v: r => usd(r.costoFaltante), cls: 'num' }
+            ] : [])
+          ], faltantes, { sinPie: true })}
+        </div>
+      </div>
+    ` : '')
+  + `<div class="panel">
+      <div class="panel-h">Detalle completo de herramientas del tipo de caja</div>
+      <div class="panel-b" style="padding:0">
+        ${grid('gDetCaj', cols, analisis, { pag: 25, totales: true })}
+      </div>
+    </div>`;
+};
+
+// Copiar lista de faltantes formateada al portapapeles
+function copiarFaltantesAlPortapapeles(tipoId, deseadas) {
+  const tipo = tipoCajaDe(tipoId);
+  const plan = calcularPlanTipoCaja(tipo);
+  const faltantes = plan.items.map(it => ({
+    ...it,
+    req: deseadas * it.cantReq,
+    falt: Math.max(0, (deseadas * it.cantReq) - it.disp)
+  })).filter(x => x.falt > 0);
+
+  let texto = 'SOLICITUD DE REPOSICIÓN / COMPRA PARA ARMADO DE CAJAS\n';
+  texto += 'Empresa: C.A. TALLERES INDUSTRIALES METALÚRGICOS ANTONIO CASADO (TIMACA)\n';
+  texto += 'Almacén Central · Fecha: ' + fFH(nowISO()) + '\n';
+  texto += 'Tipo de caja: ' + tipo.id + ' - ' + tipo.nombre + '\n';
+  texto += 'Cantidad requerida: ' + deseadas + ' caja(s)\n';
+  texto += '------------------------------------------------------------\n';
+  faltantes.forEach((f, i) => {
+    texto += (i + 1) + '. [' + f.cod + '] ' + f.desc + ' · Faltante: ' + f.falt + ' ' + f.umb + ' (Req: ' + f.req + ', Disp Central: ' + f.disp + ')\n';
+  });
+  texto += '------------------------------------------------------------\n';
+  texto += 'Total ítems con faltante: ' + faltantes.length + '\n';
+
+  navigator.clipboard.writeText(texto).then(() => {
+    toast('Lista de faltantes copiada al portapapeles.', 'ok');
+  }).catch(() => {
+    pedirTexto('Copie el siguiente texto:', 'Lista de faltantes', () => {}, 'Cerrar', texto);
+  });
+}
+
+// Exportar faltantes a Excel
+function exportarFaltantesExcel(tipoId, deseadas) {
+  const tipo = tipoCajaDe(tipoId);
+  const plan = calcularPlanTipoCaja(tipo);
+  const esMaestro = enMaestro();
+  const faltantes = plan.items.map(it => ({
+    ...it,
+    req: deseadas * it.cantReq,
+    falt: Math.max(0, (deseadas * it.cantReq) - it.disp)
+  })).filter(x => x.falt > 0);
+
+  const datos = faltantes.map(f => {
+    const r = {
+      'Código': f.cod,
+      'Descripción': f.desc,
+      'Unidad': f.umb,
+      'Por Caja': f.cantReq,
+      'Req Total': f.req,
+      'Disponible Central': f.disp,
+      'Faltante': f.falt
+    };
+    if (esMaestro) {
+      r['Costo Unit USD'] = f.costoUnit;
+      r['Costo Faltante USD'] = f.falt * f.costoUnit;
+    }
+    return r;
+  });
+
+  exportarExcel(datos, 'Faltantes_' + tipo.id + '_' + deseadas + '_cajas');
+}
+
+// Imprimir reporte formal de faltantes TIMACA
+function imprimirSolicitudFaltantes(tipoId, deseadas) {
+  const tipo = tipoCajaDe(tipoId);
+  const plan = calcularPlanTipoCaja(tipo);
+  const esMaestro = enMaestro();
+  const faltantes = plan.items.map(it => ({
+    ...it,
+    req: deseadas * it.cantReq,
+    falt: Math.max(0, (deseadas * it.cantReq) - it.disp)
+  })).filter(x => x.falt > 0);
+
+  const totUSD = faltantes.reduce((sum, f) => sum + (f.falt * f.costoUnit), 0);
+
+  const htmlPrint = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Solicitud de Faltantes · ${tipo.id}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 24px; color: #1e293b; }
+        .head { display: flex; justify-content: space-between; border-bottom: 2px solid #003366; padding-bottom: 12px; margin-bottom: 16px; }
+        .tit { font-size: 18px; font-weight: 800; color: #003366; }
+        .sub { font-size: 12px; color: #64748b; }
+        .meta { margin-bottom: 16px; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 12px; }
+        th { background: #003366; color: #fff; text-align: left; padding: 6px 8px; }
+        td { border-bottom: 1px solid #e2e8f0; padding: 6px 8px; }
+        .cen { text-align: center; }
+        .num { text-align: right; }
+        .firmas { display: flex; justify-content: space-between; margin-top: 48px; }
+        .firma { width: 30%; border-top: 1px solid #333; text-align: center; padding-top: 6px; font-size: 11px; }
+      </style>
+    </head>
+    <body>
+      <div class="head">
+        <div>
+          <div class="tit">C.A. TALLERES INDUSTRIALES METALÚRGICOS ANTONIO CASADO (TIMACA)</div>
+          <div class="sub">PLANIFICACIÓN DE CAJAS DE HERRAMIENTAS · SOLICITUD DE FALTANTES / COMPRA</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;font-weight:700">Fecha: ${fFH(nowISO())}</div>
+          <div style="font-size:11px;color:#64748b">Almacén Central</div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <b>Tipo de caja:</b> ${tipo.id} - ${esc(tipo.nombre)}<br>
+        <b>Objetivo de ensamble:</b> ${deseadas} caja(s) de herramientas<br>
+        <b>Herramientas con déficit en Almacén Central:</b> ${faltantes.length} ítems
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción de la herramienta</th>
+            <th class="cen">Unidad</th>
+            <th class="num">Requerido total</th>
+            <th class="num">Disponible Central</th>
+            <th class="num">Faltante neto</th>
+            ${esMaestro ? '<th class="num">Costo unit. USD</th><th class="num">Total USD</th>' : ''}
+          </tr>
+        </thead>
+        <tbody>
+          ${faltantes.map(f => `
+            <tr>
+              <td><b>${esc(f.cod)}</b></td>
+              <td>${esc(f.desc)}</td>
+              <td class="cen">${esc(f.umb)}</td>
+              <td class="num">${f.req}</td>
+              <td class="num">${f.disp}</td>
+              <td class="num" style="color:#dc2626;font-weight:700">${f.falt}</td>
+              ${esMaestro ? `<td class="num">${usd(f.costoUnit)}</td><td class="num">${usd(f.falt * f.costoUnit)}</td>` : ''}
+            </tr>
+          `).join('')}
+        </tbody>
+        ${esMaestro ? `
+          <tfoot>
+            <tr style="font-weight:800;background:#f8fafc">
+              <td colspan="6" class="num">Presupuesto estimado de reposición:</td>
+              <td colspan="2" class="num" style="color:#003366">${usd(totUSD)}</td>
+            </tr>
+          </tfoot>
+        ` : ''}
+      </table>
+
+      <div class="firmas">
+        <div class="firma">Elaborado por (Almacén Central)<br><small>${S.u ? esc(S.u.nombre) : 'Almacenista Central'}</small></div>
+        <div class="firma">Supervisión de Almacenes<br><small>Daniela Riveros</small></div>
+        <div class="firma">Aprobación / Compras<br><small>Gerencia de Operaciones</small></div>
+      </div>
+
+      <script>window.onload = function() { window.print(); };</script>
+    </body>
+    </html>
+  `;
+
+  const w = window.open('', '_blank');
+  w.document.write(htmlPrint);
+  w.document.close();
+}
+
+/* ---------- VISTA: GESTIÓN DE TIPOS DE CAJA ---------- */
+VISTAS.cajasTipos = () => {
+  const filas = DB.cajasTipos || [];
+  const cols = [
+    { t: 'Código', k: 'id', cls: 'cen', f: r => `<b>${esc(r.id)}</b>` },
+    { t: 'Nombre del tipo de caja', v: r => `<b>${esc(r.nombre)}</b>`, td: 'wrap' },
+    { t: 'Descripción', v: r => r.desc || '—', td: 'wrap' },
+    { t: 'Herramientas', v: r => (r.items || []).length, cls: 'cen' },
+    { t: 'Total piezas', v: r => (r.items || []).reduce((a, x) => a + (x.cantReq || 1), 0), cls: 'cen' },
+    { t: 'Estado', v: r => r.activo !== false ? 'ACTIVO' : 'INACTIVO', f: r => estB(r.activo !== false ? 'ACTIVO' : 'INACTIVO') },
+    { t: 'Acciones', v: r => '', f: r => `
+      <button class="btn btn-navy btn-mini" onclick="ir('cajasTipoDetalle',{id:'${r.id}'})">Detalle</button>
+      <button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${r.id}')">Editar</button>
+      <button class="btn ${r.activo !== false ? 'btn-rojo' : 'btn-verde'} btn-mini" onclick="toggleTipoCaja('${r.id}')">${r.activo !== false ? 'Desactivar' : 'Activar'}</button>
+    ` }
+  ];
+
+  $('area').innerHTML = cab(
+    '📋 Tipos de caja de herramientas',
+    'Definición de listas de contenido estándar (BOM) para cuadrillas y frentes de trabajo.',
+    `${botonesExport('gCajTip', 'Tipos_Cajas')}
+      <button class="btn btn-claro btn-mini" onclick="descargarPlantillaTipoCaja()">📥 Descargar plantilla Excel</button>
+      <button class="btn btn-claro btn-mini" onclick="modalImportarContenidoCaja()">📤 Carga masiva Excel</button>
+      <button class="btn btn-verde btn-mini" onclick="modalEditarTipoCaja()">➕ Nuevo tipo de caja</button>`
+  )
+  + `<div class="fila-filtros">${buscador('gCajTip', 'Buscar tipo de caja…')}</div>`
+  + grid('gCajTip', cols, filas, { pag: 20, vacio: 'No hay tipos de caja definidos.' });
+};
+
+function toggleTipoCaja(id) {
+  const r = tipoCajaDe(id);
+  if (!r) return;
+  r.activo = !(r.activo !== false);
+  bit('TIPO DE CAJA ' + (r.activo ? 'ACTIVADO' : 'DESACTIVADO'), r.id + ' · ' + r.nombre);
+  guardar();
+  toast(`Tipo ${r.id} ${r.activo ? 'activado' : 'desactivado'}.`, 'ok');
+  refrescar();
+}
+
+// Modal CRUD para crear o editar un tipo de caja y sus herramientas
+let MODAL_TIPO_CAJA_ITEMS = [];
+
+function modalEditarTipoCaja(id) {
+  const esNuevo = !id;
+  const tipo = esNuevo ? {
+    id: sugerirSiguienteIdTipoCaja(),
+    nombre: '',
+    desc: '',
+    activo: true,
+    items: []
+  } : JSON.parse(JSON.stringify(tipoCajaDe(id)));
+
+  MODAL_TIPO_CAJA_ITEMS = tipo.items || [];
+
+  const renderItemsTabla = () => {
+    if (!MODAL_TIPO_CAJA_ITEMS.length) {
+      return '<div class="ayuda-txt" style="padding:12px;text-align:center">No hay herramientas agregadas a la caja todavía. Agregue ítems abajo.</div>';
+    }
+    return `
+      <table class="grid-t" style="margin-top:8px">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Unidad</th>
+            <th class="cen">Cant. requerida</th>
+            <th class="cen">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${MODAL_TIPO_CAJA_ITEMS.map((it, idx) => `
+            <tr>
+              <td><b>${esc(it.cod)}</b></td>
+              <td>${esc(it.desc)}</td>
+              <td>${esc(it.umb)}</td>
+              <td class="cen"><b>${it.cantReq}</b></td>
+              <td class="cen"><button class="btn btn-rojo btn-mini" onclick="eliminarItemModalTipoCaja(${idx})">✕</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  };
+
+  window.eliminarItemModalTipoCaja = idx => {
+    MODAL_TIPO_CAJA_ITEMS.splice(idx, 1);
+    $('cajModalItemsList').innerHTML = renderItemsTabla();
+  };
+
+  window.agregarItemModalTipoCaja = () => {
+    const cod = ($('cajInpCod').value || '').trim().toUpperCase();
+    const cant = Math.max(1, parseInt($('cajInpCant').value) || 1);
+    if (!cod) return toast('Indique el código de la herramienta.', 'err');
+
+    const itCat = DB.catalogo.find(c => (c.cod || '').toUpperCase() === cod);
+    const desc = itCat ? itCat.desc : ($('cajInpDesc').value || '').trim();
+    const umb = itCat ? itCat.umb : ($('cajInpUmb').value || 'UND').trim();
+
+    if (!desc) return toast('Debe indicar una descripción para la herramienta.', 'err');
+
+    const yaExiste = MODAL_TIPO_CAJA_ITEMS.find(x => x.cod.toUpperCase() === cod);
+    if (yaExiste) {
+      yaExiste.cantReq += cant;
+    } else {
+      MODAL_TIPO_CAJA_ITEMS.push({ cod, desc, umb, cantReq: cant });
+    }
+
+    $('cajInpCod').value = '';
+    $('cajInpDesc').value = '';
+    $('cajInpCant').value = '1';
+    $('cajModalItemsList').innerHTML = renderItemsTabla();
+    toast('Herramienta agregada a la caja.', 'ok');
+  };
+
+  const catalogoOpciones = (DB.catalogo || [])
+    .filter(it => it.mod === 'HERRAMIENTA')
+    .slice(0, 100)
+    .map(it => `<option value="${esc(it.cod)}">${esc(it.cod)} - ${esc(it.desc)}</option>`)
+    .join('');
+
+  const cuerpo = `
+    <div class="dos-col" style="gap:12px">
+      <div class="campo"><label>Código del tipo de caja</label><input id="tcId" value="${esc(tipo.id)}" placeholder="Ej. CH-01" ${esNuevo ? '' : 'readonly'}></div>
+      <div class="campo"><label>Estado</label><select id="tcAct"><option value="1" ${tipo.activo !== false ? 'selected' : ''}>ACTIVO</option><option value="0" ${tipo.activo === false ? 'selected' : ''}>INACTIVO</option></select></div>
+    </div>
+    <div class="campo"><label>Nombre del tipo de caja</label><input id="tcNom" value="${esc(tipo.nombre)}" placeholder="Ej. Caja Cuadrilla Mecánica Pesada"></div>
+    <div class="campo"><label>Descripción o notas del kit</label><textarea id="tcDesc" rows="2" placeholder="Detalle el uso previsto, frente o especialidad">${esc(tipo.desc || '')}</textarea></div>
+
+    <div style="border-top:1px solid var(--borde);padding-top:12px;margin-top:12px">
+      <h4 style="margin:0 0 8px;font-size:13px;color:var(--navy)">Lista de herramientas requeridas</h4>
+
+      <div style="background:var(--fondo-2);padding:10px;border-radius:6px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--texto-2);margin-bottom:6px">Agregar herramienta del catálogo:</div>
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <label style="font-size:10px;color:var(--texto-3)">Código catálogo</label>
+            <input id="cajInpCod" list="listCatCod" placeholder="Escriba o seleccione código…"
+              onchange="const it=DB.catalogo.find(c=>c.cod.toUpperCase()===this.value.trim().toUpperCase());if(it){$('cajInpDesc').value=it.desc;$('cajInpUmb').value=it.umb;}">
+            <datalist id="listCatCod">${catalogoOpciones}</datalist>
+          </div>
+          <div style="flex:2;min-width:200px">
+            <label style="font-size:10px;color:var(--texto-3)">Descripción</label>
+            <input id="cajInpDesc" placeholder="Descripción autocompletada" readonly>
+          </div>
+          <div style="width:70px">
+            <label style="font-size:10px;color:var(--texto-3)">Unidad</label>
+            <input id="cajInpUmb" value="UND" readonly style="text-align:center">
+          </div>
+          <div style="width:80px">
+            <label style="font-size:10px;color:var(--texto-3)">Cantidad</label>
+            <input id="cajInpCant" type="number" min="1" value="1" style="text-align:center">
+          </div>
+          <button type="button" class="btn btn-verde" onclick="agregarItemModalTipoCaja()">➕ Agregar</button>
+        </div>
+      </div>
+
+      <div id="cajModalItemsList">${renderItemsTabla()}</div>
+    </div>
+  `;
+
+  abrirModal(
+    esNuevo ? 'Nuevo tipo de caja de herramientas' : `Editar tipo de caja ${tipo.id}`,
+    cuerpo,
+    [
+      { t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal },
+      {
+        t: 'Guardar tipo de caja',
+        cls: 'btn-verde',
+        fn: () => run(() => {
+          const idVal = ($('tcId').value || '').trim().toUpperCase();
+          const nomVal = ($('tcNom').value || '').trim();
+          const descVal = ($('tcDesc').value || '').trim();
+          const actVal = $('tcAct').value === '1';
+
+          if (!idVal) throw new Error('El código de la caja es obligatorio (ej. CH-01).');
+          if (!nomVal) throw new Error('El nombre de la caja es obligatorio.');
+          if (!MODAL_TIPO_CAJA_ITEMS.length) throw new Error('Debe agregar al menos una herramienta al contenido de la caja.');
+
+          DB.cajasTipos = DB.cajasTipos || [];
+          const dup = DB.cajasTipos.find(x => x.id === idVal && (esNuevo || x.id !== tipo.id));
+          if (dup) throw new Error(`Ya existe un tipo de caja con el código "${idVal}".`);
+
+          if (esNuevo) {
+            DB.cajasTipos.push({
+              id: idVal,
+              nombre: nomVal,
+              desc: descVal,
+              activo: actVal,
+              items: MODAL_TIPO_CAJA_ITEMS
+            });
+            bit('TIPO DE CAJA CREADO', `${idVal} - ${nomVal}`);
+          } else {
+            const actual = tipoCajaDe(id);
+            if (actual) {
+              actual.nombre = nomVal;
+              actual.desc = descVal;
+              actual.activo = actVal;
+              actual.items = MODAL_TIPO_CAJA_ITEMS;
+              bit('TIPO DE CAJA EDITADO', `${idVal} - ${nomVal}`);
+            }
+          }
+
+          guardar();
+          cerrarModal();
+          toast('Tipo de caja guardado con éxito.', 'ok');
+          refrescar();
+        })
+      }
+    ],
+    { ancho: '750px' }
+  );
+}
+
+function sugerirSiguienteIdTipoCaja() {
+  const tipos = DB.cajasTipos || [];
+  let maxNum = 0;
+  tipos.forEach(t => {
+    const m = (t.id || '').match(/CH-(\d+)/i);
+    if (m) {
+      const num = parseInt(m[1]);
+      if (num > maxNum) maxNum = num;
+    }
+  });
+  return 'CH-' + String(maxNum + 1).padStart(2, '0');
+}
+
+// Descargar plantilla Excel para tipos de caja
+function descargarPlantillaTipoCaja() {
+  const ejemplos = [
+    { Codigo: 'HE000101', Descripcion: 'Llave combinada 3/4"', Unidad: 'UND', Cantidad: 2 },
+    { Codigo: 'HE000102', Descripcion: 'Llave combinada 1/2"', Unidad: 'UND', Cantidad: 2 },
+    { Codigo: 'HE000120', Descripcion: 'Alicate universal 8"', Unidad: 'UND', Cantidad: 1 },
+    { Codigo: 'HE000140', Descripcion: 'Martillo de bola 2 lb', Unidad: 'UND', Cantidad: 1 }
+  ];
+  exportarExcel(ejemplos, 'Plantilla_Tipo_Caja_TIMACA');
+}
+
+// Carga masiva de contenido de caja desde Excel con validación de códigos de catálogo
+function modalImportarContenidoCaja(tipoId) {
+  leerArchivoTabla(filas => {
+    if (!filas || !filas.length) return toast('El archivo está vacío o no tiene el formato correcto.', 'err');
+
+    const itemsImportados = [];
+    const codigosNoEncontrados = [];
+
+    filas.forEach(f => {
+      const cod = String(f['Codigo'] || f['codigo'] || f['CÓDIGO'] || f['Código'] || '').trim().toUpperCase();
+      const cant = Math.max(1, parseInt(f['Cantidad'] || f['cantidad'] || f['Cant'] || f['CANT'] || 1) || 1);
+      const descExcel = String(f['Descripcion'] || f['descripcion'] || f['Descripción'] || '').trim();
+      const umbExcel = String(f['Unidad'] || f['unidad'] || f['UMB'] || 'UND').trim();
+
+      if (cod) {
+        const itCat = DB.catalogo.find(c => (c.cod || '').toUpperCase() === cod);
+        if (!itCat) {
+          codigosNoEncontrados.push(cod);
+        }
+        itemsImportados.push({
+          cod,
+          desc: itCat ? itCat.desc : (descExcel || 'Sin descripción'),
+          umb: itCat ? itCat.umb : umbExcel,
+          cantReq: cant
+        });
+      }
+    });
+
+    if (!itemsImportados.length) {
+      return toast('No se encontraron líneas válidas con columna "Codigo".', 'err');
+    }
+
+    let msgAviso = '';
+    if (codigosNoEncontrados.length > 0) {
+      msgAviso = `<div style="background:#FEF2F2;border:1px solid #FCA5A5;color:#991B1B;padding:8px;border-radius:6px;font-size:12px;margin-bottom:10px">
+        <b>⚠️ Advertencia:</b> Los siguientes ${codigosNoEncontrados.length} código(s) no existen en el catálogo de TIMACA:<br>
+        ${esc(codigosNoEncontrados.slice(0, 10).join(', '))}${codigosNoEncontrados.length > 10 ? '...' : ''}
+      </div>`;
+    }
+
+    // Modal de confirmación para asignar a qué tipo de caja importar
+    const tipos = DB.cajasTipos || [];
+    const selOpc = tipos.map(t => `<option value="${esc(t.id)}" ${t.id === tipoId ? 'selected' : ''}>${esc(t.id)} - ${esc(t.nombre)}</option>`).join('');
+
+    const cuerpo = `
+      ${msgAviso}
+      <p style="font-size:13px;margin:0 0 10px">Se leyeron <b>${itemsImportados.length} herramientas</b> del archivo.</p>
+      <div class="campo">
+        <label>Asignar al tipo de caja:</label>
+        <select id="tcImpSel">
+          <option value="__NUEVO__">➕ Crear un nuevo tipo de caja con este contenido</option>
+          ${selOpc}
+        </select>
+      </div>
+    `;
+
+    abrirModal('Confirmar importación de herramientas', cuerpo, [
+      { t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal },
+      {
+        t: 'Importar herramientas',
+        cls: 'btn-verde',
+        fn: () => run(() => {
+          const sel = $('tcImpSel').value;
+          if (sel === '__NUEVO__') {
+            const nextId = sugerirSiguienteIdTipoCaja();
+            DB.cajasTipos.push({
+              id: nextId,
+              nombre: 'Nuevo Tipo de Caja ' + nextId,
+              desc: 'Importado masivamente desde archivo Excel.',
+              activo: true,
+              items: itemsImportados
+            });
+            bit('CARGA MASIVA TIPO DE CAJA', nextId + ' con ' + itemsImportados.length + ' herramientas');
+          } else {
+            const dest = tipoCajaDe(sel);
+            if (dest) {
+              dest.items = itemsImportados;
+              bit('CARGA MASIVA CONTENIDO CAJA', dest.id + ' con ' + itemsImportados.length + ' herramientas');
+            }
+          }
+          guardar();
+          cerrarModal();
+          toast(`Se importaron ${itemsImportados.length} herramientas con éxito.`, 'ok');
+          refrescar();
+        })
+      }
+    ]);
+  });
+}
+
+/* ---------- SIMULADOR MULTI-CAJA (Simular varias cajas a la vez) ---------- */
+function modalSimularMultiCaja() {
+  const esMaestro = enMaestro();
+  const tipos = (DB.cajasTipos || []).filter(t => t.activo !== false);
+
+  if (!tipos.length) {
+    toast('No hay tipos de caja activos para simular.', 'err');
+    return;
+  }
+
+  // Objeto en memoria para almacenar las cantidades deseadas
+  const deseadas = {};
+  tipos.forEach(t => { deseadas[t.id] = 0; });
+  if (tipos[0]) deseadas[tipos[0].id] = 1;
+
+  const renderSimulacionResultados = () => {
+    // 1. Agrupar la demanda total por herramienta/código
+    const demanda = {}; // cod -> { cod, desc, umb, cantReq, disp, costoUnit }
+    let totCajasSimuladas = 0;
+
+    tipos.forEach(t => {
+      const n = Math.max(0, parseInt(deseadas[t.id]) || 0);
+      totCajasSimuladas += n;
+      if (n > 0) {
+        (t.items || []).forEach(it => {
+          const cod = it.cod.toUpperCase();
+          if (!demanda[cod]) {
+            const itCat = DB.catalogo.find(c => (c.cod || '').toUpperCase() === cod);
+            demanda[cod] = {
+              cod: it.cod,
+              desc: it.desc || (itCat ? itCat.desc : cod),
+              umb: it.umb || (itCat ? itCat.umb : 'UND'),
+              cantReq: 0,
+              disp: disponibleCentralPorCodigo(cod),
+              costoUnit: itCat ? (itCat.costo || 0) : 0
+            };
+          }
+          demanda[cod].cantReq += (n * it.cantReq);
+        });
+      }
+    });
+
+    const listaDemanda = Object.values(demanda).map(d => {
+      const faltante = Math.max(0, d.cantReq - d.disp);
+      const costoFaltante = faltante * d.costoUnit;
+      return {
+        ...d,
+        faltante,
+        costoFaltante,
+        rinde: d.cantReq > 0 ? (d.disp >= d.cantReq) : true
+      };
+    });
+
+    const faltantes = listaDemanda.filter(x => x.faltante > 0);
+    const totPiezasFaltantes = faltantes.reduce((a, x) => a + x.faltante, 0);
+    const totPresupuestoUSD = faltantes.reduce((a, x) => a + x.costoFaltante, 0);
+    const factible = totCajasSimuladas > 0 && faltantes.length === 0;
+
+    let resumenBanner = '';
+    if (totCajasSimuladas === 0) {
+      resumenBanner = '<div class="ayuda-txt" style="text-align:center;padding:12px">Ingrese la cantidad deseada de al menos un tipo de caja para evaluar la viabilidad.</div>';
+    } else if (factible) {
+      resumenBanner = `
+        <div style="background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;padding:12px;border-radius:6px;font-size:13px;text-align:center">
+          <b>✅ ¡FACTIBLE! El inventario disponible de Almacén Central alcanza para armar TODAS las ${totCajasSimuladas} cajas solicitadas.</b>
+        </div>
+      `;
+    } else {
+      resumenBanner = `
+        <div style="background:#FEF2F2;border:1px solid #FCA5A5;color:#991B1B;padding:12px;border-radius:6px;font-size:13px">
+          <b>⚠️ NO FACTIBLE CON STOCK ACTUAL:</b> Se detectaron faltantes combinados en <b>${faltantes.length} herramientas</b> (${totPiezasFaltantes} piezas faltantes en total).
+          ${esMaestro ? `<div style="font-size:14px;font-weight:800;margin-top:4px;color:#991B1B">Presupuesto total estimado de compra: ${usd(totPresupuestoUSD)}</div>` : ''}
+        </div>
+      `;
+    }
+
+    return `
+      <div style="margin-bottom:12px">${resumenBanner}</div>
+
+      ${totCajasSimuladas > 0 ? `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:12px;font-weight:700;color:var(--navy)">Balance consolidado de herramientas requeridas:</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-claro btn-mini" onclick="copiarBalanceSimulacionPortapapeles()">📋 Copiar balance</button>
+            <button class="btn btn-claro btn-mini" onclick="exportarSimulacionExcel()">📥 Exportar Excel</button>
+          </div>
+        </div>
+        <div style="max-height:280px;overflow-y:auto;border:1px solid var(--borde);border-radius:6px">
+          <table class="grid-t" style="margin:0">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Herramienta</th>
+                <th class="cen">Unidad</th>
+                <th class="cen">Demanda combinada</th>
+                <th class="cen">Disp. Central</th>
+                <th class="cen">Faltante neto</th>
+                ${esMaestro ? '<th class="num">Costo unit. USD</th><th class="num">Total faltante USD</th>' : ''}
+              </tr>
+            </thead>
+            <tbody>
+              ${listaDemanda.map(d => `
+                <tr style="${d.faltante > 0 ? 'background:#FFF5F5' : ''}">
+                  <td><b>${esc(d.cod)}</b></td>
+                  <td>${esc(d.desc)}</td>
+                  <td class="cen">${esc(d.umb)}</td>
+                  <td class="cen"><b>${d.cantReq}</b></td>
+                  <td class="cen">${d.disp}</td>
+                  <td class="cen" style="${d.faltante > 0 ? 'color:var(--rojo);font-weight:800' : 'color:var(--verde)'}">${d.faltante > 0 ? ('-' + d.faltante) : '0'}</td>
+                  ${esMaestro ? `<td class="num">${usd(d.costoUnit)}</td><td class="num">${d.faltante > 0 ? usd(d.costoFaltante) : '$0.00'}</td>` : ''}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : ''}
+    `;
+  };
+
+  window.actualizarSimulacionInput = (tipoId, val) => {
+    deseadas[tipoId] = Math.max(0, parseInt(val) || 0);
+    $('simulResultadosCont').innerHTML = renderSimulacionResultados();
+  };
+
+  window.copiarBalanceSimulacionPortapapeles = () => {
+    let txt = 'SIMULACIÓN MULTI-CAJA · TIMACA ALMACÉN CENTRAL\n\nCajas solicitadas:\n';
+    tipos.forEach(t => {
+      if (deseadas[t.id] > 0) txt += `- ${t.id}: ${deseadas[t.id]} caja(s) (${t.nombre})\n`;
+    });
+    txt += '\nBalance de materiales:\n';
+    const demanda = {};
+    tipos.forEach(t => {
+      const n = deseadas[t.id] || 0;
+      if (n > 0) (t.items || []).forEach(it => {
+        const cod = it.cod.toUpperCase();
+        demanda[cod] = demanda[cod] || { cod: it.cod, desc: it.desc, cantReq: 0, disp: disponibleCentralPorCodigo(cod) };
+        demanda[cod].cantReq += (n * it.cantReq);
+      });
+    });
+    Object.values(demanda).forEach(d => {
+      const falt = Math.max(0, d.cantReq - d.disp);
+      txt += `[${d.cod}] ${d.desc}: Req ${d.cantReq}, Disp Central ${d.disp} -> ${falt > 0 ? 'FALTANTE: ' + falt : 'OK'}\n`;
+    });
+    navigator.clipboard.writeText(txt).then(() => toast('Balance copiado al portapapeles.', 'ok'));
+  };
+
+  window.exportarSimulacionExcel = () => {
+    const rows = [];
+    const demanda = {};
+    tipos.forEach(t => {
+      const n = deseadas[t.id] || 0;
+      if (n > 0) (t.items || []).forEach(it => {
+        const cod = it.cod.toUpperCase();
+        demanda[cod] = demanda[cod] || { cod: it.cod, desc: it.desc, umb: it.umb, cantReq: 0, disp: disponibleCentralPorCodigo(cod) };
+        demanda[cod].cantReq += (n * it.cantReq);
+      });
+    });
+    Object.values(demanda).forEach(d => {
+      const falt = Math.max(0, d.cantReq - d.disp);
+      rows.push({
+        'Código': d.cod,
+        'Descripción': d.desc,
+        'Unidad': d.umb,
+        'Demanda Combinada': d.cantReq,
+        'Disponible Central': d.disp,
+        'Faltante': falt
+      });
+    });
+    exportarExcel(rows, 'Simulacion_Multi_Caja_TIMACA');
+  };
+
+  const cuerpo = `
+    <p style="font-size:12px;color:var(--texto-2);margin:0 0 12px">
+      Indique cuántas cajas desea armar de cada tipo. El sistema evaluará si el stock disponible en Almacén Central cubre la demanda compartida o dónde se generan cuellos de botella:
+    </p>
+
+    <div style="background:var(--fondo-2);padding:12px;border-radius:6px;margin-bottom:14px;max-height:180px;overflow-y:auto">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:10px">
+        ${tipos.map(t => {
+          const pl = calcularPlanTipoCaja(t);
+          return `
+            <div style="background:#fff;border:1px solid var(--borde);padding:8px 12px;border-radius:6px;display:flex;justify-content:space-between;align-items:center">
+              <div style="flex:1;margin-right:8px">
+                <span class="chip-mod m-HERRAMIENTA">${t.id}</span>
+                <div style="font-size:12px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.nombre)}</div>
+                <div style="font-size:10px;color:var(--texto-3)">Factibles solas: ${pl.cajasPosibles}</div>
+              </div>
+              <input type="number" min="0" max="99" value="${deseadas[t.id] || 0}" style="width:65px;font-size:16px;font-weight:900;text-align:center"
+                oninput="actualizarSimulacionInput('${t.id}', this.value)">
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div id="simulResultadosCont">${renderSimulacionResultados()}</div>
+  `;
+
+  abrirModal('🧮 Simulador multi-caja de herramientas', cuerpo, [
+    { t: 'Cerrar', cls: 'btn-claro', fn: cerrarModal }
+  ], { ancho: '820px' });
+}
+
+/* ---------- VISTA: PLANIFICACIÓN DE CAJAS EN MÓDULO MAESTRO ---------- */
+VISTAS.mCajas = p => {
+  if (!enMaestro()) {
+    $('area').innerHTML = cab('Planificación de cajas') + avisoSinPermiso('Esta opción pertenece al Maestro.');
+    return;
+  }
+  // En el maestro se despliega la misma planificación pero con costos y valorizaciones confidenciales habilitados
+  if (p && p.id) {
+    VISTAS.cajasTipoDetalle(p);
+    return;
+  }
+  VISTAS.cajasPlan(p);
+};
+
+
 function ir(id, param) {
   if (!S.u) return;
   procesarVencimientos();
-  const esMaestro = ['mRes', 'mKpi', 'mComp', 'mExp', 'mTraz', 'mAlert', 'mCost', 'mAcc'].includes(id);
+  const esMaestro = ['mRes', 'mKpi', 'mComp', 'mExp', 'mTraz', 'mAlert', 'mCajas', 'mCost', 'mAcc'].includes(id);
   if (esMaestro && !enMaestro()) { toast('Esta opción pertenece al Maestro.', 'err'); return; }
   if (!esMaestro && enMaestro() && id !== 'doc') { toast('Esta opción pertenece a los almacenes.', 'err'); return; }
   if (['aUsr', 'aPers', 'aProy', 'aCat', 'aIni', 'aConf', 'aBit', 'aResp'].includes(id) && !S.u.admin) { toast('Solo el administrador puede ingresar a esta opción.', 'err'); return; }
   S.vista = id; S.param = param || null;
+  const defMenu = menuDef();
+  const grupoDestino = defMenu.find(([g, items]) => items.some(it => it && it[0] === id));
+  if (grupoDestino) {
+    MENU_GRUPOS_ABIERTOS[grupoDestino[0]] = true;
+  }
   pintarMenu();
   $('menu').classList.remove('abierto');
   const fn = VISTAS[id];
@@ -2389,6 +3652,34 @@ VISTAS.doc = p => {
     if (d.sup) c += R('Supervisor autoriza', d.sup);
   }
   else if (t === 'ENT') c += R('Registrado por', d.realizadoPor.nombre) + (d.obs ? R('Observación', d.obs) : '');
+  else if (t === 'DEVCH') {
+    c += R('Caja de herramientas', `${d.cajaId} · ${d.cajaNombre || ''}`)
+      + R('Responsable que devuelve', d.resp ? d.resp.nombre : '—')
+      + R('Cédula / Cargo', d.resp ? `${d.resp.cedula} · ${d.resp.cargo}` : '—')
+      + R('Cuadrilla de procedencia', d.cuadrilla || '—')
+      + R('Frente de trabajo', d.frente || '—')
+      + R('Vale entrega original', d.valeEntrega || '—')
+      + R('Recibido por', d.recibidoPor ? d.recibidoPor.nombre : '—')
+      + R('Resultado de devolución', d.novedades ? 'INCOMPLETA (con novedades)' : 'ARMADA EN ALMACÉN (conforme)');
+  }
+  else if (t === 'PRHCH') {
+    c += R('Caja de herramientas', `${d.cajaId} · ${d.cajaNombre || ''}`)
+      + R('Responsable en custodia', d.resp ? d.resp.nombre : '—')
+      + R('Cédula / Cargo', d.resp ? `${d.resp.cedula} · ${d.resp.cargo}` : '—')
+      + R('Cuadrilla de destino', d.cuadrilla || '—')
+      + R('Frente de destino', d.frente || '—')
+      + R('Fecha de entrega', fF(d.fechaEntrega || d.fecha))
+      + R('Fecha dev. prevista', fF(d.fechaDevPrev))
+      + R('Entregado por', d.entregadoPor ? d.entregadoPor.nombre : (d.realizadoPor ? d.realizadoPor.nombre : '—'));
+  }
+  else if (t === 'REACH') {
+    c += R('Caja de herramientas', `${d.cajaId} · ${d.cajaNombre || ''}`)
+      + R('Responsable anterior', d.respAnt ? `${d.respAnt.nombre} (${d.respAnt.cedula})` : '—')
+      + R('Nuevo responsable', d.resp ? `${d.resp.nombre} (${d.resp.cedula})` : '—')
+      + R('Nueva cuadrilla / Frente', `${d.cuadrilla || '—'} · ${d.frente || '—'}`)
+      + R('Nueva fecha dev. prevista', fF(d.fechaDevPrev))
+      + R('Reasignado por', d.realizadoPor ? d.realizadoPor.nombre : '—');
+  }
   else {
     c += R(esSol ? 'Generado por' : 'Registrado por', esSol ? d.generadoPor.nombre : d.realizadoPor.nombre);
     if (d.resp) c += R('Responsable custodio', d.resp.nombre) + R('Cédula', d.resp.cedula) + R('Cargo', d.resp.cargo);
@@ -2403,7 +3694,21 @@ VISTAS.doc = p => {
   if (d.aprobGer) c += R('N° aprobación Gerencia (Tipo A)', d.aprobGer);
   const extraTxt = (d.extra && (d.extra.detalle || d.extra.motivo)) ? campo(t === 'PLZ' ? 'Motivo' : 'Descripción', `<textarea rows="2" readonly>${esc(d.extra.detalle || d.extra.motivo)}</textarea>`) : '';
   const conSaldo = !esSol && (t === 'PRH' || t === 'ASI');
-  const filas = d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
+  const esDevch = t === 'DEVCH';
+  const filas = esDevch
+    ? d.lineas.map(l => `<tr>
+        <td><b>${esc(l.cod)}</b></td>
+        <td>${esc(l.desc)}</td>
+        <td>${esc(l.marca)} / ${esc(l.modelo)}</td>
+        <td>${esc(l.serial || '—')}</td>
+        <td>${esc(l.cat)}</td>
+        <td class="cen"><b>${l.cantEntregada ?? l.cant}</b></td>
+        <td class="cen"><b>${l.cantRecibida ?? l.cant}</b></td>
+        <td class="cen" style="${(l.cantDiferencia > 0) ? 'color:var(--rojo);font-weight:800' : ''}">${l.cantDiferencia > 0 ? ('-' + l.cantDiferencia) : '0'}</td>
+        <td class="cen"><span class="est est-${l.condicion === 'ÓPTIMO' ? 'verde' : 'rojo'}">${esc(l.condicion || l.cond)}</span></td>
+        <td class="cen">${l.danRef ? `<span class="est est-rojo">${esc(l.danRef)}</span> ` : ''}${l.extRef ? `<span class="est est-naranja">${esc(l.extRef)}</span>` : ''}${(!l.danRef && !l.extRef) ? '—' : ''}</td>
+      </tr>`).join('')
+    : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
   const und = d.lineas.reduce((a, l) => a + l.cant, 0);
   const acciones = accionesDoc(d, esSol, p);
   const nota = esSol ? (d.estatus === 'FINALIZADO' ? motivoNoAprueba(d) : d.estatus === 'NO FINALIZADO' ? 'La solicitud aún no está finalizada. Ábrala desde "Solicitudes del almacén" con "Editar solicitud" y presione "Finalizar solicitud".' : d.estatus === 'APROBADO' ? (puedeImprimir() ? 'Solicitud aprobada: ya puede imprimir el vale ' + d.vale + '.' : 'Solicitud aprobada. El personal del almacén imprimirá el vale ' + d.vale + '.') : '') : '';
@@ -2411,7 +3716,7 @@ VISTAS.doc = p => {
     + `<div class="franja-est ${color}" style="${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'flex-wrap:wrap' : ''}"><span>Estatus: ${estB(est)}</span><span>${franjaDer}</span>${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? `<div class="crono-barra"><i data-ini="${d.fecha}" data-vence="${d.vence}"></i></div><span style="font-size:12px;color:var(--texto-2)">${d.destino === S.ctx ? `Si no la acepta o rechaza antes de que el reloj llegue a cero, la transferencia vencerá y el material regresará a ${esc(almNombre(d.origen))}.` : `${esc(almNombre(d.destino))} debe aceptarla antes de que el reloj llegue a cero; si no, el material regresará automáticamente a ${esc(almNombre(d.origen))}.`}</span>` : ''}</div>${nota ? `<div class="franja-est ${d.estatus === 'APROBADO' ? 'verde' : 'naranja'}"><span>ℹ️ ${esc(nota)}</span></div>` : ''}
     <div class="form-reg"><div class="f3">${c}</div>${extraTxt}${d.obs ? campo('Observación', `<input value="${esc(d.obs)}" readonly>`) : ''}
       <div class="carga"><div class="carga-h">CARGA DE MATERIAL</div>
-        <div style="overflow:auto"><table class="grid"><thead><tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th>${conSaldo ? '<th class="cen">Devuelto</th><th class="cen">Saldo</th>' : ''}</tr></thead><tbody>${filas}</tbody></table></div>
+        <div style="overflow:auto"><table class="grid"><thead>${esDevch ? '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th class="cen">Entregado</th><th class="cen">Recibido</th><th class="cen">Diferencia</th><th class="cen">Condición</th><th class="cen">Reportes Incidentes</th></tr>' : '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th>' + (conSaldo ? '<th class="cen">Devuelto</th><th class="cen">Saldo</th>' : '') + '</tr>'}</thead><tbody>${filas}</tbody></table></div>
       </div>
       <div class="pie-form"><div class="totales">Total de líneas: <b>${d.lineas.length}</b> · Total de unidades: <b>${und}</b></div><div class="der">${acciones}</div></div>
     </div>
@@ -2443,6 +3748,10 @@ function accionesDoc(d, esSol, p) {
   if ((d.tipo === 'PRH' || d.tipo === 'ASI') && saldoVale(d) > 0 && d.origen === S.ctx) {
     h += `<button class="btn btn-claro" onclick="ir('dev',{vale:'${d.num}'})">Registrar devolución</button>`;
     if (d.tipo === 'PRH') h += `<button class="btn btn-claro" onclick="ir('plz',{vale:'${d.num}'})">Extender plazo</button>`;
+  }
+  if (d.tipo === 'DEVCH' || d.tipo === 'PRHCH' || d.tipo === 'REACH') {
+    if (d.cajaId) h += `<button class="btn btn-claro" onclick="ir('cajaFicha',{id:'${d.cajaId}'})">🧰 Ver Ficha de Caja</button>`;
+    if (d.tipo === 'DEVCH' && d.novedades) h += `<button class="btn btn-naranja" onclick="abrirModalReponer('${d.cajaId}')">🔧 Reponer caja</button>`;
   }
   return h + (puedeImprimir() ? `<button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>` : '');
 }
@@ -2844,6 +4153,7 @@ VISTAS.dash = p => {
   const envMal = DB.vales.filter(v => v.tipo === 'TRF' && v.origen === c && (v.estatus === 'RECHAZADA' || v.estatus === 'VENCIDA') && v.procesadoEn >= hace7);
   const vacios = sumaExi([c], 'CILINDRO').vacio;
   const aviso = (n, txt, dest, cls) => `<div class="aviso ${cls || ''}" onclick="ir('${dest[0]}',${dest[1] ? JSON.stringify(dest[1]).replace(/"/g, "'") : 'null'})"><div class="a-num">${n}</div><div class="a-txt">${txt}</div></div>`;
+  
   const avisos = [
     aviso(pendAprob, 'Solicitudes pendientes de aprobación', ['aprobar'], pendAprob ? '' : 'verde'),
     aviso(venc.length, venc.length ? `Préstamos vencidos · máximo ${venc[0].dias} día(s) de atraso` : 'Préstamos vencidos', ['cVenc'], venc.length ? 'rojo' : 'verde'),
@@ -2895,7 +4205,8 @@ VISTAS.cCatAlm = p => {
   const hayCil = rows.some(r => r.it.mod === 'CILINDRO');
   const cols = [{ t: 'Código', v: r => r.it.cod, f: r => `<b>${esc(r.it.cod)}</b>` }, { t: 'Descripción', v: r => r.it.desc, td: 'wrap' }, { t: 'Marca / Modelo', v: r => `${r.it.marca} / ${r.it.modelo}`, td: 'wrap' }, { t: 'Serial', v: r => r.it.serial || '' },
     { t: 'Categoría', v: r => r.it.cat, td: 'wrap' }, { t: 'Unidad', v: r => r.it.umb, cls: 'cen' }, { t: 'Estado', v: r => r.estado, f: r => estB(r.estado) },
-    { t: 'Disponibles', k: 'disp', cls: 'cen', td: 'col-disp', sum: true }].concat(hayCil ? [{ t: 'Vacíos', k: 'vacio', cls: 'cen', td: 'col-vac', sum: true }] : []).concat([
+    { t: 'Disponibles', k: 'disp', cls: 'cen', td: 'col-disp', sum: true },
+    ].concat(hayCil ? [{ t: 'Vacíos', k: 'vacio', cls: 'cen', td: 'col-vac', sum: true }] : []).concat([
     { t: 'Prestados', k: 'prest', cls: 'cen', td: 'col-prest', sum: true }, { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig', sum: true }, { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan', sum: true },
     { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall', sum: true }, { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext', sum: true }, { t: 'Total', k: 'total', cls: 'cen', td: 'col-total', sum: true }]);
   const rec = `ir('cCatAlm',{mod:$('caMod').value,est:$('caEst').value,todos:$('caTod').checked})`;
@@ -3005,7 +4316,7 @@ VISTAS.cVales = p => {
     { t: 'Responsable / Realizado por', v: r => r.resp ? r.resp.nombre : r.realizadoPor.nombre }, { t: 'Referencia', v: r => r.ref || r.solicitud || '' }, { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
     { t: 'Impresiones', v: r => r.impresiones || 0, cls: 'num' }, { t: 'Estado', v: r => estadoVale(r), f: r => estB(estadoVale(r)) }];
   $('area').innerHTML = cab('Vales emitidos', 'Todos los vales del almacén, disponibles para visualizar e imprimir.', botonesExport('gVal', 'Vales emitidos ' + almNombre(S.ctx)))
-    + `<div class="fila-filtros">${campo('Tipo de vale', `<select onchange="ir('cVales',{tipo:this.value})"><option value="">Todos</option>${opciones(['PRH', 'ASI', 'TRF', 'ENT', 'DEV', 'DAN', 'EXT', 'PLZ'].map(k => [k, k + ' - ' + TIPOS[k].n]), tipo)}</select>`)}${buscador('gVal')}</div>`
+    + `<div class="fila-filtros">${campo('Tipo de vale', `<select onchange="ir('cVales',{tipo:this.value})"><option value="">Todos</option>${opciones(['PRH', 'ASI', 'TRF', 'ENT', 'DEV', 'DAN', 'EXT', 'PLZ', ].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}${buscador('gVal')}</div>`
     + grid('gVal', cols, rows, { pag: 15, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
     + `<div class="barra-btn"><button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,back:'cVales'})">Visualizar</button><button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num)">Imprimir vale</button></div>`;
 };
@@ -3015,7 +4326,7 @@ const colsKardex = maestro => [{ t: 'Fecha y hora', v: r => fFH(r.fecha), s: r =
 VISTAS.cKardex = p => {
   const q = ((p && p.q) || '').trim().toUpperCase();
   let rows = DB.movs.filter(m => m.origen === S.ctx || m.destino === S.ctx);
-  if (q) rows = rows.filter(m => (m.cod || '').toUpperCase() === q || (m.serial || '').toUpperCase() === q || (m.doc || '').toUpperCase() === q);
+  if (q) rows = rows.filter(m => (m.cod || '').toUpperCase() === q || (m.serial || '').toUpperCase() === q || (m.doc || '').toUpperCase() === q );
   rows = rows.slice().sort((a, b) => b.fecha.localeCompare(a.fecha) || b.n - a.n);
   $('area').innerHTML = cab('Kardex por código', 'Historial permanente de movimientos del almacén. Ningún registro se borra.', botonesExport('gKdx', 'Kardex ' + (q || almNombre(S.ctx))))
     + `<div class="fila-filtros">${campo('Código, serial o documento', `<input id="kq" value="${esc(q)}" placeholder="Ej. HE000120 u OX-0002" onkeydown="if(event.key==='Enter')ir('cKardex',{q:this.value})">`)}<button class="btn btn-navy" onclick="ir('cKardex',{q:$('kq').value})">Buscar</button>${q ? `<button class="btn btn-claro" onclick="ir('cKardex')">Ver todos</button>` : ''}${buscador('gKdx', 'Filtrar resultados…')}</div>`
@@ -3234,12 +4545,15 @@ VISTAS.mTraz = p => {
     const items = DB.catalogo.filter(it => it.cod.toUpperCase() === Q || (it.serial || '').toUpperCase() === Q);
     const persona = DB.personal.find(x => x.cedula.toUpperCase() === Q || x.cedula.replace(/\D/g, '') === Q.replace(/\D/g, '') && Q.replace(/\D/g, '').length > 5);
     const doc = Q.startsWith('SOL-') ? solDe(Q) : valeDe(Q);
+
     if (items.length) {
       const ids = new Set(items.map(i => i.id));
       const movs = DB.movs.filter(m => ids.has(m.id)).sort((a, b) => a.fecha.localeCompare(b.fecha) || a.n - b.n);
       const ubic = items.map(it => DB.almacenes.map(a => { const e = DB.exi[a.c] && DB.exi[a.c][it.id]; if (!e) return ''; const parts = [['disp', 'disponible'], ['vacio', 'vacío'], ['prest', 'en préstamo'], ['asig', 'asignado'], ['dan', 'dañado'], ['rep', 'en taller'], ['ext', 'extraviado'], ['pend', 'pendiente de recepción']].filter(([k]) => e[k] > 0).map(([k, t]) => `${e[k]} ${t}`); return parts.length ? `<b>${esc(a.n)}</b>: ${parts.join(', ')}` : ''; }).filter(Boolean).join(' · ')).join('<br>');
       res = `<div class="panel"><div class="panel-h">${esc(items[0].cod)} · ${esc(items[0].desc)}${items.length === 1 && items[0].serial ? ' · Serial ' + esc(items[0].serial) : ''}<span>Valor unitario ${usd(items[0].costo)}</span></div>
-        <div class="panel-b"><p class="ayuda-txt"><b>Ubicación y estado actual:</b><br>${ubic || 'Sin existencia'}</p></div></div>
+        <div class="panel-b">
+          <p class="ayuda-txt"><b>Ubicación y estado actual:</b><br>${ubic || 'Sin existencia'}</p>
+        </div></div>
         <div class="panel"><div class="panel-h">Línea de tiempo (${movs.length} movimientos)</div><div class="panel-b"><div class="timeline">${movs.map(m => `<div class="tl-ev ${m.tipo === 'DAN' || m.tipo === 'EXT' ? 'rojo' : m.tipo === 'DEV' ? 'verde' : ''}"><div class="tl-t">${esc(m.doc)} · ${esc(TIPOS[m.tipo] ? TIPOS[m.tipo].n : m.tipo)} · ${m.cant} ${esc(item(m.id).umb)}${items.length > 1 ? ' · ' + esc(m.serial || '') : ''}</div><div class="tl-d">${fFH(m.fecha)} · ${esc(almNombre(m.origen))}${m.destino !== m.origen ? ' → ' + esc(almNombre(m.destino)) : ''} · ${esc(m.estAnt || '—')} → ${esc(m.estNue)} · Responsable: ${esc(m.resp || '')} · Registró: ${esc(m.usr)} · ${usd(valorMov(m))}</div></div>`).join('')}</div></div></div>`;
     } else if (persona) {
       const vs = DB.vales.filter(v => v.resp && v.resp.cedula === persona.cedula);
@@ -3262,14 +4576,15 @@ VISTAS.mTraz = p => {
       </div></div>`;
     } else res = `<div class="franja-est gris"><span>No se encontró ningún código, serial, cédula o documento que coincida con "${esc(q)}".</span></div>`;
   }
-  $('area').innerHTML = cab('Trazabilidad', 'Busque por código, serial, cédula o número de documento (SOL-, PRH-, ASI-, TRF-, DEV-, DAN-, EXT-, PLZ-).')
-    + `<div class="fila-filtros">${campo('Buscar', `<input id="tzq" style="min-width:320px" value="${esc(q)}" placeholder="Ej. OX-0002, HE000120, V-15.432.111 o TRF-0000001" onkeydown="if(event.key==='Enter')ir('mTraz',{q:this.value})">`)}<button class="btn btn-navy" onclick="ir('mTraz',{q:$('tzq').value})">Buscar</button></div>
-    <p class="ayuda-txt" style="margin-bottom:12px">Ejemplos: <a href="#" onclick="ir('mTraz',{q:'OX-0002'});return false">OX-0002</a> (cadena completa de un cilindro) · <a href="#" onclick="ir('mTraz',{q:'V-15.432.111'});return false">V-15.432.111</a> (trabajador) · <a href="#" onclick="ir('mTraz',{q:'HE000120'});return false">HE000120</a> (alicates)</p>` + res;
+  $('area').innerHTML = cab('Trazabilidad', 'Busque por código, serial, cédula o documento (SOL-, TRF-, PRH-, ASI-).')
+    + `<div class="fila-filtros">${campo('Buscar', `<input id="tzq" style="min-width:320px" value="${esc(q)}" placeholder="Ej. HE000101, V-25.859.699 o TRF-0000001" onkeydown="if(event.key==='Enter')ir('mTraz',{q:this.value})">`)}<button class="btn btn-navy" onclick="ir('mTraz',{q:$('tzq').value})">Buscar</button></div>
+    <p class="ayuda-txt" style="margin-bottom:12px">Ejemplos: <a href="#" onclick="ir('mTraz',{q:'HE000101'});return false">HE000101</a> (herramienta) · <a href="#" onclick="ir('mTraz',{q:'V-25.859.699'});return false">V-25.859.699</a> (responsable)</p>` + res;
 };
 
 /* ---------- Alertas ---------- */
 function listaAlertas() {
   const a = [];
+  
   prestamosVencidos(DB.almacenes.map(x => x.c)).forEach(({ v, dias }) => a.push({ p: dias > 7 ? 1 : 2, tipo: 'Préstamo vencido', alm: v.origen, det: `${v.num} · ${v.resp.nombre} · ${dias} día(s) de atraso`, doc: v.num, valor: saldoVale(v) && v.lineas.reduce((x, l) => x + saldoLinea(l) * item(l.id).costo, 0) }));
   DB.solicitudes.filter(s => s.estatus === 'FINALIZADO' && horasEntre(s.finalizadaEn, nowISO()) > 48).forEach(s => a.push({ p: 2, tipo: 'Solicitud sin aprobar (> 48 h)', alm: s.origen, det: `${s.num} · finalizada ${fFH(s.finalizadaEn)}`, doc: s.num, valor: s.lineas.reduce((x, l) => x + l.cant * item(l.id).costo, 0) }));
   DB.vales.filter(v => v.tipo === 'TRF' && v.estatus === 'PENDIENTE DE RECEPCIÓN' && (new Date(v.vence) - ahora()) < 2 * 3600000).forEach(v => a.push({ p: 1, tipo: 'Transferencia próxima a vencer', alm: v.destino, det: `${v.num} · ${almNombre(v.origen)} → ${almNombre(v.destino)} · ${restante(v.vence)}`, doc: v.num, valor: v.lineas.reduce((x, l) => x + l.cant * item(l.id).costo, 0) }));
@@ -3285,7 +4600,7 @@ VISTAS.mAlert = () => {
   const rows = listaAlertas();
   $('area').innerHTML = cab('Alertas', 'Situaciones que requieren atención, ordenadas por prioridad.', botonesExport('gAl', 'Alertas'))
     + grid('gAl', [{ t: 'Prioridad', v: r => ['', 'Alta', 'Media', 'Baja'][r.p], s: r => r.p, f: r => `<span class="est est-${['', 'rojo', 'naranja', 'gris'][r.p]}">${['', 'Alta', 'Media', 'Baja'][r.p]}</span>` }, { t: 'Alerta', k: 'tipo' }, { t: 'Almacén', v: r => r.alm ? almNombre(r.alm) : 'Catálogo' }, { t: 'Detalle', k: 'det' }, { t: 'Valor USD', v: r => +(r.valor || 0).toFixed(2), f: r => r.valor ? usd(r.valor) : '', cls: 'num' }],
-      rows, { pag: 25, onSel: r => r.doc && ir('doc', { num: r.doc, back: 'mAlert' }), vacio: 'No hay alertas.' });
+      rows, { pag: 25, onSel: r => { if (r.cajaId) ir('mCajas', { id: r.cajaId }); else if (r.doc) ir('doc', { num: r.doc, back: 'mAlert' }); }, vacio: 'No hay alertas.' });
 };
 
 /* ---------- Costos del catálogo ---------- */
@@ -3867,22 +5182,26 @@ function restaurarRespaldo() {
 function imprimirVale(n) {
   if (!n) return toast('El vale aún no tiene número asignado.', 'err');
   const v = valeDe(n); if (!v) return toast('Vale no encontrado.', 'err');
-  // El vale lo imprime el personal del almacén (el supervisor solo aprueba)
+  const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT';
+
   if (!puedeImprimir()) return toast('La impresión del vale corresponde al personal del almacén. El supervisor solo aprueba.', 'err');
+
   const reimpresion = (v.impresiones || 0) > 0;
   v.impresiones = (v.impresiones || 0) + 1;
   bit(reimpresion ? 'REIMPRESIÓN DE VALE' : 'IMPRESIÓN DE VALE', n); guardar();
-  const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT';
+
   const izq = esEnt
     ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)}</div><div><b>Cédula:</b> ${esc(v.realizadoPor.cedula)}</div><div><b>Cargo:</b> ${esc(v.realizadoPor.cargo)}</div>`
     : esTrf
     ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)} (${esc(v.realizadoPor.cargo)})</div><div><b>Despachado por:</b> ${esc(v.despacha || v.realizadoPor.nombre)}</div>${v.resp ? `<div><b>Responsable / Custodio:</b> ${esc(v.resp.nombre)} (C.I. ${esc(v.resp.cedula)})</div><div><b>Cargo:</b> ${esc(v.resp.cargo)}</div>` : ''}`
     : `<div><b>Responsable:</b> ${esc(v.resp ? v.resp.nombre : '')}</div><div><b>Cédula:</b> ${esc(v.resp ? v.resp.cedula : '')}</div><div><b>Cargo / Supervisor:</b> ${esc(v.resp ? v.resp.cargo : '')} / ${esc(v.sup)}</div><div><b>Cuenta Auxiliar:</b> ${esc(v.cuenta)}</div>`;
+
   const der = esEnt
     ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())}</div>`
     : esTrf
-    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor autoriza:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}`
+    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor autoriza:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}</div>`
     : `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div><div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div><div><b>Tipo A / Aprobación:</b> ${v.lineas.some(l => item(l.id).tipoA) ? 'SI · N° ' + esc(v.aprobGer || '—') : 'NO'}</div>${v.ref ? `<div><b>Vale de referencia:</b> ${esc(v.ref)}</div>` : ''}`;
+
   let extra = '';
   if (t === 'PRH') extra = `<b>Fecha requerida:</b> ${fF(v.fechaReq)} &nbsp;·&nbsp; <b>Fecha de devolución:</b> ${fF(v.fechaDev)}${v.extensiones ? ` &nbsp;·&nbsp; <b>Extensiones:</b> ${v.extensiones}` : ''}`;
   if (t === 'ASI') extra = `<b>Fecha de asignación:</b> ${fF(v.fechaAsig)} &nbsp;·&nbsp; <b>Tipo de asignación:</b> tiempo indefinido${v.lineas.some(l => l.consumo) ? ' &nbsp;·&nbsp; El EPP se entrega como dotación' : ''}`;
@@ -3891,10 +5210,39 @@ function imprimirVale(n) {
   if (t === 'EXT') extra = `<b>Descripción de la incidencia:</b> ${esc(v.extra.detalle)}`;
   if (t === 'PLZ') extra = `<b>Vale de referencia:</b> ${esc(v.ref)} &nbsp;·&nbsp; <b>Fecha anterior:</b> ${fF(v.extra.anterior)} &nbsp;·&nbsp; <b>Nueva fecha:</b> ${fF(v.extra.nueva)}${v.extra.motivo ? '<br><b>Motivo:</b> ' + esc(v.extra.motivo) : ''}`;
   if (v.obs) extra += (extra ? '<br>' : '') + `<b>Observación:</b> ${esc(v.obs)}`;
+
   const firmas = esEnt ? [['Entrega', 'Firma', ''], ['Recibe (almacenista)', 'Firma y Sello', v.realizadoPor.nombre], ['Supervisor', 'Firma y Sello', '']]
     : esTrf
     ? [['Despacha (' + almNombre(v.origen).replace('Almacén ', '') + ')', 'Firma y Sello', v.despacha || v.realizadoPor.nombre], ['Recibe (' + almNombre(v.destino).replace('Almacén ', '') + ')', 'Firma y Sello', v.estatus === 'RECIBIDA' ? v.procesadoPor.nombre : ''], ['Supervisor Autoriza', 'Firma y Sello', v.sup || '']]
     : [['Responsable / Recibe', 'Firma y Cédula', ''], ['Almacenista / Despacha', 'Firma y Sello', ''], ['Supervisor Autoriza', 'Firma y Sello', v.aprobadoPor ? v.aprobadoPor.nombre : '']];
+
+  const totPiezasNormal = (v.lineas || []).reduce((a, l) => a + (l.cant || 1), 0);
+
+  const tablaHtml = `<table class="vale-items">
+        <thead>
+          <tr>
+            <th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Condición</th><th class="c">Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${v.lineas.map(l => `<tr>
+            <td>${esc(l.cod)}</td>
+            <td><b>${esc(l.desc)}</b></td>
+            <td>${esc(l.marca || '—')} / ${esc(l.modelo || '—')}</td>
+            <td>${esc(l.serial || '—')}</td>
+            <td>${esc(l.cat || '—')}</td>
+            <td>${esc(l.cond || 'ÓPTIMO')}</td>
+            <td class="c"><b>${l.cant || 1}</b></td>
+          </tr>`).join('')}
+        </tbody>
+        <tfoot>
+          <tr style="font-weight:800;background:#F8FAFC">
+            <td colspan="6" style="text-align:right">Total de piezas:</td>
+            <td class="c"><b>${totPiezasNormal}</b></td>
+          </tr>
+        </tfoot>
+      </table>`;
+
   $('hojaImpresion').innerHTML = `
     <div class="vale-enc">
       <img src="${LOGO}" alt="TIMACA">
@@ -3902,8 +5250,7 @@ function imprimirVale(n) {
       <div class="vale-tit"><div class="t">${esc(TIPOS[t].titulo)}</div>Fecha: ${fF(v.fecha)}<br><span class="n">N° Vale: ${esc(v.num)}</span></div>
     </div>
     <div class="vale-datos"><div>${izq}</div><div>${der}</div></div>
-    <table class="vale-items"><thead><tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Condición</th><th class="c">Cant.</th></tr></thead>
-      <tbody>${v.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td><b>${esc(l.desc)}</b></td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.condRet || l.cond)}</td><td class="c"><b>${l.cant}</b></td></tr>`).join('')}</tbody></table>
+    ${tablaHtml}
     ${extra ? `<div class="vale-extra">${extra}</div>` : ''}
     <div class="vale-firmas">${firmas.map(f => `<div><b>${esc(f[0])}</b><span>${esc(f[1])}</span>${f[2] ? `<span class="nom">${esc(f[2])}</span>` : ''}</div>`).join('')}</div>`;
   abrirImpresion();
