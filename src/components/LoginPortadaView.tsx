@@ -525,10 +525,15 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
                 </button>
               </form>
 
-              {/* Nota de Seguridad */}
-              <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-center gap-2 text-xs text-slate-500">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Acceso protegido con permisos por rol y departamento</span>
+              {/* Nota de Seguridad & Créditos */}
+              <div className="mt-6 pt-4 border-t border-slate-200 flex flex-col items-center justify-center gap-1.5 text-xs text-slate-500">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Acceso protegido con permisos por rol y departamento</span>
+                </div>
+                <div className="text-[11px] font-medium text-slate-600 pt-1">
+                  Sistema creado por: <strong className="text-slate-900 font-bold">Alejandra Tesara</strong> · <strong className="text-slate-900 font-bold">Daniela Riveros</strong> · <strong className="text-slate-900 font-bold">Jessica Navarro</strong>
+                </div>
               </div>
             </div>
           </div>
@@ -539,22 +544,24 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
       {/* ========================================================================= */}
       {/* 3. PIE DE PÁGINA CORPORATIVO                                              */}
       {/* ========================================================================= */}
-      <footer className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 border-t border-slate-800/60 text-slate-400 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+      <footer className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 border-t border-slate-800/60 text-slate-400 text-xs flex flex-col md:flex-row items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <span>Taller Industrial Metalúrgico Antonio, C.A.</span>
           <span className="text-slate-600">•</span>
           <span className="font-mono text-slate-300 font-semibold">RIF: J-09500315-9</span>
-        </div>
-
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-300 text-xs shadow-xs font-medium">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>SIGMA TIMACA · <strong className="text-white font-bold">Gestión de Materiales y Activos</strong></span>
-        </div>
-
-        <div className="flex items-center gap-3 text-xs text-slate-400">
-          <span>Ciudad Guayana, Estado Bolívar</span>
           <span className="text-slate-600">•</span>
-          <span className="font-mono font-bold text-sky-400">Versión 6.0 SIGMA 2026</span>
+          <span>Ciudad Guayana, Estado Bolívar</span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-300 text-xs shadow-xs font-medium">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>SIGMA TIMACA · <strong className="text-white font-bold">Gestión de Materiales y Activos</strong></span>
+          </div>
+
+          <div className="text-[11px] font-medium text-slate-300">
+            Sistema creado por: <strong className="text-white font-bold">Alejandra Tesara</strong> · <strong className="text-white font-bold">Daniela Riveros</strong> · <strong className="text-white font-bold">Jessica Navarro</strong>
+          </div>
         </div>
       </footer>
     </div>

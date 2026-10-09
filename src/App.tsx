@@ -579,30 +579,18 @@ function AppContent() {
               {esInternos ? 'Gestión Interna · CAPEX & OPEX 2026' : 'Modelo Estrella de Costos Industriales 2026'}
             </span>
           </div>
-          <div className="flex flex-col sm:flex-row items-center md:items-end gap-2 text-right">
+          <div className="flex flex-col items-center md:items-end gap-1 text-center md:text-right">
             <div className="flex items-center gap-2 text-[11px]">
               <span>Sesión: <strong className={esInternos ? 'text-white' : 'text-neutral-800'}>{currentUser.nombre}</strong> ({currentUser.rol})</span>
               <span aria-hidden="true">·</span>
               <span>Ciudad Guayana, Venezuela</span>
             </div>
-            <div className="text-[11px] font-medium text-slate-500">
-              Sistema creado por: <strong className={esInternos ? 'text-slate-200' : 'text-slate-700'}>Alejandra Tesara</strong> · <strong className={esInternos ? 'text-slate-200' : 'text-slate-700'}>Daniela Riveros</strong> · <strong className={esInternos ? 'text-slate-200' : 'text-slate-700'}>Jessica Navarro</strong>
+            <div className="text-[11px] font-medium text-slate-600">
+              Sistema creado por: <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Alejandra Tesara</strong> · <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Daniela Riveros</strong> · <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Jessica Navarro</strong>
             </div>
           </div>
         </div>
       </footer>
-
-      {/* Badge fijo en la esquina inferior derecha */}
-      <aside aria-label="Créditos del Sistema" className="fixed bottom-3 right-4 z-40 select-none print:hidden pointer-events-auto">
-        <div className="bg-slate-900/95 hover:bg-slate-900 text-slate-200 text-[11px] px-3.5 py-1.5 rounded-full border border-slate-700/80 shadow-lg backdrop-blur-md flex items-center gap-2 transition-all">
-          <span className="text-slate-400 font-medium">Sistema creado por:</span>
-          <span className="font-bold text-white">Alejandra Tesara</span>
-          <span className="text-slate-500">·</span>
-          <span className="font-bold text-white">Daniela Riveros</span>
-          <span className="text-slate-500">·</span>
-          <span className="font-bold text-white">Jessica Navarro</span>
-        </div>
-      </aside>
       </div>
     </div>
   );
