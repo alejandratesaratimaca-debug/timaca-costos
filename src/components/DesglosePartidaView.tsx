@@ -815,6 +815,19 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
   const precioPromedio = totalCantidad > 0 ? Math.round((totalMonto / totalCantidad) * 100) / 100 : 0;
   const unidadPrincipal = filasFiltradas[0]?.unidad || 'UND';
 
+  const formatUnidadLegible = (u: string) => {
+    const raw = (u || '').toUpperCase().trim();
+    if (raw === 'USE') return 'servicio';
+    if (raw === 'UND' || raw === 'UNID') return 'unidad';
+    if (raw === 'HRS' || raw === 'HR') return 'hora';
+    if (raw === 'MTR' || raw === 'MTS' || raw === 'M') return 'metro';
+    if (raw === 'KG' || raw === 'KGS') return 'kilogramo';
+    if (raw === 'GL' || raw === 'GAL') return 'galón';
+    if (raw === 'PZA' || raw === 'PZAS') return 'pieza';
+    if (raw === 'PAR' || raw === 'PARES') return 'par';
+    return raw.toLowerCase() || 'unidad';
+  };
+
   const mesLabel = useMemo(() => {
     if (selectedMesFilter === 'TODOS') return 'Acumulado Anual (Ene - Sep)';
     const nombres = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre'];
@@ -971,7 +984,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
               Volumen / Unidades
             </span>
             <span className="text-lg font-black font-mono text-neutral-900 block mt-0.5">
-              {formatNumber(totalCantidad)} {unidadPrincipal}
+              {formatNumber(totalCantidad)} {unidadPrincipal === 'USE' ? 'SERV' : unidadPrincipal}
             </span>
             <span className="text-[10px] text-neutral-500 mt-0.5 block">
               Despachado en almacén de obra
@@ -986,7 +999,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
               ${Math.round(precioPromedio).toLocaleString('de-DE')} USD
             </span>
             <span className="text-[10px] text-neutral-500 mt-0.5 block">
-              Costo ponderado por {unidadPrincipal.toLowerCase()}
+              Costo ponderado por {formatUnidadLegible(unidadPrincipal)}
             </span>
           </div>
         </div>
