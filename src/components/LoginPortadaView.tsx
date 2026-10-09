@@ -326,10 +326,10 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
                 <span className="text-white block drop-shadow-sm" style={{ color: '#ffffff' }}>
-                  Sistema Integrado de Gestión de
+                  Sistema Integrado de Gestión
                 </span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-200 to-amber-300 font-extrabold block mt-1 drop-shadow-sm">
-                  Materiales y Activos
+                  de Materiales y Activos
                 </span>
               </h1>
 
