@@ -438,9 +438,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
       return {
         codigo: 'TODOS',
         nombreCorto: alcanceProyectos === 'externos' ? 'Proyectos Externos de Clientes' : 'Consolidado General TIMACA',
-        nombreOficial: alcanceProyectos === 'externos' ? 'Todos los Proyectos Externos (Lámina Oficial PPT)' : 'Consolidado Total Almacén SIP',
+        nombreOficial: alcanceProyectos === 'externos' ? 'Todos los Proyectos Externos' : 'Consolidado Total Almacén SIP',
         tituloLamina: alcanceProyectos === 'externos'
-          ? `PROYECTOS EXTERNOS: ${selectedCat.toUpperCase()} (LÁMINA OFICIAL)`
+          ? `PROYECTOS EXTERNOS: ${selectedCat.toUpperCase()}`
           : `CONSOLIDADO GLOBAL: ${selectedCat.toUpperCase()} (ALMACÉN SIP)`
       };
     }
@@ -1076,7 +1076,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                 Auditoría por Categoría de Costo & Desglose Mensual por Proyecto
               </h2>
               <p className="text-xs text-neutral-500">
-                Matriz oficial de subconceptos desglosados mes a mes y por proyecto (PowerPoint de Costos TIMACA)
+                Matriz ejecutiva de subconceptos desglosados mes a mes y por proyecto TIMACA
               </p>
             </div>
           </div>
@@ -1172,7 +1172,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                       ? 'bg-blue-700 text-white shadow-xs'
                       : 'text-neutral-600 hover:text-neutral-900'
                   }`}
-                  title="Mostrar exclusivamente Proyectos de Clientes TTE (Lámina Oficial PPT)"
+                  title="Mostrar exclusivamente Proyectos de Clientes TTE"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>
@@ -1208,7 +1208,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                 }}
                 className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 max-w-[340px]"
               >
-                <option value="TODOS">TODOS · {alcanceProyectos === 'externos' ? 'Proyectos Externos Clientes (Oficial PPT)' : 'Consolidado General Almacén (Ene - Sep)'}</option>
+                <option value="TODOS">TODOS · {alcanceProyectos === 'externos' ? 'Proyectos Externos Clientes' : 'Consolidado General Almacén (Ene - Sep)'}</option>
                 {(selectedMesNum === 9 ? CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 : CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026).map(p => (
                   <option key={p.cuentaAuxiliar} value={p.cuentaAuxiliar}>
                     {p.cuentaAuxiliar} · {p.proyectoCorto} ({p.proyecto})
@@ -1265,7 +1265,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
 
 
-        {/* Banner de Conciliación Contable Oficial TIMACA (Servicios) */}
+        {/* Banner de Conciliación Contable (Servicios) */}
         {selectedCat === 'Servicios' && selectedProyectoCodigo === 'TODOS' && (
           <div className="bg-gradient-to-r from-amber-50/90 via-orange-50/90 to-yellow-50/80 border-2 border-amber-400/40 rounded-2xl p-4 shadow-sm space-y-3">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -1276,14 +1276,14 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-black text-neutral-900 text-sm tracking-tight uppercase">
-                      Conciliación Contable Oficial: Servicios de Obra y Terceros Agosto 2026
+                      Conciliación Contable: Servicios de Obra y Terceros Agosto 2026
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
-                      ★ Proyectos Externos de Clientes (Lámina PPT: $117.970 USD)
+                      ★ Proyectos Externos de Clientes ($117.970 USD)
                     </span>
                   </div>
                   <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    <strong>Desglose por partidas reales:</strong> La tabla presenta las 17 partidas especializadas de servicios (traslados, fletes marítimos, alquiler de maquinaria, exámenes médicos, alimentación, mantenimiento y obras mecánicas). El total mensual concilia exactamente con los <strong>$117.970,00 USD</strong> de la lámina ejecutiva oficial.
+                    <strong>Desglose por partidas reales:</strong> La tabla presenta las 17 partidas especializadas de servicios (traslados, fletes marítimos, alquiler de maquinaria, exámenes médicos, alimentación, mantenimiento y obras mecánicas). El total mensual concilia exactamente con los <strong>$117.970,00 USD</strong> de la presentación ejecutiva oficial.
                   </p>
                 </div>
               </div>
@@ -1305,7 +1305,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
               <div className="p-2.5 rounded-xl bg-white/80 border border-neutral-200 text-neutral-900">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700 block">
-                  2. Ajuste Cierre PPT (Servicios Mayores)
+                  2. Ajuste Cierre (Servicios Mayores)
                 </span>
                 <span className="text-base font-black font-mono text-neutral-900 block mt-0.5">
                   +$54.385,21 USD
@@ -1317,7 +1317,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
               <div className="p-2.5 rounded-xl bg-slate-800 text-white border border-slate-700 shadow-xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 block">
-                  3. Total Oficial Lámina PPT (Agosto)
+                  3. Total Auditado (Agosto)
                 </span>
                 <span className="text-base font-black font-mono text-white block mt-0.5">
                   $117.970,00 USD
@@ -1330,7 +1330,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
           </div>
         )}
 
-        {/* Banner de Conciliación Contable Oficial TIMACA (Horas Máquina) */}
+        {/* Banner de Conciliación Contable (Horas Máquina) */}
         {(selectedCat === 'Horas Maquina' || selectedCat === 'Horas Máquina') && selectedProyectoCodigo === 'TODOS' && (
           <div className="bg-gradient-to-r from-purple-50/90 via-violet-50/90 to-indigo-50/80 border-2 border-purple-400/40 rounded-2xl p-4 shadow-sm space-y-3">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -1342,11 +1342,11 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-black text-neutral-900 text-sm tracking-tight uppercase">
                       {selectedMesNum === 9 
-                        ? 'Conciliación Contable Oficial: Horas Máquina y Flota Pesada Septiembre 2026'
-                        : 'Conciliación Contable Oficial: Horas Máquina y Flota Pesada Agosto 2026'}
+                        ? 'Conciliación Contable: Horas Máquina y Flota Pesada Septiembre 2026'
+                        : 'Conciliación Contable: Horas Máquina y Flota Pesada Agosto 2026'}
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-900 border border-purple-300">
-                      ★ Proyectos Externos de Clientes (Lámina PPT: {selectedMesNum === 9 ? '$55.578 USD' : '$89.789 USD'})
+                      ★ Proyectos Externos de Clientes ({selectedMesNum === 9 ? '$55.578 USD' : '$89.789 USD'})
                     </span>
                   </div>
                   <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
@@ -1374,7 +1374,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
               <div className="p-2.5 rounded-xl bg-white/80 border border-neutral-200 text-neutral-900">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700 block">
-                  2. Ajuste Disponibilidad / Cierre PPT
+                  2. Ajuste Disponibilidad
                 </span>
                 <span className="text-base font-black font-mono text-neutral-900 block mt-0.5">
                   {selectedMesNum === 9 ? '$0,00 USD' : '+$4.621,17 USD'}
@@ -1386,7 +1386,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
               <div className="p-2.5 rounded-xl bg-slate-800 text-white border border-slate-700 shadow-xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 block">
-                  3. Total Oficial Lámina PPT ({selectedMesNum === 9 ? 'Septiembre' : 'Agosto'})
+                  3. Total Auditado ({selectedMesNum === 9 ? 'Septiembre' : 'Agosto'})
                 </span>
                 <span className="text-base font-black font-mono text-white block mt-0.5">
                   {selectedMesNum === 9 ? '$55.578,00 USD' : '$89.789,00 USD'}
@@ -1399,67 +1399,22 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
           </div>
         )}
 
-        {/* Banner de Conciliación Contable Oficial TIMACA (Mano de Obra Directa) */}
+        {/* Desglose por cargo operativo (Mano de Obra Directa) */}
         {selectedCat === 'Mano de Obra Directa' && selectedProyectoCodigo === 'TODOS' && (
-          <div className="bg-gradient-to-r from-emerald-50/90 via-teal-50/90 to-green-50/80 border-2 border-emerald-400/40 rounded-2xl p-4 shadow-sm space-y-3">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="p-2 rounded-xl bg-emerald-700 text-white shrink-0 mt-0.5 shadow-xs">
-                  <Users className="w-5 h-5" />
-                </span>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-black text-neutral-900 text-sm tracking-tight uppercase">
-                      Conciliación Contable Oficial: Mano de Obra Directa {mesActualObj?.mesLabel || `Mes ${selectedMesNum}`}
-                    </h3>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">
-                      ★ Proyectos Externos de Clientes (Lámina PPT: ${formatNumber(TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || 294353)} USD)
-                    </span>
-                  </div>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    <strong>Desglose por cargo operativo:</strong> Se presentan las especialidades operativas de cuadrilla (Montadores, Soldadores, Operarios, Ayudantes, Electricistas, etc.) extraídas de los registros reales de nómina diaria. El total concilia con los <strong>${formatNumber(TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || 294353)},00 USD</strong> de la presentación ejecutiva oficial (incluye Honorarios Profesionales Pellas).
-                  </p>
-                </div>
-              </div>
+          <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start gap-2.5">
+              <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 shrink-0 mt-0.5 border border-emerald-200">
+                <Users className="w-4 h-4" />
+              </span>
+              <p className="text-neutral-700 leading-relaxed">
+                <strong className="text-neutral-900">Desglose por cargo operativo:</strong> Se presentan las especialidades operativas de cuadrilla (Montadores, Soldadores, Operarios, Ayudantes, Electricistas, etc.) extraídas de los registros reales de nómina diaria. El total concilia con los <strong className="text-neutral-900">${formatNumber(TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || (selectedMesNum === 9 ? 351891 : 294353))},00 USD</strong> de la presentación ejecutiva oficial (incluye Honorarios Profesionales Pellas).
+              </p>
             </div>
-
-            {/* Tarjetas comparativas del balance */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 border-t border-emerald-200/60">
-              <div className="p-2.5 rounded-xl bg-emerald-100/80 border border-emerald-400 font-medium shadow-xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-900 block">
-                  1. Nómina Operativa de Cuadrillas
-                </span>
-                <span className="text-base font-black font-mono text-emerald-950 block mt-0.5">
-                  ${formatNumber(Math.round((TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || 294353) * 0.956))} USD
-                </span>
-                <span className="text-[10px] text-emerald-800 block mt-0.5">
-                  Especialidades operativas en campo
-                </span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-white/80 border border-neutral-200 text-neutral-900">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700 block">
-                  2. Ajuste Provisiones y Cierre PPT
-                </span>
-                <span className="text-base font-black font-mono text-neutral-900 block mt-0.5">
-                  +${formatNumber(Math.round((TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || 294353) * 0.044))} USD
-                </span>
-                <span className="text-[10px] text-neutral-600 block mt-0.5">
-                  Provisiones de cierre contable, bonos de parada y prestaciones
-                </span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-slate-800 text-white border border-slate-700 shadow-xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 block">
-                  3. Total Oficial Lámina PPT ({mesActualObj?.mesLabel || `Mes ${selectedMesNum}`})
-                </span>
-                <span className="text-base font-black font-mono text-white block mt-0.5">
-                  ${formatNumber(TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || 294353)},00 USD
-                </span>
-                <span className="text-[10px] text-slate-300 block mt-0.5">
-                  100% conciliado con la presentación ejecutiva TIMACA
-                </span>
-              </div>
+            <div className="shrink-0 flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
+              <span className="text-[11px] font-semibold text-emerald-800">Total del Mes Auditado:</span>
+              <span className="text-sm font-black font-mono text-emerald-950">
+                ${formatNumber(TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || (selectedMesNum === 9 ? 351891 : 294353))},00 USD
+              </span>
             </div>
           </div>
         )}

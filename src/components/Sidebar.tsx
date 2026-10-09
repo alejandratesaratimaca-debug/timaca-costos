@@ -288,10 +288,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         ? 'bg-blue-600 text-white font-bold shadow-xs'
                         : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                     }`}
-                    title="Matriz Proyectos x Categorías (PPT Oficial)"
+                    title="Matriz Proyectos x Categorías"
                   >
                     <TableProperties className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Matriz Proyectos (PPT)</span>}
+                    {!isCollapsed && <span>Matriz de Proyectos</span>}
                   </button>
 
                   <button
@@ -353,10 +353,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         ? 'bg-blue-600 text-white font-bold shadow-xs'
                         : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                     }`}
-                    title="Presentación Ejecutiva Oficial (PPT 8 Láminas)"
+                    title="Presentación Ejecutiva"
                   >
                     <FileText className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Presentación Ejecutiva PPT</span>}
+                    {!isCollapsed && <span>Presentación Ejecutiva</span>}
                   </button>
 
                   <button

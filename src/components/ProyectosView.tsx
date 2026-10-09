@@ -1973,7 +1973,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                       <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">
-                        LÁMINA OFICIAL DE LA PRESENTACIÓN DE COSTOS (IMAGEN 5)
+                        MATRIZ DE DISTRIBUCIÓN Y PRORRATEO CORPORATIVO
                       </span>
                       <h5 className="text-xs font-black text-neutral-900 uppercase">
                         COSTOS INDIRECTOS A PRORRATEAR (ENERO - SEPTIEMBRE 2026)

@@ -584,7 +584,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                  Trazabilidad matemática de los <strong>$856.482,12 USD</strong> en vales físicos de campo frente al Cierre Oficial PPT (<strong>$1.345.010,00 USD</strong>).
+                  Trazabilidad matemática de los <strong>$856.482,12 USD</strong> en vales físicos de campo frente al Cierre Mensual (<strong>$1.345.010,00 USD</strong>).
                 </p>
               </div>
             </div>
@@ -672,11 +672,11 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                 </div>
               </div>
 
-              {/* Sección 2: Conciliación con la Lámina PPT */}
+              {/* Sección 2: Conciliación con el Cierre Mensual */}
               <div className="border-t border-slate-200/80 pt-4">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-2.5 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                  2. Conciliación con el Cierre Oficial PPT ($1.345.010,00 USD) · Diferencia de $488.527,88 USD:
+                  2. Conciliación con el Cierre Mensual ($1.345.010,00 USD) · Diferencia de $488.527,88 USD:
                 </span>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">

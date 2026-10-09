@@ -462,6 +462,8 @@ function AppContent() {
 
             {activeTab === 'semanas' && <SemanaSemanaView onVolver={() => setActiveTab('dashboard')} />}
 
+            {activeTab === 'meses' && <MesMesView onVolver={() => setActiveTab('dashboard')} />}
+
             {activeTab === 'informe' && (
               <InformeMensualView 
                 onVolver={() => setActiveTab('dashboard')} 
