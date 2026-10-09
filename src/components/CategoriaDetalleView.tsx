@@ -22,6 +22,7 @@ import {
   HORAS_MAQUINA_CONSOLIDADO_OFICIAL_8_MESES,
   FilaDesgloseMensual 
 } from '../data/mockDesgloseCategorias';
+import { MATRIZ_MATERIALES_PELLAS_ESTRELLA } from '../data/pellasMaterialesDetalleEstrella';
 import { formatCurrency, formatNumber } from '../utils/dateHelpers';
 import { exportCategoriaToExcel } from '../utils/excelHandler';
 import { isNormalizacion } from '../utils/normalizacionFilter';
@@ -226,9 +227,17 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
     );
   }, [salidas, mesAnteriorNum, selectedCat, alcanceProyectos]);
 
-  // Amounts for current and previous month from PPT matrix (or salidas in global mode)
+  // Amounts for current and previous month from PPT matrix (or selected project / salidas)
   const montoActual = useMemo(() => {
-    if (alcanceProyectos === 'global' && selectedProyectoCodigo === 'TODOS') {
+    if (selectedProyectoCodigo !== 'TODOS') {
+      const idx = selectedMesNum - 1;
+      const realProj = MATRIZ_REAL_PROYECTOS_MENSUAL_2026[selectedProyectoCodigo];
+      if (realProj && realProj.byCategoriaMes && realProj.byCategoriaMes[idx]) {
+        return Math.round(realProj.byCategoriaMes[idx][selectedCat] || 0);
+      }
+      return Math.round(salidasCatActual.reduce((sum, s) => sum + s.montoTotal, 0));
+    }
+    if (alcanceProyectos === 'global') {
       return Math.round(salidasCatActual.reduce((sum, s) => sum + s.montoTotal, 0));
     }
     const idx = selectedMesNum - 1;
@@ -236,11 +245,19 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
       return pptCatRow.meses[idx];
     }
     return Math.round(salidasCatActual.reduce((sum, s) => sum + s.montoTotal, 0));
-  }, [selectedMesNum, pptCatRow, salidasCatActual, alcanceProyectos, selectedProyectoCodigo]);
+  }, [selectedMesNum, pptCatRow, salidasCatActual, alcanceProyectos, selectedProyectoCodigo, selectedCat]);
 
   const montoAnterior = useMemo(() => {
     if (selectedMesNum <= 1) return 0;
-    if (alcanceProyectos === 'global' && selectedProyectoCodigo === 'TODOS') {
+    if (selectedProyectoCodigo !== 'TODOS') {
+      const idx = selectedMesNum - 2;
+      const realProj = MATRIZ_REAL_PROYECTOS_MENSUAL_2026[selectedProyectoCodigo];
+      if (realProj && realProj.byCategoriaMes && realProj.byCategoriaMes[idx]) {
+        return Math.round(realProj.byCategoriaMes[idx][selectedCat] || 0);
+      }
+      return Math.round(salidasCatAnterior.reduce((sum, s) => sum + s.montoTotal, 0));
+    }
+    if (alcanceProyectos === 'global') {
       return Math.round(salidasCatAnterior.reduce((sum, s) => sum + s.montoTotal, 0));
     }
     const idx = selectedMesNum - 2;
@@ -248,7 +265,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
       return pptCatRow.meses[idx];
     }
     return Math.round(salidasCatAnterior.reduce((sum, s) => sum + s.montoTotal, 0));
-  }, [selectedMesNum, mesAnteriorNum, pptCatRow, salidasCatAnterior, alcanceProyectos, selectedProyectoCodigo]);
+  }, [selectedMesNum, mesAnteriorNum, pptCatRow, salidasCatAnterior, alcanceProyectos, selectedProyectoCodigo, selectedCat]);
 
   // Variations
   const diferenciaMonto = montoActual - montoAnterior;
@@ -833,7 +850,17 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
       return list;
     }
 
-    // 6. Materiales Directos y otras categorías: Agrupación por subcategoría oficial
+    // 6. Materiales Directos para Línea 1 Pellas (TTE-C-0706): Sincronización oficial con Detalle_Materiales de Modelo Estrella ($123.685 USD Sep / $343.586 USD Total)
+    if (selectedCat === 'Materiales Directos' && selectedProyectoCodigo === 'TTE-C-0706') {
+      let list = [...MATRIZ_MATERIALES_PELLAS_ESTRELLA];
+      if (subconceptoSearchTerm) {
+        const q = subconceptoSearchTerm.toLowerCase();
+        list = list.filter(f => f.concepto.toLowerCase().includes(q));
+      }
+      return list;
+    }
+
+    // 7. Materiales Directos y otras categorías: Agrupación por subcategoría oficial
     const mapConceptos = new Map<string, FilaDesgloseMensual>();
     MATERIALES_CONSOLIDADO_OFICIAL_8_MESES.forEach(mat => {
       mapConceptos.set(mat.concepto, {
@@ -1787,7 +1814,11 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
             <strong className="text-neutral-900 font-mono">${totalesMatriz.total.toLocaleString('de-DE')} USD</strong>
           </span>
           <span className="italic">
-            {selectedMesNum === 9
+            {selectedProyectoCodigo === 'TTE-C-0706' && selectedCat === 'Materiales Directos'
+              ? (selectedMesNum === 9
+                  ? 'Septiembre auditado en $123.685 USD según consumos reales de almacén y Modelo Estrella (1.965 registros).'
+                  : 'Cifras sincronizadas al 100% con Modelo_Estrella_Costos_TIMACA.xlsx (Hoja Detalle_Materiales).')
+              : selectedMesNum === 9
               ? (selectedCat === 'Materiales Directos'
                   ? 'Septiembre auditado en $166.893 USD según consumos reales de almacén (9 Septiembre.xlsx).'
                   : selectedCat === 'Mano de Obra Directa'
@@ -1819,7 +1850,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
             ${montoActual.toLocaleString('de-DE')} USD
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
-            Gasto global en {selectedCat}
+            {selectedProyectoCodigo === 'TODOS'
+              ? `Gasto global en ${selectedCat}`
+              : `Gasto en ${selectedCat} (${proyectoInfoSeleccionado.nombreCorto})`}
           </span>
         </div>
 
@@ -1832,7 +1865,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
             ${montoAnterior.toLocaleString('de-DE')} USD
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
-            Período precedente de referencia
+            {selectedProyectoCodigo === 'TODOS'
+              ? 'Período precedente de referencia'
+              : `Período precedente (${proyectoInfoSeleccionado.nombreCorto})`}
           </span>
         </div>
 
