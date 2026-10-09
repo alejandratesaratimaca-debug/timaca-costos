@@ -30,6 +30,7 @@ import { CertificadosModuleView } from './components/certificados/CertificadosMo
 import { SIPPmhModuleView } from './components/sip-pmh/SIPPmhModuleView';
 import { RRHHModuleView } from './components/rrhh/RRHHModuleView';
 import { Sidebar } from './components/Sidebar';
+import { VersionUpdateNotifier } from './components/VersionUpdateNotifier';
 import { SalidaCosto } from './types/costos';
 import { UsuarioSistema, USUARIOS_INICIALES_TIMACA } from './types/usuarios';
 import { SuiteModulo } from './types/suite';
@@ -226,11 +227,14 @@ function AppContent() {
   // Si no está autenticado, mostrar Portada con Separación Primaria
   if (!isAuthenticated) {
     return (
-      <LoginPortadaView 
-        onLoginSuccess={handleLoginSuccess}
-        entornoInicial={entornoActivo}
-        moduloInicial={moduloActivo}
-      />
+      <>
+        <VersionUpdateNotifier />
+        <LoginPortadaView 
+          onLoginSuccess={handleLoginSuccess}
+          entornoInicial={entornoActivo}
+          moduloInicial={moduloActivo}
+        />
+      </>
     );
   }
 
@@ -242,6 +246,7 @@ function AppContent() {
         ? 'bg-[#cbd5e1]/75 text-slate-900 selection:bg-sky-500 selection:text-white' 
         : 'bg-[#F8FAFC] text-[#1E293B] selection:bg-[#020C54] selection:text-white'
     }`}>
+      <VersionUpdateNotifier />
       {/* Menú Lateral (Sidebar Empresarial TIMACA) */}
       <Sidebar
         moduloActivo={moduloActivo}
