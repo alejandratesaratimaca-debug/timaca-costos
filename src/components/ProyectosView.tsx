@@ -1180,7 +1180,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                 <div className="text-left sm:text-right">
                   <span className="text-[10px] text-slate-300 uppercase tracking-wider block">Gasto Total ({mesLabel}):</span>
                   <span className="text-2xl font-black font-mono text-amber-300 tabular-nums">
-                    ${activeCuenta.totalMonto.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    ${Math.round(activeCuenta.totalMonto).toLocaleString('de-DE')} USD
                   </span>
                 </div>
               </div>
@@ -1277,7 +1277,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
 
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono font-bold text-neutral-900 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 tabular-nums">
-                    Total Anual: ${evolutivoCuenta.totalAnualCuenta.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    Total Anual: ${Math.round(evolutivoCuenta.totalAnualCuenta).toLocaleString('de-DE')} USD
                   </span>
                 </div>
               </div>
@@ -1289,7 +1289,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                     Total Acumulado 2026
                   </span>
                   <span className="text-base font-bold font-mono text-slate-900 tabular-nums block mt-0.5">
-                    ${evolutivoCuenta.totalAnualCuenta.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    ${Math.round(evolutivoCuenta.totalAnualCuenta).toLocaleString('de-DE')} USD
                   </span>
                   <span className="text-[10px] text-slate-500 mt-0.5 block">8 meses oficiales</span>
                 </div>
@@ -1299,7 +1299,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                     Mes de Mayor Desembolso
                   </span>
                   <span className="text-base font-bold font-mono text-blue-700 tabular-nums block mt-0.5">
-                    ${evolutivoCuenta.mesPico?.total.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    ${Math.round(evolutivoCuenta.mesPico?.total || 0).toLocaleString('de-DE')} USD
                   </span>
                   <span className="text-[10px] text-slate-500 mt-0.5 block">
                     {evolutivoCuenta.mesPico?.mesLabel} ({((evolutivoCuenta.mesPico?.total / (evolutivoCuenta.totalAnualCuenta || 1)) * 100).toFixed(1)}%)
@@ -1311,7 +1311,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                     Promedio Mensual
                   </span>
                   <span className="text-base font-bold font-mono text-slate-900 tabular-nums block mt-0.5">
-                    ${evolutivoCuenta.promedioMensual.toLocaleString('de-DE')} USD
+                    ${Math.round(evolutivoCuenta.promedioMensual).toLocaleString('de-DE')} USD
                   </span>
                   <span className="text-[10px] text-slate-500 mt-0.5 block">Media mensual</span>
                 </div>
@@ -1321,7 +1321,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                     Mayor Categoría de Costo
                   </span>
                   <span className="text-base font-bold font-mono text-emerald-700 tabular-nums block mt-0.5">
-                    ${Math.max(...Object.values(evolutivoCuenta.resumenCategoriasAnual)).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    ${Math.round(Math.max(...Object.values(evolutivoCuenta.resumenCategoriasAnual))).toLocaleString('de-DE')} USD
                   </span>
                   <span className="text-[10px] text-slate-500 mt-0.5 block truncate">
                     {Object.entries(evolutivoCuenta.resumenCategoriasAnual).sort((a,b) => b[1] - a[1])[0]?.[0]}
@@ -1446,7 +1446,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                         )}
                       </div>
                       <span className="font-mono font-bold text-neutral-900 text-base">
-                        ${evolutivoCuenta.mesesData.find(m => m.mesNum === selectedEvolutivoMes)?.total.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                        ${Math.round(evolutivoCuenta.mesesData.find(m => m.mesNum === selectedEvolutivoMes)?.total || 0).toLocaleString('de-DE')} USD
                       </span>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
@@ -1456,7 +1456,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                           <div key={cat} className="p-2 rounded-lg bg-slate-50 border border-slate-200">
                             <span className="text-[10px] text-slate-500 block truncate">{cat}</span>
                             <span className="font-mono font-bold text-slate-800 text-xs tabular-nums block mt-0.5">
-                              ${val.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              ${Math.round(val).toLocaleString('de-DE')}
                             </span>
                           </div>
                         );
@@ -1527,7 +1527,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                               );
                             })}
                             <td className="py-2 px-3 text-right font-mono font-bold tabular-nums text-neutral-900 bg-slate-50/70">
-                              ${totalCatAnual.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              ${Math.round(totalCatAnual).toLocaleString('de-DE')}
                             </td>
                             <td className="py-2 px-2.5 text-right font-mono font-semibold tabular-nums text-neutral-600 text-[11px]">
                               {pctCat}%
@@ -1547,7 +1547,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                           </td>
                         ))}
                         <td className="py-2.5 px-3 text-right font-mono text-xs font-black text-slate-900 bg-slate-200/70 tabular-nums">
-                          ${evolutivoCuenta.totalAnualCuenta.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          ${Math.round(evolutivoCuenta.totalAnualCuenta).toLocaleString('de-DE')}
                         </td>
                         <td className="py-2.5 px-2.5 text-right font-mono text-slate-800 font-bold text-[11px]">
                           100.00%
@@ -1939,8 +1939,8 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                             <td className="py-2 px-2.5 font-mono font-bold text-blue-700">{eq.codigo}</td>
                             <td className="py-2 px-3 text-slate-900 font-semibold">{eq.equipo}</td>
                             <td className="py-2 px-3 text-slate-600 text-[11px]">{eq.subcategoria}</td>
-                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">${eq.tarifa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            <td className="py-2 px-2.5 text-right font-mono font-bold text-slate-800">{eq.totalHM.toLocaleString('de-DE', { minimumFractionDigits: 1 })}</td>
+                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">${Math.round(eq.tarifa).toLocaleString('de-DE')}</td>
+                            <td className="py-2 px-2.5 text-right font-mono font-bold text-slate-800">{Math.round(eq.totalHM).toLocaleString('de-DE')}</td>
                             <td className="py-2 px-3 text-right font-mono font-bold text-purple-900 bg-purple-50/40">${eq.costoTotalHM.toLocaleString('de-DE')}</td>
                           </tr>
                         ))}
@@ -2185,10 +2185,10 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                             </span>
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono tabular-nums text-neutral-700">
-                            ${s.montoUnitario.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${Math.round(s.montoUnitario).toLocaleString('de-DE')}
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono tabular-nums font-black text-blue-950 bg-blue-50/50">
-                            ${s.montoTotal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${Math.round(s.montoTotal).toLocaleString('de-DE')}
                           </td>
                         </tr>
                       );
@@ -2205,7 +2205,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                       <td colSpan={3}></td>
                       <td className="py-2.5 px-3 text-right text-xs">TOTAL:</td>
                       <td className="py-2.5 px-3 text-right font-mono text-amber-300 text-sm bg-slate-900">
-                        ${lineasParaMostrar.reduce((sum, s) => sum + s.montoTotal, 0).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                        ${Math.round(lineasParaMostrar.reduce((sum, s) => sum + s.montoTotal, 0)).toLocaleString('de-DE')} USD
                       </td>
                     </tr>
                   </tfoot>
@@ -2287,13 +2287,13 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Precio Unitario</span>
                   <span className="font-mono font-semibold text-neutral-800 text-sm">
-                    ${salidaAuditoria.montoUnitario.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')}
                   </span>
                 </div>
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Monto Total</span>
                   <span className="font-mono font-black text-blue-700 text-base">
-                    ${salidaAuditoria.montoTotal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')}
                   </span>
                 </div>
               </div>
@@ -2304,7 +2304,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                   Cálculo:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida} × ${salidaAuditoria.montoUnitario.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${salidaAuditoria.montoTotal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>

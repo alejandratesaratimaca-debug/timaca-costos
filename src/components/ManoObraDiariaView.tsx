@@ -538,7 +538,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
 
                   {/* Tarifa */}
                   <td className="py-2 px-3 text-right font-mono tabular-nums text-neutral-600 whitespace-nowrap">
-                    ${r.tarifaHoraUsd.toFixed(2)}
+                    ${Math.round(r.tarifaHoraUsd).toLocaleString('de-DE')}
                   </td>
 
                   {/* Total Pagar */}

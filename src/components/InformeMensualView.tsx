@@ -2230,10 +2230,10 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                   )}
                                 </td>
                                 <td className="py-2 px-2.5 text-right font-mono text-slate-700">
-                                  {eq.tarifa.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                  {Math.round(eq.tarifa).toLocaleString('de-DE')}
                                 </td>
                                 <td className="py-2 px-2.5 text-right font-mono font-bold text-slate-800">
-                                  {eq.totalHM.toLocaleString('de-DE', { minimumFractionDigits: 1 })}
+                                  {Math.round(eq.totalHM).toLocaleString('de-DE')}
                                 </td>
                                 <td className="py-2 px-3 text-right font-mono font-bold text-purple-900 bg-purple-50/40">
                                   {eq.costoTotalHM.toLocaleString('de-DE')}

@@ -162,7 +162,7 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
           </div>
           <div className="my-1.5">
             <span className="text-2xl font-bold tracking-tight text-neutral-900 font-mono tabular-nums block">
-              {topMes ? formatCurrency(topMes.totalMonto) : '$ 0.00'}
+              {topMes ? formatCurrency(topMes.totalMonto) : '$ 0'}
             </span>
             <span className="text-xs font-bold text-neutral-700 block truncate mt-0.5">
               {topMes ? `${topMes.mesLabel} (Mes Pico)` : 'Sin datos'}
@@ -189,7 +189,7 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
           </div>
           <div className="my-1.5">
             <span className="text-2xl font-bold tracking-tight text-neutral-900 font-mono tabular-nums block">
-              {ultimoMes ? formatCurrency(ultimoMes.totalMonto) : '$ 0.00'}
+              {ultimoMes ? formatCurrency(ultimoMes.totalMonto) : '$ 0'}
             </span>
             <span className="text-xs font-bold text-neutral-700 block truncate mt-0.5">
               {ultimoMes ? ultimoMes.mesLabel : 'Sin datos'}

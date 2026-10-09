@@ -895,7 +895,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                       <td className="py-1.5 px-3 font-bold text-slate-800">{eq.tipo}</td>
                       <td className="py-1.5 px-3 text-center font-mono">{eq.trabajadores}</td>
                       <td className="py-1.5 px-3 text-right font-mono">{eq.totalHH} Hrs</td>
-                      <td className="py-1.5 px-3 text-right font-mono">${eq.tarifaPromedio.toFixed(2)}</td>
+                      <td className="py-1.5 px-3 text-right font-mono">${Math.round(eq.tarifaPromedio).toLocaleString('de-DE')}</td>
                       <td className="py-1.5 px-3 text-right font-mono font-bold text-slate-900">{formatCurrency(eq.costoTotalMOD)}</td>
                     </tr>
                   ))}

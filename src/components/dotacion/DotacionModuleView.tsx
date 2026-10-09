@@ -247,7 +247,7 @@ export const DotacionModuleView: React.FC<DotacionModuleViewProps> = ({
           </div>
           <span>·</span>
           <div>
-            Inversión EPP Activa: <strong className="text-sky-300 font-mono">${stats.costoTotalMes.toFixed(2)} USD</strong>
+            Inversión EPP Activa: <strong className="text-sky-300 font-mono">${Math.round(stats.costoTotalMes).toLocaleString('de-DE')} USD</strong>
           </div>
         </div>
       </div>
@@ -489,7 +489,7 @@ export const DotacionModuleView: React.FC<DotacionModuleViewProps> = ({
                         </td>
 
                         <td className="py-2.5 px-3.5 text-right font-mono font-bold text-slate-900 whitespace-nowrap">
-                          ${entrega.costoTotalUsd.toFixed(2)} USD
+                          ${Math.round(entrega.costoTotalUsd).toLocaleString('de-DE')} USD
                         </td>
 
                         <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
@@ -542,7 +542,7 @@ export const DotacionModuleView: React.FC<DotacionModuleViewProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Costo Unitario:</span>
-                      <strong className="font-mono text-slate-900">${item.costoUnitarioUsd.toFixed(2)} USD</strong>
+                      <strong className="font-mono text-slate-900">${Math.round(item.costoUnitarioUsd).toLocaleString('de-DE')} USD</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Ciclo Reposición:</span>
@@ -864,7 +864,7 @@ export const DotacionModuleView: React.FC<DotacionModuleViewProps> = ({
                         <td className="p-2 font-medium">{it.itemNombre}</td>
                         <td className="p-2 text-center font-mono">{it.talla}</td>
                         <td className="p-2 text-center font-mono">{it.cantidad}</td>
-                        <td className="p-2 text-right font-mono">${it.costoTotalUsd.toFixed(2)}</td>
+                        <td className="p-2 text-right font-mono">${Math.round(it.costoTotalUsd).toLocaleString('de-DE')}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -889,7 +889,7 @@ export const DotacionModuleView: React.FC<DotacionModuleViewProps> = ({
 
             <div className="flex justify-between items-center pt-2">
               <span className="text-xs text-slate-500 font-mono">
-                Costo Total Asignado: <strong>${actaParaVer.costoTotalUsd.toFixed(2)} USD</strong>
+                Costo Total Asignado: <strong>${Math.round(actaParaVer.costoTotalUsd).toLocaleString('de-DE')} USD</strong>
               </span>
 
               <button

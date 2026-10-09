@@ -1037,7 +1037,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               {selectedCuentasFiltro.length > 0 ? ` [${selectedCuentasFiltro.length} cta${selectedCuentasFiltro.length > 1 ? 's' : ''}]` : ''}):
             </span>
             <span className="font-mono text-sm font-extrabold text-blue-900 tabular-nums">
-              ${totalMontoMesSeleccionado.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[11px] font-bold text-blue-700">USD</span>
+              ${Math.round(totalMontoMesSeleccionado).toLocaleString('de-DE')} <span className="text-[11px] font-bold text-blue-700">USD</span>
             </span>
             <span className="text-[11px] text-blue-700 font-bold bg-white/95 px-2 py-0.5 rounded-md border border-blue-200/80 shadow-2xs">
               {salidasFiltradas.length.toLocaleString('de-DE')} {salidasFiltradas.length === 1 ? 'comprobante' : 'comprobantes'}
@@ -1243,12 +1243,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                     {/* 9. P. Unitario (USD) */}
                     <td className="py-2.5 px-3 text-right whitespace-nowrap font-mono tabular-nums text-neutral-700 text-xs">
-                      ${pUnitVal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ${Math.round(pUnitVal).toLocaleString('de-DE')}
                     </td>
 
                     {/* 10. Monto Total (USD) */}
                     <td className="py-2.5 px-3 text-right whitespace-nowrap font-mono font-bold tabular-nums text-neutral-900 text-xs bg-slate-50/50">
-                      ${s.montoTotal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ${Math.round(s.montoTotal).toLocaleString('de-DE')}
                     </td>
 
                     {/* 11. Motivo */}
@@ -1271,7 +1271,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   Total ({ultimasSalidas.length} registros mostrados):
                 </td>
                 <td className="py-3 px-3 text-right font-mono tabular-nums font-bold text-neutral-950 bg-slate-200/80 text-xs">
-                  ${totalMontoMostrado.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ${Math.round(totalMontoMostrado).toLocaleString('de-DE')}
                 </td>
                 <td colSpan={2}></td>
               </tr>
@@ -1462,13 +1462,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                   <span className="text-neutral-500 block text-[11px]">Precio Unitario</span>
                   <span className="font-mono font-semibold text-neutral-800 text-sm">
-                    ${salidaAuditoria.montoUnitario.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[10px] text-neutral-500">USD</span>
+                    ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} <span className="text-[10px] text-neutral-500">USD</span>
                   </span>
                 </div>
                 <div className="bg-blue-50/80 p-2.5 rounded-lg border border-blue-200">
                   <span className="text-blue-700 block text-[11px] font-semibold">Precio Total</span>
                   <span className="font-mono font-black text-blue-900 text-sm sm:text-base">
-                    ${salidaAuditoria.montoTotal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[10px] text-blue-700">USD</span>
+                    ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} <span className="text-[10px] text-blue-700">USD</span>
                   </span>
                 </div>
               </div>
@@ -1479,7 +1479,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   Cálculo:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida} × ${salidaAuditoria.montoUnitario.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${salidaAuditoria.montoTotal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>

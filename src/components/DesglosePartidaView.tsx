@@ -943,7 +943,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
               Monto Auditado ({mesLabel.split(' ')[0]})
             </span>
             <span className="text-lg font-black font-mono text-blue-950 block mt-0.5">
-              ${totalMonto.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+              ${Math.round(totalMonto).toLocaleString('de-DE')} USD
             </span>
             <span className="text-[10px] text-blue-600 mt-0.5 block">
               {filasFiltradas.length} despachos auditados
@@ -979,7 +979,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
               Precio Promedio Unitario
             </span>
             <span className="text-lg font-black font-mono text-neutral-900 block mt-0.5">
-              ${precioPromedio.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+              ${Math.round(precioPromedio).toLocaleString('de-DE')} USD
             </span>
             <span className="text-[10px] text-neutral-500 mt-0.5 block">
               Costo ponderado por {unidadPrincipal.toLowerCase()}
@@ -1042,7 +1042,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                     {sub.nombre}
                   </span>
                   <span className="text-xs font-mono font-black text-neutral-900 block mt-0.5">
-                    ${sub.totalUSD.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    ${Math.round(sub.totalUSD).toLocaleString('de-DE')} USD
                   </span>
                   <div className="flex items-center justify-between text-[10px] text-neutral-500 mt-0.5">
                     <span>{sub.movimientos} despachos</span>
@@ -1302,10 +1302,10 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                     </span>
                   </td>
                   <td className="py-3 px-3 text-right font-mono tabular-nums text-slate-800 text-xs">
-                    ${it.precioFinal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${Math.round(it.precioFinal).toLocaleString('de-DE')}
                   </td>
                   <td className="py-3 px-3.5 text-right font-mono font-black tabular-nums text-blue-950 bg-blue-50/50 text-sm">
-                    ${it.totalUSD.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${Math.round(it.totalUSD).toLocaleString('de-DE')}
                   </td>
                   <td className="py-3 px-3 text-center">
                     <span className="text-xs font-bold text-blue-700 bg-blue-50 group-hover:bg-blue-600 group-hover:text-white border border-blue-200 px-2.5 py-1 rounded-lg transition-all">
@@ -1330,11 +1330,11 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                   {unidadPrincipal}
                 </td>
                 <td colSpan={2} className="py-3 px-3.5 text-slate-300 text-[11px] font-normal">
-                  Promedio: ${precioPromedio.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  Promedio: ${Math.round(precioPromedio).toLocaleString('de-DE')} USD
                 </td>
                 <td className="py-3 px-3 text-right"></td>
                 <td className="py-3 px-3.5 text-right font-mono text-sm text-amber-300 bg-[#081c33]">
-                  ${totalMonto.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  ${Math.round(totalMonto).toLocaleString('de-DE')} USD
                 </td>
                 <td></td>
               </tr>
@@ -1421,13 +1421,13 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Precio Unitario</span>
                   <span className="font-mono font-semibold text-neutral-800 text-sm">
-                    ${modalItem.precioFinal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    ${Math.round(modalItem.precioFinal).toLocaleString('de-DE')} USD
                   </span>
                 </div>
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Precio Total</span>
                   <span className="font-mono font-black text-blue-700 text-base">
-                    ${modalItem.totalUSD.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                    ${Math.round(modalItem.totalUSD).toLocaleString('de-DE')} USD
                   </span>
                 </div>
               </div>
@@ -1438,7 +1438,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                   CÁLCULO:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-bold text-blue-900">
-                  {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad} × ${modalItem.precioFinal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} = ${modalItem.totalUSD.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                  {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad} × ${Math.round(modalItem.precioFinal).toLocaleString('de-DE')} = ${Math.round(modalItem.totalUSD).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>

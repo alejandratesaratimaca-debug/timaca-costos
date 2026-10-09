@@ -176,7 +176,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
 
     setVales(prev => [nuevoVale, ...prev]);
     setActiveTab('vales');
-    setNotificacion(`¡Vale ${nuevoVale.numeroVale} emitido exitosamente por $${totalMonto.toFixed(2)} USD!`);
+    setNotificacion(`¡Vale ${nuevoVale.numeroVale} emitido exitosamente por $${Math.round(totalMonto).toLocaleString()} USD!`);
     setTimeout(() => setNotificacion(null), 4000);
   };
 
@@ -515,7 +515,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
                         </td>
 
                         <td className="py-2.5 px-3.5 text-right font-mono font-bold text-slate-900 whitespace-nowrap">
-                          ${v.montoTotalUsd.toLocaleString(undefined, { minimumFractionDigits: 2 })} USD
+                          ${Math.round(v.montoTotalUsd).toLocaleString()} USD
                         </td>
 
                         <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
@@ -739,7 +739,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-500">Despachos SIP en Campo:</span>
-                        <strong className="font-mono text-amber-700">${totalGastado.toLocaleString(undefined, { minimumFractionDigits: 2 })} USD</strong>
+                        <strong className="font-mono text-amber-700">${Math.round(totalGastado).toLocaleString()} USD</strong>
                       </div>
                     </div>
 
@@ -820,8 +820,8 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
                         <td className="p-2 font-medium">{it.descripcion}</td>
                         <td className="p-2 text-center font-mono">{it.unidad}</td>
                         <td className="p-2 text-center font-mono">{it.cantidad}</td>
-                        <td className="p-2 text-right font-mono">${it.costoUnitarioUsd.toFixed(2)}</td>
-                        <td className="p-2 text-right font-mono font-bold">${it.totalUsd.toFixed(2)}</td>
+                        <td className="p-2 text-right font-mono">${Math.round(it.costoUnitarioUsd).toLocaleString()}</td>
+                        <td className="p-2 text-right font-mono font-bold">${Math.round(it.totalUsd).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -848,7 +848,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
 
             <div className="flex justify-between items-center pt-2">
               <span className="text-xs text-slate-500 font-mono">
-                Total Vale: <strong>${valeParaImprimir.montoTotalUsd.toFixed(2)} USD</strong>
+                Total Vale: <strong>${Math.round(valeParaImprimir.montoTotalUsd).toLocaleString()} USD</strong>
               </span>
 
               <button

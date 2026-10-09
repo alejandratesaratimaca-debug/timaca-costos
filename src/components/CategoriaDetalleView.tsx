@@ -2146,7 +2146,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
                               <div className="flex flex-wrap items-center gap-2">
                                 <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-lg bg-slate-800 text-amber-300 border border-slate-700">
-                                  Total Imputado: ${p.montoActual.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                                  Total Imputado: ${Math.round(p.montoActual).toLocaleString('de-DE')} USD
                                 </span>
                                 {(selectedCat === 'Costos Indirectos' || p.salidasActuales.length > 0) && (
                                   <button
@@ -2447,7 +2447,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                                           </div>
                                           <div className="flex items-center gap-2">
                                             <span className="text-xs font-mono font-bold text-slate-900">
-                                              ${group.total.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                                              ${Math.round(group.total).toLocaleString('de-DE')} USD
                                             </span>
                                             <span className="text-[10px] font-mono font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">
                                               {pct}%
@@ -2492,10 +2492,10 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                                                     {s.unidadMedida}
                                                   </td>
                                                   <td className="py-2 px-2.5 text-right font-mono tabular-nums text-slate-700">
-                                                    ${s.montoUnitario.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    ${Math.round(s.montoUnitario).toLocaleString('de-DE')}
                                                   </td>
                                                   <td className="py-2 px-3 text-right font-mono font-bold text-slate-900 bg-slate-50/60 tabular-nums">
-                                                    ${s.montoTotal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    ${Math.round(s.montoTotal).toLocaleString('de-DE')}
                                                   </td>
                                                   <td className="py-2 px-3 text-slate-700 text-[11px]">
                                                     {s.solicitante || s.responsable || 'TIMACA'}

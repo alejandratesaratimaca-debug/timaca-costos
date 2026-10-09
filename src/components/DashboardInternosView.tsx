@@ -989,7 +989,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                       <td className="py-2 px-3 font-bold text-slate-800">{eq.tipo}</td>
                       <td className="py-2 px-3 text-center font-mono text-slate-700">{eq.trabajadores}</td>
                       <td className="py-2 px-3 text-right font-mono text-slate-700">{eq.totalHH} Hrs</td>
-                      <td className="py-2 px-3 text-right font-mono text-slate-600">${eq.tarifaPromedio.toFixed(2)}</td>
+                      <td className="py-2 px-3 text-right font-mono text-slate-600">${Math.round(eq.tarifaPromedio).toLocaleString('de-DE')}</td>
                       <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatCurrency(eq.costoTotalMOD)}</td>
                     </tr>
                   ))}
