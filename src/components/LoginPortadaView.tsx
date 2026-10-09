@@ -525,15 +525,10 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
                 </button>
               </form>
 
-              {/* Nota de Seguridad & Créditos */}
-              <div className="mt-6 pt-4 border-t border-slate-200 flex flex-col items-center justify-center gap-1.5 text-xs text-slate-500">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Acceso protegido con permisos por rol y departamento</span>
-                </div>
-                <div className="text-[11px] font-medium text-slate-600 pt-1">
-                  Sistema creado por: <strong className="text-slate-900 font-bold">Alejandra Tesara</strong> · <strong className="text-slate-900 font-bold">Daniela Riveros</strong> · <strong className="text-slate-900 font-bold">Jessica Navarro</strong>
-                </div>
+              {/* Nota de Seguridad */}
+              <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-center gap-2 text-xs text-slate-500">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Acceso protegido con permisos por rol y departamento</span>
               </div>
             </div>
           </div>
@@ -544,23 +539,32 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
       {/* ========================================================================= */}
       {/* 3. PIE DE PÁGINA CORPORATIVO                                              */}
       {/* ========================================================================= */}
-      <footer className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 border-t border-slate-800/60 text-slate-400 text-xs flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
+      <footer className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-3.5 border-t border-slate-800/60 text-slate-400 text-xs flex flex-col xl:flex-row items-center justify-between gap-3">
+        {/* Izquierda: Empresa y RIF */}
+        <div className="flex flex-wrap items-center justify-center xl:justify-start gap-2">
+          <span className="font-bold text-white tracking-tight">TIMACA</span>
+          <span className="text-slate-600">•</span>
           <span>Taller Industrial Metalúrgico Antonio, C.A.</span>
           <span className="text-slate-600">•</span>
-          <span className="font-mono text-slate-300 font-semibold">RIF: J-09500315-9</span>
+          <span className="font-mono text-slate-300 font-semibold">RIF J-09500315-9</span>
           <span className="text-slate-600">•</span>
           <span>Ciudad Guayana, Estado Bolívar</span>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-300 text-xs shadow-xs font-medium">
+        {/* Derecha: Badge SIGMA y Créditos en una sola línea fluida */}
+        <div className="flex flex-wrap items-center justify-center xl:justify-end gap-x-4 gap-y-2 text-xs">
+          <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-300 text-[11px] shadow-xs font-medium">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>SIGMA TIMACA · <strong className="text-white font-bold">Gestión de Materiales y Activos</strong></span>
           </div>
 
-          <div className="text-[11px] font-medium text-slate-300">
-            Sistema creado por: <strong className="text-white font-bold">Alejandra Tesara</strong> · <strong className="text-white font-bold">Daniela Riveros</strong> · <strong className="text-white font-bold">Jessica Navarro</strong>
+          <div className="flex items-center gap-1.5 text-xs text-slate-300">
+            <span className="text-slate-400">Sistema creado por:</span>
+            <strong className="text-white font-bold">Alejandra Tesara</strong>
+            <span className="text-slate-500">·</span>
+            <strong className="text-white font-bold">Daniela Riveros</strong>
+            <span className="text-slate-500">·</span>
+            <strong className="text-white font-bold">Jessica Navarro</strong>
           </div>
         </div>
       </footer>

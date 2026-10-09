@@ -562,32 +562,43 @@ function AppContent() {
       />
 
       {/* Footer Adaptativo */}
-      <footer className={`py-4 mt-8 transition-colors duration-300 border-t ${
+      <footer className={`py-3.5 mt-8 transition-colors duration-300 border-t ${
         esInternos 
           ? 'bg-slate-900 text-slate-400 border-slate-700/80' 
           : 'bg-white text-neutral-500 border-neutral-200'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`font-black ${esInternos ? 'text-white' : 'text-[#0b2545]'}`}>TIMACA</span>
-            <span aria-hidden="true">·</span>
-            <span>Taller Industrial Metalúrgico Antonio, C.A.</span>
-            <span aria-hidden="true">·</span>
-            <span className="font-mono text-[11px]">RIF J-09500315-9</span>
-            <span aria-hidden="true">·</span>
-            <span className={esInternos ? 'text-sky-300' : 'text-neutral-500'}>
+        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col xl:flex-row items-center justify-between gap-3 text-xs">
+          {/* Izquierda: Empresa y RIF */}
+          <div className="flex flex-wrap items-center justify-center xl:justify-start gap-2">
+            <span className={`font-black tracking-tight ${esInternos ? 'text-white' : 'text-[#0b2545]'}`}>TIMACA</span>
+            <span aria-hidden="true" className="text-slate-400">·</span>
+            <span className="font-medium">Taller Industrial Metalúrgico Antonio, C.A.</span>
+            <span aria-hidden="true" className="text-slate-400">·</span>
+            <span className="font-mono text-[11px] font-semibold">RIF J-09500315-9</span>
+            <span aria-hidden="true" className="text-slate-400">·</span>
+            <span className={esInternos ? 'text-sky-300 font-medium' : 'text-slate-600 font-medium'}>
               {esInternos ? 'Gestión Interna · CAPEX & OPEX 2026' : 'Modelo Estrella de Costos Industriales 2026'}
             </span>
           </div>
-          <div className="flex flex-col items-center md:items-end gap-1 text-center md:text-right">
-            <div className="flex items-center gap-2 text-[11px]">
-              <span>Sesión: <strong className={esInternos ? 'text-white' : 'text-neutral-800'}>{currentUser.nombre}</strong> ({currentUser.rol})</span>
-              <span aria-hidden="true">·</span>
-              <span>Ciudad Guayana, Venezuela</span>
+
+          {/* Derecha: Sesión, Creadores y Ubicación aprovechando todo el ancho */}
+          <div className="flex flex-wrap items-center justify-center xl:justify-end gap-x-4 gap-y-1.5 text-xs">
+            <div className="flex items-center gap-1.5 text-slate-500">
+              <span>Sesión:</span>
+              <strong className={esInternos ? 'text-white' : 'text-neutral-900'}>{currentUser.nombre}</strong>
+              <span className="text-slate-400">({currentUser.rol})</span>
             </div>
-            <div className="text-[11px] font-medium text-slate-600">
-              Sistema creado por: <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Alejandra Tesara</strong> · <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Daniela Riveros</strong> · <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Jessica Navarro</strong>
+            <span aria-hidden="true" className="hidden sm:inline text-slate-300">|</span>
+            <div className="flex items-center gap-1.5 text-slate-600">
+              <span className="text-slate-500">Sistema creado por:</span>
+              <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Alejandra Tesara</strong>
+              <span className="text-slate-400">·</span>
+              <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Daniela Riveros</strong>
+              <span className="text-slate-400">·</span>
+              <strong className={esInternos ? 'text-slate-100 font-bold' : 'text-slate-800 font-bold'}>Jessica Navarro</strong>
             </div>
+            <span aria-hidden="true" className="hidden sm:inline text-slate-300">|</span>
+            <span className="text-slate-400 text-[11px]">Ciudad Guayana, Venezuela</span>
           </div>
         </div>
       </footer>
