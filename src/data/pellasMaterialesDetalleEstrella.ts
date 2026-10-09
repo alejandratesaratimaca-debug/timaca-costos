@@ -656,7 +656,7 @@ export const MATRIZ_MATERIALES_PELLAS_ESTRELLA: FilaMaterialesEstrellaPellas[] =
     "total": 34
   },
   {
-    "concepto": "",
+    "concepto": "Materiales y Consumibles Varios",
     "ene": 0,
     "feb": 0,
     "mar": 0,
