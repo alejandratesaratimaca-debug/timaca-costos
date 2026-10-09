@@ -1072,60 +1072,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
         </div>
       )}
 
-      {/* AUDITORÍA ESPECIAL TRASLADO DE PERSONAL (SIP vs DEVENGADO) */}
-      {isTrasladoPersonal && (
-        <div className="bg-gradient-to-r from-blue-50 via-slate-50 to-indigo-50 border border-blue-200 rounded-2xl p-5 shadow-xs space-y-3">
-          <div className="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-blue-700 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                SIP
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-blue-950 uppercase tracking-wider">
-                  Conciliación SIP vs. Criterio de Devengado · Traslado de Personal Pellas (TTE-C-0706)
-                </h4>
-                <p className="text-[11px] text-blue-800">
-                  Proveedor: <strong>A.T.I. TRANSVEN 01, C.A</strong> · Código SIP: <strong>SE1244</strong> · Solicitante: <strong>Astrid Silva</strong>
-                </p>
-              </div>
-            </div>
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200 shrink-0">
-              Auditoría y Trazabilidad Operativa
-            </span>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div className="bg-white/90 backdrop-blur-xs p-3.5 rounded-xl border border-blue-200 space-y-1 shadow-2xs">
-              <span className="text-[10px] font-bold text-neutral-500 uppercase block">1ra Quincena Septiembre</span>
-              <div className="flex items-baseline justify-between">
-                <span className="font-mono font-bold text-neutral-900 text-sm">$23.157,50 USD</span>
-                <span className="font-mono text-[10px] text-blue-700 font-semibold">SC25774 · OC22576</span>
-              </div>
-              <p className="text-[10px] text-neutral-600">Servicio: 02/09/2026. Registrado en SIP: 15/09/2026.</p>
-            </div>
-
-            <div className="bg-white/90 backdrop-blur-xs p-3.5 rounded-xl border border-blue-200 space-y-1 shadow-2xs">
-              <span className="text-[10px] font-bold text-neutral-500 uppercase block">2da Quincena Septiembre</span>
-              <div className="flex items-baseline justify-between">
-                <span className="font-mono font-bold text-neutral-900 text-sm">$22.720,00 USD</span>
-                <span className="font-mono text-[10px] text-blue-700 font-semibold">SC26299 · OC23120</span>
-              </div>
-              <p className="text-[10px] text-neutral-600">Servicio: 17/09/2026. Registrado en SIP: 26/09/2026.</p>
-            </div>
-
-            <div className="bg-amber-50/90 p-3.5 rounded-xl border border-amber-200 space-y-1 shadow-2xs">
-              <span className="text-[10px] font-bold text-amber-800 uppercase block">Desfase Operativo Detectado</span>
-              <div className="flex items-baseline justify-between">
-                <span className="font-mono font-bold text-amber-950 text-sm">$21.800,00 USD</span>
-                <span className="font-mono text-[10px] text-amber-800 font-semibold">SC25773 · OC22575</span>
-              </div>
-              <p className="text-[10px] text-amber-900 leading-tight">
-                Cargado en SIP el 15/09/2026 con motivo <strong>17/08/26</strong>. Computado por devengado en <strong>Agosto</strong> ($44.270) para no inflar septiembre.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Filter Bar & Controls */}
       <div className="bg-white p-4 rounded-2xl border border-neutral-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
