@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useCostos } from '../context/CostosContext';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CATEGORIAS_PPT_2026, CUENTAS_CORTAS_MAP, TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT } from '../data/mockCostosTimaca';
 import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual2026';
 import { DESGLOSE_CATEGORIAS_PROYECTOS, COSTOS_INDIRECTOS_POR_CATEGORIAS, COSTOS_INDIRECTOS_CONSOLIDADO_OFICIAL } from '../data/mockDesgloseCategorias';
@@ -1939,7 +1939,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                             <td className="py-2 px-2.5 font-mono font-bold text-blue-700">{eq.codigo}</td>
                             <td className="py-2 px-3 text-slate-900 font-semibold">{eq.equipo}</td>
                             <td className="py-2 px-3 text-slate-600 text-[11px]">{eq.subcategoria}</td>
-                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">${Math.round(eq.tarifa).toLocaleString('de-DE')}</td>
+                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">${formatUnitPriceRaw(eq.tarifa)}</td>
                             <td className="py-2 px-2.5 text-right font-mono font-bold text-slate-800">{Math.round(eq.totalHM).toLocaleString('de-DE')}</td>
                             <td className="py-2 px-3 text-right font-mono font-bold text-purple-900 bg-purple-50/40">${eq.costoTotalHM.toLocaleString('de-DE')}</td>
                           </tr>
@@ -2185,7 +2185,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                             </span>
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono tabular-nums text-neutral-700">
-                            ${Math.round(s.montoUnitario).toLocaleString('de-DE')}
+                            ${formatUnitPriceRaw(s.montoUnitario)}
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono tabular-nums font-black text-blue-950 bg-blue-50/50">
                             ${Math.round(s.montoTotal).toLocaleString('de-DE')}
@@ -2287,7 +2287,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Precio Unitario</span>
                   <span className="font-mono font-semibold text-neutral-800 text-sm">
-                    ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')}
+                    ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)}
                   </span>
                 </div>
                 <div>
@@ -2304,7 +2304,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                   Cálculo:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
+                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>

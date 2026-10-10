@@ -51,7 +51,7 @@ import {
   ItemDesgloseInterno 
 } from '../data/desgloseDetalleInternos';
 import { SALIDAS_REALES_SEPTIEMBRE_2026 } from '../data/realSalidasSeptiembre2026';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { UsuarioSistema } from '../types/usuarios';
 
 type SubTabInternos = 'resumen' | 'reclasificacion' | 'capex' | 'flota' | 'gruas' | 'mod' | 'infra' | 'admon';
@@ -1815,7 +1815,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                       <td className="py-2 px-3 font-bold text-slate-800">{eq.tipo}</td>
                       <td className="py-2 px-3 text-center font-mono text-slate-700">{eq.trabajadores}</td>
                       <td className="py-2 px-3 text-right font-mono text-slate-700">{eq.totalHH} Hrs</td>
-                      <td className="py-2 px-3 text-right font-mono text-slate-600">${Math.round(eq.tarifaPromedio).toLocaleString('de-DE')}</td>
+                      <td className="py-2 px-3 text-right font-mono text-slate-600">${formatUnitPriceRaw(eq.tarifaPromedio)}</td>
                       <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatCurrency(eq.costoTotalMOD)}</td>
                     </tr>
                   ))}
@@ -1932,7 +1932,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                             {item.cantidad ? `${formatNumber(item.cantidad)} ${item.unidadMedida === 'USE' ? 'SERV' : (item.unidadMedida || '')}` : '-'}
                           </td>
                           <td className="py-2.5 px-2 text-right font-mono text-slate-600">
-                            {item.montoUnitario ? formatExact(item.montoUnitario) : '-'}
+                            {item.montoUnitario ? `$${formatUnitPriceRaw(item.montoUnitario)}` : '-'}
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono font-black text-slate-900 bg-sky-50/50">
                             {formatExact(item.montoTotal)}

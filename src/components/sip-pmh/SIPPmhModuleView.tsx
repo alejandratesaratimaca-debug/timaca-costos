@@ -5,6 +5,7 @@ import {
 } from '../../data/mockSIPPmhData';
 import { ValeSIPPmh, FrenteTrabajoPMH, ItemValePMH } from '../../types/suite';
 import { UsuarioSistema } from '../../types/usuarios';
+import { formatUnitPriceRaw } from '../../utils/dateHelpers';
 import { 
   Building2, 
   Search, 
@@ -820,7 +821,7 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
                         <td className="p-2 font-medium">{it.descripcion}</td>
                         <td className="p-2 text-center font-mono">{it.unidad}</td>
                         <td className="p-2 text-center font-mono">{it.cantidad}</td>
-                        <td className="p-2 text-right font-mono">${Math.round(it.costoUnitarioUsd).toLocaleString()}</td>
+                        <td className="p-2 text-right font-mono">${formatUnitPriceRaw(it.costoUnitarioUsd)}</td>
                         <td className="p-2 text-right font-mono font-bold">${Math.round(it.totalUsd).toLocaleString()}</td>
                       </tr>
                     ))}

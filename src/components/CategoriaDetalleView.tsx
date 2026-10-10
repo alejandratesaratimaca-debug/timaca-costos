@@ -23,7 +23,7 @@ import {
   FilaDesgloseMensual 
 } from '../data/mockDesgloseCategorias';
 import { MATRIZ_MATERIALES_PELLAS_ESTRELLA } from '../data/pellasMaterialesDetalleEstrella';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { exportCategoriaToExcel } from '../utils/excelHandler';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 import { 
@@ -2527,7 +2527,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                                                     {s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida}
                                                   </td>
                                                   <td className="py-2 px-2.5 text-right font-mono tabular-nums text-slate-700">
-                                                    ${Math.round(s.montoUnitario).toLocaleString('de-DE')}
+                                                    ${formatUnitPriceRaw(s.montoUnitario)}
                                                   </td>
                                                   <td className="py-2 px-3 text-right font-mono font-bold text-slate-900 bg-slate-50/60 tabular-nums">
                                                     ${Math.round(s.montoTotal).toLocaleString('de-DE')}

@@ -5,6 +5,7 @@ import {
 } from '../../data/mockDotacionData';
 import { CatalogoEPPItem, EntregaDotacionRegistro } from '../../types/suite';
 import { UsuarioSistema } from '../../types/usuarios';
+import { formatUnitPriceRaw } from '../../utils/dateHelpers';
 import { 
   ShieldCheck, 
   Search, 
@@ -542,7 +543,7 @@ export const DotacionModuleView: React.FC<DotacionModuleViewProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Costo Unitario:</span>
-                      <strong className="font-mono text-slate-900">${Math.round(item.costoUnitarioUsd).toLocaleString('de-DE')} USD</strong>
+                      <strong className="font-mono text-slate-900">${formatUnitPriceRaw(item.costoUnitarioUsd)} USD</strong>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Ciclo Reposición:</span>

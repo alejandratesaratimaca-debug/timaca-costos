@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { generateMockManoObraDiaria, CUENTAS_CORTAS_MAP } from '../data/mockManoObraDiaria';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { 
   Users, 
   Calendar, 
@@ -538,7 +538,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
 
                   {/* Tarifa */}
                   <td className="py-2 px-3 text-right font-mono tabular-nums text-neutral-600 whitespace-nowrap">
-                    ${Math.round(r.tarifaHoraUsd).toLocaleString('de-DE')}
+                    ${formatUnitPriceRaw(r.tarifaHoraUsd)}
                   </td>
 
                   {/* Total Pagar */}

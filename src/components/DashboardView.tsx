@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import { useCostos } from '../context/CostosContext';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { KPIHeader } from './KPIHeader';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 import { CUENTAS_CORTAS_MAP, DETALLE_SUBCONCEPTOS_CATEGORIAS, TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT } from '../data/mockCostosTimaca';
@@ -1243,7 +1243,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                     {/* 9. P. Unitario (USD) */}
                     <td className="py-2.5 px-3 text-right whitespace-nowrap font-mono tabular-nums text-neutral-700 text-xs">
-                      ${Math.round(pUnitVal).toLocaleString('de-DE')}
+                      ${formatUnitPriceRaw(pUnitVal)}
                     </td>
 
                     {/* 10. Monto Total (USD) */}
@@ -1462,7 +1462,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                   <span className="text-neutral-500 block text-[11px]">Precio Unitario</span>
                   <span className="font-mono font-semibold text-neutral-800 text-sm">
-                    ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} <span className="text-[10px] text-neutral-500">USD</span>
+                    ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} <span className="text-[10px] text-neutral-500">USD</span>
                   </span>
                 </div>
                 <div className="bg-blue-50/80 p-2.5 rounded-lg border border-blue-200">
@@ -1479,7 +1479,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   Cálculo:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
+                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>

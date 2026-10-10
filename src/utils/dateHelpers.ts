@@ -205,3 +205,20 @@ export function formatNumber(num: number): string {
   }).format(Math.round(num || 0));
 }
 
+export function formatUnitPrice(price: number, currency: 'USD' | 'VES' = 'USD'): string {
+  const num = Number(price) || 0;
+  const formatted = new Intl.NumberFormat('es-VE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+  return currency === 'USD' ? `$ ${formatted}` : `Bs. ${formatted}`;
+}
+
+export function formatUnitPriceRaw(price: number): string {
+  const num = Number(price) || 0;
+  return new Intl.NumberFormat('es-VE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+}
+

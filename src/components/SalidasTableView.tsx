@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import { useCostos } from '../context/CostosContext';
 import { SalidaCosto } from '../types/costos';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { 
   Search, 
   RotateCcw, 
@@ -496,7 +496,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
 
                       {/* 9. P. Unitario */}
                       <td className="py-2 px-3 text-right whitespace-nowrap font-mono tabular-nums text-neutral-600">
-                        ${Math.round(pUnitVal).toLocaleString('de-DE')}
+                        ${formatUnitPriceRaw(pUnitVal)}
                       </td>
 
                       {/* 10. Monto Total */}
@@ -863,7 +863,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Precio Unitario</span>
                   <span className="font-mono font-semibold text-neutral-800 text-sm">
-                    ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')}
+                    ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)}
                   </span>
                 </div>
                 <div>
@@ -881,7 +881,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                     Cálculo Auditado (Master Unificado):
                   </span>
                   <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
+                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
                   </span>
                 </div>
 
@@ -891,7 +891,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                       <div>
                         <span className="font-bold text-[10px] uppercase block text-amber-800">Costo Registrado en SIP (1 Base Central Inputs):</span>
                         <span className="font-mono font-semibold">
-                          ${Math.round(salidaAuditoria.precioSIP).toLocaleString('de-DE')} USD / {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} · Total SIP: ${Math.round(((salidaAuditoria.totalSIP ?? (salidaAuditoria.cantidad * salidaAuditoria.precioSIP)))).toLocaleString('de-DE')} USD
+                          ${formatUnitPriceRaw(salidaAuditoria.precioSIP)} USD / {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} · Total SIP: ${Math.round(((salidaAuditoria.totalSIP ?? (salidaAuditoria.cantidad * salidaAuditoria.precioSIP)))).toLocaleString('de-DE')} USD
                         </span>
                       </div>
                       <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded border border-amber-300">
@@ -900,7 +900,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                     </div>
                     {salidaAuditoria.precioSIP !== salidaAuditoria.montoUnitario && (
                       <p className="text-[10px] text-neutral-500 italic px-1">
-                        * Nota de Auditoría: El precio unitario final de ${Math.round(salidaAuditoria.montoUnitario).toLocaleString('de-DE')} USD es el valor auditado por Power Query (Hoja Unificada) aplicando la regla de valoración contra precios históricos de compra y catálogo.
+                        * Nota de Auditoría: El precio unitario final de ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} USD es el valor auditado por Power Query (Hoja Unificada) aplicando la regla de valoración contra precios históricos de compra y catálogo.
                       </p>
                     )}
                   </div>

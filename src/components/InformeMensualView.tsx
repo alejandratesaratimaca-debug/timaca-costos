@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useCostos } from '../context/CostosContext';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT, CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 } from '../data/mockCostosTimaca';
 import { exportSalidasToExcel } from '../utils/excelHandler';
 import { TimacaLogo } from './TimacaLogo';
@@ -2230,7 +2230,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                   )}
                                 </td>
                                 <td className="py-2 px-2.5 text-right font-mono text-slate-700">
-                                  {Math.round(eq.tarifa).toLocaleString('de-DE')}
+                                  {formatUnitPriceRaw(eq.tarifa)}
                                 </td>
                                 <td className="py-2 px-2.5 text-right font-mono font-bold text-slate-800">
                                   {Math.round(eq.totalHM).toLocaleString('de-DE')}

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useCostos } from '../context/CostosContext';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPrice } from '../utils/dateHelpers';
 import { 
   CalendarRange, 
   ArrowUpRight, 
@@ -259,7 +259,7 @@ export const SemanaSemanaView: React.FC<SemanaSemanaViewProps> = ({ onVolver }) 
                           {formatNumber(s.cantidad)} {s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida}
                         </td>
                         <td className="py-2.5 px-4 text-right whitespace-nowrap font-mono tabular-nums text-neutral-600">
-                          {formatCurrency(s.montoUnitario)}
+                          {formatUnitPrice(s.montoUnitario)}
                         </td>
                         <td className="py-2.5 px-4 text-right whitespace-nowrap font-mono tabular-nums font-bold text-neutral-900">
                           {formatCurrency(s.montoTotal)}

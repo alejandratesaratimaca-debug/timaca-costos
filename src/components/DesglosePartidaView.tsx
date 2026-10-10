@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ItemPartidaDetalle, obtenerDesgloseSubconcepto } from '../data/mockDesglosePartidasDetalle';
 import { getConsolidadoCategoria, HORAS_MAQUINA_CONSOLIDADO_OFICIAL_8_MESES } from '../data/mockDesgloseCategorias';
-import { formatCurrency, formatNumber } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { CUENTAS_CORTAS_MAP, CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 } from '../data/mockCostosTimaca';
 import { useCostos } from '../context/CostosContext';
 import { isNormalizacion } from '../utils/normalizacionFilter';
@@ -997,7 +997,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
               Precio Promedio Unitario
             </span>
             <span className="text-lg font-black font-mono text-neutral-900 block mt-0.5">
-              ${Math.round(precioPromedio).toLocaleString('de-DE')} USD
+              ${formatUnitPriceRaw(precioPromedio)} USD
             </span>
             <span className="text-[10px] text-neutral-500 mt-0.5 block">
               Costo ponderado por {formatUnidadLegible(unidadPrincipal)}
@@ -1267,7 +1267,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                     </span>
                   </td>
                   <td className="py-3 px-3 text-right font-mono tabular-nums text-slate-800 text-xs">
-                    ${Math.round(it.precioFinal).toLocaleString('de-DE')}
+                    ${formatUnitPriceRaw(it.precioFinal)}
                   </td>
                   <td className="py-3 px-3.5 text-right font-mono font-black tabular-nums text-blue-950 bg-blue-50/50 text-sm">
                     ${Math.round(it.totalUSD).toLocaleString('de-DE')}
@@ -1295,7 +1295,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                   {unidadPrincipal}
                 </td>
                 <td colSpan={2} className="py-3 px-3.5 text-slate-300 text-[11px] font-normal">
-                  Promedio: ${Math.round(precioPromedio).toLocaleString('de-DE')} USD
+                  Promedio: ${formatUnitPriceRaw(precioPromedio)} USD
                 </td>
                 <td className="py-3 px-3 text-right"></td>
                 <td className="py-3 px-3.5 text-right font-mono text-sm text-amber-300 bg-[#081c33]">
@@ -1386,7 +1386,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Precio Unitario</span>
                   <span className="font-mono font-semibold text-neutral-800 text-sm">
-                    ${Math.round(modalItem.precioFinal).toLocaleString('de-DE')} USD
+                    ${formatUnitPriceRaw(modalItem.precioFinal)} USD
                   </span>
                 </div>
                 <div>
@@ -1403,7 +1403,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                   CÁLCULO:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-bold text-blue-900">
-                  {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad === 'USE' ? 'SERV' : modalItem.unidad} × ${Math.round(modalItem.precioFinal).toLocaleString('de-DE')} = ${Math.round(modalItem.totalUSD).toLocaleString('de-DE')} USD
+                  {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad === 'USE' ? 'SERV' : modalItem.unidad} × ${formatUnitPriceRaw(modalItem.precioFinal)} = ${Math.round(modalItem.totalUSD).toLocaleString('de-DE')} USD
                 </span>
               </div>
             </div>
