@@ -4297,7 +4297,6 @@ VISTAS.sol = p => {
   const cols = [
     { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
-    { t: 'Almacén', v: r => almNombre(r.origen), f: r => `<span class="est est-gris" style="font-weight:700">${esc(almNombre(r.origen))}</span>` },
     { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
     { t: 'Cuenta auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800">${esc(r.cuenta)}</span>` : '—' },
     { t: 'Proyecto / OT', k: 'proyecto', td: 'wrap' },
@@ -4308,9 +4307,9 @@ VISTAS.sol = p => {
   ];
   $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido) de ' + esc(almNombre(S.ctx)) + '.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
-    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones(['TODAS', 'NO FINALIZADO', 'FINALIZADO', 'APROBADO', 'ANULADO'], filtro)}</select>`)}${buscador('gSol', 'Buscar número, almacén, cuenta auxiliar, proyecto, responsable…')}</div>`
+    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones(['TODAS', 'NO FINALIZADO', 'FINALIZADO', 'APROBADO', 'ANULADO'], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
     + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
-    + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsAlm"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
+    + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
       <button class="btn-sip" onclick="ir('solNueva')">Nueva solicitud</button>
       <button class="btn-sip" id="bEdit" disabled onclick="ir('solNueva',{num:selDe('gSol').num})">Editar solicitud</button>
@@ -4323,7 +4322,6 @@ VISTAS.sol = p => {
 };
 function tiraSol(s) {
   $('tsNum').textContent = s.num;
-  if ($('tsAlm')) $('tsAlm').textContent = almNombre(s.origen);
   if ($('tsCuenta')) $('tsCuenta').textContent = s.cuenta || '—';
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
@@ -4351,7 +4349,6 @@ VISTAS.aprobar = p => {
   const cols = [
     { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
     { t: 'Fecha', v: r => fFH(r.finalizadaEn || r.fecha), s: r => r.finalizadaEn || r.fecha },
-    { t: 'Almacén solicitante', v: r => almNombre(r.origen), f: r => `<span class="est est-verde" style="font-weight:800">${esc(almNombre(r.origen))}</span>` },
     { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
     { t: 'Cuenta auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800;font-size:12px">${esc(r.cuenta)}</span>` : '—' },
     { t: 'Proyecto', k: 'proyecto', td: 'wrap', f: r => `<b>${esc(r.proyecto || '—')}</b>` },
@@ -4367,7 +4364,7 @@ VISTAS.aprobar = p => {
         ${buscador('gApr', 'Buscar por número, cuenta auxiliar, proyecto, responsable…')}
       </div>`
     + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'FINALIZADO' ? 'No hay solicitudes pendientes de aprobación en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
-    + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taAlm"></span><span class="box" id="taCuenta"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
+    + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taCuenta"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
     <div id="taMotivo"></div>
     <div class="barra-btn">
       <button class="btn-sip" id="aVer" disabled onclick="ir('doc',{num:selDe('gApr').num,back:'aprobar'})">Visualizar solicitud</button>
@@ -4378,7 +4375,6 @@ VISTAS.aprobar = p => {
 };
 function tiraApr(s) {
   $('taNum').textContent = s.num;
-  if ($('taAlm')) $('taAlm').textContent = almNombre(s.origen);
   if ($('taCuenta')) $('taCuenta').textContent = s.cuenta || '—';
   $('taProy').textContent = s.proyecto;
   $('taResp').textContent = s.resp ? s.resp.nombre : '';
@@ -4542,7 +4538,6 @@ VISTAS.aprobarPlz = () => {
 
   const cols = [
     { t: 'N° Solicitud', k: 'id', f: r => `<b>${esc(r.id)}</b>` },
-    { t: 'Almacén solicitante', v: r => almNombre(r.alm), f: r => `<span class="est est-verde" style="font-weight:800">${esc(almNombre(r.alm))}</span>` },
     { t: 'Vale préstamo', k: 'valeRef' },
     { t: 'Cuenta auxiliar', v: r => (valeDe(r.valeRef) || {}).cuenta || '—', f: r => { const cta = (valeDe(r.valeRef) || {}).cuenta; return cta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800">${esc(cta)}</span>` : '—'; } },
     { t: 'Proyecto', v: r => (valeDe(r.valeRef) || {}).proyecto || '—', td: 'wrap' },
@@ -4570,7 +4565,7 @@ VISTAS.aprobarPlz = () => {
 function tiraExt(r) {
   const v = valeDe(r.valeRef) || {};
   $('exId').textContent = r.id;
-  $('exInfo').textContent = `${almNombre(r.alm)} · ${r.valeRef} · ${v.cuenta ? v.cuenta + ' · ' : ''}${v.proyecto || ''} · Nueva fecha: ${fF(r.nuevaFecha)}`;
+  $('exInfo').textContent = `${r.valeRef} · ${v.cuenta ? v.cuenta + ' · ' : ''}${v.proyecto || ''} · Nueva fecha: ${fF(r.nuevaFecha)}`;
   $('exVer').disabled = false;
   $('exAp').disabled = false;
   $('exRe').disabled = false;
