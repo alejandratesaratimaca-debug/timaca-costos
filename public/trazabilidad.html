@@ -737,49 +737,158 @@ function limpiarModuloCajasViejo() {
   }
 }
 
+const CAJAS_ESPECIALIDADES_OFICIALES = [
+  {
+    id: 'CH-MEC',
+    especialidad: 'Mecánico',
+    icono: '🔧',
+    nombre: 'Caja de Mecánico',
+    desc: 'Lista estándar de herramientas manuales para mecánico de planta y taller (ajuste, llaves, golpe y medición).',
+    estadoLista: 'BASE EDITABLE',
+    activo: true,
+    items: [
+      { cod: 'HE000101', desc: 'Llave combinada 3/4"', umb: 'UND', cantReq: 2 },
+      { cod: 'HE000102', desc: 'Llave combinada 1/2"', umb: 'UND', cantReq: 2 },
+      { cod: 'HE000130', desc: 'Llave ajustable 12"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', umb: 'JGO', cantReq: 1 },
+      { cod: 'HE000120', desc: 'Alicate universal 8"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000140', desc: 'Martillo de bola 2 lb', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000150', desc: 'Juego de destornilladores 6 piezas', umb: 'JGO', cantReq: 1 },
+      { cod: 'HE000180', desc: 'Cinta métrica 8 m', umb: 'UND', cantReq: 1 }
+    ]
+  },
+  {
+    id: 'CH-TOR',
+    especialidad: 'Tornero',
+    icono: '⚙️',
+    nombre: 'Caja de Tornero',
+    desc: 'Lista de herramientas de precisión, medición dimensional y ajuste de portaherramientas para tornería y mecanizado.',
+    estadoLista: 'BASE EDITABLE',
+    activo: true,
+    items: [
+      { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000195', desc: 'Micrómetro exterior 0-1"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', umb: 'JGO', cantReq: 1 },
+      { cod: 'HE000130', desc: 'Llave ajustable 12"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000101', desc: 'Llave combinada 3/4"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000102', desc: 'Llave combinada 1/2"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000140', desc: 'Martillo de bola 2 lb', umb: 'UND', cantReq: 1 }
+    ]
+  },
+  {
+    id: 'CH-ELE',
+    especialidad: 'Electricista',
+    icono: '⚡',
+    nombre: 'Caja de Electricista',
+    desc: 'Lista de herramientas para electricista industrial, tableros de fuerza, control y mantenimiento eléctrico.',
+    estadoLista: 'BASE EDITABLE',
+    activo: true,
+    items: [
+      { cod: 'HE000220', desc: 'Multímetro digital industrial', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000150', desc: 'Juego de destornilladores 6 piezas', umb: 'JGO', cantReq: 1 },
+      { cod: 'HE000120', desc: 'Alicate universal 8"', umb: 'UND', cantReq: 2 },
+      { cod: 'HE000130', desc: 'Llave ajustable 12"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000160', desc: 'Arco de segueta 12"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000180', desc: 'Cinta métrica 8 m', umb: 'UND', cantReq: 1 }
+    ]
+  },
+  {
+    id: 'CH-SOL',
+    especialidad: 'Soldador / Pailero',
+    icono: '🔥',
+    nombre: 'Caja de Soldador / Pailero',
+    desc: 'Lista de herramientas auxiliares de armado, sujeción, limpieza de escoria, trazado y nivelación para soldadura y fabricación.',
+    estadoLista: 'BASE EDITABLE',
+    activo: true,
+    items: [
+      { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', umb: 'UND', cantReq: 2 },
+      { cod: 'HE000230', desc: 'Piqueta / Martillo quita escoria', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000170', desc: 'Nivel de aluminio 24"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000180', desc: 'Cinta métrica 8 m', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000160', desc: 'Arco de segueta 12"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000140', desc: 'Martillo de bola 2 lb', umb: 'UND', cantReq: 1 }
+    ]
+  },
+  {
+    id: 'CH-MON',
+    especialidad: 'Montador',
+    icono: '🏗️',
+    nombre: 'Caja de Montador Mecánico',
+    desc: 'Lista de herramientas para montaje estructural, alineación e izaje en paradas de planta y frentes externos.',
+    estadoLista: 'BASE EDITABLE',
+    activo: true,
+    items: [
+      { cod: 'HE000110', desc: 'Señorita de cadena 1 ton', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000101', desc: 'Llave combinada 3/4"', umb: 'UND', cantReq: 2 },
+      { cod: 'HE000102', desc: 'Llave combinada 1/2"', umb: 'UND', cantReq: 2 },
+      { cod: 'HE000130', desc: 'Llave ajustable 12"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000170', desc: 'Nivel de aluminio 24"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000140', desc: 'Martillo de bola 2 lb', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000180', desc: 'Cinta métrica 8 m', umb: 'UND', cantReq: 1 }
+    ]
+  },
+  {
+    id: 'CH-INS',
+    especialidad: 'Instrumentista',
+    icono: '📟',
+    nombre: 'Caja de Instrumentista',
+    desc: 'Lista de herramientas para instrumentación, lazos de control y ajuste fino en planta.',
+    estadoLista: 'BASE EDITABLE',
+    activo: true,
+    items: [
+      { cod: 'HE000220', desc: 'Multímetro digital industrial', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', umb: 'UND', cantReq: 1 },
+      { cod: 'HE000150', desc: 'Juego de destornilladores 6 piezas', umb: 'JGO', cantReq: 1 },
+      { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', umb: 'JGO', cantReq: 1 },
+      { cod: 'HE000120', desc: 'Alicate universal 8"', umb: 'UND', cantReq: 1 }
+    ]
+  }
+];
+
 function asegurarPlanificacionCajas() {
   if (!DB) return;
+  DB.catalogo = DB.catalogo || [];
+  DB.exi = DB.exi || {};
+  DB.exi['CENTRAL'] = DB.exi['CENTRAL'] || {};
+
+  // Asegurar herramientas de especialidad en el catálogo (Tornero, Mecánico, Electricista, Soldador)
+  const extrasCat = [
+    { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', mod: 'HERRAMIENTA', cat: 'Medición', marca: 'MITUTOYO', modelo: '530-104', serial: '', umb: 'UND', costo: 45, stockIni: 6 },
+    { cod: 'HE000195', desc: 'Micrómetro exterior 0-1"', mod: 'HERRAMIENTA', cat: 'Medición', marca: 'MITUTOYO', modelo: '103-137', serial: '', umb: 'UND', costo: 68, stockIni: 4 },
+    { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', mod: 'HERRAMIENTA', cat: 'Llaves', marca: 'STANLEY', modelo: '69-253', serial: '', umb: 'JGO', costo: 14.5, stockIni: 12 },
+    { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', mod: 'HERRAMIENTA', cat: 'Alicates', marca: 'VISE-GRIP', modelo: '10R', serial: '', umb: 'UND', costo: 15.8, stockIni: 10 },
+    { cod: 'HE000220', desc: 'Multímetro digital industrial', mod: 'HERRAMIENTA', cat: 'Eléctricas', marca: 'FLUKE', modelo: '117', serial: '', umb: 'UND', costo: 185, stockIni: 5 },
+    { cod: 'HE000230', desc: 'Piqueta / Martillo quita escoria', mod: 'HERRAMIENTA', cat: 'Soldadura', marca: 'TRUPER', modelo: 'MP-500', serial: '', umb: 'UND', costo: 7.5, stockIni: 14 }
+  ];
+  let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
+  extrasCat.forEach(ex => {
+    let it = DB.catalogo.find(c => (c.cod || '').toUpperCase() === ex.cod);
+    if (!it) {
+      it = { id: ++maxId, cod: ex.cod, desc: ex.desc, mod: ex.mod, cat: ex.cat, marca: ex.marca, modelo: ex.modelo, serial: ex.serial, umb: ex.umb, costo: ex.costo, tipoA: false, talla: '', vida: 0, activo: true };
+      DB.catalogo.push(it);
+      DB.exi['CENTRAL'][it.id] = { disp: ex.stockIni, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
+    }
+  });
+
   DB.cajasTipos = DB.cajasTipos || [];
-  // Asegurar los 3 tipos de caja de demostración si aún no están inicializados
-  if (!DB.cajasTipos.length || !DB.cajasTipos.some(t => t.id === 'CH-01')) {
-    DB.cajasTipos = [
-      {
-        id: 'CH-01',
-        nombre: 'Caja Cuadrilla Mecánica Pesada',
-        desc: 'Kit completo de ajuste, apriete y medición para cuadrillas mecánicas en frentes de taller y planta.',
-        activo: true,
-        items: [
-          { cod: 'HE000101', desc: 'Llave combinada 3/4"', umb: 'UND', cantReq: 2 },
-          { cod: 'HE000102', desc: 'Llave combinada 1/2"', umb: 'UND', cantReq: 2 },
-          { cod: 'HE000120', desc: 'Alicate universal 8"', umb: 'UND', cantReq: 1 },
-          { cod: 'HE000140', desc: 'Martillo de bola 2 lb', umb: 'UND', cantReq: 1 },
-          { cod: 'HE000180', desc: 'Cinta métrica 8 m', umb: 'UND', cantReq: 1 }
-        ]
-      },
-      {
-        id: 'CH-02',
-        nombre: 'Caja Cuadrilla Soldadura y Calderería',
-        desc: 'Kit de herramientas auxiliares de izaje menor y ajuste para montaje y calderería en sitio.',
-        activo: true,
-        items: [
-          { cod: 'HE000130', desc: 'Llave ajustable 12"', umb: 'UND', cantReq: 1 },
-          { cod: 'HE000160', desc: 'Arco de segueta 12"', umb: 'UND', cantReq: 1 },
-          { cod: 'HE000170', desc: 'Nivel de aluminio 24"', umb: 'UND', cantReq: 1 },
-          { cod: 'HE000110', desc: 'Señorita de cadena 1 ton', umb: 'UND', cantReq: 2 }
-        ]
-      },
-      {
-        id: 'CH-03',
-        nombre: 'Caja Cuadrilla Mantenimiento e Instrumentación',
-        desc: 'Kit especializado para montaje y mantenimiento eléctrico e instrumental de precisión.',
-        activo: true,
-        items: [
-          { cod: 'HE000150', desc: 'Juego de destornilladores 6 piezas', umb: 'JGO', cantReq: 1 },
-          { cod: 'HE000120', desc: 'Alicate universal 8"', umb: 'UND', cantReq: 1 },
-          { cod: 'HE000600', desc: 'Taladro percutor 1/2"', umb: 'UND', cantReq: 1 }
-        ]
+  const tieneViejosDemo = DB.cajasTipos.length > 0 && DB.cajasTipos.every(t => ['CH-01', 'CH-02', 'CH-03'].includes(t.id));
+  if (!DB.cajasTipos.length || tieneViejosDemo) {
+    DB.cajasTipos = JSON.parse(JSON.stringify(CAJAS_ESPECIALIDADES_OFICIALES));
+  } else {
+    // Asegurar que las especialidades oficiales estén presentes
+    CAJAS_ESPECIALIDADES_OFICIALES.forEach(ofic => {
+      const ex = DB.cajasTipos.find(t => t.id === ofic.id);
+      if (!ex) {
+        DB.cajasTipos.push(JSON.parse(JSON.stringify(ofic)));
+      } else {
+        if (!ex.especialidad) ex.especialidad = ofic.especialidad;
+        if (!ex.icono) ex.icono = ofic.icono;
+        if (!ex.estadoLista) ex.estadoLista = 'BASE EDITABLE';
       }
-    ];
+    });
+    // Remover cajas viejas de demostración genéricas si ya están las nuevas especialidades
+    DB.cajasTipos = DB.cajasTipos.filter(t => !['CH-01', 'CH-02', 'CH-03'].includes(t.id));
   }
 }
 
@@ -794,6 +903,7 @@ function cargarDatos() {
         DB = parsed;
         asegurarUsuariosClave();
         asegurarPersonalOficial();
+        if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
         limpiarModuloCajasViejo();
         asegurarPlanificacionCajas();
         guardar();
@@ -804,6 +914,7 @@ function cargarDatos() {
   DB = semilla();
   asegurarUsuariosClave();
   asegurarPersonalOficial();
+  if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
   limpiarModuloCajasViejo();
   asegurarPlanificacionCajas();
   guardar();
@@ -1534,6 +1645,80 @@ function asegurarPersonalOficial() {
   }
 }
 
+const PROYECTOS_OFICIALES = [
+  { cuenta: 'TTE-C-0561', nombre: 'Alquiler de Gruas distintas capacidades', activo: true },
+  { cuenta: 'TTE-C-0578', nombre: 'Reconstrucción de aspas de agitadores del área 41 (Bauxilum)', activo: true },
+  { cuenta: 'TTE-C-0642', nombre: 'Rehabilitation of ship loader / Rehabilitación de Carga Barco FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0655', nombre: 'Interconexión del sistema de transporte de mineral desde la tolva multipropósito hasta carga barcos de despacho internacional PMH - FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0656', nombre: 'Rehabilitación de bandas transportadoras de finos y gruesos de la torre #3 a banda JD-8012 PMH - FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0697', nombre: 'Reparación de Generador Eléctrico para Planta de Briquetas FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0662', nombre: 'Suministro y fabricación de anillo de desgaste pos. 101 de triturador primario sup 60-89. PMH – FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0605', nombre: 'Reparación de Compresor ROOTS RGS 36 X 49 (Sidor)', activo: true },
+  { cuenta: 'TTE-C-0685', nombre: 'Compras complementarias al listado original - Planta de Pellas (VP)', activo: true },
+  { cuenta: 'TTE-C-0672', nombre: 'Extensión de banda transportadora JD 8016A y JD 8016B PMH – FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0687', nombre: 'Reparación de las poleas motriz y de quiebre en la cola de la cinta JD-8016 FMO - PMH (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0693', nombre: 'Trabajos para parada de Planta de Briquetas FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0676', nombre: 'Segunda linea de Planta de Pellas (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0706', nombre: 'Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0622', nombre: 'Stock de repuestos y equipos para máquinas briqueteadoras', activo: true },
+  { cuenta: 'TTE-C-0505', nombre: 'Traslado de grua (ISI)', activo: true },
+  { cuenta: 'TTE-C-0690', nombre: 'Estandarizacion de defensas del muelle de FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'ETE-T-0505', nombre: 'Traslado de grua (ISI)', activo: true },
+  { cuenta: 'TTE-C-0641', nombre: 'HIB PLANT/ Rehabilitación de las Máquinas Briqueteadoras FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0691', nombre: 'Reparacion de la Grua #1 en la estacion de transferencia de Boca Grande II (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0714', nombre: 'Remaquinado de segmento P/N DU 1440 x 292. Modelo 9701', activo: true },
+  { cuenta: 'TTE-C-0678', nombre: 'Proyecto Pila HA y HB, suministro e instalación de apilador y recuperador de cangilones FMO-PMH (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0696', nombre: 'Reparación de Reductor OPCO de Planta de Briquetas FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0668', nombre: 'Fase 2 Planta de briquetas - FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0680', nombre: 'Servicio de mantenimiento BG II (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0008', nombre: 'Venprecar: Rep. Motores Hagglunds.', activo: true },
+  { cuenta: 'STE-T-0008', nombre: 'Venprecar: Rep. Motores Hagglunds.', activo: true },
+  { cuenta: 'TTE-C-0033', nombre: 'Fiven:Reemplazo de Flexible para Cabezal Positivo de Horno 4', activo: true },
+  { cuenta: 'STE-T-0033', nombre: 'Fiven:Reemplazo de Flexible para Cabezal Positivo de Horno 4', activo: true },
+  { cuenta: 'TTE-C-0694', nombre: 'Suministro e Instalación de la Caldera BF-6002 para el Area 6000 de Planta de Briquetas FMO (VISCO ORINICO)', activo: true },
+  { cuenta: 'TTE-C-0671', nombre: 'Segunda línea PMH - Ingenieria, diseño y suministro, para incremento de capacidad del despacho internacional PMH-FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'STE-T-0483', nombre: 'Reparación de Segmentos de Briqueteadoras. (VP)', activo: true },
+  { cuenta: 'TTE-C-0640', nombre: 'Rehabilitación de la Parrilla Móvil 610TG1/ Planta de Pellas FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0653', nombre: 'Repotenciación de recuperador de rueda de cangilones (DRAVO) equipo de recuperación PA-9020 – PMH (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0503', nombre: 'Costos asociados a valuaciones de proyectos de clientes varios', activo: true },
+  { cuenta: 'TTE-C-0681', nombre: 'Adicionales Proyecto 2da linea de Planta de Pellas (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0715', nombre: 'Mantenimiento a rodillos briqueteadores', activo: true },
+  { cuenta: 'TTE-C-0667', nombre: 'Reparaciones principales en Top Gas Scrubber (Lavador primario) FMO- Planta de briquetas (VISCO ORINOCO)', activo: true },
+  { cuenta: 'TTE-C-0713', nombre: 'Lote 5 - Proyecto cerro redondo componente empotrados para la parte de construcción civil del sistema de procesamiento de minerales', activo: true },
+  { cuenta: 'TTE-C-0716', nombre: 'Servicio de limpieza superficial mediante chorro abrasivo (Sand Blasting)', activo: true },
+  { cuenta: 'TTE-C-0695', nombre: 'Suministo e Instalación del Shipploader SL5000 para el muelle de FMO (VISCO ORINOCO)', activo: true },
+  { cuenta: 'EE-A-C-510', nombre: 'Sección Mantenimiento Mecánico', activo: true },
+  { cuenta: 'EE-A-C-509', nombre: 'Sección Servicios Generales', activo: true },
+  { cuenta: 'TT-A-C-505', nombre: 'Departamento de Fabricación', activo: true },
+  { cuenta: 'TT-A-C-502', nombre: 'Coordinación de Operaciones', activo: true },
+  { cuenta: 'TT-A-C-205', nombre: 'Departamento de Tecnologia', activo: true }
+];
+
+function asegurarProyectosOficiales() {
+  if (!DB || !Array.isArray(DB.proyectos)) DB.proyectos = [];
+  const esLegacy = DB.proyectos.length === 0 || DB.proyectos.some(p => /^OT-\d+/i.test(p.nombre) || p.cuenta === 'ADM-G-0001');
+  if (esLegacy) {
+    // Preservar proyectos personalizados que no sean los 10 de demostración antiguos
+    const personalizados = DB.proyectos.filter(p => !(/^OT-\d+/i.test(p.nombre) || p.cuenta === 'ADM-G-0001'));
+    DB.proyectos = JSON.parse(JSON.stringify(PROYECTOS_OFICIALES));
+    personalizados.forEach(pers => {
+      if (!DB.proyectos.some(x => x.cuenta.toUpperCase() === (pers.cuenta || '').toUpperCase())) {
+        DB.proyectos.push(pers);
+      }
+    });
+  } else {
+    PROYECTOS_OFICIALES.forEach(ofic => {
+      const ex = DB.proyectos.find(p => (p.cuenta || '').toUpperCase() === ofic.cuenta.toUpperCase());
+      if (!ex) {
+        DB.proyectos.push(JSON.parse(JSON.stringify(ofic)));
+      } else {
+        ex.nombre = ofic.nombre;
+        if (ex.activo === undefined) ex.activo = true;
+      }
+    });
+  }
+}
+
 function semilla() {
   const base = Date.now();
   const T = (dias, horas = 0) => new Date(base - dias * 86400000 + horas * 3600000).toISOString();
@@ -1571,11 +1756,7 @@ function semilla() {
   U('auditor', '1234', 'Lic. Patricia León', 'V-14.987.321', 'Auditora Interna', { maestro: true, editaCostos: false });
 
   DB.personal = JSON.parse(JSON.stringify(PERSONAL_OFICIAL));
-
-  [['OT-402 Planta Pellas', 'TTE-C-0681'], ['OT-415 Mantenimiento Briquetas', 'TTE-C-0702'], ['OT-388 Parada de planta PMH', 'TTE-C-0655'],
-  ['OT-420 Fabricación de estructuras', 'TTE-C-0710'], ['OT-399 Muelle Boca Grande', 'TTE-C-0690'], ['OT-430 Mantenimiento de flota ECO', 'TTE-C-0721'],
-  ['OT-377 Overhaul de hornos', 'TTE-C-0640'], ['OT-441 Calderería SMB', 'TTE-C-0733'], ['OT-450 Seguridad industrial', 'TTE-C-0745'], ['Gastos generales de almacén', 'ADM-G-0001']
-  ].forEach(([nombre, cuenta]) => DB.proyectos.push({ nombre, cuenta, activo: true }));
+  DB.proyectos = JSON.parse(JSON.stringify(PROYECTOS_OFICIALES));
 
   let idc = 0;
   const C = (cod, desc, mod, cat, marca, modelo, serial, umb, costo, o) => DB.catalogo.push(Object.assign({ id: ++idc, cod, desc, mod, cat, marca, modelo, serial, umb, costo, tipoA: false, talla: '', vida: 0, activo: true }, o || {}));
@@ -1589,6 +1770,12 @@ function semilla() {
   C('HE000160', 'Arco de segueta 12"', 'HERRAMIENTA', 'Corte', 'TRUPER', 'AS-12', '', 'UND', 8.9);
   C('HE000170', 'Nivel de aluminio 24"', 'HERRAMIENTA', 'Medición', 'STANLEY', '42-468', '', 'UND', 21);
   C('HE000180', 'Cinta métrica 8 m', 'HERRAMIENTA', 'Medición', 'STANLEY', '33-428', '', 'UND', 10.5);
+  C('HE000190', 'Vernier / Calibrador pie de rey 6"', 'HERRAMIENTA', 'Medición', 'MITUTOYO', '530-104', '', 'UND', 45);
+  C('HE000195', 'Micrómetro exterior 0-1"', 'HERRAMIENTA', 'Medición', 'MITUTOYO', '103-137', '', 'UND', 68);
+  C('HE000200', 'Juego de llaves Allen milimétricas 10 pzas', 'HERRAMIENTA', 'Llaves', 'STANLEY', '69-253', '', 'JGO', 14.5);
+  C('HE000210', 'Alicate de presión (Perro) 10"', 'HERRAMIENTA', 'Alicates', 'VISE-GRIP', '10R', '', 'UND', 15.8);
+  C('HE000220', 'Multímetro digital industrial', 'HERRAMIENTA', 'Eléctricas', 'FLUKE', '117', '', 'UND', 185);
+  C('HE000230', 'Piqueta / Martillo quita escoria', 'HERRAMIENTA', 'Soldadura', 'TRUPER', 'MP-500', '', 'UND', 7.5);
   C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482190', 'UND', 165);
   C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482191', 'UND', 165);
   C('HE000600', 'Taladro percutor 1/2"', 'HERRAMIENTA', 'Eléctricas', 'DEWALT', 'DWD024', 'SN-7781001', 'UND', 138);
@@ -1609,7 +1796,7 @@ function semilla() {
   const IT = (cod, serial) => DB.catalogo.find(i => i.cod === cod && (!serial || i.serial === serial));
   const L = (cod, cant, cond = 'ÓPTIMO', serial) => { const it = IT(cod, serial); return lineaDe(it, cant, it.mod === 'CILINDRO' && cond === 'ÓPTIMO' ? 'LLENO' : cond); };
   const P = cedula => { const p = DB.personal.find(x => x.cedula === cedula) || DB.personal.find(x => x.cedula && digitosCI(x.cedula) === digitosCI(cedula)); return p ? { nombre: p.nombre, cedula: p.cedula, cargo: p.cargo } : { nombre: 'Responsable', cedula, cargo: 'Personal' }; };
-  const PR = nombre => DB.proyectos.find(p => p.nombre.startsWith(nombre));
+  const PR = clave => DB.proyectos.find(p => p.cuenta === clave || p.nombre.startsWith(clave)) || DB.proyectos[0];
   const como = (usr, fecha, fn) => { const pu = S.u, pn = NOW_FIX, pc = S.ctx; const uObj = userDe(usr) || DB.usuarios.find(x => x.admin) || DB.usuarios[0]; S.u = uObj; S.ctx = (uObj && uObj.almacenes && uObj.almacenes[0]) ? uObj.almacenes[0] : 'CENTRAL'; NOW_FIX = fecha; procesarVencimientos(); try { return fn(); } finally { S.u = pu; NOW_FIX = pn; S.ctx = pc; } };
   const sol = (usr, fecha, tipo, origen, cedula, sup, proy, lineas, fechas, finalizar = true) => como(usr, fecha, () => {
     const pr = PR(proy);
@@ -1620,6 +1807,7 @@ function semilla() {
   como('admin', T(430), () => {
     const ini = (alm, cod, cant, serial) => cargaInicial(alm, IT(cod, serial).id, cant);
     [['HE000101', 30], ['HE000102', 25], ['HE000110', 12], ['HE000120', 20], ['HE000130', 10], ['HE000140', 15], ['HE000150', 10], ['HE000160', 12], ['HE000170', 6], ['HE000180', 15],
+    ['HE000190', 6], ['HE000195', 4], ['HE000200', 12], ['HE000210', 10], ['HE000220', 5], ['HE000230', 14],
     ['EP000101', 60], ['EP000201', 40], ['EP000202', 30], ['EP000301', 100], ['EP000401', 150], ['EP000501', 40], ['EP000601', 25]].forEach(([c, n]) => ini('CENTRAL', c, n));
     [['HE000521', 'SN-4482190'], ['HE000521', 'SN-4482191'], ['HE000600', 'SN-7781001'], ['HE000700', 'LN-250-0091'], ['HE000710', 'HR-3301'],
     ['CI000101', 'OX-0001'], ['CI000101', 'OX-0002'], ['CI000101', 'OX-0003'], ['CI000101', 'OX-0004'], ['CI000201', 'AC-0001'], ['CI000201', 'AC-0002'], ['CI000301', 'AR-0001'], ['CI000401', 'CO-0001']].forEach(([c, s]) => ini('CENTRAL', c, 1, s));
@@ -1628,7 +1816,7 @@ function semilla() {
   });
 
   /* Asignación de EPP antigua (reposición vencida) */
-  const s4 = sol('central', T(400), 'ASI', 'CENTRAL', 'V-8.526.909', 'Jesús Barrios', 'Gastos generales', [L('EP000201', 1, 'NUEVO'), L('EP000301', 1, 'NUEVO')], { fechaAsig: D(-400) });
+  const s4 = sol('central', T(400), 'ASI', 'CENTRAL', 'V-8.526.909', 'Jesús Barrios', 'TT-A-C-502', [L('EP000201', 1, 'NUEVO'), L('EP000301', 1, 'NUEVO')], { fechaAsig: D(-400) });
   como('drivero', T(400, 1), () => aprobarSolicitud(s4.num));
 
   /* Transferencias históricas */
@@ -1641,43 +1829,43 @@ function semilla() {
   como('central', T(25), () => crearTransferencia({ origen: 'CENTRAL', destino: 'BRIQUETAS', obs: '', lineas: [L('HE000140', 4), L('HE000170', 2)] }));
 
   /* Cadena completa de cilindro y herramienta en Pellas */
-  const s1 = sol('pellas', T(24), 'PRH', 'PELLAS', 'V-4.031.435', 'Freddy Cecilio Acosta Romero', 'OT-402', [L('CI000101', 1, 'LLENO', 'OX-0002'), L('HE000120', 1)], { fechaReq: D(-24), fechaDev: D(-10) });
+  const s1 = sol('pellas', T(24), 'PRH', 'PELLAS', 'V-4.031.435', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('CI000101', 1, 'LLENO', 'OX-0002'), L('HE000120', 1)], { fechaReq: D(-24), fechaDev: D(-10) });
   const v1 = como('drivero', T(24, 1), () => aprobarSolicitud(s1.num));
   como('pellas', T(12), () => registrarDevolucion(v1.num, [{ i: 0, cant: 1, cond: 'VACÍO' }, { i: 1, cant: 1, cond: 'BUENO' }], 'Luis Alvarado', 'Cilindro devuelto vacío'));
   const t5 = como('pellas', T(11), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de cilindro vacío para recarga', lineas: [L('CI000101', 1, 'VACÍO', 'OX-0002')] }));
   como('central', T(11, 4), () => aceptarTransferencia(t5.num));
 
   /* Préstamos en Central */
-  const s2 = sol('central', T(20), 'PRH', 'CENTRAL', 'V-15.836.486', 'Jonathan Grela', 'OT-388', [L('HE000521', 1, 'ÓPTIMO', 'SN-4482190'), L('HE000101', 2)], { fechaReq: D(-20), fechaDev: D(-5) });
+  const s2 = sol('central', T(20), 'PRH', 'CENTRAL', 'V-15.836.486', 'Jonathan Grela', 'TTE-C-0655', [L('HE000521', 1, 'ÓPTIMO', 'SN-4482190'), L('HE000101', 2)], { fechaReq: D(-20), fechaDev: D(-5) });
   como('drivero', T(20, 2), () => aprobarSolicitud(s2.num));
-  const s3 = sol('central', T(9), 'PRH', 'CENTRAL', 'V-13.121.593', 'Mauricio Gerussi', 'OT-420', [L('HE000600', 1, 'ÓPTIMO', 'SN-7781001')], { fechaReq: D(-9), fechaDev: D(-1) });
+  const s3 = sol('central', T(9), 'PRH', 'CENTRAL', 'V-13.121.593', 'Mauricio Gerussi', 'TT-A-C-505', [L('HE000600', 1, 'ÓPTIMO', 'SN-7781001')], { fechaReq: D(-9), fechaDev: D(-1) });
   const v3 = como('drivero', T(9, 1), () => aprobarSolicitud(s3.num));
   como('central', T(2), () => extenderPlazo(v3.num, D(7), 'Mauricio Gerussi', 'Trabajo de fabricación extendido por cambio de alcance'));
 
   /* Asignaciones */
-  const s5 = sol('central', T(20), 'ASI', 'CENTRAL', 'V-11.515.567', 'Humberto Avendaño', 'OT-450', [L('EP000101', 1, 'NUEVO'), L('EP000401', 2, 'NUEVO')], { fechaAsig: D(-20) });
+  const s5 = sol('central', T(20), 'ASI', 'CENTRAL', 'V-11.515.567', 'Humberto Avendaño', 'EE-A-C-509', [L('EP000101', 1, 'NUEVO'), L('EP000401', 2, 'NUEVO')], { fechaAsig: D(-20) });
   como('drivero', T(20, 3), () => aprobarSolicitud(s5.num));
-  const s6 = sol('pellas', T(15), 'ASI', 'PELLAS', 'V-8.179.834', 'Freddy Cecilio Acosta Romero', 'OT-402', [L('HE000140', 1)], { fechaAsig: D(-15) });
+  const s6 = sol('pellas', T(15), 'ASI', 'PELLAS', 'V-8.179.834', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('HE000140', 1)], { fechaAsig: D(-15) });
   como('drivero', T(15, 2), () => aprobarSolicitud(s6.num));
 
   /* ECO: préstamo con extravío y solicitud anulada */
-  const s11 = sol('eco', T(14), 'PRH', 'ECO', 'V-6.880.863', 'Mauricio Gerussi', 'OT-430', [L('HE000130', 1)], { fechaReq: D(-14), fechaDev: D(3) });
+  const s11 = sol('eco', T(14), 'PRH', 'ECO', 'V-6.880.863', 'Mauricio Gerussi', 'EE-A-C-510', [L('HE000130', 1)], { fechaReq: D(-14), fechaDev: D(3) });
   const v11 = como('drivero', T(14, 1), () => aprobarSolicitud(s11.num));
   como('eco', T(9), () => { const lv = v11.lineas[0]; return registrarIncidencia('EXT', { origen: 'ECO', valeRef: v11.num, resp: v11.resp, sup: 'Mauricio Gerussi', proyecto: v11.proyecto, cuenta: v11.cuenta, detalle: 'El trabajador reporta que la llave no apareció al finalizar la jornada en el área de lavado de equipos.', lineas: [Object.assign({}, lv, { cant: 1, idx: 0 })] }); });
-  const s10 = sol('eco', T(8), 'PRH', 'ECO', 'V-9.946.019', 'Carlos Giraldo', 'OT-430', [L('HE000110', 1)], { fechaReq: D(-8), fechaDev: D(-2) });
+  const s10 = sol('eco', T(8), 'PRH', 'ECO', 'V-9.946.019', 'Carlos Giraldo', 'EE-A-C-510', [L('HE000110', 1)], { fechaReq: D(-8), fechaDev: D(-2) });
   como('drivero', T(8, 2), () => anularSolicitud(s10.num, 'La OT-430 no requiere izaje esta semana.'));
 
   /* Daño en Central */
-  como('central', T(7), () => registrarIncidencia('DAN', { origen: 'CENTRAL', resp: P('V-24.037.987'), sup: 'Albin Cedeño', proyecto: 'OT-388 Parada de planta PMH', cuenta: 'TTE-C-0655', detalle: 'Carbones desgastados y guarda de protección fisurada.', malUso: 'NO', dictamen: 'REPARABLE', lineas: [L('HE000521', 1, 'DAÑADO', 'SN-4482191')] }));
+  como('central', T(7), () => registrarIncidencia('DAN', { origen: 'CENTRAL', resp: P('V-24.037.987'), sup: 'Albin Cedeño', proyecto: 'Interconexión del sistema de transporte de mineral desde la tolva multipropósito hasta carga barcos de despacho internacional PMH - FMO (VISCO ORINOCO)', cuenta: 'TTE-C-0655', detalle: 'Carbones desgastados y guarda de protección fisurada.', malUso: 'NO', dictamen: 'REPARABLE', lineas: [L('HE000521', 1, 'DAÑADO', 'SN-4482191')] }));
 
   /* Solicitudes pendientes y borrador */
-  sol('central', T(3), 'PRH', 'CENTRAL', 'V-26.662.373', 'Ricardo Ramos', 'OT-377', [L('HE000700', 1, 'ÓPTIMO', 'LN-250-0091'), L('HE000710', 1, 'ÓPTIMO', 'HR-3301')], { fechaReq: D(0), fechaDev: D(10) });
-  sol('pellas', T(2), 'PRH', 'PELLAS', 'V-14.905.458', 'Freddy Cecilio Acosta Romero', 'OT-402', [L('HE000102', 2)], { fechaReq: D(0), fechaDev: D(5) });
-  sol('central', T(1), 'PRH', 'CENTRAL', 'V-15.903.045', 'José Romero', 'OT-415', [L('HE000180', 1)], { fechaReq: D(1), fechaDev: D(6) }, false);
+  sol('central', T(3), 'PRH', 'CENTRAL', 'V-26.662.373', 'Ricardo Ramos', 'TTE-C-0640', [L('HE000700', 1, 'ÓPTIMO', 'LN-250-0091'), L('HE000710', 1, 'ÓPTIMO', 'HR-3301')], { fechaReq: D(0), fechaDev: D(10) });
+  sol('pellas', T(2), 'PRH', 'PELLAS', 'V-14.905.458', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('HE000102', 2)], { fechaReq: D(0), fechaDev: D(5) });
+  sol('central', T(1), 'PRH', 'CENTRAL', 'V-15.903.045', 'José Romero', 'TTE-C-0693', [L('HE000180', 1)], { fechaReq: D(1), fechaDev: D(6) }, false);
 
   /* Transferencias pendientes (una por vencer) */
   como('central', T(0, -11), () => crearTransferencia({ origen: 'CENTRAL', destino: 'ECO', obs: 'Reposición de EPP', lineas: [L('EP000301', 15, 'NUEVO'), L('EP000401', 25, 'NUEVO')] }));
-  como('central', T(0, -3), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PELLAS', obs: 'Requerimiento OT-402', lineas: [L('HE000101', 5), L('HE000110', 6)] }));
+  como('central', T(0, -3), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PELLAS', obs: 'Requerimiento Planta Pellas TTE-C-0681', lineas: [L('HE000101', 5), L('HE000110', 6)] }));
 
   /* Costos y bitácora del Maestro */
   como('gerencia', T(5), () => { const pc = S.ctx; S.ctx = 'MAESTRO'; cambiarCosto(IT('HE000110').id, 52, 'Actualización de proveedor'); S.ctx = pc; });
@@ -1758,8 +1946,16 @@ const buscador = (id, ph) => `<input class="buscar-grid" placeholder="${esc(ph |
 const selDe = id => GR[id] ? GR[id].sel : null;
 
 function exportarExcel(id, nombre) {
-  const g = GR[id]; const cols = g.cols.filter(c => !c.noExp);
-  const filas = [cols.map(c => c.t)].concat(g.vis.map(r => cols.map(c => { const v = valCol(c, r); return v == null ? '' : v; })));
+  let filas;
+  if (Array.isArray(id)) {
+    const datos = id;
+    const cab = datos.length ? Object.keys(datos[0]) : ['Datos'];
+    filas = [cab].concat(datos.map(r => cab.map(k => r[k] == null ? '' : r[k])));
+  } else {
+    const g = GR[id]; if (!g) return;
+    const cols = g.cols.filter(c => !c.noExp);
+    filas = [cols.map(c => c.t)].concat(g.vis.map(r => cols.map(c => { const v = valCol(c, r); return v == null ? '' : v; })));
+  }
   const archivo = (nombre || 'reporte').replace(/[^\w\-]+/g, '_') + '_' + hoy();
   if (window.XLSX) {
     const ws = XLSX.utils.aoa_to_sheet(filas); const wb = XLSX.utils.book_new();
@@ -1866,9 +2062,11 @@ const fuenteSupervisores = (q, alFoco) => {
   }));
 };
 
-const fuenteProyectos = q => { q = q.trim().toLowerCase();
-  return DB.proyectos.filter(p => p.activo && (p.nombre.toLowerCase().includes(q) || p.cuenta.toLowerCase().includes(q))).slice(0, 12)
-    .map(p => ({ val: p, html: `<b>${esc(p.nombre)}</b><small>Cuenta auxiliar: ${esc(p.cuenta)}</small>` })); };
+const fuenteProyectos = q => {
+  const nq = normTexto(q || '');
+  return DB.proyectos.filter(p => p.activo !== false && (!nq || normTexto(p.nombre).includes(nq) || normTexto(p.cuenta).includes(nq))).slice(0, 50)
+    .map(p => ({ val: p, html: `<span class="disp">${esc(p.cuenta)}</span><b>${esc(p.nombre)}</b><small>Cuenta auxiliar: ${esc(p.cuenta)}</small>` }));
+};
 const datalistPersonal = () => '';
 
 /* ---------- Impresión ---------- */
@@ -1994,8 +2192,8 @@ function menuDef() {
   ];
   if (c === 'CENTRAL') {
     m.push(['Planificación de cajas', [
-      ['cajasPlan', 'Planificación de cajas'],
-      ['cajasTipos', 'Tipos de caja']
+      ['cajasPlan', 'Planificación y faltantes'],
+      ['cajasTipos', 'Listas por especialidad']
     ]]);
   }
   m.push(
@@ -2172,118 +2370,364 @@ function calcularPlanTipoCaja(tipo) {
 }
 
 let PLAN_FILTRO_Q = '';
+let PLAN_METAS_CAJA = {}; // idTipo -> cantidad de cajas a armar en la tabla principal
+let PLAN_SOLO_FALTANTES = false;
+let CAJA_LISTA_SEL = ''; // idTipo seleccionado en la vista de Listas por Especialidad
 
-/* ---------- VISTA: PLANIFICACIÓN DE CAJAS (Pantalla Principal) ---------- */
+function inicializarMetasCaja(tipos) {
+  let algunValor = false;
+  tipos.forEach(t => {
+    if (PLAN_METAS_CAJA[t.id] !== undefined) algunValor = true;
+  });
+  if (!algunValor) {
+    tipos.forEach(t => { PLAN_METAS_CAJA[t.id] = 1; });
+  }
+}
+
+function navTabsCajas(activa) {
+  const esM = enMaestro();
+  const irPlan = esM ? "ir('mCajas')" : "ir('cajasPlan')";
+  const irListas = esM ? "ir('mCajas',{tab:'listas'})" : "ir('cajasTipos')";
+  return `
+    <div style="display:flex;gap:8px;margin-bottom:14px;border-bottom:2px solid var(--borde);padding-bottom:10px;flex-wrap:wrap;align-items:center">
+      <button type="button" class="btn ${activa === 'plan' ? 'btn-navy' : 'btn-claro'}" onclick="${irPlan}" style="font-weight:800">
+        🧰 1. Planificación y Faltantes por Caja
+      </button>
+      <button type="button" class="btn ${activa === 'listas' ? 'btn-navy' : 'btn-claro'}" onclick="${irListas}" style="font-weight:800">
+        📋 2. Listas de Herramientas por Especialidad (Mecánico, Tornero, etc.)
+      </button>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--texto-3)">
+        💡 Cada especialidad tiene su propia lista estándar de herramientas editable.
+      </span>
+    </div>
+  `;
+}
+
+/* ---------- VISTA: PLANIFICACIÓN DE CAJAS (Pantalla Principal Rediseñada) ---------- */
 VISTAS.cajasPlan = p => {
   const esMaestro = enMaestro();
   const tipos = (DB.cajasTipos || []).filter(t => t.activo !== false);
+  inicializarMetasCaja(tipos);
   const planes = tipos.map(t => calcularPlanTipoCaja(t));
 
-  // KPIs
-  const totTipos = tipos.length;
-  const totPosibles = planes.reduce((acc, pl) => acc + pl.cajasPosibles, 0);
-  const mejor = planes.slice().sort((a, b) => b.cajasPosibles - a.cajasPosibles)[0];
-  const totLimitantes = planes.reduce((acc, pl) => acc + pl.limitantes.length, 0);
-  const valorTotalKitsUSD = planes.reduce((acc, pl) => acc + (pl.cajasPosibles * pl.costoPorCaja), 0);
-
-  // Filtrado por buscador único (código, nombre o herramienta contenida)
+  // Filtrado por buscador
   const q = normTexto(PLAN_FILTRO_Q || '');
   const planesFiltrados = planes.filter(pl => {
     if (!q) return true;
     const matchId = normTexto(pl.tipo.id).includes(q);
+    const matchEsp = normTexto(pl.tipo.especialidad || '').includes(q);
     const matchNom = normTexto(pl.tipo.nombre).includes(q);
-    const matchDesc = normTexto(pl.tipo.desc || '').includes(q);
     const matchHerr = (pl.items || []).some(h => normTexto(h.cod).includes(q) || normTexto(h.desc).includes(q));
-    return matchId || matchNom || matchDesc || matchHerr;
+    return matchId || matchEsp || matchNom || matchHerr;
   });
 
-  // Gráfico de barras: Cajas posibles por tipo
-  const chartBarras = planes.length > 0
-    ? gBarras(planes.map(p => p.tipo.id), [{ n: 'Cajas posibles', c: COL.verde, vals: planes.map(p => p.cajasPosibles) }], null, 180)
-    : '<div class="ayuda-txt">Sin tipos de caja definidos.</div>';
+  // Demanda consolidada según las cajas que el usuario colocó en la columna "¿Cuántas cajas necesitas armar?"
+  const demandaConsolidada = {};
+  let totCajasMeta = 0;
+  planes.forEach(pl => {
+    const cantCajas = Math.max(0, parseInt(PLAN_METAS_CAJA[pl.tipo.id]) || 0);
+    totCajasMeta += cantCajas;
+    if (cantCajas > 0) {
+      pl.items.forEach(it => {
+        const cod = it.cod.toUpperCase();
+        if (!demandaConsolidada[cod]) {
+          demandaConsolidada[cod] = {
+            cod: it.cod,
+            desc: it.desc,
+            umb: it.umb,
+            cantReq: 0,
+            disp: it.disp,
+            costoUnit: it.costoUnit,
+            usadoEn: []
+          };
+        }
+        demandaConsolidada[cod].cantReq += cantCajas * it.cantReq;
+        demandaConsolidada[cod].usadoEn.push(`${pl.tipo.especialidad || pl.tipo.nombre} (${cantCajas * it.cantReq})`);
+      });
+    }
+  });
 
-  const btnAdmin = !esMaestro ? '<button class="btn btn-claro btn-mini" onclick="ir(\'cajasTipos\')">📋 Administrar tipos</button>' : '';
-  const btnMaestroKpi = esMaestro ? cardC('Valorización kits factibles', usd(valorTotalKitsUSD), 'verde', 'Calculado con costos del catálogo') : '';
+  const listaDemanda = Object.values(demandaConsolidada).map(d => {
+    const faltante = Math.max(0, d.cantReq - d.disp);
+    return {
+      ...d,
+      faltante,
+      costoFaltante: faltante * d.costoUnit
+    };
+  }).sort((a, b) => b.faltante - a.faltante || a.desc.localeCompare(b.desc));
+
+  const listaFaltantesMeta = listaDemanda.filter(d => d.faltante > 0);
+  const totPiezasFaltantesMeta = listaFaltantesMeta.reduce((acc, d) => acc + d.faltante, 0);
+  const totCostoFaltantesMeta = listaFaltantesMeta.reduce((acc, d) => acc + d.costoFaltante, 0);
+  const totPosiblesIndividual = planes.reduce((acc, pl) => acc + pl.cajasPosibles, 0);
+  const especialidadesListas = planes.filter(pl => pl.items.length > 0 && pl.cajasPosibles > 0).length;
+
+  window.cambiarMetaCaja = (idTipo, valor) => {
+    PLAN_METAS_CAJA[idTipo] = Math.max(0, Math.min(99, parseInt(valor) || 0));
+    ir(esMaestro ? 'mCajas' : 'cajasPlan');
+  };
+
+  window.presetMetasCaja = modo => {
+    tipos.forEach(t => {
+      PLAN_METAS_CAJA[t.id] = modo === 'uno' ? 1 : 0;
+    });
+    ir(esMaestro ? 'mCajas' : 'cajasPlan');
+  };
+
+  const listaMostrar = PLAN_SOLO_FALTANTES ? listaFaltantesMeta : listaDemanda;
 
   $('area').innerHTML = cab(
-    '🧰 Planificación de cajas de herramientas',
-    'Cálculo en tiempo real de cajas factibles a partir de la existencia DISPONIBLE de Almacén Central. Consulta analítica sin movimientos de inventario.',
+    '🧰 Planificación de Cajas por Especialidad',
+    'Consulta qué herramientas lleva cada caja según el oficio (Mecánico, Tornero, Electricista, Soldador, Montador, Instrumentista) y cuántas cajas puedes armar hoy con el stock de Almacén Central.',
     `<div style="display:flex;gap:6px;flex-wrap:wrap">
-      ${btnAdmin}
-      <button class="btn btn-navy btn-mini" onclick="modalSimularMultiCaja()">🧮 Simular varias cajas</button>
-      ${botonesExport('gCajPlan', 'Planificacion_Cajas')}
-      <button class="btn btn-claro btn-mini" onclick="refrescar()">🔄 Recalcular</button>
+      <button class="btn btn-navy btn-mini" onclick="${esMaestro ? "ir('mCajas',{tab:'listas'})" : "ir('cajasTipos')"}">📋 Cargar / Editar Listas de Herramientas</button>
+      <button class="btn btn-claro btn-mini" onclick="refrescar()">🔄 Actualizar stock</button>
     </div>`
   )
-  + `<div class="cards">
-      ${cardC('Tipos de caja', num(totTipos), '', 'Modelos activos')}
-      ${cardC('Total cajas posibles', num(totPosibles), totPosibles > 0 ? 'verde' : 'rojo', 'Sumando todos los tipos')}
-      ${cardC('Mayor disponibilidad', mejor ? `${mejor.tipo.id} (${mejor.cajasPosibles})` : '—', 'azul', mejor ? mejor.tipo.nombre : '')}
-      ${cardC('Ítems limitantes', num(totLimitantes), totLimitantes > 0 ? 'naranja' : 'verde', 'Cuellos de botella detectados')}
-      ${btnMaestroKpi}
+  + navTabsCajas('plan')
+  + `<div class="cards" style="margin-bottom:14px">
+      ${cardC('Especialidades / Oficios', `${tipos.length} tipos`, 'azul', tipos.map(t => t.especialidad || t.id).join(' · '))}
+      ${cardC('Especialidades con stock completo', `${especialidadesListas} de ${tipos.length}`, especialidadesListas === tipos.length ? 'verde' : 'naranja', `Suma máx. individual: ${totPosiblesIndividual} cajas`)}
+      ${cardC('Cajas a armar en tu plan', `${totCajasMeta} caja(s)`, 'azul', 'Ajustable en la tabla de abajo')}
+      ${cardC('Piezas faltantes para tu plan', num(totPiezasFaltantesMeta), totPiezasFaltantesMeta === 0 ? 'verde' : 'rojo', totPiezasFaltantesMeta === 0 ? '¡Stock completo en Central!' : `En ${listaFaltantesMeta.length} herramienta(s)`)}
+      ${esMaestro ? cardC('Presupuesto reposición faltantes', usd(totCostoFaltantesMeta), totCostoFaltantesMeta === 0 ? 'verde' : 'naranja', 'Según costos del catálogo') : ''}
     </div>`
   + `<div class="panel" style="margin-bottom:16px">
-      <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Disponibilidad comparativa de ensamblaje en Almacén Central</span>
-        <span style="font-size:11px;color:var(--texto-3)">Basado exclusivamente en stock disponible (excluye préstamos y satélites)</span>
+      <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div>
+          <b>1. Matriz de Cajas por Especialidad / Oficio</b>
+          <span style="font-size:11.5px;color:var(--texto-3);margin-left:8px">Indica cuántas cajas necesitas armar de cada especialidad para calcular los faltantes</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <input id="planQ" value="${esc(PLAN_FILTRO_Q)}" placeholder="Filtrar especialidad o herramienta…" oninput="PLAN_FILTRO_Q=this.value;ir('${esMaestro ? 'mCajas' : 'cajasPlan'}')" style="padding:4px 8px;font-size:12px;width:220px">
+          <button class="btn btn-claro btn-mini" onclick="presetMetasCaja('uno')">1 de cada oficio</button>
+          <button class="btn btn-claro btn-mini" onclick="presetMetasCaja('cero')">Poner en 0</button>
+        </div>
       </div>
-      <div class="panel-b">${chartBarras}</div>
+      <div class="panel-b" style="padding:0;overflow-x:auto">
+        <table class="grid">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Especialidad / Caja</th>
+              <th class="cen">Lista de Herramientas</th>
+              <th class="cen">Armables hoy (Stock Central)</th>
+              <th>Herramienta Limitante en Central</th>
+              <th class="cen" style="background:#EFF6FF;color:#1E3A8A">¿Cuántas cajas vas a armar?</th>
+              <th>Balance para esa cantidad</th>
+              <th class="cen">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${planesFiltrados.map(pl => {
+              const t = pl.tipo;
+              const meta = Math.max(0, parseInt(PLAN_METAS_CAJA[t.id]) || 0);
+              const lim = pl.limitantes[0];
+              const faltanParaMeta = pl.items.reduce((acc, it) => acc + Math.max(0, (meta * it.cantReq) - it.disp), 0);
+              const herrFaltanMeta = pl.items.filter(it => (meta * it.cantReq) > it.disp).length;
+              const irListaCaja = esMaestro ? `ir('mCajas',{tab:'listas',id:'${t.id}'})` : `ir('cajasTipos',{id:'${t.id}'})`;
+              const irDetCaja = esMaestro ? `ir('mCajas',{id:'${t.id}',deseadas:${Math.max(1, meta)}})` : `ir('cajasTipoDetalle',{id:'${t.id}',deseadas:${Math.max(1, meta)}})`;
+              return `
+                <tr>
+                  <td><span class="chip-mod m-HERRAMIENTA" style="font-weight:800">${esc(t.id)}</span></td>
+                  <td>
+                    <div style="font-weight:800;color:var(--navy);font-size:13px">${t.icono || '🧰'} ${esc(t.nombre)}</div>
+                    <div style="font-size:11px;color:var(--texto-3)">Oficio: <b>${esc(t.especialidad || t.nombre)}</b> · <span style="color:${t.estadoLista === 'LISTA OFICIAL' ? '#16a34a' : '#d97706'};font-weight:700">${esc(t.estadoLista || 'BASE EDITABLE')}</span></div>
+                  </td>
+                  <td class="cen">
+                    ${pl.items.length > 0
+                      ? `<b>${pl.items.length}</b> herr. <span style="color:var(--texto-3)">(${pl.piezasPorCaja} pzas)</span>`
+                      : `<span class="est est-rojo">Lista vacía</span>`}
+                  </td>
+                  <td class="cen">
+                    <span style="display:inline-block;padding:3px 10px;border-radius:99px;font-weight:900;font-size:13px;background:${pl.cajasPosibles > 0 ? '#DCFCE7' : '#FEE2E2'};color:${pl.cajasPosibles > 0 ? '#166534' : '#991B1B'}">
+                      ${pl.cajasPosibles} caja(s)
+                    </span>
+                  </td>
+                  <td style="font-size:11.5px">
+                    ${!pl.items.length
+                      ? '<span style="color:var(--texto-3)">Pendiente cargar lista de herramientas</span>'
+                      : lim
+                        ? `<span style="color:#92400E"><b>${esc(lim.desc)}</b></span><br><small style="color:var(--texto-3)">Disp. Central: ${lim.disp} ${lim.umb} (pide ${lim.cantReq}/caja)</small>`
+                        : '<span style="color:var(--verde);font-weight:700">✔ Stock holgado</span>'}
+                  </td>
+                  <td class="cen" style="background:#F8FAFC">
+                    <div style="display:inline-flex;align-items:center;gap:4px">
+                      <button type="button" class="btn btn-claro btn-mini" style="padding:2px 7px" onclick="cambiarMetaCaja('${t.id}', ${(meta - 1)})">−</button>
+                      <input type="number" min="0" max="99" value="${meta}" style="width:52px;text-align:center;font-weight:900;font-size:14px;padding:3px"
+                        onchange="cambiarMetaCaja('${t.id}', this.value)">
+                      <button type="button" class="btn btn-claro btn-mini" style="padding:2px 7px" onclick="cambiarMetaCaja('${t.id}', ${(meta + 1)})">+</button>
+                    </div>
+                  </td>
+                  <td style="font-size:12px">
+                    ${meta === 0
+                      ? '<span style="color:var(--texto-3)">No solicitada (0)</span>'
+                      : !pl.items.length
+                        ? '<span style="color:#d97706;font-weight:700">⚠️ Cargue primero la lista</span>'
+                        : faltanParaMeta === 0
+                          ? `<span style="color:#166534;font-weight:700">✅ Completo para ${meta} caja(s)</span>`
+                          : `<span style="color:#dc2626;font-weight:800">⚠️ Faltan ${faltanParaMeta} pzas (${herrFaltanMeta} herr.)</span>`}
+                  </td>
+                  <td class="cen" style="white-space:nowrap">
+                    <button class="btn btn-claro btn-mini" onclick="${irListaCaja}" title="Ver o editar la lista de herramientas de este oficio">📋 Lista</button>
+                    <button class="btn btn-navy btn-mini" onclick="${irDetCaja}" title="Ver desglose detallado y faltantes de esta caja">🔍 Detalle</button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
     </div>`
-  + `<div class="fila-filtros" style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
-      ${campo('Buscar tipo o herramienta contenida', `<input id="planQ" value="${esc(PLAN_FILTRO_Q)}" placeholder="Ej. CH-01, Mecánica, HE000101, señorita, alicate…" oninput="PLAN_FILTRO_Q=this.value;ir('cajasPlan')" style="min-width:320px">`)}
-      ${PLAN_FILTRO_Q ? '<button class="btn btn-claro btn-mini" onclick="PLAN_FILTRO_Q=\'\';ir(\'cajasPlan\')">Limpiar búsqueda</button>' : ''}
-      <span style="margin-left:auto;font-size:12px;font-weight:700;color:var(--texto-2)">Mostrando ${planesFiltrados.length} de ${planes.length} tipos</span>
-    </div>`
-  + `<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));gap:16px">
-      ${planesFiltrados.map(pl => {
-        const lim = pl.limitantes[0];
-        const sinStock = pl.items.find(it => it.disp === 0);
-        return `
-          <div class="panel" style="display:flex;flex-direction:column;justify-content:space-between;border-top:4px solid ${pl.cajasPosibles > 0 ? 'var(--verde)' : 'var(--rojo)'}">
-            <div class="panel-b" style="padding:16px">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-                <div>
-                  <span class="chip-mod m-HERRAMIENTA" style="font-weight:800">${pl.tipo.id}</span>
-                  <h3 style="margin:6px 0 2px;font-size:16px;color:var(--navy)">${esc(pl.tipo.nombre)}</h3>
-                </div>
-                <div style="text-align:right">
-                  <div style="font-size:36px;font-weight:900;line-height:1;color:${pl.cajasPosibles > 0 ? 'var(--verde)' : 'var(--rojo)'}">${pl.cajasPosibles}</div>
-                  <div style="font-size:10px;font-weight:800;letter-spacing:0.5px;color:var(--texto-3)">CAJAS POSIBLES</div>
-                </div>
-              </div>
-
-              <p style="font-size:12px;color:var(--texto-2);margin:6px 0 12px;line-height:1.4">${esc(pl.tipo.desc || 'Sin descripción.')}</p>
-
-              <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-top:1px dashed var(--borde);border-bottom:1px dashed var(--borde);margin-bottom:10px">
-                <span><b>Contenido:</b> ${pl.piezasPorCaja} piezas (${pl.items.length} herramientas)</span>
-                ${esMaestro ? `<span style="color:var(--verde);font-weight:800">Costo kit: ${usd(pl.costoPorCaja)}</span>` : ''}
-              </div>
-
-              ${pl.cajasPosibles === 0 && sinStock ? `
-                <div style="background:#FEE2E2;border:1px solid #FCA5A5;color:#991B1B;padding:8px 10px;border-radius:6px;font-size:11px;margin-bottom:12px">
-                  <b>🚨 Sin existencia en Central:</b> ${esc(sinStock.desc)} (Disp: 0 · Requiere: ${sinStock.cantReq} ${sinStock.umb})
-                </div>
-              ` : lim ? `
-                <div style="background:#FEF3C7;border:1px solid #FCD34D;color:#92400E;padding:8px 10px;border-radius:6px;font-size:11px;margin-bottom:12px">
-                  <b>⚠️ Ítem limitante:</b> ${esc(lim.desc)}<br>
-                  <span style="color:var(--texto-2)">Disp. Central: <b>${lim.disp} ${lim.umb}</b> · Requiere: <b>${lim.cantReq} ${lim.umb}</b> por caja (rinde ${lim.rinde} cajas)</span>
-                </div>
-              ` : `
-                <div style="background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;padding:8px 10px;border-radius:6px;font-size:11px;margin-bottom:12px">
-                  <b>✅ Stock suficiente:</b> Todo el contenido disponible en Central.
-                </div>
-              `}
-
-              <div style="display:flex;gap:8px;margin-top:12px">
-                <button class="btn btn-navy btn-mini" style="flex:1" onclick="ir('cajasTipoDetalle', { id: '${pl.tipo.id}' })">🔍 Detalle y Faltantes</button>
-                ${!esMaestro ? `<button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${pl.tipo.id}')">✏️ Editar</button>` : ''}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('')}
+  + `<div class="panel">
+      <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div>
+          <b>2. Consolidado de Herramientas Requeridas vs. Stock en Almacén Central (${totCajasMeta} cajas planificadas)</b>
+          <span style="font-size:11.5px;color:var(--texto-3);margin-left:8px">Suma las herramientas de todas las cajas que marcaste arriba</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <label style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;cursor:pointer;margin-right:6px">
+            <input type="checkbox" ${PLAN_SOLO_FALTANTES ? 'checked' : ''} onchange="PLAN_SOLO_FALTANTES=this.checked;ir('${esMaestro ? 'mCajas' : 'cajasPlan'}')">
+            Mostrar solo herramientas con FALTANTE (${listaFaltantesMeta.length})
+          </label>
+          <button class="btn btn-claro btn-mini" onclick="exportarConsolidadoPlanExcel()">📥 Exportar Excel</button>
+          <button class="btn btn-claro btn-mini" onclick="imprimirConsolidadoPlan()">🖨️ Imprimir Requisición TIMACA</button>
+        </div>
+      </div>
+      <div class="panel-b" style="padding:0">
+        ${totCajasMeta === 0
+          ? '<div class="ayuda-txt" style="padding:20px;text-align:center">Indique al menos 1 caja en la columna <b>"¿Cuántas cajas vas a armar?"</b> de la tabla superior para ver el listado consolidado de herramientas y faltantes.</div>'
+          : listaMostrar.length === 0
+            ? '<div style="padding:18px;text-align:center;color:#166534;background:#ECFDF5;font-weight:700">🎉 ¡No hay ningún faltante! El stock disponible en Almacén Central cubre el 100% de las cajas planificadas.</div>'
+            : `<div style="overflow-x:auto">
+                <table class="grid">
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Descripción de la Herramienta</th>
+                      <th>Requerida en las Cajas</th>
+                      <th class="cen">Unidad</th>
+                      <th class="num">Total Requerido</th>
+                      <th class="num">Disponible Central</th>
+                      <th class="num">Faltante a Comprar/Reponer</th>
+                      ${esMaestro ? '<th class="num">Costo Unit. USD</th><th class="num">Total Faltante USD</th>' : ''}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${listaMostrar.map(d => `
+                      <tr style="${d.faltante > 0 ? 'background:#FFF5F5' : ''}">
+                        <td><b>${esc(d.cod)}</b></td>
+                        <td><b>${esc(d.desc)}</b></td>
+                        <td style="font-size:11.5px;color:var(--texto-2)">${esc(d.usadoEn.join(' + '))}</td>
+                        <td class="cen">${esc(d.umb)}</td>
+                        <td class="num"><b>${d.cantReq}</b></td>
+                        <td class="num" style="color:${d.disp > 0 ? 'var(--verde)' : 'var(--rojo)'};font-weight:700">${d.disp}</td>
+                        <td class="num" style="font-weight:900;color:${d.faltante > 0 ? 'var(--rojo)' : 'var(--verde)'}">${d.faltante > 0 ? d.faltante : '0 (OK)'}</td>
+                        ${esMaestro ? `<td class="num">${usd(d.costoUnit)}</td><td class="num">${d.faltante > 0 ? usd(d.costoFaltante) : '$0.00'}</td>` : ''}
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>`
+        }
+      </div>
     </div>`;
 };
+
+function exportarConsolidadoPlanExcel() {
+  const esMaestro = enMaestro();
+  const tipos = (DB.cajasTipos || []).filter(t => t.activo !== false);
+  const planes = tipos.map(t => calcularPlanTipoCaja(t));
+  const demanda = {};
+  planes.forEach(pl => {
+    const n = Math.max(0, parseInt(PLAN_METAS_CAJA[pl.tipo.id]) || 0);
+    if (n > 0) {
+      pl.items.forEach(it => {
+        const cod = it.cod.toUpperCase();
+        if (!demanda[cod]) {
+          demanda[cod] = { cod: it.cod, desc: it.desc, umb: it.umb, cantReq: 0, disp: it.disp, costoUnit: it.costoUnit, cajas: [] };
+        }
+        demanda[cod].cantReq += n * it.cantReq;
+        demanda[cod].cajas.push(`${pl.tipo.nombre} (${n * it.cantReq})`);
+      });
+    }
+  });
+  const filas = Object.values(demanda).map(d => {
+    const falt = Math.max(0, d.cantReq - d.disp);
+    const r = {
+      'Código': d.cod,
+      'Herramienta': d.desc,
+      'Especialidades': d.cajas.join(' + '),
+      'Unidad': d.umb,
+      'Total Requerido': d.cantReq,
+      'Disponible Central': d.disp,
+      'Faltante': falt
+    };
+    if (esMaestro) {
+      r['Costo Unit USD'] = d.costoUnit;
+      r['Costo Faltante USD'] = +(falt * d.costoUnit).toFixed(2);
+    }
+    return r;
+  });
+  if (!filas.length) return toast('No hay cajas seleccionadas para exportar.', 'err');
+  exportarExcel(filas, 'Planificacion_Cajas_Herramientas_TIMACA');
+}
+
+function imprimirConsolidadoPlan() {
+  const esMaestro = enMaestro();
+  const tipos = (DB.cajasTipos || []).filter(t => t.activo !== false);
+  const planes = tipos.map(t => calcularPlanTipoCaja(t));
+  const demanda = {};
+  const resumenCajas = [];
+  planes.forEach(pl => {
+    const n = Math.max(0, parseInt(PLAN_METAS_CAJA[pl.tipo.id]) || 0);
+    if (n > 0) {
+      resumenCajas.push(`${n}x ${pl.tipo.nombre} (${pl.tipo.id})`);
+      pl.items.forEach(it => {
+        const cod = it.cod.toUpperCase();
+        if (!demanda[cod]) {
+          demanda[cod] = { cod: it.cod, desc: it.desc, umb: it.umb, cantReq: 0, disp: it.disp, costoUnit: it.costoUnit, cajas: [] };
+        }
+        demanda[cod].cantReq += n * it.cantReq;
+        demanda[cod].cajas.push(`${pl.tipo.especialidad || pl.tipo.id}: ${n * it.cantReq}`);
+      });
+    }
+  });
+  const lista = Object.values(demanda).map(d => ({ ...d, falt: Math.max(0, d.cantReq - d.disp) }));
+  if (!lista.length) return toast('Indique al menos 1 caja a armar para imprimir.', 'err');
+  const totUSD = lista.reduce((s, x) => s + x.falt * x.costoUnit, 0);
+
+  const htmlPrint = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Planificación de Cajas TIMACA</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 24px; color: #1e293b; }
+      .head { display: flex; justify-content: space-between; border-bottom: 2px solid #003366; padding-bottom: 10px; margin-bottom: 14px; }
+      .tit { font-size: 16px; font-weight: 800; color: #003366; }
+      .sub { font-size: 11px; color: #64748b; }
+      table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+      th { background: #003366; color: #fff; text-align: left; padding: 6px 8px; }
+      td { border-bottom: 1px solid #e2e8f0; padding: 6px 8px; }
+      .cen { text-align: center; } .num { text-align: right; }
+      .firmas { display: flex; justify-content: space-between; margin-top: 45px; }
+      .firma { width: 30%; border-top: 1px solid #333; text-align: center; padding-top: 6px; font-size: 11px; }
+    </style></head><body>
+    <div class="head">
+      <div><div class="tit">${esc(DB.config.empresa)}</div><div class="sub">PLANIFICACIÓN DE CAJAS DE HERRAMIENTAS POR ESPECIALIDAD · ALMACÉN CENTRAL</div></div>
+      <div style="text-align:right;font-size:11px"><b>Fecha:</b> ${fFH(nowISO())}<br><b>Emitido por:</b> ${esc(S.u ? S.u.nombre : '')}</div>
+    </div>
+    <div style="font-size:12px;margin-bottom:10px"><b>Cajas planificadas:</b> ${esc(resumenCajas.join(' · '))}</div>
+    <table><thead><tr><th>Código</th><th>Herramienta</th><th>Distribución por oficio</th><th class="cen">UMB</th><th class="num">Requerido</th><th class="num">Disp. Central</th><th class="num">Faltante</th>${esMaestro ? '<th class="num">Total Falt. USD</th>' : ''}</tr></thead>
+    <tbody>${lista.map(f => `<tr><td><b>${esc(f.cod)}</b></td><td>${esc(f.desc)}</td><td>${esc(f.cajas.join(', '))}</td><td class="cen">${esc(f.umb)}</td><td class="num">${f.cantReq}</td><td class="num">${f.disp}</td><td class="num" style="font-weight:700;color:${f.falt > 0 ? '#dc2626' : '#16a34a'}">${f.falt}</td>${esMaestro ? `<td class="num">${usd(f.falt * f.costoUnit)}</td>` : ''}</tr>`).join('')}</tbody>
+    ${esMaestro ? `<tfoot><tr style="font-weight:800;background:#f8fafc"><td colspan="7" class="num">Presupuesto estimado de faltantes:</td><td class="num">${usd(totUSD)}</td></tr></tfoot>` : ''}
+    </table>
+    <div class="firmas">
+      <div class="firma">Almacén Central<br><small>${esc(S.u ? S.u.nombre : '')}</small></div>
+      <div class="firma">Supervisión de Herramientas<br><small>Daniela Riveros</small></div>
+      <div class="firma">Gerencia de Operaciones / Compras</div>
+    </div>
+    ${'<script>window.onload=function(){window.print();};</' + 'script>'}
+  </body></html>`;
+  const w = window.open('', '_blank'); w.document.write(htmlPrint); w.document.close();
+}
 
 /* ---------- VISTA: DETALLE DE TIPO DE CAJA Y CÁLCULO DE FALTANTES ---------- */
 let DETALLE_CAJAS_DESEADAS = 1;
@@ -2302,7 +2746,6 @@ VISTAS.cajasTipoDetalle = p => {
   if (p && p.deseadas !== undefined) DETALLE_CAJAS_DESEADAS = Math.max(1, parseInt(p.deseadas) || 1);
   const deseadas = DETALLE_CAJAS_DESEADAS;
 
-  // Cálculo de requerimientos y faltantes para la cantidad deseada
   const analisis = plan.items.map(it => {
     const totalReq = deseadas * it.cantReq;
     const faltante = Math.max(0, totalReq - it.disp);
@@ -2325,7 +2768,7 @@ VISTAS.cajasTipoDetalle = p => {
     { t: 'Unidad', k: 'umb', cls: 'cen' },
     { t: 'Por caja', k: 'cantReq', cls: 'cen' },
     { t: 'Disp. Central', k: 'disp', cls: 'cen', td: r => r.disp > 0 ? 'col-disp' : 'col-dan' },
-    { t: 'Rinde', v: r => `${r.rinde} cajas`, cls: 'cen' },
+    { t: 'Alcanza para', v: r => `${r.rinde} cajas`, cls: 'cen' },
     { t: 'Estado', v: r => r.estado, f: r => estB(r.estado) },
     { t: `Req. (${deseadas} cajas)`, k: 'totalReq', cls: 'num' },
     { t: 'Faltante', k: 'faltante', cls: 'num', f: r => r.faltante > 0 ? `<b style="color:var(--rojo)">${r.faltante}</b>` : '<span style="color:var(--verde)">0</span>' },
@@ -2335,48 +2778,50 @@ VISTAS.cajasTipoDetalle = p => {
     ] : [])
   ];
 
-  const btnVolver = `<button class="btn btn-claro btn-mini" onclick="ir('${esMaestro ? 'mCajas' : 'cajasPlan'}')">← Volver al panel</button>`;
-  const btnEditarTipo = !esMaestro ? `<button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${tipo.id}')">✏️ Editar tipo</button>` : '';
+  const btnVolver = `<button class="btn btn-claro btn-mini" onclick="ir('${esMaestro ? 'mCajas' : 'cajasPlan'}')">← Volver a planificación</button>`;
+  const btnIrLista = `<button class="btn btn-navy btn-mini" onclick="${esMaestro ? `ir('mCajas',{tab:'listas',id:'${tipo.id}'})` : `ir('cajasTipos',{id:'${tipo.id}'})`}">📋 Editar lista de herramientas de esta caja</button>`;
 
   $('area').innerHTML = cab(
-    `🧰 ${tipo.id} · ${esc(tipo.nombre)}`,
-    'Composición del kit, balance de existencia y simulador de compras/reposición para armar la cantidad deseada.',
-    `<div style="display:flex;gap:6px">
+    `${tipo.icono || '🧰'} ${tipo.id} · ${esc(tipo.nombre)}`,
+    `Oficio / Especialidad: ${esc(tipo.especialidad || tipo.nombre)} · ${esc(tipo.desc || '')}`,
+    `<div style="display:flex;gap:6px;flex-wrap:wrap">
       ${btnVolver}
-      ${btnEditarTipo}
+      ${btnIrLista}
+      <button class="btn btn-claro btn-mini" onclick="imprimirChecklistCaja('${tipo.id}')">🖨️ Imprimir Checklist de Caja</button>
       ${botonesExport('gDetCaj', `Plan_${tipo.id}`)}
     </div>`
   )
   + `<div class="dos-col" style="margin-bottom:16px">
       <div class="panel">
-        <div class="panel-h">Ficha técnica del kit</div>
+        <div class="panel-h">Resumen de la lista estándar (${esc(tipo.nombre)})</div>
         <div class="panel-b">
           <p style="margin:0 0 8px;font-size:13px;color:var(--texto-2)">${esc(tipo.desc || 'Sin descripción.')}</p>
-          <div style="display:flex;gap:20px;margin-top:12px;font-size:12px">
-            <div><b>Piezas por caja:</b> ${plan.piezasPorCaja}</div>
-            <div><b>Líneas de herramientas:</b> ${plan.items.length}</div>
-            ${esMaestro ? `<div style="color:var(--verde);font-weight:800"><b>Costo estimado:</b> ${usd(plan.costoPorCaja)}</div>` : ''}
+          <div style="display:flex;gap:20px;margin-top:12px;font-size:12px;flex-wrap:wrap">
+            <div><b>Especialidad:</b> ${esc(tipo.especialidad || 'General')}</div>
+            <div><b>Herramientas distintas:</b> ${plan.items.length}</div>
+            <div><b>Total piezas por caja:</b> ${plan.piezasPorCaja}</div>
+            ${esMaestro ? `<div style="color:var(--verde);font-weight:800"><b>Costo por caja:</b> ${usd(plan.costoPorCaja)}</div>` : ''}
           </div>
         </div>
       </div>
 
       <div class="panel" style="border:2px solid var(--navy)">
-        <div class="panel-h" style="background:var(--navy);color:#fff">Simulador interactivo: ¿Cuántas cajas quiero armar?</div>
+        <div class="panel-h" style="background:var(--navy);color:#fff">¿Cuántas ${esc(tipo.nombre)} necesitas armar?</div>
         <div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
           <div style="display:flex;align-items:center;gap:12px">
-            <label style="font-weight:800;font-size:13px;color:var(--navy)">Cantidad de cajas objetivo:</label>
-            <input type="number" min="1" max="999" id="cantObj" value="${deseadas}" style="width:100px;font-size:18px;font-weight:900;text-align:center"
-              oninput="DETALLE_CAJAS_DESEADAS=Math.max(1,parseInt(this.value)||1);ir('cajasTipoDetalle',{id:'${tipo.id}',deseadas:DETALLE_CAJAS_DESEADAS})">
-            <span style="font-size:12px;color:var(--texto-3)">Factibles actualmente con stock: <b>${plan.cajasPosibles}</b></span>
+            <label style="font-weight:800;font-size:13px;color:var(--navy)">Cantidad de cajas:</label>
+            <input type="number" min="1" max="999" id="cantObj" value="${deseadas}" style="width:90px;font-size:16px;font-weight:900;text-align:center"
+              oninput="DETALLE_CAJAS_DESEADAS=Math.max(1,parseInt(this.value)||1);PLAN_METAS_CAJA['${tipo.id}']=DETALLE_CAJAS_DESEADAS;ir('${esMaestro ? 'mCajas' : 'cajasTipoDetalle'}',{id:'${tipo.id}',deseadas:DETALLE_CAJAS_DESEADAS})">
+            <span style="font-size:12px;color:var(--texto-3)">Armables hoy con stock Central: <b>${plan.cajasPosibles}</b></span>
           </div>
 
           ${faltantes.length === 0 ? `
             <div style="background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;padding:10px 12px;border-radius:6px;font-size:12px">
-              <b>🎉 ¡Inventario suficiente en Central!</b> Se pueden armar las <b>${deseadas} cajas</b> solicitadas sin compras adicionales.
+              <b>✅ Stock suficiente en Central:</b> Se pueden armar las <b>${deseadas} caja(s)</b> sin compras adicionales.
             </div>
           ` : `
             <div style="background:#FEF2F2;border:1px solid #FCA5A5;color:#991B1B;padding:10px 12px;border-radius:6px;font-size:12px">
-              <b>⚠️ Se detectaron faltantes:</b> Requiere reponer <b>${totPiezasFaltantes} piezas</b> en <b>${faltantes.length} herramientas</b> para alcanzar la meta.
+              <b>⚠️ Faltan herramientas:</b> Requiere reponer <b>${totPiezasFaltantes} piezas</b> en <b>${faltantes.length} herramientas</b>.
               ${esMaestro ? `<br><b>Presupuesto estimado de compra:</b> ${usd(totCostoFaltantesUSD)}` : ''}
             </div>
           `}
@@ -2385,11 +2830,11 @@ VISTAS.cajasTipoDetalle = p => {
     </div>`
   + (faltantes.length > 0 ? `
       <div class="panel" style="margin-bottom:16px;border:1px solid var(--rojo)">
-        <div class="panel-h" style="background:#FEF2F2;color:#991B1B;display:flex;justify-content:space-between;align-items:center">
-          <span>📋 Lista de faltantes para solicitud de compra o reposición (${deseadas} cajas)</span>
+        <div class="panel-h" style="background:#FEF2F2;color:#991B1B;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+          <span>📋 Herramientas faltantes para armar ${deseadas} ${esc(tipo.nombre)}</span>
           <div style="display:flex;gap:6px">
             <button class="btn btn-rojo btn-mini" onclick="copiarFaltantesAlPortapapeles('${tipo.id}', ${deseadas})">📋 Copiar faltantes</button>
-            <button class="btn btn-claro btn-mini" onclick="exportarFaltantesExcel('${tipo.id}', ${deseadas})">📥 Exportar faltantes Excel</button>
+            <button class="btn btn-claro btn-mini" onclick="exportarFaltantesExcel('${tipo.id}', ${deseadas})">📥 Exportar Excel</button>
             <button class="btn btn-claro btn-mini" onclick="imprimirSolicitudFaltantes('${tipo.id}', ${deseadas})">🖨️ Imprimir solicitud TIMACA</button>
           </div>
         </div>
@@ -2410,9 +2855,9 @@ VISTAS.cajasTipoDetalle = p => {
       </div>
     ` : '')
   + `<div class="panel">
-      <div class="panel-h">Detalle completo de herramientas del tipo de caja</div>
+      <div class="panel-h">Lista completa de herramientas de ${esc(tipo.nombre)}</div>
       <div class="panel-b" style="padding:0">
-        ${grid('gDetCaj', cols, analisis, { pag: 25, totales: true })}
+        ${grid('gDetCaj', cols, analisis, { pag: 30, totales: true })}
       </div>
     </div>`;
 };
@@ -2428,9 +2873,9 @@ function copiarFaltantesAlPortapapeles(tipoId, deseadas) {
   })).filter(x => x.falt > 0);
 
   let texto = 'SOLICITUD DE REPOSICIÓN / COMPRA PARA ARMADO DE CAJAS\n';
-  texto += 'Empresa: C.A. TALLERES INDUSTRIALES METALÚRGICOS ANTONIO CASADO (TIMACA)\n';
+  texto += 'Empresa: ' + DB.config.empresa + '\n';
   texto += 'Almacén Central · Fecha: ' + fFH(nowISO()) + '\n';
-  texto += 'Tipo de caja: ' + tipo.id + ' - ' + tipo.nombre + '\n';
+  texto += 'Caja / Especialidad: ' + tipo.id + ' - ' + tipo.nombre + '\n';
   texto += 'Cantidad requerida: ' + deseadas + ' caja(s)\n';
   texto += '------------------------------------------------------------\n';
   faltantes.forEach((f, i) => {
@@ -2514,7 +2959,7 @@ function imprimirSolicitudFaltantes(tipoId, deseadas) {
     <body>
       <div class="head">
         <div>
-          <div class="tit">C.A. TALLERES INDUSTRIALES METALÚRGICOS ANTONIO CASADO (TIMACA)</div>
+          <div class="tit">${esc(DB.config.empresa)}</div>
           <div class="sub">PLANIFICACIÓN DE CAJAS DE HERRAMIENTAS · SOLICITUD DE FALTANTES / COMPRA</div>
         </div>
         <div style="text-align:right">
@@ -2524,8 +2969,8 @@ function imprimirSolicitudFaltantes(tipoId, deseadas) {
       </div>
 
       <div class="meta">
-        <b>Tipo de caja:</b> ${tipo.id} - ${esc(tipo.nombre)}<br>
-        <b>Objetivo de ensamble:</b> ${deseadas} caja(s) de herramientas<br>
+        <b>Caja / Especialidad:</b> ${tipo.id} - ${esc(tipo.nombre)} (${esc(tipo.especialidad || '')})<br>
+        <b>Objetivo de armado:</b> ${deseadas} caja(s) de herramientas<br>
         <b>Herramientas con déficit en Almacén Central:</b> ${faltantes.length} ítems
       </div>
 
@@ -2580,33 +3025,294 @@ function imprimirSolicitudFaltantes(tipoId, deseadas) {
   w.document.close();
 }
 
-/* ---------- VISTA: GESTIÓN DE TIPOS DE CAJA ---------- */
-VISTAS.cajasTipos = () => {
-  const filas = DB.cajasTipos || [];
-  const cols = [
-    { t: 'Código', k: 'id', cls: 'cen', f: r => `<b>${esc(r.id)}</b>` },
-    { t: 'Nombre del tipo de caja', v: r => `<b>${esc(r.nombre)}</b>`, td: 'wrap' },
-    { t: 'Descripción', v: r => r.desc || '—', td: 'wrap' },
-    { t: 'Herramientas', v: r => (r.items || []).length, cls: 'cen' },
-    { t: 'Total piezas', v: r => (r.items || []).reduce((a, x) => a + (x.cantReq || 1), 0), cls: 'cen' },
-    { t: 'Estado', v: r => r.activo !== false ? 'ACTIVO' : 'INACTIVO', f: r => estB(r.activo !== false ? 'ACTIVO' : 'INACTIVO') },
-    { t: 'Acciones', v: r => '', f: r => `
-      <button class="btn btn-navy btn-mini" onclick="ir('cajasTipoDetalle',{id:'${r.id}'})">Detalle</button>
-      <button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${r.id}')">Editar</button>
-      <button class="btn ${r.activo !== false ? 'btn-rojo' : 'btn-verde'} btn-mini" onclick="toggleTipoCaja('${r.id}')">${r.activo !== false ? 'Desactivar' : 'Activar'}</button>
-    ` }
-  ];
+// Imprimir Checklist formal de la lista de herramientas de una caja (para entrega/revisión en almacén)
+function imprimirChecklistCaja(tipoId) {
+  const tipo = tipoCajaDe(tipoId);
+  if (!tipo) return;
+  const plan = calcularPlanTipoCaja(tipo);
+  const htmlPrint = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Lista de Caja · ${esc(tipo.id)}</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 24px; color: #1e293b; }
+      .head { display: flex; justify-content: space-between; border-bottom: 2px solid #003366; padding-bottom: 10px; margin-bottom: 14px; }
+      .tit { font-size: 16px; font-weight: 800; color: #003366; }
+      .sub { font-size: 11px; color: #64748b; }
+      table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+      th { background: #003366; color: #fff; text-align: left; padding: 6px 8px; }
+      td { border-bottom: 1px solid #cbd5e1; padding: 6px 8px; }
+      .cen { text-align: center; }
+      .chk { display: inline-block; width: 13px; height: 13px; border: 1.5px solid #334155; border-radius: 2px; }
+      .firmas { display: flex; justify-content: space-between; margin-top: 48px; }
+      .firma { width: 30%; border-top: 1px solid #333; text-align: center; padding-top: 6px; font-size: 11px; }
+    </style></head><body>
+    <div class="head">
+      <div><div class="tit">${esc(DB.config.empresa)}</div><div class="sub">LISTA ESTÁNDAR DE CONTENIDO Y CHEQUEO DE CAJA DE HERRAMIENTAS</div></div>
+      <div style="text-align:right;font-size:11px"><b>Código:</b> ${esc(tipo.id)}<br><b>Fecha:</b> ${fF(nowISO())}</div>
+    </div>
+    <div style="font-size:12px;margin-bottom:10px">
+      <b>Caja / Especialidad:</b> ${esc(tipo.nombre)} (${esc(tipo.especialidad || '')})<br>
+      <b>Descripción:</b> ${esc(tipo.desc || '')}<br>
+      <b>Total estándar:</b> ${plan.items.length} tipos de herramienta · ${plan.piezasPorCaja} piezas en total
+    </div>
+    <table><thead><tr><th class="cen">#</th><th>Código</th><th>Descripción de la Herramienta</th><th class="cen">Unidad</th><th class="cen">Cant. por Caja</th><th class="cen">Chequeo Salida</th><th class="cen">Chequeo Retorno</th><th>Observación</th></tr></thead>
+    <tbody>${plan.items.map((it, idx) => `<tr><td class="cen">${idx + 1}</td><td><b>${esc(it.cod)}</b></td><td>${esc(it.desc)}</td><td class="cen">${esc(it.umb)}</td><td class="cen"><b>${it.cantReq}</b></td><td class="cen"><span class="chk"></span></td><td class="cen"><span class="chk"></span></td><td></td></tr>`).join('')}</tbody></table>
+    <div class="firmas">
+      <div class="firma">Entregado / Verificado por (Almacén)</div>
+      <div class="firma">Recibido Conforme (Trabajador Custodio)</div>
+      <div class="firma">Supervisor de Área</div>
+    </div>
+    ${'<script>window.onload=function(){window.print();};</' + 'script>'}
+  </body></html>`;
+  const w = window.open('', '_blank'); w.document.write(htmlPrint); w.document.close();
+}
+
+/* ---------- VISTA: LISTAS DE HERRAMIENTAS POR ESPECIALIDAD / OFICIO (Master-Detail) ---------- */
+VISTAS.cajasTipos = p => {
+  const esMaestro = enMaestro();
+  const tipos = DB.cajasTipos || [];
+  if (p && p.id) CAJA_LISTA_SEL = p.id;
+  if (!CAJA_LISTA_SEL || !tipoCajaDe(CAJA_LISTA_SEL)) {
+    CAJA_LISTA_SEL = tipos[0] ? tipos[0].id : '';
+  }
+  const sel = tipoCajaDe(CAJA_LISTA_SEL);
+  const planSel = sel ? calcularPlanTipoCaja(sel) : null;
+
+  const catalogoOpciones = (DB.catalogo || [])
+    .filter(it => it.mod === 'HERRAMIENTA')
+    .map(it => `<option value="${esc(it.cod)}">${esc(it.cod)} · ${esc(it.desc)}</option>`)
+    .join('');
+
+  window.seleccionarEspecialidadLista = id => {
+    CAJA_LISTA_SEL = id;
+    ir(esMaestro ? 'mCajas' : 'cajasTipos', esMaestro ? { tab: 'listas', id } : { id });
+  };
+
+  window.cambiarCantHerrCaja = (tipoId, idx, nuevaCant) => {
+    const t = tipoCajaDe(tipoId);
+    if (!t || !t.items || !t.items[idx]) return;
+    const c = Math.max(1, parseInt(nuevaCant) || 1);
+    t.items[idx].cantReq = c;
+    guardar();
+    seleccionarEspecialidadLista(tipoId);
+  };
+
+  window.quitarHerrDeCaja = (tipoId, idx) => {
+    const t = tipoCajaDe(tipoId);
+    if (!t || !t.items || !t.items[idx]) return;
+    const h = t.items[idx];
+    t.items.splice(idx, 1);
+    bit('HERRAMIENTA QUITADA DE CAJA', `${tipoId} · ${h.cod} ${h.desc}`);
+    guardar();
+    toast(`Se quitó "${h.desc}" de ${t.nombre}.`, 'ok');
+    seleccionarEspecialidadLista(tipoId);
+  };
+
+  window.vaciarListaCaja = tipoId => {
+    const t = tipoCajaDe(tipoId);
+    if (!t) return;
+    confirmar(`¿Desea vaciar todas las herramientas actuales de <b>${esc(t.nombre)}</b> para cargar su lista desde cero?`, () => {
+      t.items = [];
+      t.estadoLista = 'PENDIENTE LISTA';
+      guardar();
+      toast(`Lista de ${t.nombre} vaciada. Ahora puede agregar o importar las herramientas.`, 'ok');
+      seleccionarEspecialidadLista(tipoId);
+    }, 'Vaciar lista');
+  };
+
+  window.marcarEstadoListaCaja = (tipoId, estado) => {
+    const t = tipoCajaDe(tipoId);
+    if (!t) return;
+    t.estadoLista = estado;
+    guardar();
+    toast(`Estado de la lista actualizado a: ${estado}`, 'ok');
+    seleccionarEspecialidadLista(tipoId);
+  };
+
+  window.agregarHerrDirectoACaja = tipoId => {
+    const t = tipoCajaDe(tipoId);
+    if (!t) return;
+    let cod = ($(' dirInpCod') ? $(' dirInpCod').value : ($('dirInpCod') ? $('dirInpCod').value : '')).trim().toUpperCase();
+    let desc = ($('dirInpDesc') ? $('dirInpDesc').value : '').trim();
+    let umb = ($('dirInpUmb') ? $('dirInpUmb').value : 'UND').trim().toUpperCase() || 'UND';
+    const cant = Math.max(1, parseInt($('dirInpCant') ? $('dirInpCant').value : '1') || 1);
+
+    let itCat = cod ? DB.catalogo.find(c => (c.cod || '').toUpperCase() === cod) : null;
+    if (!itCat && desc) {
+      itCat = DB.catalogo.find(c => normTexto(c.desc) === normTexto(desc));
+      if (itCat && !cod) cod = itCat.cod;
+    }
+
+    if (!desc && itCat) desc = itCat.desc;
+    if (!desc) return toast('Escriba la descripción de la herramienta o selecciónela del catálogo.', 'err');
+
+    // Si no tiene código o no existe en el catálogo, generamos/registramos automáticamente en el catálogo para mantener trazabilidad
+    if (!cod) {
+      const nums = DB.catalogo.map(c => { const m = (c.cod || '').match(/^HE(\d+)$/i); return m ? parseInt(m[1]) : 0; });
+      const nextNum = Math.max(100230, ...nums) + 1;
+      cod = 'HE' + String(nextNum).padStart(6, '0');
+    }
+    if (!itCat) {
+      const maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
+      itCat = { id: maxId + 1, cod, desc, mod: 'HERRAMIENTA', cat: t.especialidad || 'General', marca: 'ESTÁNDAR', modelo: '', serial: '', umb, costo: 0, tipoA: false, talla: '', vida: 0, activo: true };
+      DB.catalogo.push(itCat);
+    }
+
+    t.items = t.items || [];
+    const existente = t.items.find(x => (x.cod || '').toUpperCase() === cod);
+    if (existente) {
+      existente.cantReq += cant;
+      toast(`Se sumaron ${cant} ${umb} a "${existente.desc}" en ${t.nombre}.`, 'ok');
+    } else {
+      t.items.push({ cod, desc: itCat.desc || desc, umb: itCat.umb || umb, cantReq: cant });
+      toast(`"${desc}" agregada a la lista de ${t.nombre}.`, 'ok');
+    }
+    guardar();
+    seleccionarEspecialidadLista(tipoId);
+  };
 
   $('area').innerHTML = cab(
-    '📋 Tipos de caja de herramientas',
-    'Definición de listas de contenido estándar (BOM) para cuadrillas y frentes de trabajo.',
-    `${botonesExport('gCajTip', 'Tipos_Cajas')}
+    '📋 Listas de Herramientas por Especialidad / Oficio',
+    'Seleccione un oficio a la izquierda (Mecánico, Tornero, Electricista, Soldador, Montador, Instrumentista) para ver, editar o cargar desde Excel la lista exacta de herramientas que lleva su caja.',
+    `<div style="display:flex;gap:6px;flex-wrap:wrap">
       <button class="btn btn-claro btn-mini" onclick="descargarPlantillaTipoCaja()">📥 Descargar plantilla Excel</button>
-      <button class="btn btn-claro btn-mini" onclick="modalImportarContenidoCaja()">📤 Carga masiva Excel</button>
-      <button class="btn btn-verde btn-mini" onclick="modalEditarTipoCaja()">➕ Nuevo tipo de caja</button>`
+      <button class="btn btn-navy btn-mini" onclick="modalImportarContenidoCaja('${sel ? sel.id : ''}')">📤 Importar lista desde Excel</button>
+      <button class="btn btn-verde btn-mini" onclick="modalEditarTipoCaja()">➕ Nueva especialidad / caja</button>
+    </div>`
   )
-  + `<div class="fila-filtros">${buscador('gCajTip', 'Buscar tipo de caja…')}</div>`
-  + grid('gCajTip', cols, filas, { pag: 20, vacio: 'No hay tipos de caja definidos.' });
+  + navTabsCajas('listas')
+  + `<div style="display:grid;grid-template-columns:310px 1fr;gap:16px;align-items:start">
+      <!-- Columna izquierda: Especialidades / Oficios -->
+      <div class="panel">
+        <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Especialidades / Cajas (${tipos.length})</span>
+          <button class="btn btn-verde btn-mini" onclick="modalEditarTipoCaja()">+ Nueva</button>
+        </div>
+        <div class="panel-b" style="padding:8px;display:flex;flex-direction:column;gap:6px">
+          ${tipos.map(t => {
+            const esAct = sel && sel.id === t.id;
+            const nHerr = (t.items || []).length;
+            const nPzas = (t.items || []).reduce((a, x) => a + (Number(x.cantReq) || 1), 0);
+            return `
+              <div onclick="seleccionarEspecialidadLista('${t.id}')" style="cursor:pointer;padding:10px 12px;border-radius:8px;border:2px solid ${esAct ? 'var(--navy)' : 'var(--borde)'};background:${esAct ? '#EFF6FF' : '#fff'};transition:all 0.15s">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span class="chip-mod m-HERRAMIENTA" style="font-weight:800">${esc(t.id)}</span>
+                  <span style="font-size:10.5px;font-weight:800;color:${t.estadoLista === 'LISTA OFICIAL' ? '#16a34a' : '#d97706'}">${esc(t.estadoLista || 'BASE EDITABLE')}</span>
+                </div>
+                <div style="font-weight:800;font-size:13.5px;color:var(--navy);margin-top:4px">${t.icono || '🧰'} ${esc(t.nombre)}</div>
+                <div style="font-size:11.5px;color:var(--texto-2);margin-top:2px">
+                  Oficio: <b>${esc(t.especialidad || 'General')}</b> · <b>${nHerr}</b> herr. (${nPzas} pzas)
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Columna derecha: Lista de herramientas de la especialidad seleccionada -->
+      ${!sel ? '<div class="panel"><div class="panel-b">Seleccione o cree una especialidad.</div></div>' : `
+        <div class="panel">
+          <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <div>
+              <span style="font-size:15px;font-weight:900;color:var(--navy)">${sel.icono || '🧰'} ${esc(sel.id)} · ${esc(sel.nombre)}</span>
+              <span style="margin-left:8px;font-size:12px;color:var(--texto-3)">(${planSel.items.length} herramientas · ${planSel.piezasPorCaja} piezas por caja)</span>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <select onchange="marcarEstadoListaCaja('${sel.id}', this.value)" style="font-size:11.5px;padding:3px 8px;font-weight:700;border-radius:6px">
+                <option value="BASE EDITABLE" ${(sel.estadoLista || 'BASE EDITABLE') === 'BASE EDITABLE' ? 'selected' : ''}>📌 Lista Base (Editable)</option>
+                <option value="LISTA OFICIAL" ${sel.estadoLista === 'LISTA OFICIAL' ? 'selected' : ''}>✅ Lista Oficial Definitiva</option>
+                <option value="PENDIENTE LISTA" ${sel.estadoLista === 'PENDIENTE LISTA' ? 'selected' : ''}>⏳ Pendiente Cargar Lista</option>
+              </select>
+              <button class="btn btn-claro btn-mini" onclick="imprimirChecklistCaja('${sel.id}')">🖨️ Imprimir Checklist</button>
+              <button class="btn btn-claro btn-mini" onclick="modalImportarContenidoCaja('${sel.id}')">📤 Cargar desde Excel</button>
+              <button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${sel.id}')">✏️ Editar datos de caja</button>
+              ${planSel.items.length > 0 ? `<button class="btn btn-rojo btn-mini" onclick="vaciarListaCaja('${sel.id}')">🧹 Vaciar lista</button>` : ''}
+            </div>
+          </div>
+
+          <div class="panel-b">
+            <p style="margin:0 0 12px;font-size:12.5px;color:var(--texto-2)">${esc(sel.desc || '')}</p>
+
+            <!-- Barra para agregar herramienta rápido a esta lista -->
+            <div style="background:#F8FAFC;border:1px solid var(--borde);padding:12px;border-radius:8px;margin-bottom:14px">
+              <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px">
+                ➕ Agregar herramienta a la lista de <u>${esc(sel.nombre)}</u> <span style="font-weight:400;color:var(--texto-3)">(puede elegir del catálogo o escribir una herramienta nueva)</span>:
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+                <div style="width:170px">
+                  <label style="font-size:11px;font-weight:700;color:var(--texto-2);display:block;margin-bottom:3px">Código (o automático)</label>
+                  <input id="dirInpCod" list="dlCatHerr" placeholder="Ej. HE000101 o vacío"
+                    oninput="const it=DB.catalogo.find(c=>c.cod.toUpperCase()===this.value.trim().toUpperCase());if(it){$('dirInpDesc').value=it.desc;$('dirInpUmb').value=it.umb||'UND';}">
+                  <datalist id="dlCatHerr">${catalogoOpciones}</datalist>
+                </div>
+                <div style="flex:1;min-width:240px">
+                  <label style="font-size:11px;font-weight:700;color:var(--texto-2);display:block;margin-bottom:3px">Nombre / Descripción de la herramienta *</label>
+                  <input id="dirInpDesc" placeholder="Escriba la herramienta (ej. Llave combinada 9/16, Galga de roscas, etc.)"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault();agregarHerrDirectoACaja('${sel.id}');}">
+                </div>
+                <div style="width:90px">
+                  <label style="font-size:11px;font-weight:700;color:var(--texto-2);display:block;margin-bottom:3px">Unidad</label>
+                  <select id="dirInpUmb">
+                    <option value="UND">UND</option>
+                    <option value="JGO">JGO</option>
+                    <option value="PAR">PAR</option>
+                    <option value="KIT">KIT</option>
+                  </select>
+                </div>
+                <div style="width:95px">
+                  <label style="font-size:11px;font-weight:700;color:var(--texto-2);display:block;margin-bottom:3px">Cant. por caja</label>
+                  <input id="dirInpCant" type="number" min="1" max="99" value="1" style="text-align:center;font-weight:800"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault();agregarHerrDirectoACaja('${sel.id}');}">
+                </div>
+                <button type="button" class="btn btn-verde" onclick="agregarHerrDirectoACaja('${sel.id}')">➕ Agregar a la lista</button>
+              </div>
+            </div>
+
+            <!-- Tabla de herramientas de esta caja -->
+            ${!planSel.items.length ? `
+              <div style="padding:28px;text-align:center;background:#FFFBEB;border:1px dashed #F59E0B;border-radius:8px;color:#92400E">
+                <b>📋 La lista de herramientas de ${esc(sel.nombre)} está vacía.</b><br>
+                <span style="font-size:12px">Cuando tengas la lista de este oficio, puedes agregar las herramientas arriba una por una o usar el botón <b>"📤 Cargar desde Excel"</b>.</span>
+              </div>
+            ` : `
+              <div style="overflow-x:auto;border:1px solid var(--borde);border-radius:6px">
+                <table class="grid" style="margin:0">
+                  <thead>
+                    <tr>
+                      <th class="cen" style="width:45px">#</th>
+                      <th>Código</th>
+                      <th>Descripción de la Herramienta</th>
+                      <th class="cen">Unidad</th>
+                      <th class="cen" style="background:#EFF6FF;color:#1E3A8A">Cant. requerida por caja</th>
+                      <th class="cen">Stock Disp. en Central</th>
+                      <th class="cen">Alcanza para</th>
+                      <th class="cen">Quitar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${planSel.items.map((it, idx) => `
+                      <tr>
+                        <td class="cen" style="color:var(--texto-3)">${idx + 1}</td>
+                        <td><b>${esc(it.cod)}</b></td>
+                        <td><b>${esc(it.desc)}</b></td>
+                        <td class="cen">${esc(it.umb)}</td>
+                        <td class="cen" style="background:#F8FAFC">
+                          <input type="number" min="1" max="99" value="${it.cantReq}" style="width:64px;text-align:center;font-weight:800;padding:3px"
+                            onchange="cambiarCantHerrCaja('${sel.id}', ${idx}, this.value)">
+                        </td>
+                        <td class="cen" style="font-weight:700;color:${it.disp > 0 ? 'var(--verde)' : 'var(--rojo)'}">${it.disp}</td>
+                        <td class="cen"><span class="est est-${it.rinde > 0 ? 'verde' : 'rojo'}">${it.rinde} caja(s)</span></td>
+                        <td class="cen">
+                          <button type="button" class="btn btn-rojo btn-mini" onclick="quitarHerrDeCaja('${sel.id}', ${idx})" title="Quitar de esta caja">✕</button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `}
+          </div>
+        </div>
+      `}
+    </div>`;
 };
 
 function toggleTipoCaja(id) {
@@ -2619,144 +3325,52 @@ function toggleTipoCaja(id) {
   refrescar();
 }
 
-// Modal CRUD para crear o editar un tipo de caja y sus herramientas
+// Modal CRUD para crear o editar los datos de una especialidad/caja
 let MODAL_TIPO_CAJA_ITEMS = [];
 
 function modalEditarTipoCaja(id) {
   const esNuevo = !id;
   const tipo = esNuevo ? {
     id: sugerirSiguienteIdTipoCaja(),
+    especialidad: '',
+    icono: '🧰',
     nombre: '',
     desc: '',
+    estadoLista: 'BASE EDITABLE',
     activo: true,
     items: []
   } : JSON.parse(JSON.stringify(tipoCajaDe(id)));
 
   MODAL_TIPO_CAJA_ITEMS = tipo.items || [];
 
-  const renderItemsTabla = () => {
-    if (!MODAL_TIPO_CAJA_ITEMS.length) {
-      return '<div class="ayuda-txt" style="padding:12px;text-align:center">No hay herramientas agregadas a la caja todavía. Agregue ítems abajo.</div>';
-    }
-    return `
-      <table class="grid-t" style="margin-top:8px">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Descripción</th>
-            <th>Unidad</th>
-            <th class="cen">Cant. requerida</th>
-            <th class="cen">Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${MODAL_TIPO_CAJA_ITEMS.map((it, idx) => `
-            <tr>
-              <td><b>${esc(it.cod)}</b></td>
-              <td>${esc(it.desc)}</td>
-              <td>${esc(it.umb)}</td>
-              <td class="cen"><b>${it.cantReq}</b></td>
-              <td class="cen"><button class="btn btn-rojo btn-mini" onclick="eliminarItemModalTipoCaja(${idx})">✕</button></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    `;
-  };
-
-  window.eliminarItemModalTipoCaja = idx => {
-    MODAL_TIPO_CAJA_ITEMS.splice(idx, 1);
-    $('cajModalItemsList').innerHTML = renderItemsTabla();
-  };
-
-  window.agregarItemModalTipoCaja = () => {
-    const cod = ($('cajInpCod').value || '').trim().toUpperCase();
-    const cant = Math.max(1, parseInt($('cajInpCant').value) || 1);
-    if (!cod) return toast('Indique el código de la herramienta.', 'err');
-
-    const itCat = DB.catalogo.find(c => (c.cod || '').toUpperCase() === cod);
-    const desc = itCat ? itCat.desc : ($('cajInpDesc').value || '').trim();
-    const umb = itCat ? itCat.umb : ($('cajInpUmb').value || 'UND').trim();
-
-    if (!desc) return toast('Debe indicar una descripción para la herramienta.', 'err');
-
-    const yaExiste = MODAL_TIPO_CAJA_ITEMS.find(x => x.cod.toUpperCase() === cod);
-    if (yaExiste) {
-      yaExiste.cantReq += cant;
-    } else {
-      MODAL_TIPO_CAJA_ITEMS.push({ cod, desc, umb, cantReq: cant });
-    }
-
-    $('cajInpCod').value = '';
-    $('cajInpDesc').value = '';
-    $('cajInpCant').value = '1';
-    $('cajModalItemsList').innerHTML = renderItemsTabla();
-    toast('Herramienta agregada a la caja.', 'ok');
-  };
-
-  const catalogoOpciones = (DB.catalogo || [])
-    .filter(it => it.mod === 'HERRAMIENTA')
-    .slice(0, 100)
-    .map(it => `<option value="${esc(it.cod)}">${esc(it.cod)} - ${esc(it.desc)}</option>`)
-    .join('');
-
   const cuerpo = `
-    <div class="dos-col" style="gap:12px">
-      <div class="campo"><label>Código del tipo de caja</label><input id="tcId" value="${esc(tipo.id)}" placeholder="Ej. CH-01" ${esNuevo ? '' : 'readonly'}></div>
+    <div class="f3" style="gap:12px">
+      <div class="campo"><label>Código de la caja *</label><input id="tcId" value="${esc(tipo.id)}" placeholder="Ej. CH-MEC, CH-TOR" ${esNuevo ? '' : 'readonly'}></div>
+      <div class="campo"><label>Especialidad / Oficio *</label><input id="tcEsp" value="${esc(tipo.especialidad || '')}" placeholder="Ej. Mecánico, Tornero, Soldador…"></div>
       <div class="campo"><label>Estado</label><select id="tcAct"><option value="1" ${tipo.activo !== false ? 'selected' : ''}>ACTIVO</option><option value="0" ${tipo.activo === false ? 'selected' : ''}>INACTIVO</option></select></div>
     </div>
-    <div class="campo"><label>Nombre del tipo de caja</label><input id="tcNom" value="${esc(tipo.nombre)}" placeholder="Ej. Caja Cuadrilla Mecánica Pesada"></div>
-    <div class="campo"><label>Descripción o notas del kit</label><textarea id="tcDesc" rows="2" placeholder="Detalle el uso previsto, frente o especialidad">${esc(tipo.desc || '')}</textarea></div>
-
-    <div style="border-top:1px solid var(--borde);padding-top:12px;margin-top:12px">
-      <h4 style="margin:0 0 8px;font-size:13px;color:var(--navy)">Lista de herramientas requeridas</h4>
-
-      <div style="background:var(--fondo-2);padding:10px;border-radius:6px;margin-bottom:10px">
-        <div style="font-size:11px;font-weight:700;color:var(--texto-2);margin-bottom:6px">Agregar herramienta del catálogo:</div>
-        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
-          <div style="flex:1;min-width:200px">
-            <label style="font-size:10px;color:var(--texto-3)">Código catálogo</label>
-            <input id="cajInpCod" list="listCatCod" placeholder="Escriba o seleccione código…"
-              onchange="const it=DB.catalogo.find(c=>c.cod.toUpperCase()===this.value.trim().toUpperCase());if(it){$('cajInpDesc').value=it.desc;$('cajInpUmb').value=it.umb;}">
-            <datalist id="listCatCod">${catalogoOpciones}</datalist>
-          </div>
-          <div style="flex:2;min-width:200px">
-            <label style="font-size:10px;color:var(--texto-3)">Descripción</label>
-            <input id="cajInpDesc" placeholder="Descripción autocompletada" readonly>
-          </div>
-          <div style="width:70px">
-            <label style="font-size:10px;color:var(--texto-3)">Unidad</label>
-            <input id="cajInpUmb" value="UND" readonly style="text-align:center">
-          </div>
-          <div style="width:80px">
-            <label style="font-size:10px;color:var(--texto-3)">Cantidad</label>
-            <input id="cajInpCant" type="number" min="1" value="1" style="text-align:center">
-          </div>
-          <button type="button" class="btn btn-verde" onclick="agregarItemModalTipoCaja()">➕ Agregar</button>
-        </div>
-      </div>
-
-      <div id="cajModalItemsList">${renderItemsTabla()}</div>
-    </div>
+    <div class="campo"><label>Nombre de la caja *</label><input id="tcNom" value="${esc(tipo.nombre)}" placeholder="Ej. Caja de Tornero / Caja de Mecánico"></div>
+    <div class="campo"><label>Descripción o alcance del oficio</label><textarea id="tcDesc" rows="2" placeholder="Detalle el uso previsto o especialidad">${esc(tipo.desc || '')}</textarea></div>
+    <p class="ayuda-txt" style="margin-top:8px">💡 Una vez creada la caja, podrá agregar, editar o importar su lista de herramientas directamente en la pantalla de <b>Listas por Especialidad</b>.</p>
   `;
 
   abrirModal(
-    esNuevo ? 'Nuevo tipo de caja de herramientas' : `Editar tipo de caja ${tipo.id}`,
+    esNuevo ? 'Nueva Especialidad / Tipo de Caja' : `Editar Especialidad · ${tipo.id}`,
     cuerpo,
     [
       { t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal },
       {
-        t: 'Guardar tipo de caja',
+        t: 'Guardar caja',
         cls: 'btn-verde',
         fn: () => run(() => {
           const idVal = ($('tcId').value || '').trim().toUpperCase();
+          const espVal = ($('tcEsp').value || '').trim();
           const nomVal = ($('tcNom').value || '').trim();
           const descVal = ($('tcDesc').value || '').trim();
           const actVal = $('tcAct').value === '1';
 
-          if (!idVal) throw new Error('El código de la caja es obligatorio (ej. CH-01).');
+          if (!idVal) throw new Error('El código de la caja es obligatorio (ej. CH-TOR).');
           if (!nomVal) throw new Error('El nombre de la caja es obligatorio.');
-          if (!MODAL_TIPO_CAJA_ITEMS.length) throw new Error('Debe agregar al menos una herramienta al contenido de la caja.');
 
           DB.cajasTipos = DB.cajasTipos || [];
           const dup = DB.cajasTipos.find(x => x.id === idVal && (esNuevo || x.id !== tipo.id));
@@ -2765,45 +3379,48 @@ function modalEditarTipoCaja(id) {
           if (esNuevo) {
             DB.cajasTipos.push({
               id: idVal,
+              especialidad: espVal || nomVal,
+              icono: '🧰',
               nombre: nomVal,
               desc: descVal,
+              estadoLista: 'PENDIENTE LISTA',
               activo: actVal,
-              items: MODAL_TIPO_CAJA_ITEMS
+              items: []
             });
+            CAJA_LISTA_SEL = idVal;
             bit('TIPO DE CAJA CREADO', `${idVal} - ${nomVal}`);
           } else {
             const actual = tipoCajaDe(id);
             if (actual) {
+              actual.especialidad = espVal || nomVal;
               actual.nombre = nomVal;
               actual.desc = descVal;
               actual.activo = actVal;
-              actual.items = MODAL_TIPO_CAJA_ITEMS;
               bit('TIPO DE CAJA EDITADO', `${idVal} - ${nomVal}`);
             }
           }
 
           guardar();
           cerrarModal();
-          toast('Tipo de caja guardado con éxito.', 'ok');
+          toast('Especialidad / caja guardada con éxito.', 'ok');
           refrescar();
         })
       }
-    ],
-    { ancho: '750px' }
+    ]
   );
 }
 
 function sugerirSiguienteIdTipoCaja() {
   const tipos = DB.cajasTipos || [];
-  let maxNum = 0;
+  let maxNum = tipos.length + 1;
   tipos.forEach(t => {
     const m = (t.id || '').match(/CH-(\d+)/i);
     if (m) {
       const num = parseInt(m[1]);
-      if (num > maxNum) maxNum = num;
+      if (num >= maxNum) maxNum = num + 1;
     }
   });
-  return 'CH-' + String(maxNum + 1).padStart(2, '0');
+  return 'CH-' + String(maxNum).padStart(2, '0');
 }
 
 // Descargar plantilla Excel para tipos de caja
@@ -2814,31 +3431,39 @@ function descargarPlantillaTipoCaja() {
     { Codigo: 'HE000120', Descripcion: 'Alicate universal 8"', Unidad: 'UND', Cantidad: 1 },
     { Codigo: 'HE000140', Descripcion: 'Martillo de bola 2 lb', Unidad: 'UND', Cantidad: 1 }
   ];
-  exportarExcel(ejemplos, 'Plantilla_Tipo_Caja_TIMACA');
+  exportarExcel(ejemplos, 'Plantilla_Lista_Herramientas_Caja_TIMACA');
 }
 
-// Carga masiva de contenido de caja desde Excel con validación de códigos de catálogo
+// Carga masiva de contenido de caja desde Excel (permite códigos existentes o herramientas nuevas)
 function modalImportarContenidoCaja(tipoId) {
   leerArchivoTabla(filas => {
     if (!filas || !filas.length) return toast('El archivo está vacío o no tiene el formato correcto.', 'err');
 
     const itemsImportados = [];
-    const codigosNoEncontrados = [];
+    let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
 
-    filas.forEach(f => {
-      const cod = String(f['Codigo'] || f['codigo'] || f['CÓDIGO'] || f['Código'] || '').trim().toUpperCase();
+    filas.forEach((f, idx) => {
+      let cod = String(f['Codigo'] || f['codigo'] || f['CÓDIGO'] || f['Código'] || '').trim().toUpperCase();
       const cant = Math.max(1, parseInt(f['Cantidad'] || f['cantidad'] || f['Cant'] || f['CANT'] || 1) || 1);
-      const descExcel = String(f['Descripcion'] || f['descripcion'] || f['Descripción'] || '').trim();
-      const umbExcel = String(f['Unidad'] || f['unidad'] || f['UMB'] || 'UND').trim();
+      const descExcel = String(f['Descripcion'] || f['descripcion'] || f['Descripción'] || f['Herramienta'] || f['HERRAMIENTA'] || '').trim();
+      const umbExcel = String(f['Unidad'] || f['unidad'] || f['UMB'] || 'UND').trim().toUpperCase() || 'UND';
 
-      if (cod) {
-        const itCat = DB.catalogo.find(c => (c.cod || '').toUpperCase() === cod);
-        if (!itCat) {
-          codigosNoEncontrados.push(cod);
+      if (cod || descExcel) {
+        let itCat = cod ? DB.catalogo.find(c => (c.cod || '').toUpperCase() === cod) : null;
+        if (!itCat && descExcel) {
+          itCat = DB.catalogo.find(c => normTexto(c.desc) === normTexto(descExcel));
+          if (itCat && !cod) cod = itCat.cod;
+        }
+        if (!cod) {
+          cod = 'HE' + String(100300 + idx + 1).padStart(6, '0');
+        }
+        if (!itCat && descExcel) {
+          itCat = { id: ++maxId, cod, desc: descExcel, mod: 'HERRAMIENTA', cat: 'General', marca: 'ESTÁNDAR', modelo: '', serial: '', umb: umbExcel, costo: 0, tipoA: false, talla: '', vida: 0, activo: true };
+          DB.catalogo.push(itCat);
         }
         itemsImportados.push({
           cod,
-          desc: itCat ? itCat.desc : (descExcel || 'Sin descripción'),
+          desc: itCat ? itCat.desc : (descExcel || cod),
           umb: itCat ? itCat.umb : umbExcel,
           cantReq: cant
         });
@@ -2846,268 +3471,78 @@ function modalImportarContenidoCaja(tipoId) {
     });
 
     if (!itemsImportados.length) {
-      return toast('No se encontraron líneas válidas con columna "Codigo".', 'err');
+      return toast('No se encontraron líneas válidas con "Codigo" o "Descripcion".', 'err');
     }
 
-    let msgAviso = '';
-    if (codigosNoEncontrados.length > 0) {
-      msgAviso = `<div style="background:#FEF2F2;border:1px solid #FCA5A5;color:#991B1B;padding:8px;border-radius:6px;font-size:12px;margin-bottom:10px">
-        <b>⚠️ Advertencia:</b> Los siguientes ${codigosNoEncontrados.length} código(s) no existen en el catálogo de TIMACA:<br>
-        ${esc(codigosNoEncontrados.slice(0, 10).join(', '))}${codigosNoEncontrados.length > 10 ? '...' : ''}
-      </div>`;
-    }
-
-    // Modal de confirmación para asignar a qué tipo de caja importar
     const tipos = DB.cajasTipos || [];
-    const selOpc = tipos.map(t => `<option value="${esc(t.id)}" ${t.id === tipoId ? 'selected' : ''}>${esc(t.id)} - ${esc(t.nombre)}</option>`).join('');
+    const selOpc = tipos.map(t => `<option value="${esc(t.id)}" ${t.id === tipoId ? 'selected' : ''}>${esc(t.id)} - ${esc(t.nombre)} (${esc(t.especialidad || '')})</option>`).join('');
 
     const cuerpo = `
-      ${msgAviso}
-      <p style="font-size:13px;margin:0 0 10px">Se leyeron <b>${itemsImportados.length} herramientas</b> del archivo.</p>
+      <p style="font-size:13px;margin:0 0 10px">Se leyeron <b>${itemsImportados.length} herramientas</b> del archivo Excel.</p>
       <div class="campo">
-        <label>Asignar al tipo de caja:</label>
+        <label>Asignar esta lista de herramientas a la caja / especialidad:</label>
         <select id="tcImpSel">
-          <option value="__NUEVO__">➕ Crear un nuevo tipo de caja con este contenido</option>
           ${selOpc}
+          <option value="__NUEVO__">➕ Crear una nueva especialidad / caja con esta lista</option>
+        </select>
+      </div>
+      <div class="campo" style="margin-top:8px">
+        <label>Modo de carga:</label>
+        <select id="tcImpModo">
+          <option value="reemplazar">Reemplazar la lista actual de esa caja por la del archivo</option>
+          <option value="sumar">Agregar / combinar con las herramientas que ya tiene la caja</option>
         </select>
       </div>
     `;
 
-    abrirModal('Confirmar importación de herramientas', cuerpo, [
+    abrirModal('Confirmar importación de lista de herramientas', cuerpo, [
       { t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal },
       {
-        t: 'Importar herramientas',
+        t: 'Importar lista',
         cls: 'btn-verde',
         fn: () => run(() => {
           const sel = $('tcImpSel').value;
+          const modo = $('tcImpModo').value;
           if (sel === '__NUEVO__') {
             const nextId = sugerirSiguienteIdTipoCaja();
             DB.cajasTipos.push({
               id: nextId,
-              nombre: 'Nuevo Tipo de Caja ' + nextId,
-              desc: 'Importado masivamente desde archivo Excel.',
+              especialidad: 'Especialidad ' + nextId,
+              icono: '🧰',
+              nombre: 'Caja ' + nextId,
+              desc: 'Lista importada desde archivo Excel.',
+              estadoLista: 'LISTA OFICIAL',
               activo: true,
               items: itemsImportados
             });
+            CAJA_LISTA_SEL = nextId;
             bit('CARGA MASIVA TIPO DE CAJA', nextId + ' con ' + itemsImportados.length + ' herramientas');
           } else {
             const dest = tipoCajaDe(sel);
             if (dest) {
-              dest.items = itemsImportados;
+              if (modo === 'reemplazar') {
+                dest.items = itemsImportados;
+              } else {
+                dest.items = dest.items || [];
+                itemsImportados.forEach(imp => {
+                  const ex = dest.items.find(x => x.cod.toUpperCase() === imp.cod.toUpperCase());
+                  if (ex) ex.cantReq += imp.cantReq;
+                  else dest.items.push(imp);
+                });
+              }
+              dest.estadoLista = 'LISTA OFICIAL';
+              CAJA_LISTA_SEL = dest.id;
               bit('CARGA MASIVA CONTENIDO CAJA', dest.id + ' con ' + itemsImportados.length + ' herramientas');
             }
           }
           guardar();
           cerrarModal();
-          toast(`Se importaron ${itemsImportados.length} herramientas con éxito.`, 'ok');
+          toast(`Se cargaron ${itemsImportados.length} herramientas con éxito.`, 'ok');
           refrescar();
         })
       }
     ]);
   });
-}
-
-/* ---------- SIMULADOR MULTI-CAJA (Simular varias cajas a la vez) ---------- */
-function modalSimularMultiCaja() {
-  const esMaestro = enMaestro();
-  const tipos = (DB.cajasTipos || []).filter(t => t.activo !== false);
-
-  if (!tipos.length) {
-    toast('No hay tipos de caja activos para simular.', 'err');
-    return;
-  }
-
-  // Objeto en memoria para almacenar las cantidades deseadas
-  const deseadas = {};
-  tipos.forEach(t => { deseadas[t.id] = 0; });
-  if (tipos[0]) deseadas[tipos[0].id] = 1;
-
-  const renderSimulacionResultados = () => {
-    // 1. Agrupar la demanda total por herramienta/código
-    const demanda = {}; // cod -> { cod, desc, umb, cantReq, disp, costoUnit }
-    let totCajasSimuladas = 0;
-
-    tipos.forEach(t => {
-      const n = Math.max(0, parseInt(deseadas[t.id]) || 0);
-      totCajasSimuladas += n;
-      if (n > 0) {
-        (t.items || []).forEach(it => {
-          const cod = it.cod.toUpperCase();
-          if (!demanda[cod]) {
-            const itCat = DB.catalogo.find(c => (c.cod || '').toUpperCase() === cod);
-            demanda[cod] = {
-              cod: it.cod,
-              desc: it.desc || (itCat ? itCat.desc : cod),
-              umb: it.umb || (itCat ? itCat.umb : 'UND'),
-              cantReq: 0,
-              disp: disponibleCentralPorCodigo(cod),
-              costoUnit: itCat ? (itCat.costo || 0) : 0
-            };
-          }
-          demanda[cod].cantReq += (n * it.cantReq);
-        });
-      }
-    });
-
-    const listaDemanda = Object.values(demanda).map(d => {
-      const faltante = Math.max(0, d.cantReq - d.disp);
-      const costoFaltante = faltante * d.costoUnit;
-      return {
-        ...d,
-        faltante,
-        costoFaltante,
-        rinde: d.cantReq > 0 ? (d.disp >= d.cantReq) : true
-      };
-    });
-
-    const faltantes = listaDemanda.filter(x => x.faltante > 0);
-    const totPiezasFaltantes = faltantes.reduce((a, x) => a + x.faltante, 0);
-    const totPresupuestoUSD = faltantes.reduce((a, x) => a + x.costoFaltante, 0);
-    const factible = totCajasSimuladas > 0 && faltantes.length === 0;
-
-    let resumenBanner = '';
-    if (totCajasSimuladas === 0) {
-      resumenBanner = '<div class="ayuda-txt" style="text-align:center;padding:12px">Ingrese la cantidad deseada de al menos un tipo de caja para evaluar la viabilidad.</div>';
-    } else if (factible) {
-      resumenBanner = `
-        <div style="background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;padding:12px;border-radius:6px;font-size:13px;text-align:center">
-          <b>✅ ¡FACTIBLE! El inventario disponible de Almacén Central alcanza para armar TODAS las ${totCajasSimuladas} cajas solicitadas.</b>
-        </div>
-      `;
-    } else {
-      resumenBanner = `
-        <div style="background:#FEF2F2;border:1px solid #FCA5A5;color:#991B1B;padding:12px;border-radius:6px;font-size:13px">
-          <b>⚠️ NO FACTIBLE CON STOCK ACTUAL:</b> Se detectaron faltantes combinados en <b>${faltantes.length} herramientas</b> (${totPiezasFaltantes} piezas faltantes en total).
-          ${esMaestro ? `<div style="font-size:14px;font-weight:800;margin-top:4px;color:#991B1B">Presupuesto total estimado de compra: ${usd(totPresupuestoUSD)}</div>` : ''}
-        </div>
-      `;
-    }
-
-    return `
-      <div style="margin-bottom:12px">${resumenBanner}</div>
-
-      ${totCajasSimuladas > 0 ? `
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:12px;font-weight:700;color:var(--navy)">Balance consolidado de herramientas requeridas:</span>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-claro btn-mini" onclick="copiarBalanceSimulacionPortapapeles()">📋 Copiar balance</button>
-            <button class="btn btn-claro btn-mini" onclick="exportarSimulacionExcel()">📥 Exportar Excel</button>
-          </div>
-        </div>
-        <div style="max-height:280px;overflow-y:auto;border:1px solid var(--borde);border-radius:6px">
-          <table class="grid-t" style="margin:0">
-            <thead>
-              <tr>
-                <th>Código</th>
-                <th>Herramienta</th>
-                <th class="cen">Unidad</th>
-                <th class="cen">Demanda combinada</th>
-                <th class="cen">Disp. Central</th>
-                <th class="cen">Faltante neto</th>
-                ${esMaestro ? '<th class="num">Costo unit. USD</th><th class="num">Total faltante USD</th>' : ''}
-              </tr>
-            </thead>
-            <tbody>
-              ${listaDemanda.map(d => `
-                <tr style="${d.faltante > 0 ? 'background:#FFF5F5' : ''}">
-                  <td><b>${esc(d.cod)}</b></td>
-                  <td>${esc(d.desc)}</td>
-                  <td class="cen">${esc(d.umb)}</td>
-                  <td class="cen"><b>${d.cantReq}</b></td>
-                  <td class="cen">${d.disp}</td>
-                  <td class="cen" style="${d.faltante > 0 ? 'color:var(--rojo);font-weight:800' : 'color:var(--verde)'}">${d.faltante > 0 ? ('-' + d.faltante) : '0'}</td>
-                  ${esMaestro ? `<td class="num">${usd(d.costoUnit)}</td><td class="num">${d.faltante > 0 ? usd(d.costoFaltante) : '$0.00'}</td>` : ''}
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      ` : ''}
-    `;
-  };
-
-  window.actualizarSimulacionInput = (tipoId, val) => {
-    deseadas[tipoId] = Math.max(0, parseInt(val) || 0);
-    $('simulResultadosCont').innerHTML = renderSimulacionResultados();
-  };
-
-  window.copiarBalanceSimulacionPortapapeles = () => {
-    let txt = 'SIMULACIÓN MULTI-CAJA · TIMACA ALMACÉN CENTRAL\n\nCajas solicitadas:\n';
-    tipos.forEach(t => {
-      if (deseadas[t.id] > 0) txt += `- ${t.id}: ${deseadas[t.id]} caja(s) (${t.nombre})\n`;
-    });
-    txt += '\nBalance de materiales:\n';
-    const demanda = {};
-    tipos.forEach(t => {
-      const n = deseadas[t.id] || 0;
-      if (n > 0) (t.items || []).forEach(it => {
-        const cod = it.cod.toUpperCase();
-        demanda[cod] = demanda[cod] || { cod: it.cod, desc: it.desc, cantReq: 0, disp: disponibleCentralPorCodigo(cod) };
-        demanda[cod].cantReq += (n * it.cantReq);
-      });
-    });
-    Object.values(demanda).forEach(d => {
-      const falt = Math.max(0, d.cantReq - d.disp);
-      txt += `[${d.cod}] ${d.desc}: Req ${d.cantReq}, Disp Central ${d.disp} -> ${falt > 0 ? 'FALTANTE: ' + falt : 'OK'}\n`;
-    });
-    navigator.clipboard.writeText(txt).then(() => toast('Balance copiado al portapapeles.', 'ok'));
-  };
-
-  window.exportarSimulacionExcel = () => {
-    const rows = [];
-    const demanda = {};
-    tipos.forEach(t => {
-      const n = deseadas[t.id] || 0;
-      if (n > 0) (t.items || []).forEach(it => {
-        const cod = it.cod.toUpperCase();
-        demanda[cod] = demanda[cod] || { cod: it.cod, desc: it.desc, umb: it.umb, cantReq: 0, disp: disponibleCentralPorCodigo(cod) };
-        demanda[cod].cantReq += (n * it.cantReq);
-      });
-    });
-    Object.values(demanda).forEach(d => {
-      const falt = Math.max(0, d.cantReq - d.disp);
-      rows.push({
-        'Código': d.cod,
-        'Descripción': d.desc,
-        'Unidad': d.umb,
-        'Demanda Combinada': d.cantReq,
-        'Disponible Central': d.disp,
-        'Faltante': falt
-      });
-    });
-    exportarExcel(rows, 'Simulacion_Multi_Caja_TIMACA');
-  };
-
-  const cuerpo = `
-    <p style="font-size:12px;color:var(--texto-2);margin:0 0 12px">
-      Indique cuántas cajas desea armar de cada tipo. El sistema evaluará si el stock disponible en Almacén Central cubre la demanda compartida o dónde se generan cuellos de botella:
-    </p>
-
-    <div style="background:var(--fondo-2);padding:12px;border-radius:6px;margin-bottom:14px;max-height:180px;overflow-y:auto">
-      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:10px">
-        ${tipos.map(t => {
-          const pl = calcularPlanTipoCaja(t);
-          return `
-            <div style="background:#fff;border:1px solid var(--borde);padding:8px 12px;border-radius:6px;display:flex;justify-content:space-between;align-items:center">
-              <div style="flex:1;margin-right:8px">
-                <span class="chip-mod m-HERRAMIENTA">${t.id}</span>
-                <div style="font-size:12px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.nombre)}</div>
-                <div style="font-size:10px;color:var(--texto-3)">Factibles solas: ${pl.cajasPosibles}</div>
-              </div>
-              <input type="number" min="0" max="99" value="${deseadas[t.id] || 0}" style="width:65px;font-size:16px;font-weight:900;text-align:center"
-                oninput="actualizarSimulacionInput('${t.id}', this.value)">
-            </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-
-    <div id="simulResultadosCont">${renderSimulacionResultados()}</div>
-  `;
-
-  abrirModal('🧮 Simulador multi-caja de herramientas', cuerpo, [
-    { t: 'Cerrar', cls: 'btn-claro', fn: cerrarModal }
-  ], { ancho: '820px' });
 }
 
 /* ---------- VISTA: PLANIFICACIÓN DE CAJAS EN MÓDULO MAESTRO ---------- */
@@ -3116,7 +3551,10 @@ VISTAS.mCajas = p => {
     $('area').innerHTML = cab('Planificación de cajas') + avisoSinPermiso('Esta opción pertenece al Maestro.');
     return;
   }
-  // En el maestro se despliega la misma planificación pero con costos y valorizaciones confidenciales habilitados
+  if (p && p.tab === 'listas') {
+    VISTAS.cajasTipos(p);
+    return;
+  }
   if (p && p.id) {
     VISTAS.cajasTipoDetalle(p);
     return;
@@ -3572,14 +4010,19 @@ function bindResponsableProyecto() {
 
     $('fProy').addEventListener('change', () => {
       const val = $('fProy').value.trim();
-      const p = DB.proyectos.find(x => normTexto(x.nombre) === normTexto(val));
+      if (F.proyecto && F.cuenta && normTexto(F.proyecto) === normTexto(val)) {
+        if ($('fCuenta')) $('fCuenta').value = F.cuenta;
+        return;
+      }
+      const p = DB.proyectos.find(x => normTexto(x.cuenta) === normTexto(val)) || DB.proyectos.find(x => normTexto(x.nombre) === normTexto(val));
       if (p) {
         F.proyecto = p.nombre;
         F.cuenta = p.cuenta;
+        $('fProy').value = p.nombre;
       } else {
         F.proyecto = '';
         F.cuenta = '';
-        if (val) toast('Seleccione un proyecto registrado para asignar su cuenta auxiliar.', 'err');
+        if (val) toast('Seleccione un proyecto o cuenta auxiliar registrada de la lista.', 'err');
       }
       if ($('fCuenta')) $('fCuenta').value = F.cuenta;
     });
@@ -4787,12 +5230,17 @@ function activarUsuario() { const u = selDe('gUsr'); if (u.usuario === S.u.usuar
 function vistaListaMaestra(tipo) {
   const esP = tipo === 'personal';
   const cols = esP ? [{ t: 'Nombre', k: 'nombre' }, { t: 'Cédula', k: 'cedula' }, { t: 'Cargo', k: 'cargo' }, { t: 'Departamento', k: 'depto' }]
-    : [{ t: 'Proyecto / OT', k: 'nombre' }, { t: 'Cuenta auxiliar', k: 'cuenta' }, { t: 'Estado', v: r => r.activo ? 'ACTIVO' : 'INACTIVO', f: r => estB(r.activo ? 'ACTIVO' : 'INACTIVO') }];
-  const enc = esP ? ['Nombre', 'Cédula', 'Cargo', 'Departamento'] : ['Proyecto / OT', 'Cuenta auxiliar'];
-  $('area').innerHTML = cab(esP ? 'Personal' : 'Proyectos', esP ? 'Lista de responsables. Al escribir el nombre en un vale se completan la cédula y el cargo.' : 'Lista de proyectos u órdenes de trabajo. Al elegir el proyecto se completa la cuenta auxiliar.',
+    : [
+        { t: 'Cuenta auxiliar', k: 'cuenta', f: r => `<span class="est est-azul" style="font-weight:800;font-family:monospace;font-size:12px">${esc(r.cuenta)}</span>` },
+        { t: 'Proyecto / OT', k: 'nombre', f: r => `<b>${esc(r.nombre)}</b>` },
+        { t: 'Estado', v: r => r.activo !== false ? 'ACTIVO' : 'INACTIVO', f: r => estB(r.activo !== false ? 'ACTIVO' : 'INACTIVO') }
+      ];
+  const enc = esP ? ['Nombre', 'Cédula', 'Cargo', 'Departamento'] : ['Cuenta auxiliar', 'Proyecto / OT'];
+  $('area').innerHTML = cab(esP ? 'Personal' : 'Proyectos y Cuentas Auxiliares', esP ? 'Lista de responsables. Al escribir el nombre en un vale se completan la cédula y el cargo.' : `Catálogo oficial de proyectos y órdenes de trabajo (${DB.proyectos.length} cuentas registradas). Al elegir el proyecto o escribir la cuenta en un vale, se vinculan automáticamente.`,
     `${botonesExport('gLM', esP ? 'Personal' : 'Proyectos')} <button class="btn btn-claro btn-mini" onclick="plantilla(${JSON.stringify(enc).replace(/"/g, "'")},'Plantilla_${esP ? 'personal' : 'proyectos'}')">Descargar plantilla</button> <button class="btn btn-navy btn-mini" onclick="importarLista('${tipo}')">Importar Excel</button>`)
-    + `<div class="fila-filtros">${buscador('gLM')}</div>` + grid('gLM', cols, DB[tipo], { pag: 20, onSel: () => { $('lmEd').disabled = false; } })
-    + `<div class="barra-btn"><button class="btn-sip" onclick="editarRegistroLista('${tipo}')">Nuevo registro</button><button class="btn-sip" id="lmEd" disabled onclick="editarRegistroLista('${tipo}',selDe('gLM'))">Editar registro</button></div>`;
+    + `<div class="fila-filtros">${buscador('gLM', 'Buscar por cuenta auxiliar (ej. TTE-C-0001) o nombre del proyecto…')}</div>`
+    + grid('gLM', cols, DB[tipo], { pag: 25, onSel: () => { if ($('lmEd')) $('lmEd').disabled = false; if ($('lmAct')) $('lmAct').disabled = false; } })
+    + `<div class="barra-btn"><button class="btn-sip" onclick="editarRegistroLista('${tipo}')">➕ Nuevo proyecto / cuenta</button><button class="btn-sip" id="lmEd" disabled onclick="editarRegistroLista('${tipo}',selDe('gLM'))">✏️ Editar registro</button><button class="btn-sip" id="lmAct" disabled onclick="toggleActivoProyecto(selDe('gLM'))">🔄 Activar / Desactivar</button></div>`;
 }
 let filtroRolPers = '';
 let filtroAlmPers = '';
@@ -5097,16 +5545,25 @@ function importarPersonalExcel() {
 }
 
 VISTAS.aProy = () => vistaListaMaestra('proyectos');
+function toggleActivoProyecto(p) {
+  if (!p) return;
+  p.activo = p.activo === false ? true : false;
+  bit('PROYECTO ' + (p.activo ? 'ACTIVADO' : 'DESACTIVADO'), `${p.cuenta} · ${p.nombre}`);
+  guardar();
+  toast(`Proyecto ${p.cuenta} ${p.activo ? 'activado' : 'desactivado'}.`, 'ok');
+  refrescar();
+}
 function editarRegistroLista(tipo, r) {
+  const esEd = !!r;
   r = r || { nombre: '', cuenta: '', activo: true };
-  const cuerpo = `<div class="f3">${campo('Proyecto / OT', `<input id="lmA" value="${esc(r.nombre)}">`)}${campo('Cuenta auxiliar', `<input id="lmB" value="${esc(r.cuenta)}">`)}${campo('Estado', `<select id="lmC">${opciones([['1', 'ACTIVO'], ['0', 'INACTIVO']], r.activo ? '1' : '0')}</select>`)}</div>`;
-  abrirModal(r.nombre ? 'Editar registro' : 'Nuevo registro', cuerpo, [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Guardar', cls: 'btn-verde', fn: () => run(() => {
-    const a = $('lmA').value.trim(), b = $('lmB').value.trim(); if (!a || !b) throw new Error('Complete los campos obligatorios.');
-    const lista = DB.proyectos; const dup = lista.find(x => x !== r && x.nombre.toLowerCase() === a.toLowerCase());
-    if (dup) throw new Error('Ya existe un proyecto con ese nombre.');
+  const cuerpo = `<div class="f3">${campo('Cuenta auxiliar *', `<input id="lmB" value="${esc(r.cuenta)}" placeholder="Ej. TTE-C-0001">`)}<div style="grid-column:span 2">${campo('Proyecto / OT *', `<input id="lmA" value="${esc(r.nombre)}" placeholder="Nombre del proyecto u orden de trabajo">`)}</div>${campo('Estado', `<select id="lmC">${opciones([['1', 'ACTIVO'], ['0', 'INACTIVO']], r.activo !== false ? '1' : '0')}</select>`)}</div>`;
+  abrirModal(esEd ? 'Editar proyecto / cuenta auxiliar' : 'Nuevo proyecto / cuenta auxiliar', cuerpo, [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Guardar', cls: 'btn-verde', fn: () => run(() => {
+    const a = $('lmA').value.trim(), b = $('lmB').value.trim().toUpperCase(); if (!a || !b) throw new Error('Complete la cuenta auxiliar y el nombre del proyecto.');
+    const lista = DB.proyectos; const dup = lista.find(x => x !== r && normTexto(x.cuenta) === normTexto(b));
+    if (dup) throw new Error(`Ya existe un proyecto registrado con la cuenta auxiliar ${b} (${dup.nombre}).`);
     Object.assign(r, { nombre: a, cuenta: b, activo: $('lmC').value === '1' });
     if (!lista.includes(r)) lista.push(r);
-    bit('LISTA PROYECTOS ACTUALIZADA', a); guardar(); cerrarModal(); toast('Registro guardado.', 'ok'); refrescar();
+    bit('LISTA PROYECTOS ACTUALIZADA', `${b} · ${a}`); guardar(); cerrarModal(); toast('Proyecto y cuenta auxiliar guardados.', 'ok'); refrescar();
   }) }]);
 }
 function importarLista(tipo) {
@@ -5114,14 +5571,16 @@ function importarLista(tipo) {
     const nuevos = [], act = [], err = [];
     filas.forEach((f, i) => {
       const g = (...ks) => { for (const k of ks) if (f[k] != null && String(f[k]).trim()) return String(f[k]).trim(); return ''; };
-      const r = { nombre: g('Proyecto / OT', 'Proyecto', 'OT'), cuenta: g('Cuenta auxiliar', 'Cuenta'), activo: true }; if (!r.nombre || !r.cuenta) return err.push(`Fila ${i + 2}: falta proyecto o cuenta`); (DB.proyectos.find(x => x.nombre.toLowerCase() === r.nombre.toLowerCase()) ? act : nuevos).push(r);
+      const r = { nombre: g('Proyecto / OT', 'Proyecto', 'OT', 'PROYECTO'), cuenta: g('Cuenta auxiliar', 'Cuenta Auxiliar', 'Cuenta', 'CUENTA AUXILIAR').toUpperCase(), activo: true };
+      if (!r.nombre || !r.cuenta) return err.push(`Fila ${i + 2}: falta proyecto o cuenta auxiliar`);
+      (DB.proyectos.find(x => normTexto(x.cuenta) === normTexto(r.cuenta)) ? act : nuevos).push(r);
     });
-    abrirModal('Vista previa de importación', `<p class="ayuda-txt">Nuevos: <b>${nuevos.length}</b> · Ya existentes: <b>${act.length}</b>${err.length ? '<br><b>Errores:</b><br>' + err.map(esc).join('<br>') : ''}</p>
+    abrirModal('Vista previa de importación de Proyectos', `<p class="ayuda-txt">Nuevos: <b>${nuevos.length}</b> · Cuentas ya existentes: <b>${act.length}</b>${err.length ? '<br><b>Errores:</b><br>' + err.map(esc).join('<br>') : ''}</p>
       <label style="display:block;margin:10px 0;font-size:12.5px"><input type="checkbox" id="impAct" checked> Actualizar los registros existentes con los datos del archivo</label>
-      <div class="grid-wrap" style="max-height:300px"><table class="grid"><tbody>${nuevos.concat(act).map(r => `<tr><td>${esc(r.nombre)}</td><td>${esc(r.cuenta)}</td><td>${nuevos.includes(r) ? 'Nuevo' : 'Existente'}</td></tr>`).join('')}</tbody></table></div>`,
+      <div class="grid-wrap" style="max-height:300px"><table class="grid"><thead><tr><th>Cuenta auxiliar</th><th>Proyecto / OT</th><th>Acción</th></tr></thead><tbody>${nuevos.concat(act).map(r => `<tr><td><b>${esc(r.cuenta)}</b></td><td>${esc(r.nombre)}</td><td>${nuevos.includes(r) ? 'Nuevo' : 'Actualizar'}</td></tr>`).join('')}</tbody></table></div>`,
       [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Importar', cls: 'btn-verde', fn: () => {
         nuevos.forEach(r => DB.proyectos.push(r));
-        if ($('impAct').checked) act.forEach(r => Object.assign(DB.proyectos.find(x => x.nombre.toLowerCase() === r.nombre.toLowerCase()), r));
+        if ($('impAct').checked) act.forEach(r => Object.assign(DB.proyectos.find(x => normTexto(x.cuenta) === normTexto(r.cuenta)), r));
         bit('IMPORTACIÓN PROYECTOS', `${nuevos.length} nuevos, ${act.length} existentes`); guardar(); cerrarModal(); toast('Importación completada.', 'ok'); refrescar();
       } }], true);
   });
