@@ -2570,7 +2570,7 @@ function imprimirSolicitudFaltantes(tipoId, deseadas) {
         <div class="firma">Aprobación / Compras<br><small>Gerencia de Operaciones</small></div>
       </div>
 
-      <script>window.onload = function() { window.print(); };</script>
+      ${'<script>window.onload = function() { window.print(); };</' + 'script>'}
     </body>
     </html>
   `;
