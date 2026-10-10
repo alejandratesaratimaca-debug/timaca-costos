@@ -1698,7 +1698,6 @@ function asegurarProyectosOficiales() {
   if (!DB || !Array.isArray(DB.proyectos)) DB.proyectos = [];
   const esLegacy = DB.proyectos.length === 0 || DB.proyectos.some(p => /^OT-\d+/i.test(p.nombre) || p.cuenta === 'ADM-G-0001');
   if (esLegacy) {
-    // Preservar proyectos personalizados que no sean los 10 de demostración antiguos
     const personalizados = DB.proyectos.filter(p => !(/^OT-\d+/i.test(p.nombre) || p.cuenta === 'ADM-G-0001'));
     DB.proyectos = JSON.parse(JSON.stringify(PROYECTOS_OFICIALES));
     personalizados.forEach(pers => {
@@ -1717,6 +1716,48 @@ function asegurarProyectosOficiales() {
       }
     });
   }
+
+  // Migrar solicitudes, vales e incidencias previas en localStorage que aún tengan nombres demo antiguos (OT-3xx/4xx)
+  const mapaDemo = {
+    'TTE-C-0001': { cuenta: 'TTE-C-0681', nombre: 'Adicionales Proyecto 2da linea de Planta de Pellas (VISCO ORINOCO)' },
+    'TTE-C-0002': { cuenta: 'TTE-C-0693', nombre: 'Trabajos para parada de Planta de Briquetas FMO (VISCO ORINOCO)' },
+    'TTE-C-0003': { cuenta: 'TTE-C-0655', nombre: 'Interconexión del sistema de transporte de mineral desde la tolva multipropósito hasta carga barcos de despacho internacional PMH - FMO (VISCO ORINOCO)' },
+    'TTE-C-0004': { cuenta: 'TTE-C-0640', nombre: 'Rehabilitación de la Parrilla Móvil 610TG1/ Planta de Pellas FMO (VISCO ORINOCO)' },
+    'TTE-C-0005': { cuenta: 'TT-A-C-505', nombre: 'Departamento de Fabricación' },
+    'TTE-C-0006': { cuenta: 'TTE-C-0691', nombre: 'Reparacion de la Grua #1 en la estacion de transferencia de Boca Grande II (VISCO ORINOCO)' },
+    'TTE-C-0007': { cuenta: 'EE-A-C-510', nombre: 'Sección Mantenimiento Mecánico' },
+    'TTE-C-0009': { cuenta: 'EE-A-C-509', nombre: 'Sección Servicios Generales' },
+    'ADM-G-0001': { cuenta: 'TT-A-C-502', nombre: 'Coordinación de Operaciones' }
+  };
+  const normalizarDocProy = doc => {
+    if (!doc) return;
+    const cta = String(doc.cuenta || '').trim().toUpperCase();
+    const nom = String(doc.proyecto || '').trim();
+    if (mapaDemo[cta] && (/^OT-\d+/i.test(nom) || cta === 'ADM-G-0001')) {
+      doc.cuenta = mapaDemo[cta].cuenta;
+      doc.proyecto = mapaDemo[cta].nombre;
+      return;
+    }
+    if (/^OT-301/i.test(nom)) { doc.cuenta = 'TTE-C-0681'; doc.proyecto = mapaDemo['TTE-C-0001'].nombre; return; }
+    if (/^OT-315/i.test(nom)) { doc.cuenta = 'TTE-C-0693'; doc.proyecto = mapaDemo['TTE-C-0002'].nombre; return; }
+    if (/^OT-342/i.test(nom)) { doc.cuenta = 'TTE-C-0655'; doc.proyecto = mapaDemo['TTE-C-0003'].nombre; return; }
+    if (/^OT-377/i.test(nom)) { doc.cuenta = 'TTE-C-0640'; doc.proyecto = mapaDemo['TTE-C-0004'].nombre; return; }
+    if (/^OT-401/i.test(nom)) { doc.cuenta = 'TT-A-C-505'; doc.proyecto = mapaDemo['TTE-C-0005'].nombre; return; }
+    if (/^OT-418/i.test(nom)) { doc.cuenta = 'TTE-C-0691'; doc.proyecto = mapaDemo['TTE-C-0006'].nombre; return; }
+    if (/^OT-430/i.test(nom)) { doc.cuenta = 'EE-A-C-510'; doc.proyecto = mapaDemo['TTE-C-0007'].nombre; return; }
+    if (/^OT-455/i.test(nom)) { doc.cuenta = 'TTE-C-0008'; doc.proyecto = 'Venprecar: Rep. Motores Hagglunds.'; return; }
+    if (/^OT-490/i.test(nom)) { doc.cuenta = 'EE-A-C-509'; doc.proyecto = mapaDemo['TTE-C-0009'].nombre; return; }
+    const oficPorCta = PROYECTOS_OFICIALES.find(p => p.cuenta.toUpperCase() === cta);
+    if (oficPorCta && (!nom || /^OT-\d+/i.test(nom))) {
+      doc.proyecto = oficPorCta.nombre;
+    } else if (!cta && nom) {
+      const oficPorNom = PROYECTOS_OFICIALES.find(p => p.nombre.toLowerCase() === nom.toLowerCase());
+      if (oficPorNom) doc.cuenta = oficPorNom.cuenta;
+    }
+  };
+  (DB.solicitudes || []).forEach(normalizarDocProy);
+  (DB.vales || []).forEach(normalizarDocProy);
+  (DB.incid || []).forEach(normalizarDocProy);
 }
 
 function semilla() {
@@ -2184,9 +2225,9 @@ function menuDef() {
       ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
   }
   const c = S.ctx;
-  const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus === 'FINALIZADO').length;
+  const pendAprob = DB.solicitudes.filter(s => (s.origen === c || puede('aprobar', s.origen)) && s.estatus === 'FINALIZADO').length;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
-  const pendExt = (DB.extSol || []).filter(x => x.alm === c && x.estatus === 'PENDIENTE').length;
+  const pendExt = (DB.extSol || []).filter(x => (x.alm === c || puede('aprobar', x.alm)) && x.estatus === 'PENDIENTE').length;
   const m = [
     ['Inicio', [['dash', 'Dashboard del almacén']]]
   ];
@@ -4114,7 +4155,7 @@ VISTAS.doc = p => {
   const esSol = p.num.startsWith('SOL-');
   const d = esSol ? solDe(p.num) : valeDe(p.num);
   if (!d) { $('area').innerHTML = cab('Documento no encontrado'); return; }
-  if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
+  if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx && !puede('aprobar', d.origen)) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
   const t = d.tipo, est = esSol ? d.estatus : estadoVale(d);
   const color = EST_COLOR[est] === 'ambar' ? 'naranja' : (EST_COLOR[est] || 'gris');
   let franjaDer = '';
@@ -4216,7 +4257,7 @@ function accionesDoc(d, esSol, p) {
   let h = '';
   if (enMaestro()) return esSol ? '' : `<button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>`;
   if (esSol) {
-    if (d.estatus === 'FINALIZADO' && d.origen === S.ctx) {
+    if (d.estatus === 'FINALIZADO' && (d.origen === S.ctx || puede('aprobar', d.origen))) {
       const ok = puede('aprobar', d.origen) && d.generadoPor.usuario !== S.u.usuario;
       h += `<button class="btn btn-rojo" ${ok ? '' : 'disabled'} onclick="accionAnular('${d.num}')">Anular solicitud</button><button class="btn btn-verde" ${ok ? '' : 'disabled'} onclick="accionAprobar('${d.num}')">Aceptar solicitud</button>`;
     }
@@ -4253,14 +4294,23 @@ VISTAS.sol = p => {
   if (tab === 'mias') rows = rows.filter(s => s.generadoPor.usuario === S.u.usuario);
   if (filtro !== 'TODAS') rows = rows.filter(s => s.estatus === filtro);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
-  const cols = [{ t: 'Número', k: 'num' }, { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha }, { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
-    { t: 'Motivo / Proyecto', k: 'proyecto' }, { t: 'Solicitado', v: r => r.resp ? r.resp.nombre : '' }, { t: 'Generado por', v: r => r.generadoPor.nombre },
-    { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }, { t: 'Vale', v: r => r.vale || '' }];
+  const cols = [
+    { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
+    { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
+    { t: 'Almacén', v: r => almNombre(r.origen), f: r => `<span class="est est-gris" style="font-weight:700">${esc(almNombre(r.origen))}</span>` },
+    { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
+    { t: 'Cuenta auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800">${esc(r.cuenta)}</span>` : '—' },
+    { t: 'Proyecto / OT', k: 'proyecto', td: 'wrap' },
+    { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '' },
+    { t: 'Generado por', v: r => r.generadoPor.nombre },
+    { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) },
+    { t: 'Vale', v: r => r.vale || '' }
+  ];
   $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido) de ' + esc(almNombre(S.ctx)) + '.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
-    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones(['TODAS', 'NO FINALIZADO', 'FINALIZADO', 'APROBADO', 'ANULADO'], filtro)}</select>`)}${buscador('gSol', 'Buscar número, responsable, proyecto…')}</div>`
+    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones(['TODAS', 'NO FINALIZADO', 'FINALIZADO', 'APROBADO', 'ANULADO'], filtro)}</select>`)}${buscador('gSol', 'Buscar número, almacén, cuenta auxiliar, proyecto, responsable…')}</div>`
     + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
-    + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
+    + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsAlm"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
       <button class="btn-sip" onclick="ir('solNueva')">Nueva solicitud</button>
       <button class="btn-sip" id="bEdit" disabled onclick="ir('solNueva',{num:selDe('gSol').num})">Editar solicitud</button>
@@ -4272,7 +4322,11 @@ VISTAS.sol = p => {
   if (p && p.sel) { const g = GR.gSol; const i = g.vis.findIndex(r => r.num === p.sel); if (i >= 0) selGrid('gSol', i); }
 };
 function tiraSol(s) {
-  $('tsNum').textContent = s.num; $('tsProy').textContent = s.proyecto; $('tsResp').textContent = s.resp ? s.resp.nombre : '';
+  $('tsNum').textContent = s.num;
+  if ($('tsAlm')) $('tsAlm').textContent = almNombre(s.origen);
+  if ($('tsCuenta')) $('tsCuenta').textContent = s.cuenta || '—';
+  $('tsProy').textContent = s.proyecto;
+  $('tsResp').textContent = s.resp ? s.resp.nombre : '';
   const propia = S.u.admin || s.generadoPor.usuario === S.u.usuario;
   $('bEdit').disabled = !(s.estatus === 'NO FINALIZADO' && propia);
   $('bDel').disabled = !(s.estatus === 'NO FINALIZADO' && propia);
@@ -4290,18 +4344,34 @@ function accionEliminarSol() { const s = selDe('gSol'); confirmar(`¿Eliminar la
    ===================================================================== */
 VISTAS.aprobar = p => {
   const filtro = (p && p.f) || 'FINALIZADO';
-  const tienePerm = puede('aprobar', S.ctx);
-  let rows = DB.solicitudes.filter(s => s.origen === S.ctx && s.estatus !== 'NO FINALIZADO');
+  const almsApr = DB.almacenes.filter(a => puede('aprobar', a.c) || a.c === S.ctx);
+  const almFiltro = (p && p.alm !== undefined) ? p.alm : (almsApr.length > 1 ? 'TODOS' : S.ctx);
+  const tienePerm = almsApr.some(a => puede('aprobar', a.c));
+  let rows = DB.solicitudes.filter(s => s.estatus !== 'NO FINALIZADO' && (almFiltro === 'TODOS' ? almsApr.some(a => a.c === s.origen) : s.origen === almFiltro));
   if (filtro !== 'TODAS') rows = rows.filter(s => s.estatus === filtro);
   rows.sort((a, b) => (b.finalizadaEn || b.fecha).localeCompare(a.finalizadaEn || a.fecha));
-  const cols = [{ t: 'Número', k: 'num' }, { t: 'Fecha', v: r => fFH(r.finalizadaEn || r.fecha), s: r => r.finalizadaEn || r.fecha }, { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
-    { t: 'Proyecto', k: 'proyecto' }, { t: 'Solicitado', v: r => r.resp.nombre }, { t: 'Generado por', v: r => r.generadoPor.nombre },
-    { t: 'Tipo A', v: r => r.lineas.some(l => item(l.id).tipoA) ? 'SI' : 'NO' }, { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }];
-  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes finalizadas de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
+  const cols = [
+    { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
+    { t: 'Fecha', v: r => fFH(r.finalizadaEn || r.fecha), s: r => r.finalizadaEn || r.fecha },
+    { t: 'Almacén solicitante', v: r => almNombre(r.origen), f: r => `<span class="est est-verde" style="font-weight:800">${esc(almNombre(r.origen))}</span>` },
+    { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
+    { t: 'Cuenta auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800;font-size:12px">${esc(r.cuenta)}</span>` : '—' },
+    { t: 'Proyecto', k: 'proyecto', td: 'wrap', f: r => `<b>${esc(r.proyecto || '—')}</b>` },
+    { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '—' },
+    { t: 'Generado por', v: r => r.generadoPor ? r.generadoPor.nombre : '—' },
+    { t: 'Tipo A', v: r => r.lineas.some(l => (item(l.id) || {}).tipoA) ? 'SI' : 'NO', cls: 'cen' },
+    { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }
+  ];
+  const recApr = `ir('aprobar',{f:$('apEst').value,alm:$('apAlm').value})`;
+  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes finalizadas con detalle del almacén solicitante, cuenta auxiliar y proyecto. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
     + (tienePerm ? '' : avisoSinPermiso('Su usuario no tiene permiso de aprobación en este almacén. Puede consultar las solicitudes, pero no aceptarlas ni anularlas.'))
-    + `<div class="fila-filtros">${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['FINALIZADO', 'Pendientes de aprobación'], ['APROBADO', 'Aprobadas'], ['ANULADO', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}${buscador('gApr')}</div>`
+    + `<div class="fila-filtros">
+        ${campo('Mostrar', `<select id="apEst" onchange="${recApr}">${opciones([['FINALIZADO', 'Pendientes de aprobación'], ['APROBADO', 'Aprobadas'], ['ANULADO', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
+        ${campo('Almacén solicitante', `<select id="apAlm" onchange="${recApr}"><option value="TODOS" ${almFiltro === 'TODOS' ? 'selected' : ''}>Todos los almacenes (${almsApr.length})</option>${almsApr.map(a => `<option value="${a.c}" ${almFiltro === a.c ? 'selected' : ''}>${esc(a.n)}</option>`).join('')}</select>`)}
+        ${buscador('gApr', 'Buscar por almacén, cuenta auxiliar, proyecto, responsable…')}
+      </div>`
     + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'FINALIZADO' ? 'No hay solicitudes pendientes de aprobación.' : 'No hay registros.' })
-    + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
+    + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taAlm"></span><span class="box" id="taCuenta"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
     <div id="taMotivo"></div>
     <div class="barra-btn">
       <button class="btn-sip" id="aVer" disabled onclick="ir('doc',{num:selDe('gApr').num,back:'aprobar'})">Visualizar solicitud</button>
@@ -4311,7 +4381,11 @@ VISTAS.aprobar = p => {
     </div>`;
 };
 function tiraApr(s) {
-  $('taNum').textContent = s.num; $('taProy').textContent = s.proyecto; $('taResp').textContent = s.resp.nombre;
+  $('taNum').textContent = s.num;
+  if ($('taAlm')) $('taAlm').textContent = almNombre(s.origen);
+  if ($('taCuenta')) $('taCuenta').textContent = s.cuenta || '—';
+  $('taProy').textContent = s.proyecto;
+  $('taResp').textContent = s.resp ? s.resp.nombre : '';
   const ok = s.estatus === 'FINALIZADO' && puede('aprobar', s.origen) && s.generadoPor.usuario !== S.u.usuario;
   $('aVer').disabled = false; $('aOk').disabled = !ok; $('aNo').disabled = !ok;
   const m = motivoNoAprueba(s);
@@ -4463,16 +4537,20 @@ VISTAS.plz = p => {
 };
 
 VISTAS.aprobarPlz = () => {
-  if (!puede('aprobar', S.ctx) && !S.u.admin) {
+  const almsApr = DB.almacenes.filter(a => puede('aprobar', a.c) || a.c === S.ctx);
+  if (!almsApr.some(a => puede('aprobar', a.c)) && !S.u.admin) {
     $('area').innerHTML = cab('Aprobar extensiones de plazo') + avisoSinPermiso('Su usuario no tiene permiso de aprobación en ' + almNombre(S.ctx) + '.');
     return;
   }
   DB.extSol = DB.extSol || [];
-  const pendientes = DB.extSol.filter(x => (x.alm === S.ctx || S.u.admin) && x.estatus === 'PENDIENTE');
+  const pendientes = DB.extSol.filter(x => (x.alm === S.ctx || puede('aprobar', x.alm) || S.u.admin) && x.estatus === 'PENDIENTE');
 
   const cols = [
-    { t: 'N° Solicitud', k: 'id' },
+    { t: 'N° Solicitud', k: 'id', f: r => `<b>${esc(r.id)}</b>` },
+    { t: 'Almacén solicitante', v: r => almNombre(r.alm), f: r => `<span class="est est-verde" style="font-weight:800">${esc(almNombre(r.alm))}</span>` },
     { t: 'Vale préstamo', k: 'valeRef' },
+    { t: 'Cuenta auxiliar', v: r => (valeDe(r.valeRef) || {}).cuenta || '—', f: r => { const cta = (valeDe(r.valeRef) || {}).cuenta; return cta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800">${esc(cta)}</span>` : '—'; } },
+    { t: 'Proyecto', v: r => (valeDe(r.valeRef) || {}).proyecto || '—', td: 'wrap' },
     { t: 'Fecha solicitud', v: r => fFH(r.fechaSol), s: r => r.fechaSol },
     { t: 'Solicitado por', v: r => r.solicitadoPor ? r.solicitadoPor.nombre : '—' },
     { t: 'Devolución actual', v: r => fF(r.fechaDevActual) },
@@ -4483,9 +4561,9 @@ VISTAS.aprobarPlz = () => {
     { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }
   ];
 
-  $('area').innerHTML = cab('Aprobar extensiones de plazo', `Solicitudes de prórroga pendientes de aprobación del supervisor en ${esc(almNombre(S.ctx))}.`)
+  $('area').innerHTML = cab('Aprobar extensiones de plazo', 'Solicitudes de prórroga pendientes de aprobación del supervisor con detalle de almacén, cuenta auxiliar y proyecto.')
     + `<div class="franja-est ${pendientes.length ? 'naranja' : 'verde'}"><span>Hay <b>${pendientes.length}</b> extensión(es) de plazo pendiente(s) de aprobación.</span></div>`
-    + grid('gExt', cols, pendientes, { pag: 15, onSel: r => tiraExt(r), vacio: 'No hay solicitudes de extensión pendientes en este almacén.' })
+    + grid('gExt', cols, pendientes, { pag: 15, onSel: r => tiraExt(r), vacio: 'No hay solicitudes de extensión pendientes.' })
     + `<div class="sel-strip"><span class="lbl">Extensión seleccionada</span><span class="box" id="exId"></span><span class="box" id="exInfo" style="flex:1"></span></div>
       <div class="barra-btn">
         <button class="btn-sip" id="exVer" disabled onclick="ir('doc',{num:selDe('gExt').valeRef,back:'aprobarPlz'})">Ver vale de préstamo</button>
@@ -4495,8 +4573,9 @@ VISTAS.aprobarPlz = () => {
 };
 
 function tiraExt(r) {
+  const v = valeDe(r.valeRef) || {};
   $('exId').textContent = r.id;
-  $('exInfo').textContent = `${r.valeRef} · Nueva fecha: ${fF(r.nuevaFecha)} · ${r.motivo}`;
+  $('exInfo').textContent = `${almNombre(r.alm)} · ${r.valeRef} · ${v.cuenta ? v.cuenta + ' · ' : ''}${v.proyecto || ''} · Nueva fecha: ${fF(r.nuevaFecha)}`;
   $('exVer').disabled = false;
   $('exAp').disabled = false;
   $('exRe').disabled = false;
