@@ -2225,9 +2225,9 @@ function menuDef() {
       ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
   }
   const c = S.ctx;
-  const pendAprob = DB.solicitudes.filter(s => (s.origen === c || puede('aprobar', s.origen)) && s.estatus === 'FINALIZADO').length;
+  const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus === 'FINALIZADO').length;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
-  const pendExt = (DB.extSol || []).filter(x => (x.alm === c || puede('aprobar', x.alm)) && x.estatus === 'PENDIENTE').length;
+  const pendExt = (DB.extSol || []).filter(x => x.alm === c && x.estatus === 'PENDIENTE').length;
   const m = [
     ['Inicio', [['dash', 'Dashboard del almacén']]]
   ];
@@ -4155,7 +4155,7 @@ VISTAS.doc = p => {
   const esSol = p.num.startsWith('SOL-');
   const d = esSol ? solDe(p.num) : valeDe(p.num);
   if (!d) { $('area').innerHTML = cab('Documento no encontrado'); return; }
-  if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx && !puede('aprobar', d.origen)) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
+  if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
   const t = d.tipo, est = esSol ? d.estatus : estadoVale(d);
   const color = EST_COLOR[est] === 'ambar' ? 'naranja' : (EST_COLOR[est] || 'gris');
   let franjaDer = '';
@@ -4257,7 +4257,7 @@ function accionesDoc(d, esSol, p) {
   let h = '';
   if (enMaestro()) return esSol ? '' : `<button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>`;
   if (esSol) {
-    if (d.estatus === 'FINALIZADO' && (d.origen === S.ctx || puede('aprobar', d.origen))) {
+    if (d.estatus === 'FINALIZADO' && d.origen === S.ctx) {
       const ok = puede('aprobar', d.origen) && d.generadoPor.usuario !== S.u.usuario;
       h += `<button class="btn btn-rojo" ${ok ? '' : 'disabled'} onclick="accionAnular('${d.num}')">Anular solicitud</button><button class="btn btn-verde" ${ok ? '' : 'disabled'} onclick="accionAprobar('${d.num}')">Aceptar solicitud</button>`;
     }
@@ -4344,10 +4344,8 @@ function accionEliminarSol() { const s = selDe('gSol'); confirmar(`¿Eliminar la
    ===================================================================== */
 VISTAS.aprobar = p => {
   const filtro = (p && p.f) || 'FINALIZADO';
-  const almsApr = DB.almacenes.filter(a => puede('aprobar', a.c) || a.c === S.ctx);
-  const almFiltro = (p && p.alm !== undefined) ? p.alm : (almsApr.length > 1 ? 'TODOS' : S.ctx);
-  const tienePerm = almsApr.some(a => puede('aprobar', a.c));
-  let rows = DB.solicitudes.filter(s => s.estatus !== 'NO FINALIZADO' && (almFiltro === 'TODOS' ? almsApr.some(a => a.c === s.origen) : s.origen === almFiltro));
+  const tienePerm = puede('aprobar', S.ctx);
+  let rows = DB.solicitudes.filter(s => s.origen === S.ctx && s.estatus !== 'NO FINALIZADO');
   if (filtro !== 'TODAS') rows = rows.filter(s => s.estatus === filtro);
   rows.sort((a, b) => (b.finalizadaEn || b.fecha).localeCompare(a.finalizadaEn || a.fecha));
   const cols = [
@@ -4362,15 +4360,13 @@ VISTAS.aprobar = p => {
     { t: 'Tipo A', v: r => r.lineas.some(l => (item(l.id) || {}).tipoA) ? 'SI' : 'NO', cls: 'cen' },
     { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }
   ];
-  const recApr = `ir('aprobar',{f:$('apEst').value,alm:$('apAlm').value})`;
-  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes finalizadas con detalle del almacén solicitante, cuenta auxiliar y proyecto. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
+  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes finalizadas de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
     + (tienePerm ? '' : avisoSinPermiso('Su usuario no tiene permiso de aprobación en este almacén. Puede consultar las solicitudes, pero no aceptarlas ni anularlas.'))
     + `<div class="fila-filtros">
-        ${campo('Mostrar', `<select id="apEst" onchange="${recApr}">${opciones([['FINALIZADO', 'Pendientes de aprobación'], ['APROBADO', 'Aprobadas'], ['ANULADO', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
-        ${campo('Almacén solicitante', `<select id="apAlm" onchange="${recApr}"><option value="TODOS" ${almFiltro === 'TODOS' ? 'selected' : ''}>Todos los almacenes (${almsApr.length})</option>${almsApr.map(a => `<option value="${a.c}" ${almFiltro === a.c ? 'selected' : ''}>${esc(a.n)}</option>`).join('')}</select>`)}
-        ${buscador('gApr', 'Buscar por almacén, cuenta auxiliar, proyecto, responsable…')}
+        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['FINALIZADO', 'Pendientes de aprobación'], ['APROBADO', 'Aprobadas'], ['ANULADO', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
+        ${buscador('gApr', 'Buscar por número, cuenta auxiliar, proyecto, responsable…')}
       </div>`
-    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'FINALIZADO' ? 'No hay solicitudes pendientes de aprobación.' : 'No hay registros.' })
+    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'FINALIZADO' ? 'No hay solicitudes pendientes de aprobación en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taAlm"></span><span class="box" id="taCuenta"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
     <div id="taMotivo"></div>
     <div class="barra-btn">
@@ -4537,13 +4533,12 @@ VISTAS.plz = p => {
 };
 
 VISTAS.aprobarPlz = () => {
-  const almsApr = DB.almacenes.filter(a => puede('aprobar', a.c) || a.c === S.ctx);
-  if (!almsApr.some(a => puede('aprobar', a.c)) && !S.u.admin) {
+  if (!puede('aprobar', S.ctx) && !S.u.admin) {
     $('area').innerHTML = cab('Aprobar extensiones de plazo') + avisoSinPermiso('Su usuario no tiene permiso de aprobación en ' + almNombre(S.ctx) + '.');
     return;
   }
   DB.extSol = DB.extSol || [];
-  const pendientes = DB.extSol.filter(x => (x.alm === S.ctx || puede('aprobar', x.alm) || S.u.admin) && x.estatus === 'PENDIENTE');
+  const pendientes = DB.extSol.filter(x => x.alm === S.ctx && x.estatus === 'PENDIENTE');
 
   const cols = [
     { t: 'N° Solicitud', k: 'id', f: r => `<b>${esc(r.id)}</b>` },
@@ -4561,9 +4556,9 @@ VISTAS.aprobarPlz = () => {
     { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }
   ];
 
-  $('area').innerHTML = cab('Aprobar extensiones de plazo', 'Solicitudes de prórroga pendientes de aprobación del supervisor con detalle de almacén, cuenta auxiliar y proyecto.')
-    + `<div class="franja-est ${pendientes.length ? 'naranja' : 'verde'}"><span>Hay <b>${pendientes.length}</b> extensión(es) de plazo pendiente(s) de aprobación.</span></div>`
-    + grid('gExt', cols, pendientes, { pag: 15, onSel: r => tiraExt(r), vacio: 'No hay solicitudes de extensión pendientes.' })
+  $('area').innerHTML = cab('Aprobar extensiones de plazo', `Solicitudes de prórroga pendientes de aprobación del supervisor en ${esc(almNombre(S.ctx))}.`)
+    + `<div class="franja-est ${pendientes.length ? 'naranja' : 'verde'}"><span>Hay <b>${pendientes.length}</b> extensión(es) de plazo pendiente(s) de aprobación en ${esc(almNombre(S.ctx))}.</span></div>`
+    + grid('gExt', cols, pendientes, { pag: 15, onSel: r => tiraExt(r), vacio: 'No hay solicitudes de extensión pendientes en este almacén.' })
     + `<div class="sel-strip"><span class="lbl">Extensión seleccionada</span><span class="box" id="exId"></span><span class="box" id="exInfo" style="flex:1"></span></div>
       <div class="barra-btn">
         <button class="btn-sip" id="exVer" disabled onclick="ir('doc',{num:selDe('gExt').valeRef,back:'aprobarPlz'})">Ver vale de préstamo</button>
