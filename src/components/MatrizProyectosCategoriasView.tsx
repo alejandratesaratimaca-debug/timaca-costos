@@ -245,7 +245,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               </h1>
             </div>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Distribución consolidada en USD · 9 meses auditados (Enero - Septiembre 2026) · Total Acumulado: $12.478.718 USD
+              Distribución consolidada en USD · 9 meses auditados (Enero - Septiembre 2026) · Total Acumulado: ${totalAnualGlobal.toLocaleString('de-DE')} USD
             </p>
           </div>
         </div>
@@ -393,8 +393,8 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               <span className="text-2xl font-bold font-mono tabular-nums text-neutral-900 block mt-1">
                 ${(TABLA_PPT_DISTRIBUCION_2026[0]?.total2026 || 4073732).toLocaleString('de-DE')} USD
               </span>
-              <span className="text-[10px] text-neutral-500 mt-1 block truncate">
-                Materiales Directos (ASTM A36, etc.)
+              <span className="text-[10px] text-neutral-500 mt-1 block truncate" title="Materiales Directos · 9 meses auditados (Ene - Sep)">
+                Materiales Directos · 9 meses auditados (Ene - Sep)
               </span>
             </div>
           </div>

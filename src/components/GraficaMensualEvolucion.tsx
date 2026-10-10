@@ -254,7 +254,7 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
       {/* Mini KPIs Informativos Dinámicos */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
         <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
-          <span className="text-[10px] text-slate-500 uppercase font-bold block">Pico Anual de Obra</span>
+          <span className="text-[10px] text-slate-500 uppercase font-bold block">Pico de la Obra</span>
           <span className="text-sm font-bold font-mono text-slate-900 block mt-0.5">
             $2.663.899 <span className="text-[10px] text-orange-600 font-sans font-bold">(Junio)</span>
           </span>
