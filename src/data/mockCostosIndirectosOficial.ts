@@ -1,4 +1,4 @@
-// Matriz Oficial de Costos Indirectos a Prorratear (Enero - Agosto 2026)
+// Matriz Oficial de Costos Indirectos a Prorratear (Enero - Septiembre 2026)
 // Coincidencia exacta con 3 Analisis Costos Indirectos.xlsx y Modelo Estrella TIMACA
 
 export interface FilaCostoIndirectoOficial {
@@ -29,7 +29,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 8628,
     jul: 9875,
     ago: 19239,
-    total: 133210
+    sep: 50413,
+    total: 183623
   },
   {
     id: 'ind-02',
@@ -42,7 +43,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 55,
     jul: 0,
     ago: 0,
-    total: 508
+    sep: 56,
+    total: 564
   },
   {
     id: 'ind-03',
@@ -55,7 +57,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 318,
     jul: 0,
     ago: 0,
-    total: 605
+    sep: 277,
+    total: 882
   },
   {
     id: 'ind-04',
@@ -68,6 +71,7 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 0,
     jul: 0,
     ago: 0,
+    sep: 0,
     total: 2176
   },
   {
@@ -81,7 +85,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 120,
     jul: 120,
     ago: 120,
-    total: 956
+    sep: 250,
+    total: 1206
   },
   {
     id: 'ind-06',
@@ -94,6 +99,7 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 0,
     jul: 0,
     ago: 6700,
+    sep: 0,
     total: 6700
   },
   {
@@ -121,6 +127,7 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 0,
     jul: 0,
     ago: 122000,
+    sep: 0,
     total: 122000
   },
   {
@@ -134,6 +141,7 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 14,
     jul: 0,
     ago: 0,
+    sep: 0,
     total: 14
   },
   {
@@ -147,7 +155,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 1562,
     jul: 1562,
     ago: 1562,
-    total: 11857
+    sep: 2556,
+    total: 14413
   },
   {
     id: 'ind-11',
@@ -160,7 +169,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 614,
     jul: 0,
     ago: 0,
-    total: 2859
+    sep: 570,
+    total: 3429
   },
   {
     id: 'ind-12',
@@ -173,7 +183,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 57000,
     jul: 57000,
     ago: 57000,
-    total: 453898
+    sep: 58952,
+    total: 512850
   },
   {
     id: 'ind-13',
@@ -186,7 +197,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 726,
     jul: 0,
     ago: 0,
-    total: 726
+    sep: 79,
+    total: 805
   },
   {
     id: 'ind-14',
@@ -199,7 +211,22 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 5718,
     jul: 4588,
     ago: 4587,
-    total: 34806
+    sep: 4803,
+    total: 39609
+  },
+  {
+    id: 'ind-15',
+    concepto: 'Gastos de viajes/viáticos nacionales',
+    ene: 351,
+    feb: 393,
+    mar: 2353,
+    abr: 3964,
+    may: 1940,
+    jun: 1523,
+    jul: 2267,
+    ago: 1259,
+    sep: 4124,
+    total: 18174
   }
 ];
 
@@ -212,6 +239,6 @@ export const TOTALES_COSTOS_INDIRECTOS_OFICIAL = {
   jun: 206755,
   jul: 201145,
   ago: 336208,
-  sep: 73000,
-  total: 1755313
+  sep: 195129,
+  total: 1877442
 };
