@@ -1,14 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
-  TRABAJADORES_CURSOS_TIMACA, 
-  CERTIFICADOS_VERIFICADOS_DRIVE, 
-  CATALOGO_CURSOS_NOMBRES,
-  STATS_CURSOS_TOTALES,
-  DEPARTAMENTOS_LISTA,
-  AREAS_FISICAS_LISTA,
   TrabajadorCursosHSE,
-  CertificadoVerificadoHSE
+  CertificadoVerificadoHSE,
+  ItemCatalogoCurso
 } from '../../data/realCertificadosData';
+import {
+  getInitialCursosData,
+  fetchLiveCursosData,
+  GOOGLE_SHEET_URL
+} from '../../lib/cursosSync';
 import { UsuarioSistema } from '../../types/usuarios';
 import { 
   Award, 
@@ -36,7 +36,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
   BookOpen,
-  FolderSync
+  FolderSync,
+  RefreshCw
 } from 'lucide-react';
 
 interface CertificadosModuleViewProps {
@@ -46,7 +47,6 @@ interface CertificadosModuleViewProps {
   onGoToSeguridad?: () => void;
 }
 
-const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1HLg7w29tI9XGVxwLtCE-OHQmF-JnnwoaF3OF4o_7kS8/edit?gid=1730870257#gid=1730870257';
 const APPS_SCRIPT_URL = 'https://script.google.com/u/0/home/projects/1_X3O-E4mf5l3qzHnTRBY_GbhTOpR4FCLLz-IbWatFX19zksIiQXEjMAF/edit';
 
 export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
@@ -57,6 +57,54 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'matriz' | 'drive' | 'dashboard' | 'catalogo' | 'script'>('matriz');
   const canEdit = currentUser.permisos.ambitoEdicion === 'todo' || currentUser.permisos.canEditCertificados === true;
+
+  // Estado dinámico sincronizado en vivo
+  const initialData = useMemo(() => getInitialCursosData(), []);
+  const [trabajadoresData, setTrabajadoresData] = useState<TrabajadorCursosHSE[]>(initialData.trabajadores);
+  const [certificadosData, setCertificadosData] = useState<CertificadoVerificadoHSE[]>(initialData.certificados);
+  const [catalogoNombres, setCatalogoNombres] = useState<string[]>(initialData.catalogoNombres);
+  const [catalogoDetalle, setCatalogoDetalle] = useState<ItemCatalogoCurso[]>(initialData.catalogoDetalle);
+  const [statsCursos, setStatsCursos] = useState(initialData.statsCursos);
+  const [departamentosLista, setDepartamentosLista] = useState<string[]>(initialData.departamentos);
+  const [areasFisicasLista, setAreasFisicasLista] = useState<string[]>(initialData.areasFisicas);
+  const [lastSyncTime, setLastSyncTime] = useState<string>(initialData.lastSync);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [syncSuccessMsg, setSyncSuccessMsg] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
+
+  // Sincronización en vivo con Google Sheets
+  const handleSyncFromGoogleSheets = async (showFeedback = true) => {
+    setIsSyncing(true);
+    setSyncError(null);
+    try {
+      const liveData = await fetchLiveCursosData();
+      setTrabajadoresData(liveData.trabajadores);
+      setCertificadosData(liveData.certificados);
+      setCatalogoNombres(liveData.catalogoNombres);
+      setCatalogoDetalle(liveData.catalogoDetalle);
+      setStatsCursos(liveData.statsCursos);
+      setDepartamentosLista(liveData.departamentos);
+      setAreasFisicasLista(liveData.areasFisicas);
+      setLastSyncTime(liveData.lastSync);
+      if (showFeedback) {
+        setSyncSuccessMsg(`¡Sincronizado con éxito! (${liveData.trabajadores.length} trabajadores y ${liveData.catalogoNombres.length} cursos al día)`);
+        setTimeout(() => setSyncSuccessMsg(null), 4000);
+      }
+    } catch (err: any) {
+      console.warn('[CursosSync] Fallo al sincronizar en vivo:', err);
+      if (showFeedback) {
+        setSyncError(err?.message || 'No se pudo conectar directamente con Google Sheets');
+        setTimeout(() => setSyncError(null), 5000);
+      }
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Carga automática al abrir el módulo
+  useEffect(() => {
+    handleSyncFromGoogleSheets(false);
+  }, []);
   
   // Filtros de búsqueda para la matriz
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,7 +113,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
   const [selectedCursoFiltro, setSelectedCursoFiltro] = useState<string>('TODOS');
   const [filtroEstadoCapacitacion, setFiltroEstadoCapacitacion] = useState<'TODOS' | 'CON_COMPLETADOS' | 'PENDIENTES'>('TODOS');
   
-  // Paginación de la matriz (879 registros)
+  // Paginación de la matriz
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
@@ -78,7 +126,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
 
   // Filtrado de la matriz principal
   const filteredTrabajadores = useMemo(() => {
-    return TRABAJADORES_CURSOS_TIMACA.filter(t => {
+    return trabajadoresData.filter(t => {
       const q = searchQuery.toLowerCase().trim();
       const matchSearch = !q || 
         t.nombre.toLowerCase().includes(q) ||
@@ -90,7 +138,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
 
       let matchCurso = true;
       if (selectedCursoFiltro !== 'TODOS') {
-        const reg = t.cursos.find(c => c.curso === selectedCursoFiltro);
+        const reg = t.cursos.find(c => c.curso.toLowerCase() === selectedCursoFiltro.toLowerCase());
         matchCurso = !!reg && (reg.aplica || reg.completado);
       }
 
@@ -103,7 +151,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
 
       return matchSearch && matchArea && matchDpto && matchCurso && matchEstado;
     });
-  }, [searchQuery, selectedArea, selectedDpto, selectedCursoFiltro, filtroEstadoCapacitacion]);
+  }, [trabajadoresData, searchQuery, selectedArea, selectedDpto, selectedCursoFiltro, filtroEstadoCapacitacion]);
 
   // Paginación calculada
   const totalPages = Math.ceil(filteredTrabajadores.length / pageSize) || 1;
@@ -114,7 +162,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
 
   // Filtrado de certificados en drive
   const filteredCertificadosDrive = useMemo(() => {
-    return CERTIFICADOS_VERIFICADOS_DRIVE.filter(c => {
+    return certificadosData.filter(c => {
       const q = searchDriveQuery.toLowerCase().trim();
       const matchSearch = !q || 
         c.nombre.toLowerCase().includes(q) ||
@@ -122,22 +170,22 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
         c.cargo.toLowerCase().includes(q) ||
         c.curso.toLowerCase().includes(q);
 
-      const matchCurso = selectedCursoDrive === 'TODOS' || c.curso === selectedCursoDrive;
+      const matchCurso = selectedCursoDrive === 'TODOS' || c.curso.toLowerCase() === selectedCursoDrive.toLowerCase();
       return matchSearch && matchCurso;
     });
-  }, [searchDriveQuery, selectedCursoDrive]);
+  }, [certificadosData, searchDriveQuery, selectedCursoDrive]);
 
   // Exportar matriz actual a CSV
   const handleExportCSV = () => {
-    const headers = ['Cédula', 'Nombre', 'Cargo', 'Departamento', 'Área Física', ...CATALOGO_CURSOS_NOMBRES];
+    const headers = ['Cédula', 'Nombre', 'Cargo', 'Departamento', 'Área Física', ...catalogoNombres];
     const rows = filteredTrabajadores.map(t => [
       t.cedula,
       `"${t.nombre}"`,
       `"${t.cargo}"`,
       `"${t.departamento}"`,
       `"${t.areaFisica}"`,
-      ...CATALOGO_CURSOS_NOMBRES.map(cName => {
-        const cur = t.cursos.find(c => c.curso === cName);
+      ...catalogoNombres.map(cName => {
+        const cur = t.cursos.find(c => c.curso.toLowerCase() === cName.toLowerCase());
         return cur ? `"${cur.estado}${cur.fecha ? ' (' + cur.fecha + ')' : ''}"` : '"No aplica"';
       })
     ]);
@@ -149,7 +197,6 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
     link.setAttribute('download', `TIMACA_Matriz_Cursos_HSE_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
   };
 
   return (
@@ -171,16 +218,41 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                 title="Abrir Google Sheet oficial de TIMACA"
               >
                 <ExternalLink className="w-3 h-3 text-emerald-400" />
-                Google Sheet Sincronizado (gid=1730870257)
+                Google Sheet Oficial
               </a>
+              <div className="flex items-center gap-1.5 text-[10px] font-mono bg-slate-800/90 border border-slate-700 px-2 py-0.5 rounded text-slate-300">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{lastSyncTime}</span>
+              </div>
+              <button
+                onClick={() => handleSyncFromGoogleSheets(true)}
+                disabled={isSyncing}
+                className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
+                title="Sincronizar ahora con la última versión de Google Sheets"
+              >
+                <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
+                <span>{isSyncing ? 'Sincronizando...' : 'Sincronizar en Vivo'}</span>
+              </button>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
               <GraduationCap className="w-8 h-8 text-indigo-400 shrink-0" />
               <span>Sistema de Capacitación y Competencias Técnicas TIMACA</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed mt-1">
-              Base de datos integral de 879 trabajadores de TIMACA, PMH, Pellas y Briquetas. Seguimiento de los 10 cursos obligatorios de seguridad, habilitación operacional y 169 certificados verificados con respaldo en Google Drive.
+              Base de datos integral de {trabajadoresData.length} trabajadores de TIMACA, PMH, Pellas y Briquetas. Seguimiento de los {catalogoDetalle.length} cursos oficiales de seguridad, habilitación operacional y {certificadosData.length} certificados verificados con respaldo en Google Drive.
             </p>
+            {syncSuccessMsg && (
+              <div className="text-xs font-bold text-emerald-300 bg-emerald-950/90 border border-emerald-500/50 px-3 py-1.5 rounded-lg flex items-center gap-2 mt-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>{syncSuccessMsg}</span>
+              </div>
+            )}
+            {syncError && (
+              <div className="text-xs font-bold text-rose-300 bg-rose-950/90 border border-rose-500/50 px-3 py-1.5 rounded-lg flex items-center gap-2 mt-2">
+                <AlertTriangle className="w-4 h-4 text-rose-400" />
+                <span>{syncError}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
@@ -222,7 +294,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
               <Users className="w-3.5 h-3.5 text-indigo-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-white mt-1">
-              879
+              {trabajadoresData.length}
             </div>
             <div className="text-[10px] text-slate-400 mt-0.5">
               Trabajadores en matriz oficial
@@ -231,24 +303,24 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
 
           <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-3.5 shadow-md">
             <div className="text-[10px] text-slate-300 font-mono uppercase font-bold flex items-center justify-between">
-              <span>Cursos Completados</span>
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Cursos en Catálogo</span>
+              <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-emerald-400 mt-1">
-              173
+              {catalogoDetalle.length}
             </div>
             <div className="text-[10px] text-emerald-300 mt-0.5">
-              Certificaciones aprobadas
+              Cursos HSE aprobados
             </div>
           </div>
 
           <div className="bg-slate-800/90 border border-slate-700/80 rounded-xl p-3.5 shadow-md">
             <div className="text-[10px] text-slate-300 font-mono uppercase font-bold flex items-center justify-between">
-              <span>Archivos en Drive</span>
+              <span>Certificados en Drive</span>
               <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-sky-400 mt-1">
-              169
+              {certificadosData.length}
             </div>
             <div className="text-[10px] text-sky-300 mt-0.5">
               PDFs con enlace directo
@@ -261,10 +333,10 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
               <Award className="w-3.5 h-3.5 text-amber-400" />
             </div>
             <div className="text-xl sm:text-2xl font-black text-amber-400 mt-1">
-              90 / 166
+              {statsCursos['Trabajo en Altura']?.completados || 94} / {statsCursos['Trabajo en Altura']?.aplican || 166}
             </div>
             <div className="text-[10px] text-amber-300 mt-0.5">
-              54.2% cobertura operativa
+              {statsCursos['Trabajo en Altura']?.aplican ? Math.round(((statsCursos['Trabajo en Altura']?.completados || 0) / statsCursos['Trabajo en Altura'].aplican) * 100) : 0}% cobertura operativa
             </div>
           </div>
         </div>
@@ -281,7 +353,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
           }`}
         >
           <Users className="w-4 h-4" />
-          <span>Matriz de Cursos (879 Trabajadores)</span>
+          <span>Matriz de Cursos ({trabajadoresData.length} Trabajadores)</span>
           <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-indigo-700 text-white">
             {filteredTrabajadores.length}
           </span>
@@ -298,7 +370,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
           <ExternalLink className="w-4 h-4" />
           <span>Certificados Digitales en Drive</span>
           <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold">
-            169 PDFs
+            {certificadosData.length} PDFs
           </span>
         </button>
 
@@ -323,7 +395,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
           }`}
         >
           <BookOpen className="w-4 h-4" />
-          <span>Catálogo de 10 Cursos</span>
+          <span>Catálogo de {catalogoDetalle.length} Cursos</span>
         </button>
 
         <button
@@ -727,8 +799,8 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
               Cumplimiento por Curso en Toda la Empresa
             </h2>
             <div className="space-y-3.5">
-              {CATALOGO_CURSOS_NOMBRES.map(cName => {
-                const stats = (STATS_CURSOS_TOTALES as any)[cName] || { aplican: 0, completados: 0, pendientes: 0 };
+              {catalogoNombres.map(cName => {
+                const stats = (statsCursos as any)[cName] || { aplican: 0, completados: 0, pendientes: 0 };
                 const pct = stats.aplican > 0 ? Math.round((stats.completados / stats.aplican) * 100) : 0;
                 return (
                   <div key={cName} className="space-y-1">
@@ -761,18 +833,37 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
       {/* ================= TAB 4: CATÁLOGO DE CURSOS ================= */}
       {activeTab === 'catalogo' && (
         <div className="bg-white border border-slate-200 shadow-2xs rounded-2xl p-5 shadow-xl space-y-4">
-          <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-indigo-600" />
-            Matriz de Aplicabilidad de Cursos (CATALOGO_CURSOS)
-          </h2>
-          <p className="text-xs text-slate-600 font-medium">
-            Reglas oficiales para determinar a qué cargos aplica cada uno de los 10 cursos de Seguridad Industrial según el procedimiento interno de TIMACA.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-indigo-600" />
+                Matriz de Aplicabilidad de Cursos (CATALOGO_CURSOS)
+              </h2>
+              <p className="text-xs text-slate-600 font-medium mt-0.5">
+                Reglas oficiales para determinar a qué cargos aplica cada uno de los {catalogoDetalle.length} cursos de Seguridad Industrial según el procedimiento interno de TIMACA.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                {catalogoDetalle.length} Cursos Activos
+              </span>
+              <button
+                onClick={() => handleSyncFromGoogleSheets(true)}
+                disabled={isSyncing}
+                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                title="Actualizar catálogo en vivo desde Google Sheets"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-indigo-600' : ''}`} />
+                <span>Refrescar</span>
+              </button>
+            </div>
+          </div>
 
           <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-800 font-mono text-[11px] uppercase border-b border-slate-300">
+                  <th className="p-3 font-black w-10">#</th>
                   <th className="p-3 font-black">Curso de Seguridad</th>
                   <th className="p-3 font-black text-center">Téc. Seguridad</th>
                   <th className="p-3 font-black text-center">Supervisores</th>
@@ -780,66 +871,29 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-slate-800 bg-white">
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Operadores de Grúa</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Operadores de equipo pesado, montacarguistas, mecánicos de grúa</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Rigger - Señalero</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Albañil, Ayudante, Electricista, Fabricador, Instrumentista, Mecánico, Montador, Soldador</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Espacios Confinados</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Albañil, Andamiero, Ayudante, Electricista, Fabricador, Instrumentista, Mecánico, Montador, Soldador</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Manejo Defensivo</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Choferes de camión plataforma, choferes de transporte de personal y vehículos de flota</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Montaje / Andamio</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Andamieros, montadores de estructura y cuadrillas de parada de planta</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Seguridad Laboral para Técnicos</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Técnicos de seguridad, coordinadores SHA y analistas HSE</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Seguridad Laboral para Supervisores</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Técnicos de seguridad, coordinadores, ingenieros de proyectos, mecánicos especializados, planificadores</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Inducción General</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">100% de los trabajadores de TIMACA (Personal de planta, campo y administración)</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">MATPEL (Materiales Peligrosos)</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Manejo de químicos, lubricantes, solventes, gases y combustibles DISPESUR</td>
-                </tr>
-                <tr className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-bold text-slate-900">Trabajo en Altura</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-center text-emerald-700 font-bold">✅ Aplica</td>
-                  <td className="p-3 text-slate-700">Montadores, andamieros, soldadores, cuadrillas de Muelle PMH (PMH) y línea de pellas</td>
-                </tr>
+                {catalogoDetalle.map((cat, idx) => (
+                  <tr key={cat.nombre} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-3 font-mono text-slate-400 text-[11px] font-bold">{idx + 1}</td>
+                    <td className="p-3 font-bold text-slate-900">{cat.nombre}</td>
+                    <td className="p-3 text-center">
+                      {cat.tecnicosAplica ? (
+                        <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">✅ Aplica</span>
+                      ) : (
+                        <span className="text-slate-400 bg-slate-50 px-2 py-0.5 rounded">❌ No aplica</span>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      {cat.supervisoresAplica ? (
+                        <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">✅ Aplica</span>
+                      ) : (
+                        <span className="text-slate-400 bg-slate-50 px-2 py-0.5 rounded">❌ No aplica</span>
+                      )}
+                    </td>
+                    <td className="p-3 text-slate-700">
+                      {cat.cargosOperativos || 'Solo aplica a personal técnico / supervisión'}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
