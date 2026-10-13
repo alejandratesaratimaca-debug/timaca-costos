@@ -211,8 +211,8 @@ export const INTERVENCIONES_VIDA_UTIL_SEPTIEMBRE_2026: IntervencionVidaUtilCapex
     montoItemUsd: 9000.00,
     montoTotalEquipoMesUsd: 10031.68,
     nivel: 'NIVEL_1_DIRECTO',
-    criterioContable: 'Reconstrucción mecánica mayor del cilindro telescópico principal de grúa de 400TN que restituye su capacidad estructural y vida útil.',
-    activoPorDefecto: true
+    criterioContable: 'Mecanizado y rectificado de vástago de cilindro. Permanece en OPEX Flota por instrucción de usuario (solo motor de bus pasa a CAPEX).',
+    activoPorDefecto: false
   },
   {
     id: 'CAPEX-VU-SEP-03',
@@ -227,8 +227,8 @@ export const INTERVENCIONES_VIDA_UTIL_SEPTIEMBRE_2026: IntervencionVidaUtilCapex
     montoItemUsd: 2635.00,
     montoTotalEquipoMesUsd: 2979.07,
     nivel: 'NIVEL_1_DIRECTO',
-    criterioContable: 'Adición y mejora tecnológica permanente de protección eléctrica industrial sobre activo productivo.',
-    activoPorDefecto: true
+    criterioContable: 'Dispositivo eléctrico de protección industrial. Permanece en OPEX por instrucción de usuario.',
+    activoPorDefecto: false
   },
   {
     id: 'CAPEX-VU-SEP-04',
@@ -243,8 +243,8 @@ export const INTERVENCIONES_VIDA_UTIL_SEPTIEMBRE_2026: IntervencionVidaUtilCapex
     montoItemUsd: 600.00,
     montoTotalEquipoMesUsd: 1126.92,
     nivel: 'NIVEL_1_DIRECTO',
-    criterioContable: 'Overhaul integral de motor de combustión (bloque, cigüeñal, cámara y pistones) que extiende la vida útil del vehículo.',
-    activoPorDefecto: true
+    criterioContable: 'Mantenimiento/rectificación de motor combustión. Permanece en OPEX Flota.',
+    activoPorDefecto: false
   },
   {
     id: 'CAPEX-VU-SEP-05',
@@ -457,16 +457,16 @@ export const TOP_10_EQUIPOS_OPEX_AGOSTO = [
 ];
 
 export const TOP_10_EQUIPOS_OPEX_SEPTIEMBRE = [
-  { codigo: 'GR23', cuentaCompleta: 'EEI-C-GR23', tipo: 'Grúas', nombre: 'Grúa Link Belt LS918 400TN', montoSeptiembre: 10031.68, montoCapexReclasificado: 9000.00, esCapexVidaUtil: true, detalle: 'Mecanizado de vástago del telescópico 400TN ($9.000 USD -> CAPEX Vida Útil) + repuestos de tren motriz y filtros ($1.031,68 USD).' },
-  { codigo: 'BS03', cuentaCompleta: 'EEA-C-BS03', tipo: 'Autobuses', nombre: 'Autobús Encava - Placa: FA160P', montoSeptiembre: 8500.00, montoCapexReclasificado: 8500.00, esCapexVidaUtil: true, detalle: 'Suministro de Motor Diésel Cummins 6CT 8.3L 225HP nuevo ($8.500 USD -> 100% CAPEX por extensión de vida útil).' },
+  { codigo: 'GR23', cuentaCompleta: 'EEI-C-GR23', tipo: 'Grúas', nombre: 'Grúa Link Belt LS918 400TN', montoSeptiembre: 10031.68, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Mecanizado de vástago del telescópico 400TN ($9.000 USD) + repuestos de tren motriz y filtros ($1.031,68 USD) — Permanece en OPEX Flota.' },
+  { codigo: 'BS03', cuentaCompleta: 'EEA-C-BS03', tipo: 'Autobuses', nombre: 'Autobús Encava - Placa: FA160P', montoSeptiembre: 8500.00, montoCapexReclasificado: 8500.00, esCapexVidaUtil: true, detalle: 'Suministro de Motor Diésel Cummins 6CT 8.3L 225HP nuevo ($8.500 USD -> 100% CAPEX por aumento de vida útil del autobús).' },
   { codigo: 'GR13', cuentaCompleta: 'EEI-C-GR13', tipo: 'Grúas', nombre: 'Grúa Grove RT 75S - 50TN', montoSeptiembre: 4561.00, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Reemplazo de 2 cauchos 29.5R25 ($3.600 USD), reparación de radiador ($700 USD) y lubricantes ($261 USD).' },
   { codigo: 'GR24', cuentaCompleta: 'EEI-C-GR24', tipo: 'Grúas', nombre: 'Grúa Liebherr ITM1100/1 - 100TN', montoSeptiembre: 3983.63, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Mantenimiento hidráulico, aceite ISO 68 ($262,88 USD), filtros y componentes electromecánicos.' },
-  { codigo: 'GR25', cuentaCompleta: 'EEI-C-GR25', tipo: 'Grúas', nombre: 'Grúa Grove RT750 50TN Serial 87167', montoSeptiembre: 3899.00, montoCapexReclasificado: 3850.00, esCapexVidaUtil: true, detalle: 'Cromado de 4 vástagos cilindros estabilizadores ($2.000 USD) y fabricación de 4 kits de sellos hidráulicos ($1.850 USD).' },
-  { codigo: 'RE01', cuentaCompleta: 'EEE-C-RE01', tipo: 'Equipos especiales', nombre: 'Retroexcavadora Case 580M Serie 2', montoSeptiembre: 3191.54, montoCapexReclasificado: 2300.00, esCapexVidaUtil: true, detalle: '2 Cubos mozo eje delantero Case ($2.300 USD), mangueras hidráulicas y mantenimiento correctivo ($891,54 USD).' },
-  { codigo: 'PC05', cuentaCompleta: 'TT-F-PC05', tipo: 'Pantógrafos', nombre: 'Máquina Corte por Láser BODOR A12', montoSeptiembre: 2979.07, montoCapexReclasificado: 2635.00, esCapexVidaUtil: true, detalle: 'Sistema descargador contra rayos y sobretensiones ($2.635 USD -> CAPEX Mejora) + consumibles láser ($344,07 USD).' },
-  { codigo: 'BS15', cuentaCompleta: 'EEA-C-BS15', tipo: 'Autobuses', nombre: 'Autobús Encava ENT-3300 Placa 6036A1Y', montoSeptiembre: 2777.40, montoCapexReclasificado: 2777.40, esEquipoNuevo: true, esCapexVidaUtil: true, detalle: 'EQUIPO NUEVO SEP: Turbocompresor Holset HX40 ($640), 6 Cauchos 315/80R22.5 ($1.326), radiador ($260), rotulado ($130) y fluidos ($421,40).' },
+  { codigo: 'GR25', cuentaCompleta: 'EEI-C-GR25', tipo: 'Grúas', nombre: 'Grúa Grove RT750 50TN Serial 87167', montoSeptiembre: 3899.00, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Cromado de 4 vástagos cilindros estabilizadores ($2.000 USD) y fabricación de sellos ($1.850 USD) — Permanece en OPEX Flota.' },
+  { codigo: 'RE01', cuentaCompleta: 'EEE-C-RE01', tipo: 'Equipos especiales', nombre: 'Retroexcavadora Case 580M Serie 2', montoSeptiembre: 3191.54, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: '2 Cubos mozo eje delantero Case ($2.300 USD), mangueras hidráulicas y mantenimiento correctivo ($891,54 USD) — En OPEX Flota.' },
+  { codigo: 'PC05', cuentaCompleta: 'TT-F-PC05', tipo: 'Pantógrafos', nombre: 'Máquina Corte por Láser BODOR A12', montoSeptiembre: 2979.07, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Sistema descargador contra rayos y sobretensiones ($2.635 USD) + consumibles láser ($344,07 USD) — En OPEX.' },
+  { codigo: 'BS15', cuentaCompleta: 'EEA-C-BS15', tipo: 'Autobuses', nombre: 'Autobús Encava ENT-3300 Placa 6036A1Y', montoSeptiembre: 2777.40, montoCapexReclasificado: 2777.40, esEquipoNuevo: true, esCapexVidaUtil: false, detalle: 'EQUIPO NUEVO SEP: Turbocompresor Holset HX40 ($640), 6 Cauchos 315/80R22.5 ($1.326), radiador ($260) — Pasa a CAPEX en mes de ingreso.' },
   { codigo: 'GR22', cuentaCompleta: 'EEI-C-GR22', tipo: 'Grúas', nombre: 'Grúa Liebherr LTM1400 - 400TN', montoSeptiembre: 2517.58, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Baterías, repuestos eléctricos automotor, filtros y mantenimiento preventivo de grúa 400TN.' },
-  { codigo: 'PA01', cuentaCompleta: 'TT-S-C-854', tipo: 'Equipos especiales', nombre: 'Payloader Hyundai HL760-7', montoSeptiembre: 2516.43, montoCapexReclasificado: 2071.68, esCapexVidaUtil: true, detalle: 'Bomba hidráulica principal de freno/ventilador ($2.071,68 USD) y lubricantes/filtros ($444,75 USD).' },
+  { codigo: 'PA01', cuentaCompleta: 'TT-S-C-854', tipo: 'Equipos especiales', nombre: 'Payloader Hyundai HL760-7', montoSeptiembre: 2516.43, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Bomba hidráulica principal de freno/ventilador ($2.071,68 USD) y lubricantes/filtros ($444,75 USD) — En OPEX Flota.' },
 ];
 
 export const TIPOS_EQUIPOS_OPEX_MENSUAL = [
@@ -509,10 +509,10 @@ export const VOCES_GASTO_OPEX_FLOTA_SEPTIEMBRE = [
   { rubro: 'MATERIALES HIDRONEUMÁTICOS Y MECÁNICOS', grupo: 'Materiales Directos', monto: 11850.40, detalle: 'Bomba hidráulica Hyundai PA01 ($2.071,68), mangueras de alta presión, sellos y rodamientos.' },
   { rubro: 'MATERIALES ELÉCTRICOS Y ELECTRÓNICOS', grupo: 'Materiales Directos', monto: 7420.15, detalle: 'Descargador sobretensiones Láser BODOR PC05 ($2.635 -> CAPEX), baterías y alternadores.' },
   { rubro: 'ACEITE HIDRÁULICO Y LUBRICANTES', grupo: 'Materiales Directos', monto: 6334.25, detalle: 'Aceite hidráulico ISO 68, aceite motor 15W40 y valvulina 80W90 para grúas, autobuses y vehículos.' },
-  { rubro: 'SERVICIO MECANIZADO MAYOR', grupo: 'Servicios', monto: 9000.00, detalle: 'Mecanizado de vástago del telescópico y rectificado de rosca en Grúa Link Belt 400TN GR23 ($9.000 -> CAPEX Vida Útil).' },
+  { rubro: 'SERVICIO MECANIZADO MAYOR', grupo: 'Servicios', monto: 9000.00, detalle: 'Mecanizado de vástago del telescópico y rectificado de rosca en Grúa Link Belt 400TN GR23 ($9.000 USD — Queda en OPEX Flota por instrucción de usuario).' },
   { rubro: 'FABRICACIÓN SELLO HIDRÁULICO Y CROMADO', grupo: 'Servicios', monto: 7101.49, detalle: 'Fabricación de sellos hidráulicos ($5.101,49) y servicio de cromado de vástagos en Grúa GR25 ($2.000).' },
   { rubro: 'MANTTO. EQUIPOS DE SOLDADURA Y TARJETAS', grupo: 'Servicios', monto: 3300.00, detalle: 'Mantenimiento de máquinas de soldar y oxicorte ($2.600) + reparación de tarjetas electrónicas ($700).' },
-  { rubro: 'REPARACIÓN DE RADIADORES Y MOTORES', grupo: 'Servicios', monto: 2478.00, detalle: 'Reparación radiadores Tractor nuevo TR01 ($700 -> CAPEX), GR13 ($700), BS15 ($260 -> CAPEX), cámara ($688) y motor VH09 ($600 -> CAPEX).' },
+  { rubro: 'REPARACIÓN DE RADIADORES Y MOTORES', grupo: 'Servicios', monto: 2478.00, detalle: 'Reparación radiadores Tractor nuevo TR01 ($700 -> CAPEX), GR13 ($700), BS15 ($260 -> CAPEX), cámara ($688) y motor VH09 ($600).' },
   { rubro: 'OTROS SERVICIOS DE FLOTA', grupo: 'Servicios', monto: 2553.00, detalle: 'Cristalería ($716), vulcanización bandas de freno ($440), lavandería ($372), cilindros ($260), rotulado BS15 ($130 -> CAPEX) y aire acondicionado.' }
 ];
 

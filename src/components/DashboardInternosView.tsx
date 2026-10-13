@@ -23,7 +23,10 @@ import {
   X,
   Briefcase,
   AlertCircle,
-  SlidersHorizontal
+  SlidersHorizontal,
+  BarChart3,
+  Check,
+  RotateCcw
 } from 'lucide-react';
 import { 
   EVOLUTIVO_INTERNOS_2026, 
@@ -54,13 +57,13 @@ import { SALIDAS_REALES_SEPTIEMBRE_2026 } from '../data/realSalidasSeptiembre202
 import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
 import { UsuarioSistema } from '../types/usuarios';
 
-type SubTabInternos = 'resumen' | 'reclasificacion' | 'capex' | 'flota' | 'gruas' | 'mod' | 'infra' | 'admon';
+export type SubTabInternos = 'resumen' | 'capex' | 'variaciones' | 'flota' | 'infra' | 'reclasificacion' | 'admon' | 'gruas' | 'mod';
 
 interface DashboardInternosViewProps {
   onGoToPPT?: () => void;
   currentUser?: UsuarioSistema;
-  activeSubTab?: 'resumen' | 'capex' | 'flota' | 'gruas' | 'mod' | 'infra';
-  onSelectSubTab?: (tab: 'resumen' | 'capex' | 'flota' | 'gruas' | 'mod' | 'infra') => void;
+  activeSubTab?: 'resumen' | 'capex' | 'variaciones' | 'flota' | 'gruas' | 'mod' | 'infra';
+  onSelectSubTab?: (tab: 'resumen' | 'capex' | 'variaciones' | 'flota' | 'gruas' | 'mod' | 'infra') => void;
 }
 
 export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({ 
@@ -70,9 +73,13 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   onSelectSubTab
 }) => {
   const [subTab, setSubTab] = useState<SubTabInternos>(activeSubTab || 'resumen');
-  const [selectedMesIdx, setSelectedMesIdx] = useState<number>(8); // Septiembre por defecto (index 8)
+  // Mes 7 = Agosto (mes base de las diapositivas de referencia), Mes 8 = Septiembre (cierre con Master y reclasificación)
+  const [selectedMesIdx, setSelectedMesIdx] = useState<number>(7); 
   const [modoReclasificadoSep, setModoReclasificadoSep] = useState<boolean>(true);
   const [incluirEquiposNuevosCapex, setIncluirEquiposNuevosCapex] = useState<boolean>(true);
+  const [variacionPeriodo, setVariacionPeriodo] = useState<'jul-ago' | 'ago-sep'>('jul-ago');
+  
+  // Por defecto, solo el autobús Encava con motor diésel Cummins ($8.500) pasa a CAPEX. Los demás ("periquitos") quedan en OPEX Flota.
   const [idsVidaUtilActivos, setIdsVidaUtilActivos] = useState<Record<string, boolean>>(() => {
     const map: Record<string, boolean> = {};
     INTERVENCIONES_VIDA_UTIL_SEPTIEMBRE_2026.forEach(item => {
@@ -80,6 +87,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
     });
     return map;
   });
+  
   const [selectedActivoParaDesglose, setSelectedActivoParaDesglose] = useState<DetalleCuentaOActivo | null>(null);
 
   useEffect(() => {
@@ -90,7 +98,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
 
   const handleTabChange = (newTab: SubTabInternos) => {
     setSubTab(newTab);
-    if (newTab === 'resumen' || newTab === 'capex' || newTab === 'flota' || newTab === 'gruas' || newTab === 'mod' || newTab === 'infra') {
+    if (newTab === 'resumen' || newTab === 'capex' || newTab === 'variaciones' || newTab === 'flota' || newTab === 'gruas' || newTab === 'mod' || newTab === 'infra') {
       onSelectSubTab?.(newTab);
     }
   };
@@ -115,27 +123,36 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
     setIdsVidaUtilActivos(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const mesActivoRaw = EVOLUTIVO_INTERNOS_2026[selectedMesIdx] || EVOLUTIVO_INTERNOS_2026[8];
+  const mesActivoRaw = EVOLUTIVO_INTERNOS_2026[selectedMesIdx] || EVOLUTIVO_INTERNOS_2026[7];
   const esSeptiembre = selectedMesIdx === 8;
+  const esAgosto = selectedMesIdx === 7;
 
   // Montos efectivos del mes activo (aplicando reclasificación si estamos en Septiembre y el modo está activo)
-  const capexEfectivoMes = mesActivoRaw.capex + montoReclasificadoSep;
-  const opexFlotaEfectivoMes = Math.max(0, mesActivoRaw.opexActivos - montoReclasificadoSep);
+  const capexEfectivoMes = mesActivoRaw.capex + (esSeptiembre ? montoReclasificadoSep : 0);
+  const opexFlotaEfectivoMes = Math.max(0, mesActivoRaw.opexActivos - (esSeptiembre ? montoReclasificadoSep : 0));
   const opexInfraEfectivoMes = mesActivoRaw.opexInfraestructura;
   const admonEfectivoMes = mesActivoRaw.admon || 0;
   const totalOpexEfectivoMes = opexFlotaEfectivoMes + opexInfraEfectivoMes;
-  const totalGeneralConAdmonMes = capexEfectivoMes + opexFlotaEfectivoMes + opexInfraEfectivoMes + admonEfectivoMes;
+  const totalGeneralSinAdmon = capexEfectivoMes + totalOpexEfectivoMes;
+  const totalGeneralConAdmonMes = totalGeneralSinAdmon + admonEfectivoMes;
 
   const formatExact = (val: number) => {
     return '$' + val.toLocaleString('de-DE', { minimumFractionDigits: val % 1 !== 0 ? 2 : 0, maximumFractionDigits: 2 });
   };
 
-  // Apertura de desglose con lectura directa de SALIDAS_REALES_SEPTIEMBRE_2026 cuando es Septiembre
+  const formatSinDecimales = (val: number) => {
+    return '$' + Math.round(val).toLocaleString('de-DE');
+  };
+
+  // Apertura de desglose con lectura directa de datos
   const handleAbrirDesglose = (codigo: string, tituloFallback?: string, montoFallback?: number) => {
     if (esSeptiembre) {
       const registrosSep = SALIDAS_REALES_SEPTIEMBRE_2026.filter(r => 
         r.cuentaAuxiliarCodigo === codigo || 
-        r.cuentaAuxiliarCodigo.endsWith(`-${codigo}`)
+        r.cuentaAuxiliarCodigo.endsWith(`-${codigo}`) ||
+        (codigo === 'GR23' && r.cuentaAuxiliarCodigo.includes('GR23')) ||
+        (codigo === 'BS03' && r.cuentaAuxiliarCodigo.includes('BS03')) ||
+        (codigo === 'BS15' && r.cuentaAuxiliarCodigo.includes('BS15'))
       );
       if (registrosSep.length > 0) {
         const itemsSep: ItemDesgloseInterno[] = registrosSep
@@ -148,24 +165,21 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
             categoria: (r.tipo as ItemDesgloseInterno['categoria']) || 'Materiales Directos',
             rubro: r.categoria || r.subcategoria,
             cantidad: r.cantidad,
-            unidadMedida: r.unidadMedida,
-            montoUnitario: r.montoUnitario,
+            unidadMedida: r.unidad,
+            montoUnitario: r.precioUnitario,
             montoTotal: r.montoTotal,
-            proveedor: r.responsable || 'Almacén Central SIP',
-            solicitante: r.solicitante,
-            motivo: r.motivo,
             comprobanteSIP: r.codigoSalida,
-            fecha: r.fecha
+            fecha: r.fecha,
+            solicitante: r.solicitante,
+            motivo: r.observaciones
           }));
-        const sumaReal = registrosSep.reduce((s, r) => s + (r.montoTotal || 0), 0);
+
         setSelectedActivoParaDesglose({
-          codigo: registrosSep[0].cuentaAuxiliarCodigo,
-          titulo: tituloFallback || registrosSep[0].cuentaAuxiliarNombre || `Cuenta ${codigo}`,
-          tipo: registrosSep[0].tipoCosto === 'Interno' ? 'CAPEX' :
-                registrosSep[0].tipoCosto === 'Mantto Infraestructura (OPEX)' ? 'OPEX_INFRA' : 'OPEX_FLOTA',
-          montoAgosto: montoFallback ?? sumaReal,
-          responsableArea: registrosSep[0].tipoCosto || 'Gestión Interna TIMACA',
-          descripcionGeneral: `Desglose real de Septiembre 2026 extraído de Master Unificado (${registrosSep.length} registros procesados).`,
+          codigo,
+          titulo: tituloFallback || `Cuenta ${codigo} - Septiembre 2026`,
+          descripcionGeneral: `Desglose de compras y despachos de almacén registrados en Septiembre 2026.`,
+          responsableArea: 'Auditoría Almacén & Proyectos',
+          montoAgosto: itemsSep.reduce((acc, it) => acc + it.montoTotal, 0),
           items: itemsSep
         });
         return;
@@ -178,11 +192,10 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
     } else {
       setSelectedActivoParaDesglose({
         codigo,
-        titulo: tituloFallback || `Activo / Cuenta ${codigo}`,
-        tipo: 'CAPEX',
+        titulo: tituloFallback || `Detalle ${codigo}`,
+        descripcionGeneral: `Información de auditoría contable para ${codigo}.`,
+        responsableArea: 'Gestión de Costos TIMACA',
         montoAgosto: montoFallback || 0,
-        responsableArea: 'Planta Industrial TIMACA',
-        descripcionGeneral: 'Registro contable consolidado en el sistema de costos SIP de Planta.',
         items: []
       });
     }
@@ -190,12 +203,13 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
 
   const handleDescargarDesgloseExcel = (detalle: DetalleCuentaOActivo) => {
     const data = detalle.items.map((item, idx) => ({
-      'N°': idx + 1,
-      'Comprobante / Despacho': item.comprobanteSIP || item.codigo,
+      '#': idx + 1,
+      'Comprobante': item.comprobanteSIP || item.codigo,
       'Fecha': item.fecha || '',
-      'Descripción del Ítem / Servicio': item.descripcion,
+      'Descripción': item.descripcion,
+      'Especificación': item.especificacion || '',
       'Categoría': item.categoria,
-      'Rubro Contable': item.rubro || '',
+      'Rubro': item.rubro || '',
       'Cantidad': item.cantidad || '',
       'Unidad': item.unidadMedida === 'USE' ? 'SERV' : (item.unidadMedida || ''),
       'Precio Unitario ($)': item.montoUnitario || '',
@@ -210,61 +224,59 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
     XLSX.writeFile(wb, `Desglose_${detalle.codigo}_${mesActivoRaw.mesLabel}2026.xlsx`);
   };
 
-  const pctCapex = totalGeneralConAdmonMes > 0 ? Math.round((capexEfectivoMes / totalGeneralConAdmonMes) * 1000) / 10 : 0;
-  const pctFlota = totalGeneralConAdmonMes > 0 ? Math.round((opexFlotaEfectivoMes / totalGeneralConAdmonMes) * 1000) / 10 : 0;
-  const pctInfra = totalGeneralConAdmonMes > 0 ? Math.round((opexInfraEfectivoMes / totalGeneralConAdmonMes) * 1000) / 10 : 0;
-  const pctAdmon = totalGeneralConAdmonMes > 0 ? Math.round((admonEfectivoMes / totalGeneralConAdmonMes) * 1000) / 10 : 0;
+  const pctCapex = totalGeneralSinAdmon > 0 ? Math.round((capexEfectivoMes / totalGeneralSinAdmon) * 100) : 0;
+  const pctFlota = totalGeneralSinAdmon > 0 ? Math.round((opexFlotaEfectivoMes / totalGeneralSinAdmon) * 100) : 0;
+  const pctInfra = totalGeneralSinAdmon > 0 ? Math.round((opexInfraEfectivoMes / totalGeneralSinAdmon) * 100) : 0;
 
   return (
-    <div className="space-y-5 animate-fade-in text-slate-800">
+    <div className="space-y-6 animate-fade-in text-slate-800 bg-slate-50/60 p-1 sm:p-2 rounded-2xl">
       
-      {/* Banner Superior Distintivo: Gestión Interna */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-xl border border-slate-700/80 relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-sky-600/20 via-slate-700/10 to-transparent pointer-events-none" />
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
+      {/* ========================================================================= */}
+      {/* 1. HEADER CORPORATIVO EJECUTIVO (CLARO, ELEGANTE Y PROFESIONAL)          */}
+      {/* ========================================================================= */}
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0f2e5a] via-sky-600 to-[#0f2e5a]" />
+        
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/90 border border-slate-600 text-sky-300 text-xs font-semibold shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
-                <span>GESTIÓN INTERNA CORPORATIVA · CORTE SEPTIEMBRE 2026</span>
-              </div>
-              {currentUser?.permisos.canEditInternos ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold shadow-xs">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Edición Habilitada ({currentUser.nombre.split(' ')[0]})</span>
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-700/60 text-slate-400 border border-slate-600 text-xs font-medium shadow-xs">
-                  <Eye className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Modo Consulta Ejecutiva</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0f2e5a]/10 text-[#0f2e5a] text-xs font-bold tracking-wide">
+                <span className="w-2 h-2 rounded-full bg-[#0f2e5a]" />
+                GESTIÓN DE COSTOS INTERNOS · TIMACA 2026
+              </span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                Mes Base: <strong className="text-slate-900 ml-1">{mesActivoRaw.mesLabel} 2026</strong>
+              </span>
+              {esSeptiembre && modoReclasificadoSep && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
+                  <Sparkles className="w-3 h-3 text-emerald-600" />
+                  Solo Motor Bus Encava ($8.500) en CAPEX · Demás en OPEX
                 </span>
               )}
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex flex-wrap items-center gap-3">
-              <span>Proyectos Internos, Flota, Infraestructura & Admon</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-md bg-sky-950 text-sky-300 border border-sky-700/60 font-mono">
-                CAPEX + OPEX + ADMON
-              </span>
+            
+            <h1 className="text-2xl sm:text-3xl font-black text-[#0f2e5a] tracking-tight">
+              Proyectos Internos, Flota & Infraestructura
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-4xl">
-              Consolidación oficial Enero–Septiembre 2026 con separación contable de <strong className="text-sky-300">Equipos Nuevos incorporados en el mes</strong> e <strong className="text-emerald-300">Intervenciones que aumentan la vida útil (Motores / Overhauls Mayores)</strong> desde Mantto. Flota (OPEX) hacia CAPEX.
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-4xl leading-relaxed">
+              Consolidación ejecutiva oficial (CAPEX · OPEX Activos Productivos · OPEX Infraestructura · Administrativo).
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={() => handleTabChange('reclasificacion')}
-              className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-[#0f2e5a] font-bold text-xs border border-slate-300 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2 cursor-pointer"
             >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span>Simulador Reclasificación CAPEX/OPEX</span>
+              <SlidersHorizontal className="w-4 h-4 text-sky-600" />
+              <span>Criterio Vida Útil / Equipos</span>
             </button>
             {onGoToPPT && (
               <button
                 onClick={onGoToPPT}
-                className="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer group"
+                className="px-4 py-2.5 rounded-xl bg-[#0f2e5a] hover:bg-[#163a6f] text-white font-bold text-xs shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="w-4 h-4 text-sky-300" />
                 <span>Presentación PPT</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
@@ -272,660 +284,1550 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
           </div>
         </div>
 
-        {/* Sub-Navegación Interna Rápida */}
-        <div className="pt-4 mt-4 border-t border-slate-700/80 flex flex-wrap items-center gap-1.5 text-xs">
+        {/* Barra de Navegación por Pestañas (Estructura de las 5 Láminas) */}
+        <div className="pt-4 mt-4 border-t border-slate-200 flex flex-wrap items-center gap-2 text-xs">
           {[
-            { id: 'resumen', label: '1. Tablero General' },
-            { id: 'reclasificacion', label: '2. Separación CAPEX vs OPEX (Sep)' },
-            { id: 'capex', label: '3. Inversiones CAPEX' },
-            { id: 'flota', label: '4. Mantto. Flota (OPEX)' },
-            { id: 'gruas', label: '5. Flota 26 Grúas' },
-            { id: 'infra', label: '6. Mantto. Infraestructura' },
-            { id: 'admon', label: '7. Administrativo ($31,3k)' },
-            { id: 'mod', label: '8. Horas Hombre (MOD)' },
-          ].map((t) => (
-            <button
-              key={t.id}
-              onClick={() => handleTabChange(t.id as SubTabInternos)}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                subTab === t.id
-                  ? 'bg-sky-500 text-white shadow-xs'
-                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+            { id: 'resumen', label: '1. Resumen Ejecutivo (Introducción)', icon: BarChart3 },
+            { id: 'capex', label: '2. Proyectos Internos – CAPEX', icon: Building2 },
+            { id: 'variaciones', label: '3. Variación Por Proyecto', icon: TrendingUp },
+            { id: 'flota', label: '4. Mantto. Activos Prod. (OPEX Flota)', icon: Truck },
+            { id: 'infra', label: '5. Mantto. Infraestructura (OPEX)', icon: Wrench },
+            { id: 'reclasificacion', label: '6. Cierre Sep & Reclasificación', icon: SlidersHorizontal },
+            { id: 'admon', label: '7. Administrativo ($31,3k)', icon: Briefcase },
+            { id: 'gruas', label: '8. Flota 26 Grúas', icon: Cpu },
+            { id: 'mod', label: '9. Mano de Obra (MOD)', icon: Clock },
+          ].map((t) => {
+            const Icon = t.icon;
+            const isAct = subTab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => handleTabChange(t.id as SubTabInternos)}
+                className={`px-3 py-2 rounded-xl font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isAct
+                    ? 'bg-[#0f2e5a] text-white shadow-sm ring-1 ring-[#0f2e5a]'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isAct ? 'text-sky-300' : 'text-slate-500'}`} />
+                <span>{t.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Selector de Mes + Switch Maestro Base vs Reclasificado */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-200/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-300 shadow-xs">
+      {/* ========================================================================= */}
+      {/* 2. SELECTOR DE MES Y VISTA CONTABLE (CON ACCESO DIRECTO A AGOSTO Y SEP)   */}
+      {/* ========================================================================= */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/90 shadow-2xs">
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mr-1">
-            <Calendar className="w-4 h-4 text-slate-600" />
-            <span>Mes Activo:</span>
+            <Calendar className="w-4 h-4 text-[#0f2e5a]" />
+            <span>Mes a Visualizar:</span>
           </div>
           <div className="flex items-center gap-1 overflow-x-auto">
-            {EVOLUTIVO_INTERNOS_2026.map((m, idx) => (
-              <button
-                key={m.mesCorto}
-                onClick={() => setSelectedMesIdx(idx)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  selectedMesIdx === idx
-                    ? idx === 8
-                      ? 'bg-sky-700 text-white shadow-xs ring-2 ring-sky-400'
-                      : 'bg-slate-800 text-white shadow-xs ring-1 ring-slate-700'
-                    : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-300'
-                }`}
-              >
-                {m.mesCorto}
-                {idx === 8 && <span className="ml-1 text-[9px] bg-amber-400 text-slate-950 px-1 rounded font-black">NUEVO</span>}
-              </button>
-            ))}
+            {EVOLUTIVO_INTERNOS_2026.map((m, idx) => {
+              const isSelected = selectedMesIdx === idx;
+              return (
+                <button
+                  key={m.mesCorto}
+                  onClick={() => setSelectedMesIdx(idx)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#0f2e5a] text-white shadow-2xs ring-2 ring-sky-400'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
+                  }`}
+                >
+                  {m.mesCorto}
+                  {idx === 7 && <span className="ml-1 text-[9px] bg-sky-200 text-[#0f2e5a] px-1 rounded font-bold">LÁMINAS</span>}
+                  {idx === 8 && <span className="ml-1 text-[9px] bg-emerald-200 text-emerald-950 px-1 rounded font-bold">CIERRE</span>}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Switch Interactivo de Criterio Contable para Septiembre */}
+        {/* Switch Interactivo Contable para Septiembre */}
         {esSeptiembre && (
-          <div className="flex flex-wrap items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-300 shadow-2xs">
-            <span className="text-[11px] font-bold text-slate-600">Vista Contable Septiembre:</span>
+          <div className="flex flex-wrap items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
+            <span className="font-bold text-slate-600 text-[11px]">Criterio Sep:</span>
             <button
               onClick={() => setModoReclasificadoSep(false)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                 !modoReclasificadoSep
                   ? 'bg-slate-800 text-white shadow-2xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              Base Master Original (CAPEX $34.930,08 | Flota $83.729,79)
+              Base Master Original ($34.930 CAPEX)
             </button>
             <button
               onClick={() => setModoReclasificadoSep(true)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 modoReclasificadoSep
                   ? 'bg-emerald-600 text-white shadow-2xs'
-                  : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
+                  : 'bg-white text-emerald-800 hover:bg-emerald-50 border border-emerald-300'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Reclasificado Vida Útil + Equipos Nuevos (CAPEX {formatExact(capexEfectivoMes)} | Flota {formatExact(opexFlotaEfectivoMes)})</span>
+              <Check className="w-3.5 h-3.5" />
+              <span>Con Reclasificación (CAPEX {formatExact(capexEfectivoMes)} | Flota {formatExact(opexFlotaEfectivoMes)})</span>
             </button>
           </div>
         )}
       </div>
 
-      {/* Aviso de Estado de Cierre Septiembre (Pendientes HH y Reimputaciones) */}
-      {esSeptiembre && (
-        <div className="bg-amber-50/90 border border-amber-300 rounded-2xl p-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs text-amber-950 shadow-2xs">
-          <div className="flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-black">Estado del Cierre Septiembre 2026 (Materiales + Servicios = $191.739,35 USD): </span>
-              <span>
-                Los montos base están conciliados al 100% con el Master ($34.930,08 CAPEX · $83.729,79 Flota · $41.739,91 Infraestructura · $31.339,57 Administrativo). 
-                Queda lista la estructura para sumar las <strong>Horas Hombre (MOD) de Flota y Proyectos</strong> y aplicar las <strong>correcciones de cuentas mal imputadas</strong> en cuanto las tengas listas.
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={() => handleTabChange('reclasificacion')}
-            className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition-colors cursor-pointer"
-          >
-            Ajustar CAPEX / OPEX →
-          </button>
-        </div>
-      )}
-
-      {/* 5 KPIs Ejecutivos Oficiales (4 Bloques del Master + Total General) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-        
-        {/* KPI 1: CAPEX */}
-        <div 
-          onClick={() => handleTabChange('capex')}
-          className="bg-white/95 rounded-2xl p-4 border border-sky-300 shadow-sm hover:shadow-md transition-all cursor-pointer"
-        >
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">
-            <span>1. Proyectos Internos (CAPEX)</span>
-            <Building2 className="w-4 h-4 text-sky-600" />
-          </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">
-            {esSeptiembre ? formatExact(capexEfectivoMes) : formatCurrency(mesActivoRaw.capex)}
-          </div>
-          {esSeptiembre && modoReclasificadoSep && montoReclasificadoSep > 0 ? (
-            <div className="mt-1.5 text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-1 rounded font-semibold">
-              Base: $34.930,08 + Reclasif: {formatExact(montoReclasificadoSep)}
-            </div>
-          ) : (
-            <div className="mt-1.5 text-[10px] text-slate-500 font-mono">
-              Obras civiles, galpones y adecuaciones
-            </div>
-          )}
-          <div className="flex items-center justify-between text-[11px] mt-2 pt-2 border-t border-slate-100">
-            <span className="text-sky-700 font-bold flex items-center gap-0.5">
-              {esSeptiembre ? '▲ +20,4% Base vs Ago' : '▼ 36% vs Julio'}
-            </span>
-            <span className="text-slate-500 font-bold">{pctCapex}% del total</span>
-          </div>
-        </div>
-
-        {/* KPI 2: Mantto Flota (OPEX) */}
-        <div 
-          onClick={() => handleTabChange('flota')}
-          className="bg-white/95 rounded-2xl p-4 border border-indigo-300 shadow-sm hover:shadow-md transition-all cursor-pointer"
-        >
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">
-            <span>2. Mantto. Flota (OPEX)</span>
-            <Truck className="w-4 h-4 text-indigo-600" />
-          </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">
-            {esSeptiembre ? formatExact(opexFlotaEfectivoMes) : formatCurrency(mesActivoRaw.opexActivos)}
-          </div>
-          {esSeptiembre && modoReclasificadoSep && montoReclasificadoSep > 0 ? (
-            <div className="mt-1.5 text-[10px] bg-indigo-50 text-indigo-800 border border-indigo-200 px-2 py-1 rounded font-semibold">
-              Master: $83.729,79 − CAPEX: {formatExact(montoReclasificadoSep)}
-            </div>
-          ) : (
-            <div className="mt-1.5 text-[10px] text-slate-500 font-mono">
-              Mat: $59.297,30 · Serv: $24.432,49
-            </div>
-          )}
-          <div className="flex items-center justify-between text-[11px] mt-2 pt-2 border-t border-slate-100">
-            <span className="text-emerald-600 font-bold flex items-center gap-0.5">
-              {esSeptiembre ? '▼ 26,2% Base vs Ago' : '▲ 16% vs Julio'}
-            </span>
-            <span className="text-slate-500 font-bold">{pctFlota}% del total</span>
-          </div>
-        </div>
-
-        {/* KPI 3: Mantto Infraestructura (OPEX) */}
-        <div 
-          onClick={() => handleTabChange('infra')}
-          className="bg-white/95 rounded-2xl p-4 border border-teal-300 shadow-sm hover:shadow-md transition-all cursor-pointer"
-        >
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">
-            <span>3. Mantto. Infraestructura</span>
-            <Wrench className="w-4 h-4 text-teal-600" />
-          </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">
-            {esSeptiembre ? formatExact(opexInfraEfectivoMes) : formatCurrency(mesActivoRaw.opexInfraestructura)}
-          </div>
-          <div className="mt-1.5 text-[10px] text-slate-500 font-mono">
-            TT-I-C-033 Adecuaciones: $27.701,47
-          </div>
-          <div className="flex items-center justify-between text-[11px] mt-2 pt-2 border-t border-slate-100">
-            <span className="text-rose-600 font-bold flex items-center gap-0.5">
-              {esSeptiembre ? '▲ +2,9% vs Ago ($40.545)' : '▼ 3% vs Julio'}
-            </span>
-            <span className="text-slate-500 font-bold">{pctInfra}% del total</span>
-          </div>
-        </div>
-
-        {/* KPI 4: Gastos Administrativos (Admon) */}
-        <div 
-          onClick={() => handleTabChange('admon')}
-          className="bg-white/95 rounded-2xl p-4 border border-amber-300 shadow-sm hover:shadow-md transition-all cursor-pointer"
-        >
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold uppercase tracking-wider">
-            <span>4. Administrativo (Admon)</span>
-            <Briefcase className="w-4 h-4 text-amber-600" />
-          </div>
-          <div className="text-2xl font-black text-slate-900 font-mono">
-            {esSeptiembre ? formatExact(admonEfectivoMes) : formatCurrency(admonEfectivoMes)}
-          </div>
-          <div className="mt-1.5 text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-semibold">
-            Gerencias, Dpto. Fab, TI, Procura y Almacén
-          </div>
-          <div className="flex items-center justify-between text-[11px] mt-2 pt-2 border-t border-slate-100">
-            <span className="text-emerald-600 font-bold flex items-center gap-0.5">
-              {esSeptiembre ? 'Conciliado Master Sep' : 'Gasto Departamental'}
-            </span>
-            <span className="text-slate-500 font-bold">{pctAdmon}% del total</span>
-          </div>
-        </div>
-
-        {/* KPI 5: Total General Consolidado */}
-        <div className="bg-gradient-to-br from-slate-900 to-sky-950 text-white rounded-2xl p-4 border border-sky-800/80 shadow-md">
-          <div className="flex items-center justify-between text-xs text-sky-200 mb-1 font-semibold uppercase tracking-wider">
-            <span>Total {mesActivoRaw.mesLabel} (4 Bloques)</span>
-            <DollarSign className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="text-2xl font-black text-amber-300 font-mono">
-            {esSeptiembre ? formatExact(totalGeneralConAdmonMes) : formatCurrency(totalGeneralConAdmonMes)}
-          </div>
-          <div className="mt-1.5 text-[10px] text-sky-200 font-mono">
-            Sin Admon (3 bloques): {esSeptiembre ? formatExact(capexEfectivoMes + totalOpexEfectivoMes) : formatCurrency(mesActivoRaw.totalGeneral)}
-          </div>
-          <div className="flex items-center justify-between text-[11px] mt-2 pt-2 border-t border-sky-900 text-slate-300">
-            <span className="text-emerald-400 font-bold">
-              OPEX Total: {esSeptiembre ? formatExact(totalOpexEfectivoMes) : formatCurrency(mesActivoRaw.totalOpex)}
-            </span>
-            <span className="font-mono text-slate-300">Ene-Sep</span>
-          </div>
-        </div>
-
-      </div>
-
-      {/* ===================== CONTENIDO POR SUB-PESTAÑA ===================== */}
-
-      {/* PESTAÑA 1: RESUMEN EJECUTIVO */}
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 1: RESUMEN EJECUTIVO (IDÉNTICO A LA LÁMINA 1)                 */}
+      {/* ========================================================================= */}
       {subTab === 'resumen' && (
         <div className="space-y-6">
           
-          {/* Tarjeta Destacada: Resumen de Separación CAPEX vs OPEX en Septiembre */}
-          {esSeptiembre && (
-            <div className="bg-gradient-to-r from-sky-950 via-slate-900 to-indigo-950 text-white rounded-2xl p-5 border border-sky-700/70 shadow-lg">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-700/80 pb-4 mb-4">
-                <div>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[11px] font-bold mb-1.5">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>CRITERIO DE VIDA ÚTIL E INCORPORACIÓN DE ACTIVOS (SEPTIEMBRE 2026)</span>
-                  </div>
-                  <h3 className="text-lg font-black text-white">
-                    Separación Contable de Mantenimiento de Flota (OPEX) hacia CAPEX
-                  </h3>
-                  <p className="text-xs text-slate-300 mt-0.5">
-                    Los equipos nuevos ingresados en septiembre pasan a CAPEX únicamente por sus intervenciones de puesta en marcha en este mes (en octubre su mantenimiento mínimo irá a OPEX). Asimismo, los motores y overhauls mayores que extienden la vida útil se reclasifican a CAPEX.
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleTabChange('reclasificacion')}
-                  className="shrink-0 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all cursor-pointer shadow-md"
-                >
-                  Configurar Ítems CAPEX / OPEX →
-                </button>
-              </div>
+          {/* TÍTULO EJECUTIVO DE LA LÁMINA */}
+          <div className="flex items-baseline justify-between border-b border-slate-200 pb-2">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Resumen Ejecutivo – {mesActivoRaw.mesLabel} 2026
+            </h2>
+            <span className="text-xs text-slate-500 font-semibold">
+              Cifras expresadas en Dólares Estadounidenses ($ USD)
+            </span>
+          </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3.5 text-xs">
-                <div className="bg-slate-800/90 p-3.5 rounded-xl border border-slate-700">
-                  <div className="text-slate-400 font-bold uppercase text-[10px]">1. CAPEX Obras / Planta (Master)</div>
-                  <div className="text-xl font-black text-sky-300 font-mono mt-1">$34.930,08</div>
-                  <div className="text-[11px] text-slate-300 mt-1">10 cuentas de obra civil, galpones, patio externo y bancos de prueba.</div>
-                </div>
-
-                <div className="bg-slate-800/90 p-3.5 rounded-xl border border-emerald-700/60">
-                  <div className="text-emerald-300 font-bold uppercase text-[10px]">2. + Equipos Nuevos (Ingreso Sep)</div>
-                  <div className="text-xl font-black text-emerald-400 font-mono mt-1">+{formatExact(totalEquiposNuevosSep)}</div>
-                  <div className="text-[11px] text-slate-300 mt-1">
-                    6 equipos nuevos (<span className="font-mono text-white">BS15, TR01, VH52, PA03, CO19, CO20</span>). En Oct pasan a OPEX si es mantto mínimo.
-                  </div>
-                </div>
-
-                <div className="bg-slate-800/90 p-3.5 rounded-xl border border-amber-600/60">
-                  <div className="text-amber-300 font-bold uppercase text-[10px]">3. + Extensión Vida Útil Flota</div>
-                  <div className="text-xl font-black text-amber-300 font-mono mt-1">+{formatExact(totalVidaUtilSep)}</div>
-                  <div className="text-[11px] text-slate-300 mt-1">
-                    Motor Cummins <span className="font-mono text-white">BS03</span> ($8,5k), Telescópico <span className="font-mono text-white">GR23</span> ($9k), Protección <span className="font-mono text-white">PC05</span> ($2,6k) y Motor <span className="font-mono text-white">VH09</span> ($0,6k).
-                  </div>
-                </div>
-
-                <div className="bg-sky-950/90 p-3.5 rounded-xl border border-sky-500/60">
-                  <div className="text-sky-200 font-bold uppercase text-[10px]">= Nuevo Balance Septiembre</div>
-                  <div className="flex items-baseline justify-between mt-1">
-                    <span className="text-slate-300">CAPEX Total:</span>
-                    <span className="text-base font-black text-emerald-300 font-mono">{formatExact(capexEfectivoMes)}</span>
-                  </div>
-                  <div className="flex items-baseline justify-between mt-1">
-                    <span className="text-slate-300">Mantto Flota OPEX:</span>
-                    <span className="text-base font-black text-indigo-300 font-mono">{formatExact(opexFlotaEfectivoMes)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Fila: Evolutivo Mensual + Distribución del Mes */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* 5 TARJETAS KPI CON EL RIBETE AZUL MARINO DE LA LÁMINA 1 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             
-            {/* Gráfico / Evolutivo General Mensual Ene-Sep */}
-            <div className="lg:col-span-8 bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm">
-              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-base font-black text-slate-900 tracking-tight">
-                    Evolutivo General Mensual (Enero – Septiembre 2026)
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Comportamiento histórico de inversiones (CAPEX), Mantenimiento Operativo (OPEX) y Administrativo.
-                  </p>
+            {/* KPI 1: CAPEX */}
+            <div 
+              onClick={() => handleTabChange('capex')}
+              className="bg-white rounded-xl border border-slate-300 shadow-2xs hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between overflow-hidden group"
+            >
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  PROYECTOS INTERNOS (CAPEX)
                 </div>
-                <span className="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
-                  Acum. Ene-Sep: {formatCurrency(TOTALES_ACUMULADOS_INTERNOS_2026.totalConAdmon)}
-                </span>
-              </div>
-
-              {/* Barras de Evolución */}
-              <div className="h-64 flex items-end justify-between gap-2.5 pt-6 pb-2 px-2">
-                {EVOLUTIVO_INTERNOS_2026.map((m, idx) => {
-                  const maxVal = 520000;
-                  const capexMes = idx === 8 ? capexEfectivoMes : m.capex;
-                  const activosMes = idx === 8 ? opexFlotaEfectivoMes : m.opexActivos;
-                  const infraMes = m.opexInfraestructura;
-                  const admonMes = m.admon || 0;
-                  const totalBarra = capexMes + activosMes + infraMes + admonMes;
-
-                  const hCapex = Math.max(6, (capexMes / maxVal) * 100);
-                  const hActivos = Math.max(6, (activosMes / maxVal) * 100);
-                  const hInfra = Math.max(6, (infraMes / maxVal) * 100);
-                  const hAdmon = Math.max(4, (admonMes / maxVal) * 100);
-                  const isSelected = selectedMesIdx === idx;
-
-                  return (
-                    <div 
-                      key={m.mesCorto} 
-                      onClick={() => setSelectedMesIdx(idx)}
-                      className={`flex-1 flex flex-col items-center cursor-pointer group p-1 rounded-xl transition-all ${
-                        isSelected ? 'bg-sky-50/90 ring-2 ring-sky-700' : 'hover:bg-slate-50'
-                      }`}
-                    >
-                      <div className="text-[10px] font-mono font-bold text-slate-700 mb-1">
-                        ${Math.round(totalBarra / 1000)}k
-                      </div>
-                      
-                      <div className="w-full max-w-[32px] flex flex-col-reverse gap-0.5 items-center justify-end h-44">
-                        <div 
-                          style={{ height: `${hAdmon}%` }} 
-                          className="w-full bg-amber-500 rounded-t-xs hover:brightness-110 transition-all"
-                          title={`Administrativo: ${formatExact(admonMes)}`}
-                        />
-                        <div 
-                          style={{ height: `${hInfra}%` }} 
-                          className="w-full bg-teal-500 rounded-t-xs hover:brightness-110 transition-all"
-                          title={`OPEX Infra: ${formatExact(infraMes)}`}
-                        />
-                        <div 
-                          style={{ height: `${hActivos}%` }} 
-                          className="w-full bg-indigo-600 rounded-t-xs hover:brightness-110 transition-all"
-                          title={`OPEX Flota: ${formatExact(activosMes)}`}
-                        />
-                        <div 
-                          style={{ height: `${hCapex}%` }} 
-                          className="w-full bg-sky-500 rounded-t-xs hover:brightness-110 transition-all"
-                          title={`CAPEX: ${formatExact(capexMes)}`}
-                        />
-                      </div>
-
-                      <div className={`text-xs font-bold mt-2 ${isSelected ? 'text-sky-900 font-black' : 'text-slate-500'}`}>
-                        {m.mesCorto}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Leyenda de Colores */}
-              <div className="flex flex-wrap items-center justify-center gap-4 pt-3 border-t border-slate-100 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-sm bg-sky-500" />
-                  <span className="font-medium text-slate-700">Proyectos Internos (CAPEX)</span>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$29.017' : formatExact(capexEfectivoMes)}
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-sm bg-indigo-600" />
-                  <span className="font-medium text-slate-700">Mantto. Flota (OPEX)</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-sm bg-teal-500" />
-                  <span className="font-medium text-slate-700">Mantto. Infraestructura (OPEX)</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-sm bg-amber-500" />
-                  <span className="font-medium text-slate-700">Administrativo (Admon)</span>
+                <div className="text-xs font-bold text-slate-600 flex items-center justify-center gap-1">
+                  {esAgosto ? (
+                    <>
+                      <span className="text-slate-800">▼ 36%</span>
+                      <span className="text-slate-500 font-normal">vs Julio</span>
+                    </>
+                  ) : esSeptiembre ? (
+                    <>
+                      <span className="text-emerald-700">▲ +20,4%</span>
+                      <span className="text-slate-500 font-normal">vs Agosto</span>
+                    </>
+                  ) : (
+                    <span className="text-slate-500 font-normal">Gasto mensual</span>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Distribución de Costos del Mes Seleccionado */}
-            <div className="lg:col-span-4 bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 className="text-base font-black text-slate-900 tracking-tight">
-                  Distribución {mesActivoRaw.mesLabel} 2026
-                </h3>
-                <p className="text-xs text-slate-500 mb-3">
-                  Participación de los 4 bloques ({formatExact(totalGeneralConAdmonMes)} USD).
-                </p>
-
-                {/* Barra de Distribución Porcentual */}
-                <div className="h-4 w-full rounded-full overflow-hidden flex bg-slate-100 shadow-inner mb-4">
-                  <div style={{ width: `${pctCapex}%` }} className="bg-sky-500" title={`CAPEX: ${pctCapex}%`} />
-                  <div style={{ width: `${pctFlota}%` }} className="bg-indigo-600" title={`Flota: ${pctFlota}%`} />
-                  <div style={{ width: `${pctInfra}%` }} className="bg-teal-500" title={`Infraestructura: ${pctInfra}%`} />
-                  <div style={{ width: `${pctAdmon}%` }} className="bg-amber-500" title={`Administrativo: ${pctAdmon}%`} />
+            {/* KPI 2: OPEX ACTIVOS PRODUCTIVOS */}
+            <div 
+              onClick={() => handleTabChange('flota')}
+              className="bg-white rounded-xl border border-slate-300 shadow-2xs hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between overflow-hidden group"
+            >
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  MANTTO. ACTIVOS. PROD (OPEX)
                 </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$113.450' : formatExact(opexFlotaEfectivoMes)}
+                </div>
+                <div className="text-xs font-bold text-slate-600 flex items-center justify-center gap-1">
+                  {esAgosto ? (
+                    <>
+                      <span className="text-slate-800">▲ 16%</span>
+                      <span className="text-slate-500 font-normal">vs Julio</span>
+                    </>
+                  ) : esSeptiembre ? (
+                    <>
+                      <span className="text-emerald-700">▼ 26,2%</span>
+                      <span className="text-slate-500 font-normal">vs Agosto</span>
+                    </>
+                  ) : (
+                    <span className="text-slate-500 font-normal">Flota & Equipos</span>
+                  )}
+                </div>
+              </div>
+            </div>
 
-                {/* Desglose en Tarjetas */}
-                <div className="space-y-2">
-                  <div 
-                    onClick={() => handleTabChange('capex')}
-                    className="p-2.5 rounded-xl bg-sky-50/60 border border-sky-200 flex items-center justify-between hover:bg-sky-100 cursor-pointer transition-all group"
-                  >
-                    <div>
-                      <div className="text-xs font-bold text-sky-950 flex items-center gap-1.5">
-                        <span>1. Proyectos Internos (CAPEX)</span>
-                        <ArrowRight className="w-3 h-3 text-sky-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      <div className="text-[10px] text-sky-700 font-medium">
-                        {esSeptiembre && modoReclasificadoSep ? 'Obras + Equipos Nuevos + Vida Útil' : 'Obras civiles, galpones y patios'}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-black text-sky-900 font-mono">{formatExact(capexEfectivoMes)}</div>
-                      <div className="text-[10px] font-bold text-sky-600">{pctCapex}%</div>
-                    </div>
-                  </div>
+            {/* KPI 3: OPEX INFRAESTRUCTURA */}
+            <div 
+              onClick={() => handleTabChange('infra')}
+              className="bg-white rounded-xl border border-slate-300 shadow-2xs hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between overflow-hidden group"
+            >
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  MANTTO. INFRAESTRUCTURA (OPEX)
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$40.545' : formatExact(opexInfraEfectivoMes)}
+                </div>
+                <div className="text-xs font-bold text-slate-600 flex items-center justify-center gap-1">
+                  {esAgosto ? (
+                    <>
+                      <span className="text-slate-800">▼ 3%</span>
+                      <span className="text-slate-500 font-normal">vs Julio</span>
+                    </>
+                  ) : esSeptiembre ? (
+                    <>
+                      <span className="text-rose-700">▲ 2,9%</span>
+                      <span className="text-slate-500 font-normal">vs Agosto</span>
+                    </>
+                  ) : (
+                    <span className="text-slate-500 font-normal">Galpones & Talleres</span>
+                  )}
+                </div>
+              </div>
+            </div>
 
-                  <div 
-                    onClick={() => handleTabChange('flota')}
-                    className="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-200 flex items-center justify-between hover:bg-indigo-100 cursor-pointer transition-all group"
-                  >
-                    <div>
-                      <div className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
-                        <span>2. Mantto. Flota (OPEX)</span>
-                        <ArrowRight className="w-3 h-3 text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      <div className="text-[10px] text-indigo-700 font-medium">
-                        {esSeptiembre && modoReclasificadoSep ? 'Mantenimiento rutinario depurado' : 'Total Master Flota y Equipos'}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-black text-indigo-900 font-mono">{formatExact(opexFlotaEfectivoMes)}</div>
-                      <div className="text-[10px] font-bold text-indigo-600">{pctFlota}%</div>
-                    </div>
-                  </div>
+            {/* KPI 4: TOTAL OPEX */}
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs flex flex-col justify-between overflow-hidden">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  TOTAL OPEX
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$153.995' : formatExact(totalOpexEfectivoMes)}
+                </div>
+                <div className="text-xs font-bold text-slate-600 flex items-center justify-center gap-1">
+                  {esAgosto ? (
+                    <>
+                      <span className="text-slate-800">▲ 10%</span>
+                      <span className="text-slate-500 font-normal">vs Julio</span>
+                    </>
+                  ) : esSeptiembre ? (
+                    <>
+                      <span className="text-emerald-700">▼ 18,5%</span>
+                      <span className="text-slate-500 font-normal">vs Agosto</span>
+                    </>
+                  ) : (
+                    <span className="text-slate-500 font-normal">Flota + Infra</span>
+                  )}
+                </div>
+              </div>
+            </div>
 
-                  <div 
-                    onClick={() => handleTabChange('infra')}
-                    className="p-2.5 rounded-xl bg-teal-50/60 border border-teal-200 flex items-center justify-between hover:bg-teal-100 cursor-pointer transition-all group"
-                  >
-                    <div>
-                      <div className="text-xs font-bold text-teal-950 flex items-center gap-1.5">
-                        <span>3. Mantto. Infraestructura (OPEX)</span>
-                        <ArrowRight className="w-3 h-3 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      <div className="text-[10px] text-teal-700 font-medium">Adecuaciones, galpones y talleres</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-black text-teal-900 font-mono">{formatExact(opexInfraEfectivoMes)}</div>
-                      <div className="text-[10px] font-bold text-teal-600">{pctInfra}%</div>
-                    </div>
-                  </div>
-
-                  <div 
-                    onClick={() => handleTabChange('admon')}
-                    className="p-2.5 rounded-xl bg-amber-50/60 border border-amber-200 flex items-center justify-between hover:bg-amber-100 cursor-pointer transition-all group"
-                  >
-                    <div>
-                      <div className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                        <span>4. Administrativo (Admon)</span>
-                        <ArrowRight className="w-3 h-3 text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      <div className="text-[10px] text-amber-700 font-medium">Departamentos y áreas de soporte</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-black text-amber-900 font-mono">{formatExact(admonEfectivoMes)}</div>
-                      <div className="text-[10px] font-bold text-amber-700">{pctAdmon}%</div>
-                    </div>
-                  </div>
+            {/* KPI 5: TOTAL DEL MES */}
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs flex flex-col justify-between overflow-hidden">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  TOTAL {mesActivoRaw.mesCorto.toUpperCase()}
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$183.013' : formatExact(totalGeneralSinAdmon)}
+                </div>
+                <div className="text-xs font-bold text-slate-600 flex items-center justify-center gap-1">
+                  {esAgosto ? (
+                    <>
+                      <span className="text-slate-800">▼ 1%</span>
+                      <span className="text-slate-500 font-normal">vs Julio</span>
+                    </>
+                  ) : esSeptiembre ? (
+                    <>
+                      <span className="text-emerald-700">▼ 12,4%</span>
+                      <span className="text-slate-500 font-normal">vs Agosto</span>
+                    </>
+                  ) : (
+                    <span className="text-slate-500 font-normal">CAPEX + OPEX</span>
+                  )}
                 </div>
               </div>
             </div>
 
           </div>
 
-          {/* Matriz Comparativa Mensual Enero a Septiembre 2026 */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm overflow-x-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-              <h3 className="text-base font-black text-slate-900 tracking-tight">
-                Matriz Comparativa Mensual Enero a Septiembre 2026 ($ USD)
-              </h3>
-              <span className="text-xs font-semibold text-sky-800 bg-sky-50 border border-sky-200 px-3 py-1 rounded-lg">
-                {modoReclasificadoSep 
-                  ? `Septiembre con Reclasificación Activa (${formatExact(montoReclasificadoSep)} de OPEX Flota a CAPEX)` 
-                  : 'Septiembre en Vista Base Master Original'}
-              </span>
+          {/* ===================================================================== */}
+          {/* GRÁFICAS DE LA LÁMINA 1: EVOLUTIVO GENERAL Y DISTRIBUCIÓN CAPEX/OPEX  */}
+          {/* ===================================================================== */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* EVOLUTIVO GENERAL (CURVA SVG SUAVE CON 3 LÍNEAS) */}
+            <div className="lg:col-span-8 bg-white rounded-2xl p-5 border border-slate-300/90 shadow-2xs">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">
+                  EVOLUTIVO GENERAL
+                </h3>
+                <span className="text-xs font-semibold text-slate-400">Enero – Septiembre 2026</span>
+              </div>
+
+              {/* GRÁFICO SVG PROFESIONAL Y NÍTIDO */}
+              <div className="relative w-full h-64 mt-2">
+                <svg className="w-full h-full overflow-visible" viewBox="0 0 650 200" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="gradCapex" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#0f4c81" stopOpacity="0.15" />
+                      <stop offset="100%" stopColor="#0f4c81" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Líneas de cuadrícula horizontales tenues */}
+                  <line x1="40" y1="30" x2="630" y2="30" stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1="40" y1="80" x2="630" y2="80" stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1="40" y1="130" x2="630" y2="130" stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1="40" y1="170" x2="630" y2="170" stroke="#e2e8f0" strokeWidth="1" />
+
+                  {/* Línea 1: Proyectos Internos (CAPEX) - Curva Azul Petróleo Oscuro (#0f4c81) */}
+                  {/* Puntos: Ene (162k), Feb (326k-pico), Mar (149k), Abr (92k), May (77k), Jun (32k), Jul (45k), Ago (29k), Sep (35k) */}
+                  <path
+                    d="M 50 110 C 80 80, 100 25, 120 25 C 145 25, 170 100, 190 115 C 220 135, 240 148, 260 152 C 290 158, 310 162, 330 165 C 360 170, 380 183, 400 185 C 430 186, 450 178, 470 176 C 500 174, 520 186, 540 187 C 570 188, 590 183, 610 182"
+                    fill="none"
+                    stroke="#0f4c81"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                  {/* Marcadores circulares CAPEX */}
+                  <circle cx="50" cy="110" r="4" fill="#0f4c81" />
+                  <circle cx="120" cy="25" r="4.5" fill="#0f4c81" />
+                  <circle cx="190" cy="115" r="4" fill="#0f4c81" />
+                  <circle cx="260" cy="152" r="4" fill="#0f4c81" />
+                  <circle cx="330" cy="165" r="4" fill="#0f4c81" />
+                  <circle cx="400" cy="185" r="4" fill="#0f4c81" />
+                  <circle cx="470" cy="176" r="4" fill="#0f4c81" />
+                  <circle cx="540" cy="187" r="4" fill="#0f4c81" />
+                  <circle cx="610" cy="182" r="4" fill="#0f4c81" />
+
+                  {/* Línea 2: Mantto. Activos Productivos (OPEX) - Curva Azul Celeste (#38bdf8 / #0284c7) */}
+                  {/* Puntos: Ene (143k), Feb (102k), Mar (83k), Abr (59k), May (68k), Jun (72k), Jul (97k), Ago (113k), Sep (83k) */}
+                  <path
+                    d="M 50 120 C 80 135, 100 145, 120 148 C 145 151, 170 158, 190 160 C 220 163, 240 173, 260 174 C 290 175, 310 170, 330 169 C 360 168, 380 167, 400 166 C 430 165, 450 152, 470 150 C 500 148, 520 142, 540 140 C 570 138, 590 156, 610 157"
+                    fill="none"
+                    stroke="#38bdf8"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                  {/* Marcadores circulares Activos */}
+                  <circle cx="50" cy="120" r="4" fill="#38bdf8" />
+                  <circle cx="120" cy="148" r="4" fill="#38bdf8" />
+                  <circle cx="190" cy="160" r="4" fill="#38bdf8" />
+                  <circle cx="260" cy="174" r="4" fill="#38bdf8" />
+                  <circle cx="330" cy="169" r="4" fill="#38bdf8" />
+                  <circle cx="400" cy="166" r="4" fill="#38bdf8" />
+                  <circle cx="470" cy="150" r="4" fill="#38bdf8" />
+                  <circle cx="540" cy="140" r="4" fill="#38bdf8" />
+                  <circle cx="610" cy="157" r="4" fill="#38bdf8" />
+
+                  {/* Línea 3: Mantto. Infraestructura (OPEX) - Curva Gris / Slate (#94a3b8) */}
+                  {/* Puntos: Ene (145k), Feb (50k), Mar (20k), Abr (25k), May (20k), Jun (15k), Jul (41k), Ago (40k), Sep (41k) */}
+                  <path
+                    d="M 50 118 C 80 150, 100 174, 120 175 C 145 176, 170 189, 190 190 C 220 191, 240 188, 260 187 C 290 186, 310 189, 330 190 C 360 191, 380 192, 400 192 C 430 192, 450 178, 470 178 C 500 178, 520 180, 540 180 C 570 180, 590 179, 610 179"
+                    fill="none"
+                    stroke="#94a3b8"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                  {/* Marcadores circulares Infra */}
+                  <circle cx="50" cy="118" r="4" fill="#94a3b8" />
+                  <circle cx="120" cy="175" r="4" fill="#94a3b8" />
+                  <circle cx="190" cy="190" r="4" fill="#94a3b8" />
+                  <circle cx="260" cy="187" r="4" fill="#94a3b8" />
+                  <circle cx="330" cy="190" r="4" fill="#94a3b8" />
+                  <circle cx="400" cy="192" r="4" fill="#94a3b8" />
+                  <circle cx="470" cy="178" r="4" fill="#94a3b8" />
+                  <circle cx="540" cy="180" r="4" fill="#94a3b8" />
+                  <circle cx="610" cy="179" r="4" fill="#94a3b8" />
+
+                  {/* Etiquetas de meses en el eje X */}
+                  {['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep'].map((m, idx) => {
+                    const xPositions = [50, 120, 190, 260, 330, 400, 470, 540, 610];
+                    return (
+                      <text
+                        key={m}
+                        x={xPositions[idx]}
+                        y="198"
+                        textAnchor="middle"
+                        className="text-[10px] font-bold fill-slate-500 font-sans"
+                      >
+                        {m}
+                      </text>
+                    );
+                  })}
+                </svg>
+              </div>
+
+              {/* Leyenda idéntica a la Lámina 1 */}
+              <div className="flex flex-wrap items-center justify-center gap-6 mt-4 pt-3 border-t border-slate-100 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-3.5 h-1 bg-[#0f4c81] rounded-full inline-block" />
+                  <span className="w-2 h-2 rounded-full bg-[#0f4c81] -ml-3.5 inline-block" />
+                  <span className="text-slate-700 font-medium ml-1">Proyectos Internos (CAPEX)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3.5 h-1 bg-[#38bdf8] rounded-full inline-block" />
+                  <span className="w-2 h-2 rounded-full bg-[#38bdf8] -ml-3.5 inline-block" />
+                  <span className="text-slate-700 font-medium ml-1">Mantto. Activos Productivos (OPEX)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3.5 h-1 bg-[#94a3b8] rounded-full inline-block" />
+                  <span className="w-2 h-2 rounded-full bg-[#94a3b8] -ml-3.5 inline-block" />
+                  <span className="text-slate-700 font-medium ml-1">Mantto. Infraestructura (OPEX)</span>
+                </div>
+              </div>
             </div>
-            <table className="w-full text-xs text-left">
-              <thead>
-                <tr className="bg-slate-800 text-white font-bold">
-                  <th className="py-2.5 px-3 rounded-l-lg">Descripción del Bloque</th>
-                  <th className="py-2.5 px-2.5 text-right">Ene</th>
-                  <th className="py-2.5 px-2.5 text-right">Feb</th>
-                  <th className="py-2.5 px-2.5 text-right">Mar</th>
-                  <th className="py-2.5 px-2.5 text-right">Abr</th>
-                  <th className="py-2.5 px-2.5 text-right">May</th>
-                  <th className="py-2.5 px-2.5 text-right">Jun</th>
-                  <th className="py-2.5 px-2.5 text-right">Jul</th>
-                  <th className="py-2.5 px-2.5 text-right">Ago</th>
-                  <th className="py-2.5 px-3 text-right bg-sky-900 text-amber-300">Sep 2026</th>
-                  <th className="py-2.5 px-3 text-right rounded-r-lg font-mono">Acum. 2026 ($)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                <tr className="hover:bg-sky-50/40">
-                  <td className="py-2.5 px-3 font-bold text-slate-800 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-sky-500" />
-                    <span>1. Proyectos Internos (CAPEX)</span>
-                  </td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$162.467</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$326.380</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$149.039</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$92.865</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$77.901</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$32.585</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$45.087</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$29.017</td>
-                  <td className="py-2.5 px-3 text-right font-mono font-black bg-sky-50 text-sky-900">
-                    {formatExact(34930.08 + (modoReclasificadoSep ? montoReclasificadoSep : 0))}
-                  </td>
-                  <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                    {formatExact(950271.43 + (modoReclasificadoSep ? montoReclasificadoSep : 0))}
-                  </td>
-                </tr>
-                <tr className="hover:bg-indigo-50/40">
-                  <td className="py-2.5 px-3 font-bold text-slate-800 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-indigo-600" />
-                    <span>2. Mantto. Flota y Equipos (OPEX)</span>
-                  </td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$143.581</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$102.274</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$83.194</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$59.543</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$68.409</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$72.213</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$97.727</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$113.450</td>
-                  <td className="py-2.5 px-3 text-right font-mono font-black bg-indigo-50 text-indigo-900">
-                    {formatExact(83729.79 - (modoReclasificadoSep ? montoReclasificadoSep : 0))}
-                  </td>
-                  <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                    {formatExact(824120.75 - (modoReclasificadoSep ? montoReclasificadoSep : 0))}
-                  </td>
-                </tr>
-                <tr className="hover:bg-teal-50/40">
-                  <td className="py-2.5 px-3 font-bold text-slate-800 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-teal-500" />
-                    <span>3. Mantto. Infraestructura (OPEX)</span>
-                  </td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$145.197</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$50.329</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$20.149</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$25.926</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$20.031</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$15.748</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$41.898</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$40.545</td>
-                  <td className="py-2.5 px-3 text-right font-mono font-black bg-teal-50 text-teal-900">$41.739,91</td>
-                  <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">$401.562,86</td>
-                </tr>
-                <tr className="hover:bg-amber-50/40">
-                  <td className="py-2.5 px-3 font-bold text-slate-800 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-amber-500" />
-                    <span>4. Gastos Administrativos (Admon)</span>
-                  </td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$63.209</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$28.720</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$86.208</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$28.640</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$67.895</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$37.742</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$40.086</td>
-                  <td className="py-2.5 px-2.5 text-right font-mono">$53.325</td>
-                  <td className="py-2.5 px-3 text-right font-mono font-black bg-amber-50 text-amber-900">$31.339,57</td>
-                  <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">$437.164,57</td>
-                </tr>
-                <tr className="bg-slate-100/90 font-black text-slate-900 border-t-2 border-slate-300">
-                  <td className="py-3 px-3">TOTAL GENERAL CONSOLIDADO (4 BLOQUES)</td>
-                  <td className="py-3 px-2.5 text-right font-mono">$514.453</td>
-                  <td className="py-3 px-2.5 text-right font-mono">$507.703</td>
-                  <td className="py-3 px-2.5 text-right font-mono">$338.590</td>
-                  <td className="py-3 px-2.5 text-right font-mono">$206.974</td>
-                  <td className="py-3 px-2.5 text-right font-mono">$234.236</td>
-                  <td className="py-3 px-2.5 text-right font-mono">$158.288</td>
-                  <td className="py-3 px-2.5 text-right font-mono">$224.798</td>
-                  <td className="py-3 px-2.5 text-right font-mono">$236.338</td>
-                  <td className="py-3 px-3 text-right font-mono bg-slate-200 text-sky-950 text-sm">$191.739,35</td>
-                  <td className="py-3 px-3 text-right font-mono text-sm text-sky-900 font-extrabold">$2.613.119,61</td>
-                </tr>
-              </tbody>
-            </table>
+
+            {/* DISTRIBUCIÓN CAPEX Y OPEX (GRÁFICO CIRCULAR DE LA LÁMINA 1) */}
+            <div className="lg:col-span-4 bg-white rounded-2xl p-5 border border-slate-300/90 shadow-2xs flex flex-col justify-between">
+              <div>
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-2">
+                  DISTRIBUCIÓN CAPEX Y OPEX – {mesActivoRaw.mesCorto.toUpperCase()}
+                </h3>
+
+                {/* Gráfico circular con proporciones de Agosto (16% CAPEX, 62% Flota, 22% Infra) */}
+                <div className="flex flex-col items-center justify-center py-4">
+                  <div className="relative w-48 h-48">
+                    <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                      {/* Segmento 1: CAPEX (16%) -> Color #0f4c81 */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="35"
+                        fill="transparent"
+                        stroke="#0f4c81"
+                        strokeWidth="30"
+                        strokeDasharray={`${pctCapex * 2.2} 220`}
+                        strokeDashoffset="0"
+                      />
+                      {/* Segmento 2: Flota (62%) -> Color #38bdf8 */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="35"
+                        fill="transparent"
+                        stroke="#38bdf8"
+                        strokeWidth="30"
+                        strokeDasharray={`${pctFlota * 2.2} 220`}
+                        strokeDashoffset={`-${pctCapex * 2.2}`}
+                      />
+                      {/* Segmento 3: Infra (22%) -> Color #94a3b8 */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="35"
+                        fill="transparent"
+                        stroke="#94a3b8"
+                        strokeWidth="30"
+                        strokeDasharray={`${pctInfra * 2.2} 220`}
+                        strokeDashoffset={`-${(pctCapex + pctFlota) * 2.2}`}
+                      />
+                    </svg>
+
+                    {/* Etiquetas de porcentaje flotantes */}
+                    <div className="absolute top-6 right-8 text-white font-bold text-xs drop-shadow-sm">
+                      {pctCapex}%
+                    </div>
+                    <div className="absolute bottom-6 right-12 text-white font-bold text-sm drop-shadow-sm">
+                      {pctFlota}%
+                    </div>
+                    <div className="absolute top-10 left-8 text-white font-bold text-xs drop-shadow-sm">
+                      {pctInfra}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Leyenda lateral con colores corporativos */}
+              <div className="space-y-2 text-xs pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-xs bg-[#0f4c81] shrink-0" />
+                    <span className="text-slate-700 font-medium">Proyectos Internos (CAPEX)</span>
+                  </div>
+                  <span className="font-mono font-bold text-slate-900">{formatExact(capexEfectivoMes)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-xs bg-[#38bdf8] shrink-0" />
+                    <span className="text-slate-700 font-medium">Mantto. Activos Productivos (OPEX)</span>
+                  </div>
+                  <span className="font-mono font-bold text-slate-900">{formatExact(opexFlotaEfectivoMes)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-xs bg-[#94a3b8] shrink-0" />
+                    <span className="text-slate-700 font-medium">Mantto. Infraestructura (OPEX)</span>
+                  </div>
+                  <span className="font-mono font-bold text-slate-900">{formatExact(opexInfraEfectivoMes)}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* ===================================================================== */}
+          {/* TABLA MENSUAL EXACTA DE LA LÁMINA 1 (CON ENCABEZADO AZUL MARINO)     */}
+          {/* ===================================================================== */}
+          <div className="bg-white rounded-2xl border border-slate-300 shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-[#0f2e5a] text-white font-bold">
+                    <th className="py-2.5 px-4 text-left font-semibold">Descripción</th>
+                    <th className="py-2.5 px-3 text-right">Ene</th>
+                    <th className="py-2.5 px-3 text-right">Feb</th>
+                    <th className="py-2.5 px-3 text-right">Mar</th>
+                    <th className="py-2.5 px-3 text-right">Abr</th>
+                    <th className="py-2.5 px-3 text-right">May</th>
+                    <th className="py-2.5 px-3 text-right">Jun</th>
+                    <th className="py-2.5 px-3 text-right">Jul</th>
+                    <th className="py-2.5 px-3 text-right">Ago</th>
+                    <th className="py-2.5 px-3 text-right bg-[#163a6f] text-sky-200">Sep</th>
+                    <th className="py-2.5 px-4 text-right font-mono bg-[#0c2447]">Acum. 2026 ($)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {/* Fila 1: CAPEX */}
+                  <tr className="hover:bg-slate-50">
+                    <td className="py-2.5 px-4 font-semibold text-slate-900">
+                      Proyectos Internos (CAPEX)
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">162.467</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">326.380</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">149.039</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">92.865</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">77.901</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">32.585</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">45.087</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700 font-bold">29.017</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-sky-950 font-bold bg-sky-50">
+                      {Math.round(capexEfectivoMes).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-2.5 px-4 text-right font-mono font-bold text-slate-900 bg-slate-50">
+                      {Math.round(915341 + (esSeptiembre ? capexEfectivoMes : 0)).toLocaleString('de-DE')}
+                    </td>
+                  </tr>
+
+                  {/* Fila 2: OPEX Activos Productivos */}
+                  <tr className="hover:bg-slate-50">
+                    <td className="py-2.5 px-4 font-semibold text-slate-900">
+                      Mantto. Activos Productivos (OPEX)
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">143.581</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">102.274</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">83.194</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">59.543</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">68.409</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">72.213</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">97.727</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700 font-bold">113.450</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-indigo-950 font-bold bg-indigo-50">
+                      {Math.round(opexFlotaEfectivoMes).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-2.5 px-4 text-right font-mono font-bold text-slate-900 bg-slate-50">
+                      {Math.round(740391 + (esSeptiembre ? opexFlotaEfectivoMes : 0)).toLocaleString('de-DE')}
+                    </td>
+                  </tr>
+
+                  {/* Fila 3: Mantto Infraestructura */}
+                  <tr className="hover:bg-slate-50">
+                    <td className="py-2.5 px-4 font-semibold text-slate-900">
+                      Mantto. Infraestructura (OPEX)
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">145.197</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">50.329</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">20.149</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">25.926</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">20.031</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">15.748</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700">41.898</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-slate-700 font-bold">40.545</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-teal-950 font-bold bg-teal-50">
+                      {Math.round(opexInfraEfectivoMes).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-2.5 px-4 text-right font-mono font-bold text-slate-900 bg-slate-50">
+                      {Math.round(359823 + (esSeptiembre ? opexInfraEfectivoMes : 0)).toLocaleString('de-DE')}
+                    </td>
+                  </tr>
+
+                  {/* Fila Total */}
+                  <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
+                    <td className="py-3 px-4 font-bold">Total</td>
+                    <td className="py-3 px-3 text-right font-mono">451.244</td>
+                    <td className="py-3 px-3 text-right font-mono">478.983</td>
+                    <td className="py-3 px-3 text-right font-mono">252.382</td>
+                    <td className="py-3 px-3 text-right font-mono">178.334</td>
+                    <td className="py-3 px-3 text-right font-mono">166.341</td>
+                    <td className="py-3 px-3 text-right font-mono">120.546</td>
+                    <td className="py-3 px-3 text-right font-mono">184.712</td>
+                    <td className="py-3 px-3 text-right font-mono">183.013</td>
+                    <td className="py-3 px-3 text-right font-mono bg-sky-100 text-sky-950">
+                      {Math.round(totalGeneralSinAdmon).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-3 px-4 text-right font-mono text-[#0f2e5a] bg-slate-200">
+                      {Math.round(2015555 + (esSeptiembre ? totalGeneralSinAdmon : 0)).toLocaleString('de-DE')}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
         </div>
       )}
 
-      {/* PESTAÑA 2: SEPARACIÓN CONTABLE CAPEX vs OPEX (SEPTIEMBRE 2026) */}
-      {subTab === 'reclasificacion' && (
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 2: PROYECTOS INTERNOS – CAPEX (IDÉNTICO A LA LÁMINA 2)        */}
+      {/* ========================================================================= */}
+      {subTab === 'capex' && (
         <div className="space-y-6">
           
-          {/* Resumen Comparativo Antes vs Después */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300 shadow-sm">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-5">
-              <div>
-                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                  <SlidersHorizontal className="w-5 h-5 text-emerald-600" />
-                  <span>Separación CAPEX vs. OPEX en Mantenimiento de Flota (Septiembre 2026)</span>
-                </h3>
-                <p className="text-xs text-slate-600 mt-1">
-                  Marca o desmarca las intervenciones que deseas pasar de <strong>Mantto. Flota (OPEX)</strong> a <strong>CAPEX</strong> en el mes de Septiembre.
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="inline-flex items-center gap-2 text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-300 px-3 py-2 rounded-xl cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={incluirEquiposNuevosCapex}
-                    onChange={(e) => setIncluirEquiposNuevosCapex(e.target.checked)}
-                    className="rounded text-emerald-600 focus:ring-emerald-500"
-                  />
-                  <span>Pasar Equipos Nuevos de Sep a CAPEX (+$3.786,83)</span>
-                </label>
+          <div className="flex items-baseline justify-between border-b border-slate-200 pb-2">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Proyectos Internos – CAPEX {mesActivoRaw.mesLabel} 2026
+            </h2>
+            <span className="text-xs text-slate-500 font-semibold">
+              Obras civiles, infraestructura, galpones y bancos de prueba
+            </span>
+          </div>
+
+          {/* 3 KPI CARDS DE LA LÁMINA 2 CON RIBETE AZUL MARINO */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-5 text-center flex-1 flex flex-col justify-between">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                  TOTAL {mesActivoRaw.mesCorto.toUpperCase()}
+                </div>
+                <div className="text-3xl sm:text-4xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$29.017' : formatExact(capexEfectivoMes)}
+                </div>
+                <div className="text-xs font-medium text-slate-600">
+                  {esAgosto ? '▼ 36% vs Julio ($45.087)' : '▲ +20,4% vs Agosto ($29.017)'}
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                <div className="text-xs font-bold text-slate-500 uppercase">Escenario 1: Base Master Original</div>
-                <div className="mt-3 space-y-2 text-xs">
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-5 text-center flex-1 flex flex-col justify-between">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                  TOTAL ACUMULADO 2026
+                </div>
+                <div className="text-3xl sm:text-4xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$915.341' : formatExact(950271.43 + (modoReclasificadoSep ? montoReclasificadoSep : 0))}
+                </div>
+                <div className="text-xs font-medium text-slate-500">
+                  Enero - {mesActivoRaw.mesLabel} 2026
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-5 text-center flex-1 flex flex-col justify-between">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                  PROYECTO CON MAYOR GASTO {mesActivoRaw.mesCorto.toUpperCase()}
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-[#0f2e5a] font-mono my-2">
+                  {esAgosto ? 'TTI-C-0095' : 'TSI-T-0108'}
+                </div>
+                <div className="text-xs font-medium text-slate-600">
+                  {esAgosto 
+                    ? '▼ 38% vs Julio ($21.319) · Edif. Administrativo' 
+                    : '▲ +141% vs Agosto ($5.596) · Construcción Galpones ($13.498,06)'}
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* EVOLUTIVO PROYECTOS INTERNOS (CURVA CON ETIQUETAS FLOTANTES SOBRE CADA PUNTO) */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-300/90 shadow-2xs">
+            <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider text-center mb-1">
+              EVOLUTIVO PROYECTOS INTERNOS
+            </h3>
+            
+            <div className="relative w-full h-56 mt-4">
+              <svg className="w-full h-full overflow-visible" viewBox="0 0 650 170" preserveAspectRatio="none">
+                {/* Cuadrícula tenue */}
+                <line x1="30" y1="140" x2="620" y2="140" stroke="#e2e8f0" strokeWidth="1" />
+
+                {/* Curva Suave Azul Petróleo */}
+                <path
+                  d="M 50 80 C 80 50, 100 15, 120 15 C 145 15, 170 75, 190 90 C 220 110, 240 120, 260 125 C 290 130, 310 134, 330 135 C 360 138, 380 148, 400 150 C 430 151, 450 140, 470 139 C 500 138, 520 150, 540 152 C 570 153, 590 145, 610 144"
+                  fill="none"
+                  stroke="#0f4c81"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                />
+
+                {/* Marcadores circulares y etiquetas numéricas arriba de cada punto */}
+                {[
+                  { x: 50, y: 80, val: '162.467', mes: 'ENE' },
+                  { x: 120, y: 15, val: '326.380', mes: 'FEB' },
+                  { x: 190, y: 90, val: '149.039', mes: 'MAR' },
+                  { x: 260, y: 125, val: '92.865', mes: 'ABR' },
+                  { x: 330, y: 135, val: '77.901', mes: 'MAY' },
+                  { x: 400, y: 150, val: '32.585', mes: 'JUN' },
+                  { x: 470, y: 139, val: '45.087', mes: 'JUL' },
+                  { x: 540, y: 152, val: '29.017', mes: 'AGO' },
+                  { x: 610, y: 144, val: esSeptiembre ? (modoReclasificadoSep ? Math.round(capexEfectivoMes).toLocaleString('de-DE') : '34.930') : '34.930', mes: 'SEP' }
+                ].map((pt) => (
+                  <g key={pt.mes}>
+                    <circle cx={pt.x} cy={pt.y} r="4.5" fill="#0f4c81" />
+                    <text
+                      x={pt.x}
+                      y={pt.y - 10}
+                      textAnchor="middle"
+                      className="text-[10px] font-bold fill-slate-700 font-mono"
+                    >
+                      {pt.val}
+                    </text>
+                    <text
+                      x={pt.x}
+                      y="160"
+                      textAnchor="middle"
+                      className="text-[10px] font-bold fill-slate-500 font-sans"
+                    >
+                      {pt.mes}
+                    </text>
+                  </g>
+                ))}
+              </svg>
+            </div>
+          </div>
+
+          {/* TABLA OFICIAL DE CUENTAS AUXILIARES CAPEX (LÁMINA 2) */}
+          <div className="bg-white rounded-2xl border border-slate-300 shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-[#0f2e5a] text-white font-bold">
+                    <th className="py-2.5 px-3">Cuenta Auxiliar</th>
+                    <th className="py-2.5 px-3">Proyectos</th>
+                    <th className="py-2.5 px-2 text-right">2025</th>
+                    <th className="py-2.5 px-2 text-right">Ajuste 2025</th>
+                    <th className="py-2.5 px-2 text-right">Ene</th>
+                    <th className="py-2.5 px-2 text-right">Feb</th>
+                    <th className="py-2.5 px-2 text-right">Mar</th>
+                    <th className="py-2.5 px-2 text-right">Abr</th>
+                    <th className="py-2.5 px-2 text-right">May</th>
+                    <th className="py-2.5 px-2 text-right">Jun</th>
+                    <th className="py-2.5 px-2 text-right">Jul</th>
+                    <th className="py-2.5 px-2 text-right bg-[#163a6f]">Ago</th>
+                    <th className="py-2.5 px-2 text-right bg-[#163a6f] text-sky-200">Sep</th>
+                    <th className="py-2.5 px-3 text-right bg-[#0c2447] font-mono">Total 2026</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {CUENTAS_CAPEX_INTERNOS.map((c) => (
+                    <tr 
+                      key={c.cuentaAuxiliar}
+                      onClick={() => handleAbrirDesglose(c.cuentaAuxiliar, c.proyecto, esSeptiembre ? c.sep : c.ago)}
+                      className="hover:bg-sky-50/70 cursor-pointer transition-colors"
+                    >
+                      <td className="py-2 px-3 font-mono font-bold text-[#0f2e5a]">{c.cuentaAuxiliar}</td>
+                      <td className="py-2 px-3 font-semibold text-slate-800">{c.proyecto}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-500">{c.ajuste2025 ? formatNumber(c.ajuste2025 * 3) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-500">{c.ajuste2025 ? formatNumber(c.ajuste2025) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.ene > 0 ? formatNumber(c.ene) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.feb > 0 ? formatNumber(c.feb) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.mar > 0 ? formatNumber(c.mar) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.abr > 0 ? formatNumber(c.abr) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.may > 0 ? formatNumber(c.may) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.jun > 0 ? formatNumber(c.jun) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.jul > 0 ? formatNumber(c.jul) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-900 font-bold bg-slate-50">{c.ago > 0 ? formatNumber(c.ago) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-sky-950 font-bold bg-sky-50">{c.sep > 0 ? formatNumber(Math.round(c.sep)) : ''}</td>
+                      <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatNumber(Math.round(c.total2026))}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
+                    <td colSpan={2} className="py-3 px-3">Total</td>
+                    <td className="py-3 px-2 text-right font-mono">624.894</td>
+                    <td className="py-3 px-2 text-right font-mono">77.666</td>
+                    <td className="py-3 px-2 text-right font-mono">162.467</td>
+                    <td className="py-3 px-2 text-right font-mono">326.380</td>
+                    <td className="py-3 px-2 text-right font-mono">149.039</td>
+                    <td className="py-3 px-2 text-right font-mono">92.865</td>
+                    <td className="py-3 px-2 text-right font-mono">77.901</td>
+                    <td className="py-3 px-2 text-right font-mono">32.585</td>
+                    <td className="py-3 px-2 text-right font-mono">45.087</td>
+                    <td className="py-3 px-2 text-right font-mono font-black text-[#0f2e5a]">29.017</td>
+                    <td className="py-3 px-2 text-right font-mono font-black text-sky-950 bg-sky-100">
+                      {Math.round(capexEfectivoMes).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-3 px-3 text-right font-mono font-black text-[#0f2e5a] bg-slate-200">
+                      {Math.round(915341 + (esSeptiembre ? capexEfectivoMes : 0)).toLocaleString('de-DE')}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 3: VARIACIÓN POR PROYECTO (IDÉNTICO A LA LÁMINA 3)            */}
+      {/* ========================================================================= */}
+      {subTab === 'variaciones' && (
+        <div className="space-y-6">
+          
+          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-slate-200 pb-2">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Variación Por Proyecto – {variacionPeriodo === 'jul-ago' ? 'Julio vs Agosto 2026' : 'Agosto vs Septiembre 2026'}
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Comparativa cuantitativa de variaciones y causas técnicas que originaron el incremento o disminución.
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold border border-slate-200">
+              <button
+                onClick={() => setVariacionPeriodo('jul-ago')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  variacionPeriodo === 'jul-ago' ? 'bg-[#0f2e5a] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Julio vs Agosto (Lámina)
+              </button>
+              <button
+                onClick={() => setVariacionPeriodo('ago-sep')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  variacionPeriodo === 'ago-sep' ? 'bg-[#0f2e5a] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Agosto vs Septiembre (Master)
+              </button>
+            </div>
+          </div>
+
+          {/* GRID DE DOS COLUMNAS: IZQUIERDA GRÁFICA DE BARRAS HORIZONTALES / DERECHA 5 FICHAS EJECUTIVAS */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* COLUMNA IZQUIERDA: GRÁFICO COMPARATIVO DE BARRAS HORIZONTALES (LÁMINA 3) */}
+            <div className="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-300/90 shadow-2xs space-y-6">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <span className="text-xs font-bold text-slate-500 uppercase">Proyecto</span>
+                <div className="flex items-center gap-4 text-xs font-bold">
+                  <span className="flex items-center gap-1.5 text-slate-500">
+                    <span className="w-3 h-3 bg-[#94a3b8] rounded-xs inline-block" />
+                    {variacionPeriodo === 'jul-ago' ? 'Julio' : 'Agosto'}
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[#0f2e5a]">
+                    <span className="w-3 h-3 bg-[#0f2e5a] rounded-xs inline-block" />
+                    {variacionPeriodo === 'jul-ago' ? 'Agosto' : 'Septiembre'}
+                  </span>
+                </div>
+              </div>
+
+              {/* BARRAS HORIZONTALES PARA LOS 5 PROYECTOS CLAVE */}
+              {[
+                { 
+                  nombre: 'Obra civil Edificio Administrativo',
+                  anterior: variacionPeriodo === 'jul-ago' ? 21319 : 13164,
+                  actual: variacionPeriodo === 'jul-ago' ? 13164 : 6617.15,
+                  label: variacionPeriodo === 'jul-ago' ? '13.164 ▼ 38%' : '6.617 ▼ 50%',
+                  esSubida: false,
+                  maxVal: 22000
+                },
+                { 
+                  nombre: 'Construcción Galpones TIMACA Cant. 04',
+                  anterior: variacionPeriodo === 'jul-ago' ? 1628 : 5596,
+                  actual: variacionPeriodo === 'jul-ago' ? 5596 : 13498.06,
+                  label: variacionPeriodo === 'jul-ago' ? '5.596 ▲ 244%' : '13.498 ▲ 141%',
+                  esSubida: true,
+                  maxVal: 22000
+                },
+                { 
+                  nombre: 'Adecuación patio externo Timaca',
+                  anterior: variacionPeriodo === 'jul-ago' ? 14225 : 5371,
+                  actual: variacionPeriodo === 'jul-ago' ? 5371 : 9050.80,
+                  label: variacionPeriodo === 'jul-ago' ? '5.371 ▼ 62%' : '9.051 ▲ 69%',
+                  esSubida: variacionPeriodo === 'ago-sep',
+                  maxVal: 22000
+                },
+                { 
+                  nombre: 'Adecuación de banco de pruebas de motores eléctricos 440v',
+                  anterior: variacionPeriodo === 'jul-ago' ? 5575 : 3289,
+                  actual: variacionPeriodo === 'jul-ago' ? 3289 : 3759.16,
+                  label: variacionPeriodo === 'jul-ago' ? '3.289 ▼ 41%' : '3.759 ▲ 14%',
+                  esSubida: variacionPeriodo === 'ago-sep',
+                  maxVal: 22000
+                },
+                { 
+                  nombre: 'Reacondicionamiento Grúas Torres Liebherr (Pellas 2)*',
+                  anterior: variacionPeriodo === 'jul-ago' ? 1891 : 1528,
+                  actual: variacionPeriodo === 'jul-ago' ? 1528 : 1951.95,
+                  label: variacionPeriodo === 'jul-ago' ? '1.528 ▼ 19%' : '1.952 ▲ 28%',
+                  esSubida: variacionPeriodo === 'ago-sep',
+                  maxVal: 22000
+                }
+              ].map((item) => (
+                <div key={item.nombre} className="space-y-1.5">
+                  <div className="text-xs font-bold text-slate-800">{item.nombre}</div>
+                  
+                  {/* Barra del mes anterior (Gris #94a3b8) */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-full bg-slate-100 h-5 rounded-xs overflow-hidden flex items-center">
+                      <div 
+                        style={{ width: `${Math.min(100, Math.max(4, (item.anterior / item.maxVal) * 100))}%` }}
+                        className="bg-[#94a3b8] h-full"
+                      />
+                    </div>
+                    <span className="w-16 text-right font-mono text-[11px] text-slate-400 font-medium">
+                      ${Math.round(item.anterior).toLocaleString('de-DE')}
+                    </span>
+                  </div>
+
+                  {/* Barra del mes actual (Azul Marino #0f2e5a con etiqueta de variación) */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-full bg-slate-100 h-5 rounded-xs overflow-hidden flex items-center">
+                      <div 
+                        style={{ width: `${Math.min(100, Math.max(4, (item.actual / item.maxVal) * 100))}%` }}
+                        className="bg-[#0f2e5a] h-full"
+                      />
+                    </div>
+                    <span className={`w-28 text-right font-mono text-xs font-bold ${item.esSubida ? 'text-emerald-700' : 'text-slate-800'}`}>
+                      {item.label}
+                    </span>
+                  </div>
+                </div>
+              ))}
+
+              <div className="pt-3 border-t border-slate-100 text-center text-xs text-slate-500 font-medium">
+                ■ {variacionPeriodo === 'jul-ago' ? 'Julio' : 'Agosto'} (Gris) &nbsp;&nbsp;&nbsp;&nbsp; ■ {variacionPeriodo === 'jul-ago' ? 'Agosto' : 'Septiembre'} (Azul Marino)
+              </div>
+            </div>
+
+            {/* COLUMNA DERECHA: 5 TARJETAS EJECUTIVAS IDÉNTICAS A LA LÁMINA 3 */}
+            <div className="lg:col-span-6 space-y-3.5">
+              {(variacionPeriodo === 'jul-ago' ? VARIACIONES_CAPEX_JUL_AGO : VARIACIONES_CAPEX_AGO_SEP).map((v) => {
+                const anteriorMonto = 'julio' in v ? (v as any).julio : (v as any).anterior;
+                const actualMonto = 'agosto' in v ? (v as any).agosto : (v as any).actual;
+                return (
+                  <div 
+                    key={v.cuenta}
+                    className="bg-white rounded-xl border border-slate-300 p-4 shadow-2xs hover:shadow-xs transition-shadow"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        {v.esSubida ? (
+                          <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                            <TrendingUp className="w-6 h-6 stroke-[2.5]" />
+                          </div>
+                        ) : (
+                          <div className="p-2 rounded-lg bg-rose-50 text-rose-600">
+                            <TrendingDown className="w-6 h-6 stroke-[2.5]" />
+                          </div>
+                        )}
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-900">{v.proyecto}</h4>
+                          <div className="text-xl font-black text-slate-900 font-mono mt-0.5">
+                            {formatExact(actualMonto)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <span className={`text-base font-black ${v.esSubida ? 'text-emerald-600' : 'text-rose-600'}`}>
+                          {v.porcentaje}
+                        </span>
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                          Ant: {formatCurrency(anteriorMonto)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-2.5 pt-2 border-t border-slate-100 text-[11px] text-slate-600 italic leading-relaxed">
+                      "{v.explicacion}"
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 4: MANTTO. ACTIVOS PROD. – OPEX FLOTA (LÁMINA 4)             */}
+      {/* ========================================================================= */}
+      {subTab === 'flota' && (
+        <div className="space-y-6">
+          
+          <div className="flex items-baseline justify-between border-b border-slate-200 pb-2">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Mantto. Activos Productivos – OPEX {mesActivoRaw.mesLabel} 2026
+            </h2>
+            <span className="text-xs text-slate-500 font-semibold">
+              Flota de equipos móviles pesados, livianos, grúas y maquinaria de planta
+            </span>
+          </div>
+
+          {/* 3 KPI CARDS DE LA LÁMINA 4 CON RIBETE AZUL MARINO */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-5 text-center flex-1 flex flex-col justify-between">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                  TOTAL {mesActivoRaw.mesCorto.toUpperCase()}
+                </div>
+                <div className="text-3xl sm:text-4xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$113.450' : formatExact(opexFlotaEfectivoMes)}
+                </div>
+                <div className="text-xs font-medium text-slate-600">
+                  {esAgosto ? '▲ 16% vs Julio ($97.727)' : '▼ 26,2% vs Agosto ($113.450)'}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-5 text-center flex-1 flex flex-col justify-between">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                  TOTAL ACUMULADO 2026
+                </div>
+                <div className="text-3xl sm:text-4xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$740.391' : formatExact(824120.75 - (modoReclasificadoSep ? montoReclasificadoSep : 0))}
+                </div>
+                <div className="text-xs font-medium text-slate-500">
+                  Enero - {mesActivoRaw.mesLabel} 2026 (Incluye Horas Hombres)
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-5 text-center flex-1 flex flex-col justify-between">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-tight">
+                  EQUIPO CON MAYOR VARIACIÓN {mesActivoRaw.mesCorto.toUpperCase()}
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-[#0f2e5a] font-mono my-2">
+                  {esAgosto ? 'Autobuses' : 'Grúas'}
+                </div>
+                <div className="text-xs font-medium text-slate-600">
+                  {esAgosto 
+                    ? '▲ 183% vs Julio ($7.371)' 
+                    : 'Líder en volumen de intervenciones ($32.984,63)'}
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* GRID DE GRÁFICAS DE LA LÁMINA 4: 2 CURVAS A LA IZQUIERDA Y TOP 10 A LA DERECHA */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* IZQUIERDA: 2 CURVAS EVOLUTIVAS */}
+            <div className="lg:col-span-6 space-y-6">
+              
+              {/* CURVA 1: EVOLUTIVO EQUIPOS MÓVILES */}
+              <div className="bg-white rounded-2xl p-5 border border-slate-300/90 shadow-2xs">
+                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center mb-1">
+                  EVOLUTIVO EQUIPOS MÓVILES
+                </h3>
+                
+                <div className="relative w-full h-44 mt-3">
+                  <svg className="w-full h-full overflow-visible" viewBox="0 0 600 130" preserveAspectRatio="none">
+                    <line x1="20" y1="110" x2="580" y2="110" stroke="#e2e8f0" strokeWidth="1" />
+                    
+                    {/* Curva Azul */}
+                    <path
+                      d="M 30 25 C 60 50, 80 65, 100 70 C 130 78, 150 95, 170 98 C 200 102, 220 90, 240 88 C 270 85, 290 80, 310 78 C 340 75, 360 55, 380 50 C 410 45, 430 35, 450 32 C 480 30, 510 65, 540 68"
+                      fill="none"
+                      stroke="#0f4c81"
+                      strokeWidth="3"
+                    />
+
+                    {[
+                      { x: 30, y: 25, val: '143.581', mes: 'Ene' },
+                      { x: 100, y: 70, val: '102.274', mes: 'Feb' },
+                      { x: 170, y: 98, val: '83.194', mes: 'Mar' },
+                      { x: 240, y: 88, val: '59.543', mes: 'Abr' },
+                      { x: 310, y: 78, val: '68.409', mes: 'May' },
+                      { x: 380, y: 50, val: '72.213', mes: 'Jun' },
+                      { x: 450, y: 32, val: '97.727', mes: 'Jul' },
+                      { x: 500, y: 28, val: '113.450', mes: 'Ago' },
+                      { x: 550, y: 68, val: esSeptiembre ? Math.round(opexFlotaEfectivoMes).toLocaleString('de-DE') : '83.730', mes: 'Sep' }
+                    ].map((p) => (
+                      <g key={p.mes}>
+                        <circle cx={p.x} cy={p.y} r="3.5" fill="#0f4c81" />
+                        <text x={p.x} y={p.y - 7} textAnchor="middle" className="text-[9px] font-bold fill-slate-700 font-mono">
+                          {p.val}
+                        </text>
+                        <text x={p.x} y="125" textAnchor="middle" className="text-[9px] font-bold fill-slate-500">
+                          {p.mes}
+                        </text>
+                      </g>
+                    ))}
+                  </svg>
+                </div>
+              </div>
+
+              {/* CURVA 2: EVOLUTIVO GRÚAS VS OTROS EQUIPOS */}
+              <div className="bg-white rounded-2xl p-5 border border-slate-300/90 shadow-2xs">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                    EVOLUTIVO COMPARATIVO
+                  </h3>
+                  <div className="flex items-center gap-3 text-[11px] font-bold">
+                    <span className="flex items-center gap-1 text-[#0f4c81]">
+                      <span className="w-2.5 h-2.5 bg-[#0f4c81] rounded-full inline-block" /> GRÚAS
+                    </span>
+                    <span className="flex items-center gap-1 text-rose-600">
+                      <span className="w-2.5 h-2.5 bg-rose-600 rounded-full inline-block" /> OTROS EQUIPOS
+                    </span>
+                  </div>
+                </div>
+
+                <div className="relative w-full h-36 mt-2">
+                  <svg className="w-full h-full overflow-visible" viewBox="0 0 600 110" preserveAspectRatio="none">
+                    <line x1="20" y1="95" x2="580" y2="95" stroke="#e2e8f0" strokeWidth="1" />
+                    
+                    {/* Grúas (Azul) */}
+                    <path
+                      d="M 30 20 C 70 50, 110 70, 160 72 C 220 74, 270 65, 320 66 C 380 67, 430 63, 490 62 C 530 61, 560 60, 580 60"
+                      fill="none"
+                      stroke="#0f4c81"
+                      strokeWidth="2.5"
+                    />
+
+                    {/* Otros Equipos (Rojo) */}
+                    <path
+                      d="M 30 75 C 70 68, 110 80, 160 82 C 220 84, 270 78, 320 76 C 380 72, 430 45, 490 35 C 530 40, 560 55, 580 56"
+                      fill="none"
+                      stroke="#e11d48"
+                      strokeWidth="2.5"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+            </div>
+
+            {/* DERECHA: TOP 10 EQUIPOS CON MAYOR GASTO (BARRAS HORIZONTALES LÁMINA 4) */}
+            <div className="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-300/90 shadow-2xs flex flex-col justify-between">
+              <div>
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">
+                  TOP 10 EQUIPOS CON MAYOR GASTO ({mesActivoRaw.mesLabel.toUpperCase()})
+                </h3>
+
+                <div className="space-y-3">
+                  {(esAgosto ? TOP_10_EQUIPOS_OPEX_AGOSTO : TOP_10_EQUIPOS_OPEX_SEPTIEMBRE.map(e => ({
+                    codigo: e.codigo,
+                    nombre: e.nombre,
+                    monto: e.montoSeptiembre
+                  }))).map((eq: any) => {
+                    const monto = eq.montoAgosto || eq.monto;
+                    const maxTop = 25000;
+                    const pct = Math.min(100, Math.max(8, (monto / maxTop) * 100));
+                    return (
+                      <div key={eq.codigo} className="space-y-1">
+                        <div className="flex items-baseline justify-between text-xs">
+                          <span className="font-bold text-slate-800 truncate pr-2">
+                            {eq.codigo} <span className="font-normal text-slate-500">{eq.nombre}</span>
+                          </span>
+                          <span className="font-mono font-bold text-slate-900 shrink-0">
+                            {formatExact(monto)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-4 rounded-xs overflow-hidden">
+                          <div 
+                            style={{ width: `${pct}%` }}
+                            className="bg-[#0f2e5a] h-full hover:bg-sky-700 transition-colors"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 text-xs text-slate-500 text-right">
+                Concentración del Top 10: <strong>~55%</strong> del gasto operativo total del mes
+              </div>
+            </div>
+
+          </div>
+
+          {/* TABLA POR TIPO DE EQUIPO (LÁMINA 4) */}
+          <div className="bg-white rounded-2xl border border-slate-300 shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-[#0f2e5a] text-white font-bold">
+                    <th className="py-2.5 px-3">Descripción / Familia</th>
+                    <th className="py-2.5 px-2 text-right">Ene</th>
+                    <th className="py-2.5 px-2 text-right">Feb</th>
+                    <th className="py-2.5 px-2 text-right">Mar</th>
+                    <th className="py-2.5 px-2 text-right">Abr</th>
+                    <th className="py-2.5 px-2 text-right">May</th>
+                    <th className="py-2.5 px-2 text-right">Jun</th>
+                    <th className="py-2.5 px-2 text-right">Jul</th>
+                    <th className="py-2.5 px-2 text-right bg-[#163a6f]">Ago</th>
+                    <th className="py-2.5 px-2 text-right bg-[#163a6f] text-sky-200">Sep</th>
+                    <th className="py-2.5 px-3 text-right bg-[#0c2447] font-mono">Total 2026</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {TIPOS_EQUIPOS_OPEX_MENSUAL.map((t) => (
+                    <tr key={t.tipo} className="hover:bg-slate-50">
+                      <td className="py-2 px-3 font-semibold text-slate-800">{t.tipo}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{t.ene > 0 ? formatNumber(t.ene) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{t.feb > 0 ? formatNumber(t.feb) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{t.mar > 0 ? formatNumber(t.mar) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{t.abr > 0 ? formatNumber(t.abr) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{t.may > 0 ? formatNumber(t.may) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{t.jun > 0 ? formatNumber(t.jun) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{t.jul > 0 ? formatNumber(t.jul) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono font-bold text-slate-900 bg-slate-50">{t.ago > 0 ? formatNumber(t.ago) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono font-bold text-sky-950 bg-sky-50">{t.sep > 0 ? formatNumber(Math.round(t.sep)) : '-'}</td>
+                      <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatNumber(Math.round(t.total))}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
+                    <td className="py-3 px-3">Total Flota</td>
+                    <td className="py-3 px-2 text-right font-mono">143.581</td>
+                    <td className="py-3 px-2 text-right font-mono">102.274</td>
+                    <td className="py-3 px-2 text-right font-mono">83.194</td>
+                    <td className="py-3 px-2 text-right font-mono">59.543</td>
+                    <td className="py-3 px-2 text-right font-mono">68.409</td>
+                    <td className="py-3 px-2 text-right font-mono">72.213</td>
+                    <td className="py-3 px-2 text-right font-mono">97.727</td>
+                    <td className="py-3 px-2 text-right font-mono font-black text-[#0f2e5a]">113.450</td>
+                    <td className="py-3 px-2 text-right font-mono font-black text-sky-950 bg-sky-100">
+                      {Math.round(opexFlotaEfectivoMes).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-3 px-3 text-right font-mono font-black text-[#0f2e5a] bg-slate-200">
+                      {Math.round(740391 + (esSeptiembre ? opexFlotaEfectivoMes : 0)).toLocaleString('de-DE')}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 5: MANTTO. INFRAESTRUCTURA – OPEX (IDÉNTICO A LA LÁMINA 5)     */}
+      {/* ========================================================================= */}
+      {subTab === 'infra' && (
+        <div className="space-y-6">
+          
+          <div className="flex items-baseline justify-between border-b border-slate-200 pb-2">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Mantto. Infraestructura – OPEX {mesActivoRaw.mesLabel} 2026
+            </h2>
+            <span className="text-xs text-slate-500 font-semibold">
+              Galpones, adecuaciones, herramientas de talleres y almacén
+            </span>
+          </div>
+
+          {/* 5 KPI CARDS DE LA LÁMINA 5 CON RIBETE AZUL MARINO */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  TOTAL {mesActivoRaw.mesCorto.toUpperCase()}
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$40.545' : formatExact(opexInfraEfectivoMes)}
+                </div>
+                <div className="text-xs font-medium text-slate-600">
+                  {esAgosto ? '▼ 3% vs Julio ($41.898)' : '▲ 2,9% vs Agosto ($40.545)'}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  TOTAL ACUMULADO 2026
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  {esAgosto ? '$359.823' : formatExact(401562.86)}
+                </div>
+                <div className="text-[10px] text-slate-500">
+                  Enero - {mesActivoRaw.mesLabel} 2026 (Incluye HH)
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  MAYOR INCREMENTO {mesActivoRaw.mesCorto.toUpperCase()}
+                </div>
+                <div className="text-sm font-black text-[#0f2e5a] my-1">
+                  Adecuaciones y/o mejoras
+                </div>
+                <div className="text-xs font-mono font-bold text-slate-800">
+                  $31.297 <span className="text-emerald-700 font-bold">▲ 59% vs Julio</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  HH MANTTO INFRAESTRUCTURA
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  1145Hrs
+                </div>
+                <div className="text-[10px] text-slate-500">
+                  Horas Hombre ejecutadas
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-300 shadow-2xs overflow-hidden flex flex-col justify-between">
+              <div className="h-1.5 bg-[#0f2e5a]" />
+              <div className="p-4 text-center flex-1 flex flex-col justify-between">
+                <div className="text-[11px] font-bold text-slate-700 uppercase tracking-tight">
+                  COSTO TOTAL MOD
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono my-2">
+                  $2.127
+                </div>
+                <div className="text-[10px] text-slate-500">
+                  Mano de obra directa asignada
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* GRID DE DOS GRÁFICAS: EVOLUTIVO Y VARIACIÓN POR CUENTA AUXILIAR */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* IZQUIERDA: EVOLUTIVO CURVO CON PUNTOS (LÁMINA 5) */}
+            <div className="lg:col-span-6 bg-white rounded-2xl p-5 border border-slate-300/90 shadow-2xs">
+              <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider text-center mb-1">
+                EVOLUTIVO
+              </h3>
+              
+              <div className="relative w-full h-52 mt-3">
+                <svg className="w-full h-full overflow-visible" viewBox="0 0 600 130" preserveAspectRatio="none">
+                  <line x1="20" y1="110" x2="580" y2="110" stroke="#e2e8f0" strokeWidth="1" />
+                  
+                  {/* Curva Azul */}
+                  <path
+                    d="M 30 15 C 60 70, 80 88, 100 90 C 130 92, 150 95, 170 96 C 200 97, 220 92, 240 91 C 270 90, 290 94, 310 95 C 340 96, 360 97, 380 98 C 410 98, 430 75, 450 72 C 480 70, 510 73, 540 73"
+                    fill="none"
+                    stroke="#0f4c81"
+                    strokeWidth="3"
+                  />
+
+                  {[
+                    { x: 30, y: 15, val: '145.197', mes: 'Ene' },
+                    { x: 100, y: 90, val: '50.329', mes: 'Feb' },
+                    { x: 170, y: 96, val: '20.149', mes: 'Mar' },
+                    { x: 240, y: 91, val: '25.926', mes: 'Abr' },
+                    { x: 310, y: 95, val: '20.031', mes: 'May' },
+                    { x: 380, y: 98, val: '15.748', mes: 'Jun' },
+                    { x: 450, y: 72, val: '41.898', mes: 'Jul' },
+                    { x: 500, y: 73, val: '40.545', mes: 'Ago' },
+                    { x: 550, y: 72, val: '41.740', mes: 'Sep' }
+                  ].map((p) => (
+                    <g key={p.mes}>
+                      <circle cx={p.x} cy={p.y} r="3.5" fill="#0f4c81" />
+                      <text x={p.x} y={p.y - 7} textAnchor="middle" className="text-[9px] font-bold fill-slate-700 font-mono">
+                        {p.val}
+                      </text>
+                      <text x={p.x} y="125" textAnchor="middle" className="text-[9px] font-bold fill-slate-500">
+                        {p.mes}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+              </div>
+            </div>
+
+            {/* DERECHA: VARIACIÓN POR CTA AUXILIAR (BARRAS HORIZONTALES CON % DE LÁMINA 5) */}
+            <div className="lg:col-span-6 bg-white rounded-2xl p-5 border border-slate-300/90 shadow-2xs">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                  VARIACIÓN POR CTA AUXILIAR
+                </h3>
+                <div className="flex items-center gap-3 text-[11px] font-bold">
+                  <span className="flex items-center gap-1 text-[#94a3b8]">
+                    <span className="w-2.5 h-2.5 bg-[#94a3b8] rounded-xs inline-block" /> JULIO
+                  </span>
+                  <span className="flex items-center gap-1 text-[#0f2e5a]">
+                    <span className="w-2.5 h-2.5 bg-[#0f2e5a] rounded-xs inline-block" /> AGOSTO
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-2 mt-3">
+                {[
+                  { cuenta: 'TT-I-C-033', variacion: '▲ 59%', jul: 19651, ago: 31297, max: 32000 },
+                  { cuenta: 'EE-H-C-015', variacion: '▼ 15%', jul: 2516, ago: 2141, max: 32000 },
+                  { cuenta: 'TT-G-C-032', variacion: '▲ 2387%', jul: 73, ago: 1809, max: 32000 },
+                  { cuenta: 'EE-G-C-016', variacion: '▲ 59%', jul: 855, ago: 1361, max: 32000 },
+                  { cuenta: 'SS-G-C-025', variacion: '▲ 148%', jul: 438, ago: 1085, max: 32000 },
+                  { cuenta: 'TT-H-C-031', variacion: '▲ 0%', jul: 3063, ago: 1051, max: 32000 },
+                  { cuenta: 'TT-A-C-208', variacion: '▲ 132%', jul: 448, ago: 1040, max: 32000 },
+                  { cuenta: 'TT-A-C-207', variacion: '▼ 97%', jul: 14107, ago: 444, max: 32000 },
+                  { cuenta: 'TT-H-C-033', variacion: '▼ 70%', jul: 690, ago: 205, max: 32000 },
+                  { cuenta: 'TT-G-C-034', variacion: '▲ 596%', jul: 14, ago: 94, max: 32000 },
+                  { cuenta: 'SS-H-C-024', variacion: '▼ 60%', jul: 45, ago: 18, max: 32000 }
+                ].map((item) => (
+                  <div key={item.cuenta} className="flex items-center gap-2 text-[11px]">
+                    <span className="w-20 font-mono font-bold text-slate-700 shrink-0">{item.cuenta}</span>
+                    <div className="flex-1 bg-slate-100 h-3.5 rounded-xs overflow-hidden flex items-center">
+                      <div 
+                        style={{ width: `${Math.min(100, Math.max(3, (item.ago / item.max) * 100))}%` }}
+                        className="bg-[#0f2e5a] h-full"
+                      />
+                    </div>
+                    <span className={`w-16 text-right font-bold text-[10px] ${item.variacion.includes('▲') ? 'text-emerald-700' : 'text-slate-600'}`}>
+                      {item.variacion}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          {/* TABLA DE CUENTAS DE INFRAESTRUCTURA (LÁMINA 5) */}
+          <div className="bg-white rounded-2xl border border-slate-300 shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-[#0f2e5a] text-white font-bold">
+                    <th className="py-2.5 px-3">Cuenta Auxiliar</th>
+                    <th className="py-2.5 px-3">Proyecto</th>
+                    <th className="py-2.5 px-2 text-right">Ajuste 2025</th>
+                    <th className="py-2.5 px-2 text-right">Ene</th>
+                    <th className="py-2.5 px-2 text-right">Feb</th>
+                    <th className="py-2.5 px-2 text-right">Mar</th>
+                    <th className="py-2.5 px-2 text-right">Abr</th>
+                    <th className="py-2.5 px-2 text-right">May</th>
+                    <th className="py-2.5 px-2 text-right">Jun</th>
+                    <th className="py-2.5 px-2 text-right">Jul</th>
+                    <th className="py-2.5 px-2 text-right bg-[#163a6f]">Ago</th>
+                    <th className="py-2.5 px-2 text-right bg-[#163a6f] text-sky-200">Sep</th>
+                    <th className="py-2.5 px-3 text-right bg-[#0c2447] font-mono">Total 2026</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {MANTTO_INFRAESTRUCTURA_2026.cuentas.map((c) => (
+                    <tr 
+                      key={c.cuenta}
+                      onClick={() => handleAbrirDesglose(c.cuenta, c.descripcion, esSeptiembre ? c.sep : c.ago)}
+                      className="hover:bg-teal-50/70 cursor-pointer transition-colors"
+                    >
+                      <td className="py-2 px-3 font-mono font-bold text-[#0f2e5a]">{c.cuenta}</td>
+                      <td className="py-2 px-3 font-semibold text-slate-800">{c.descripcion}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-500">{(c as any).ajuste2025 ? formatNumber((c as any).ajuste2025) : ''}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.ene > 0 ? formatNumber(c.ene) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.feb > 0 ? formatNumber(c.feb) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.mar > 0 ? formatNumber(c.mar) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.abr > 0 ? formatNumber(c.abr) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.may > 0 ? formatNumber(c.may) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.jun > 0 ? formatNumber(c.jun) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.jul > 0 ? formatNumber(c.jul) : '-'}</td>
+                      <td className="py-2 px-2 text-right font-mono font-bold text-slate-900 bg-slate-50">{formatNumber(c.ago)}</td>
+                      <td className="py-2 px-2 text-right font-mono font-bold text-sky-950 bg-sky-50">{formatNumber(Math.round(c.sep))}</td>
+                      <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatNumber(Math.round(c.total))}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
+                    <td colSpan={2} className="py-3 px-3">Total</td>
+                    <td className="py-3 px-2 text-right font-mono">209.615</td>
+                    <td className="py-3 px-2 text-right font-mono">145.197</td>
+                    <td className="py-3 px-2 text-right font-mono">50.329</td>
+                    <td className="py-3 px-2 text-right font-mono">20.149</td>
+                    <td className="py-3 px-2 text-right font-mono">25.926</td>
+                    <td className="py-3 px-2 text-right font-mono">20.031</td>
+                    <td className="py-3 px-2 text-right font-mono">15.748</td>
+                    <td className="py-3 px-2 text-right font-mono">41.898</td>
+                    <td className="py-3 px-2 text-right font-mono font-black text-[#0f2e5a]">40.545</td>
+                    <td className="py-3 px-2 text-right font-mono font-black text-sky-950 bg-sky-100">41.740</td>
+                    <td className="py-3 px-3 text-right font-mono font-black text-[#0f2e5a] bg-slate-200">401.563</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* BULLET NOTES DE LA LÁMINA 5 (INCREMENTOS Y DISMINUCIONES) */}
+          <div className="bg-white rounded-2xl p-4 border border-slate-300 text-xs text-slate-700 space-y-1.5 shadow-2xs">
+            <p className="leading-relaxed">
+              • <strong className="text-slate-900 underline">Incrementos:</strong> <strong>TT-I-C-033</strong> adecuación de contenedores en Pellas 1 (22K USD en acero al carbono, 1,2K USD en materiales de construcción y 1,2K en materiales eléctricos), <strong>TT-G-C-032</strong> : materiales eléctricos para cajas de distribución (761 USD) y aire acondicionado para el comedor de fabricación (550 USD).
+            </p>
+            <p className="leading-relaxed">
+              • <strong className="text-slate-900 underline">Disminuciones:</strong> <strong>TT-A-C-207</strong> : disminuyó tras la fabricación de 40 cajas de herramientas en el mes anterior (12,4K USD en láminas estriadas), quedando en el mes actual 443,58 USD, principalmente un servicio de recarga y mantenimiento de extintores (279,89 USD).
+            </p>
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 6: CIERRE SEPTIEMBRE & RECLASIFICACIÓN CONTABLE              */}
+      {/* ========================================================================= */}
+      {subTab === 'reclasificacion' && (
+        <div className="space-y-6">
+          
+          <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-2xs">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 mb-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>CRITERIO OFICIAL APLICADO: SOLO MOTOR DE AUTOBÚS A CAPEX</span>
+                </div>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                  Separación Contable de Mantto. Flota (OPEX) hacia CAPEX en Septiembre 2026
+                </h3>
+                <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
+                  Conforme a tu instrucción contable: Cuando se colocó un motor o repuesto que aumenta la vida útil, 
+                  <strong> solo pasa a CAPEX el autobús con ese motor ($8.500 USD)</strong>. Todos los demás componentes menores ("periquitos") se mantienen en <strong>OPEX Flota</strong>.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const resetMap: Record<string, boolean> = {};
+                    INTERVENCIONES_VIDA_UTIL_SEPTIEMBRE_2026.forEach(it => {
+                      resetMap[it.id] = (it.id === 'CAPEX-VU-SEP-01'); // Solo motor bus
+                    });
+                    setIdsVidaUtilActivos(resetMap);
+                  }}
+                  className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Restablecer (Solo Motor Bus)</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 3 TARJETAS COMPARATIVAS ANTES VS DESPUÉS */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="font-bold text-slate-500 uppercase text-[10px]">1. Base Master Original (Sin Reclasificar)</div>
+                <div className="mt-2 space-y-1.5 font-medium">
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Proyectos Internos (CAPEX):</span>
+                    <span className="text-slate-600">CAPEX Proyectos Internos:</span>
                     <span className="font-mono font-bold text-slate-900">$34.930,08</span>
                   </div>
                   <div className="flex justify-between">
@@ -941,641 +1843,315 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                     <span className="font-mono font-bold text-slate-900">$31.339,57</span>
                   </div>
                   <div className="pt-2 border-t border-slate-200 flex justify-between font-black text-slate-900">
-                    <span>Total Master Septiembre:</span>
+                    <span>Total Septiembre:</span>
                     <span className="font-mono">$191.739,35</span>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-300">
-                <div className="text-xs font-bold text-emerald-800 uppercase">Monto Reclasificado (OPEX → CAPEX)</div>
-                <div className="text-2xl font-black text-emerald-700 font-mono mt-2">
-                  {formatExact(totalEquiposNuevosSep + totalVidaUtilSep)}
-                </div>
-                <div className="mt-2 space-y-1.5 text-xs text-emerald-900">
+              <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-300">
+                <div className="font-bold text-emerald-800 uppercase text-[10px]">2. Reclasificado (Solo Motor Bus $8.500)</div>
+                <div className="mt-2 space-y-1.5 font-medium text-emerald-950">
                   <div className="flex justify-between">
-                    <span>• Equipos Nuevos (Ingreso Sep):</span>
-                    <span className="font-mono font-bold">{formatExact(totalEquiposNuevosSep)}</span>
+                    <span>+ Motor Cummins en Bus BS03:</span>
+                    <span className="font-mono font-black text-emerald-700">+$8.500,00</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>• Aumento de Vida Útil (Motores/Overhaul):</span>
-                    <span className="font-mono font-bold">{formatExact(totalVidaUtilSep)}</span>
+                  <div className="flex justify-between text-slate-600">
+                    <span>• Demás repuestos menores:</span>
+                    <span className="font-mono font-bold text-slate-700">$0,00 (en OPEX)</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>• Equipos nuevos ingreso Sep:</span>
+                    <span className="font-mono font-bold text-slate-700">{incluirEquiposNuevosCapex ? `+$${totalEquiposNuevosSep.toLocaleString('de-DE')}` : '$0,00'}</span>
+                  </div>
+                  <div className="pt-2 border-t border-emerald-300 flex justify-between font-black text-emerald-900">
+                    <span>Total Reclasificado a CAPEX:</span>
+                    <span className="font-mono">{formatExact(montoReclasificadoSep)}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-sky-950 text-white border border-sky-800">
-                <div className="text-xs font-bold text-sky-300 uppercase">Escenario 2: Cierre Reclasificado Sep</div>
-                <div className="mt-3 space-y-2 text-xs">
+              <div className="p-4 rounded-xl bg-[#0f2e5a] text-white border border-[#0f2e5a]">
+                <div className="font-bold text-sky-300 uppercase text-[10px]">3. Cierre Efectivo de Septiembre</div>
+                <div className="mt-2 space-y-1.5 font-medium">
                   <div className="flex justify-between">
-                    <span className="text-sky-200">Nuevo CAPEX Total Sep:</span>
-                    <span className="font-mono font-black text-emerald-300">{formatExact(34930.08 + totalEquiposNuevosSep + totalVidaUtilSep)}</span>
+                    <span className="text-sky-200">Nuevo CAPEX Septiembre:</span>
+                    <span className="font-mono font-black text-emerald-300">{formatExact(capexEfectivoMes)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sky-200">Nuevo Mantto. Flota (OPEX):</span>
-                    <span className="font-mono font-black text-amber-300">{formatExact(83729.79 - (totalEquiposNuevosSep + totalVidaUtilSep))}</span>
+                    <span className="font-mono font-black text-amber-300">{formatExact(opexFlotaEfectivoMes)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-300">Mantto. Infraestructura:</span>
                     <span className="font-mono font-bold text-white">$41.739,91</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-300">Administrativo (Admon):</span>
+                    <span className="text-slate-300">Administrativo:</span>
                     <span className="font-mono font-bold text-white">$31.339,57</span>
                   </div>
                   <div className="pt-2 border-t border-sky-800 flex justify-between font-black text-white">
-                    <span>Total Master Septiembre:</span>
+                    <span>Total Septiembre Conciliado:</span>
                     <span className="font-mono">$191.739,35</span>
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
 
-          {/* SUB-BLOQUE A: 6 EQUIPOS NUEVOS INCORPORADOS EN SEPTIEMBRE */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300 shadow-sm overflow-x-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-              <div>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-emerald-600" />
-                  <span>A. Equipos Nuevos Incorporados en Septiembre 2026 (Pasan a CAPEX en Septiembre)</span>
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Como ingresaron en Septiembre, todas sus intervenciones de puesta a punto de este mes van a <strong>CAPEX</strong>. A partir de <strong>Octubre</strong>, si reciben mantenimientos mínimos o preventivos, irán a <strong>OPEX</strong>.
-                </p>
-              </div>
-              <span className="text-xs font-mono font-black bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1 rounded-lg">
-                Subtotal Equipos Nuevos Sep: $3.786,83 USD
+          {/* TABLA DETALLADA DE ÍTEMS DE VIDA ÚTIL: SE VE EXACTAMENTE QUE SOLO EL MOTOR DEL BUS ESTÁ MARCADO */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-2xs overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-[#0f2e5a]" />
+                <span>Auditoría de Intervenciones: Vida Útil vs Repuestos Menores (Flota Existente)</span>
+              </h3>
+              <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                Pasa a CAPEX: {formatExact(totalVidaUtilSep)} USD
               </span>
             </div>
 
-            <table className="w-full text-xs text-left">
-              <thead>
-                <tr className="bg-slate-800 text-white font-bold">
-                  <th className="py-2.5 px-3 rounded-l-lg">Código</th>
-                  <th className="py-2.5 px-3">Equipo Nuevo Incorporado</th>
-                  <th className="py-2.5 px-2">Familia</th>
-                  <th className="py-2.5 px-2 text-center">Despachos Sep</th>
-                  <th className="py-2.5 px-2 text-right">Materiales ($)</th>
-                  <th className="py-2.5 px-2 text-right">Servicios ($)</th>
-                  <th className="py-2.5 px-3 text-right bg-emerald-900 text-emerald-200">Total CAPEX Sep ($)</th>
-                  <th className="py-2.5 px-3">Intervenciones Realizadas en Septiembre / Regla Octubre</th>
-                  <th className="py-2.5 px-2 text-center rounded-r-lg">Auditar</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                {EQUIPOS_NUEVOS_SEPTIEMBRE_2026.map((eq) => (
-                  <tr key={eq.codigo} className="hover:bg-emerald-50/40">
-                    <td className="py-2.5 px-3 font-mono font-black text-emerald-800">{eq.codigo}</td>
-                    <td className="py-2.5 px-3 font-bold text-slate-900">{eq.nombre}</td>
-                    <td className="py-2.5 px-2 text-slate-600">{eq.familia}</td>
-                    <td className="py-2.5 px-2 text-center font-mono">
-                      {eq.registrosSep > 0 ? (
-                        <span className="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">{eq.registrosSep} reg.</span>
-                      ) : (
-                        <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded">0 reg.</span>
-                      )}
-                    </td>
-                    <td className="py-2.5 px-2 text-right font-mono">{formatExact(eq.materialesUsd)}</td>
-                    <td className="py-2.5 px-2 text-right font-mono">{formatExact(eq.serviciosUsd)}</td>
-                    <td className="py-2.5 px-3 text-right font-mono font-black bg-emerald-50 text-emerald-900">
-                      {formatExact(eq.totalSepUsd)}
-                    </td>
-                    <td className="py-2.5 px-3 text-[11px] text-slate-600 max-w-md">
-                      <div>{eq.detalleIntervencion}</div>
-                      <div className="text-[10px] text-sky-700 font-semibold mt-0.5">→ {eq.reglaOctubre}</div>
-                    </td>
-                    <td className="py-2.5 px-2 text-center">
-                      {eq.registrosSep > 0 && (
-                        <button
-                          onClick={() => handleAbrirDesglose(eq.codigo, eq.nombre, eq.totalSepUsd)}
-                          className="px-2 py-1 rounded bg-slate-100 hover:bg-sky-100 text-sky-700 font-bold text-[11px] cursor-pointer"
-                        >
-                          Ver ítems 🔍
-                        </button>
-                      )}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-[#0f2e5a] text-white font-bold">
+                    <th className="py-2.5 px-3 text-center">Pasa a CAPEX</th>
+                    <th className="py-2.5 px-3">Equipo</th>
+                    <th className="py-2.5 px-3">Intervención / Repuesto</th>
+                    <th className="py-2.5 px-2">Categoría</th>
+                    <th className="py-2.5 px-3 text-right">Monto ($)</th>
+                    <th className="py-2.5 px-4">Destino Contable</th>
+                    <th className="py-2.5 px-2 text-center">Auditar</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {INTERVENCIONES_VIDA_UTIL_SEPTIEMBRE_2026.map((it) => {
+                    const isActivo = !!idsVidaUtilActivos[it.id];
+                    return (
+                      <tr key={it.id} className={isActivo ? 'bg-emerald-50/50 hover:bg-emerald-50' : 'hover:bg-slate-50'}>
+                        <td className="py-2.5 px-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={isActivo}
+                            onChange={() => toggleItemVidaUtil(it.id)}
+                            className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                          />
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <div className="font-mono font-bold text-[#0f2e5a]">{it.codigoEquipo}</div>
+                          <div className="text-[11px] text-slate-500">{it.nombreEquipo}</div>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <div className="font-bold text-slate-900">{it.descripcionItem}</div>
+                          <div className="text-[10px] text-slate-500">Motivo: {it.motivo}</div>
+                        </td>
+                        <td className="py-2.5 px-2 text-slate-600">{it.categoria}</td>
+                        <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
+                          {formatExact(it.montoItemUsd)}
+                        </td>
+                        <td className="py-2.5 px-4">
+                          {isActivo ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              CAPEX (Extiende vida útil autobús)
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold text-[10px]">
+                              OPEX Flota (Repuesto menor / Mantenimiento)
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-2 text-center">
+                          <button
+                            onClick={() => handleAbrirDesglose(it.codigoEquipo, it.nombreEquipo, it.montoTotalEquipoMesUsd)}
+                            className="px-2 py-1 rounded bg-slate-100 hover:bg-sky-100 text-[#0f2e5a] font-bold text-[11px] cursor-pointer"
+                          >
+                            Ver 🔍
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* SUB-BLOQUE B: INTERVENCIONES QUE AUMENTAN LA VIDA ÚTIL EN FLOTA EXISTENTE */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300 shadow-sm overflow-x-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          {/* EQUIPOS NUEVOS INCORPORADOS EN SEPTIEMBRE */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-2xs overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
               <div>
-                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <Wrench className="w-4 h-4 text-amber-600" />
-                  <span>B. Consumos y Servicios en Mantto. Flota (OPEX) que Aumentan la Vida Útil (Capitalizables a CAPEX)</span>
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-emerald-600" />
+                  <span>Equipos Nuevos Incorporados en Septiembre 2026</span>
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Activa o desactiva cada intervención para incluirla o excluirla de CAPEX en Septiembre.
+                  Regla contable: Pasan a CAPEX en Septiembre por intervenciones de acondicionamiento de llegada. En Octubre pasarán a OPEX si son mantenimientos mínimos.
                 </p>
               </div>
-              <span className="text-xs font-mono font-black bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1 rounded-lg">
-                Seleccionado Vida Útil: {formatExact(totalVidaUtilSep)} USD
-              </span>
+              <label className="inline-flex items-center gap-2 text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-xl cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={incluirEquiposNuevosCapex}
+                  onChange={(e) => setIncluirEquiposNuevosCapex(e.target.checked)}
+                  className="rounded text-emerald-600 focus:ring-emerald-500"
+                />
+                <span>Incluir en CAPEX Sep (+{formatExact(totalEquiposNuevosSep)})</span>
+              </label>
             </div>
 
-            <table className="w-full text-xs text-left">
-              <thead>
-                <tr className="bg-slate-800 text-white font-bold">
-                  <th className="py-2.5 px-3 rounded-l-lg text-center">Incluir CAPEX</th>
-                  <th className="py-2.5 px-2">Nivel</th>
-                  <th className="py-2.5 px-2.5">Equipo</th>
-                  <th className="py-2.5 px-3">Ítem / Servicio Capitalizable (Vida Útil)</th>
-                  <th className="py-2.5 px-2">Comprobante</th>
-                  <th className="py-2.5 px-2">Categoría</th>
-                  <th className="py-2.5 px-3 text-right bg-amber-900 text-amber-200">Monto a CAPEX ($)</th>
-                  <th className="py-2.5 px-3">Criterio Técnico / Contable</th>
-                  <th className="py-2.5 px-2 text-center rounded-r-lg">Auditar</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                {INTERVENCIONES_VIDA_UTIL_SEPTIEMBRE_2026.map((item) => {
-                  const checked = !!idsVidaUtilActivos[item.id];
-                  return (
-                    <tr key={item.id} className={checked ? 'bg-amber-50/40 hover:bg-amber-50/80' : 'hover:bg-slate-50 opacity-75'}>
-                      <td className="py-2.5 px-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => toggleItemVidaUtil(item.id)}
-                          className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
-                        />
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-slate-800 text-white font-bold">
+                    <th className="py-2.5 px-3">Código</th>
+                    <th className="py-2.5 px-3">Equipo Nuevo</th>
+                    <th className="py-2.5 px-2">Familia</th>
+                    <th className="py-2.5 px-2 text-right">Materiales ($)</th>
+                    <th className="py-2.5 px-2 text-right">Servicios ($)</th>
+                    <th className="py-2.5 px-3 text-right bg-emerald-900 text-emerald-200">Total Sep ($)</th>
+                    <th className="py-2.5 px-3">Intervención de Ingreso / Criterio</th>
+                    <th className="py-2.5 px-2 text-center">Ver</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {EQUIPOS_NUEVOS_SEPTIEMBRE_2026.map((eq) => (
+                    <tr key={eq.codigo} className="hover:bg-slate-50">
+                      <td className="py-2.5 px-3 font-mono font-bold text-emerald-800">{eq.codigo}</td>
+                      <td className="py-2.5 px-3 font-semibold text-slate-900">{eq.nombre}</td>
+                      <td className="py-2.5 px-2 text-slate-600">{eq.familia}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{formatExact(eq.materialesUsd)}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{formatExact(eq.serviciosUsd)}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-black text-emerald-900 bg-emerald-50/50">
+                        {formatExact(eq.totalSepUsd)}
                       </td>
-                      <td className="py-2.5 px-2">
-                        {item.nivel === 'NIVEL_1_DIRECTO' ? (
-                          <span className="inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-black text-[10px]">
-                            Nivel 1 · Directo
-                          </span>
-                        ) : (
-                          <span className="inline-block px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-bold text-[10px]">
-                            Nivel 2 · Opcional
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-2.5 px-2.5">
-                        <div className="font-mono font-black text-indigo-800">{item.codigoEquipo}</div>
-                        <div className="text-[11px] text-slate-600">{item.nombreEquipo}</div>
-                      </td>
-                      <td className="py-2.5 px-3">
-                        <div className="font-bold text-slate-900">{item.descripcionItem}</div>
-                        <div className="text-[10px] text-slate-500">Motivo: {item.motivo}</div>
-                      </td>
-                      <td className="py-2.5 px-2 font-mono text-[11px] text-slate-700">{item.comprobante}</td>
-                      <td className="py-2.5 px-2 text-[11px] text-slate-600">{item.categoria}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-black text-slate-900 bg-amber-50/60">
-                        {formatExact(item.montoItemUsd)}
-                      </td>
-                      <td className="py-2.5 px-3 text-[11px] text-slate-600 max-w-xs">
-                        {item.criterioContable}
+                      <td className="py-2.5 px-3 text-[11px] text-slate-600 max-w-sm">
+                        {eq.detalleIntervencion}
                       </td>
                       <td className="py-2.5 px-2 text-center">
-                        <button
-                          onClick={() => handleAbrirDesglose(item.codigoEquipo, item.nombreEquipo, item.montoTotalEquipoMesUsd)}
-                          className="px-2 py-1 rounded bg-slate-100 hover:bg-sky-100 text-sky-700 font-bold text-[11px] cursor-pointer"
-                        >
-                          Ver 🔍
-                        </button>
+                        {eq.totalSepUsd > 0 && (
+                          <button
+                            onClick={() => handleAbrirDesglose(eq.codigo, eq.nombre, eq.totalSepUsd)}
+                            className="px-2 py-1 rounded bg-slate-100 hover:bg-sky-100 text-sky-700 font-bold text-[11px] cursor-pointer"
+                          >
+                            Ver 🔍
+                          </button>
+                        )}
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-      )}
-
-      {/* PESTAÑA 3: INVERSIONES CAPEX */}
-      {subTab === 'capex' && (
-        <div className="space-y-6">
-          
-          {/* Tarjetas de Variaciones CAPEX */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-sky-600" />
-                <span>
-                  {esSeptiembre 
-                    ? 'Principales Proyectos CAPEX de Planta en Septiembre 2026 (vs Agosto)' 
-                    : 'Variación por Proyecto CAPEX (Julio vs Agosto 2026)'}
-                </span>
-              </h3>
-              <span className="text-xs text-slate-500 font-medium">Hacer clic en cualquier tarjeta para auditar sus despachos</span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
-              {(esSeptiembre ? VARIACIONES_CAPEX_AGO_SEP : VARIACIONES_CAPEX_JUL_AGO.map(v => ({
-                cuenta: v.cuenta,
-                proyecto: v.proyecto,
-                anterior: v.julio,
-                actual: v.agosto,
-                porcentaje: v.porcentaje,
-                esSubida: v.esSubida,
-                explicacion: v.explicacion
-              }))).map((v) => (
-                <div 
-                  key={v.cuenta} 
-                  onClick={() => handleAbrirDesglose(v.cuenta, v.proyecto, v.actual)}
-                  className="bg-white/95 rounded-2xl p-4 border border-slate-300/80 shadow-sm flex flex-col justify-between hover:border-sky-400 hover:shadow-md cursor-pointer transition-all group"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-mono text-[10px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded font-bold group-hover:bg-sky-100 group-hover:text-sky-800 transition-colors">
-                        {v.cuenta}
-                      </span>
-                      <span className={`text-xs font-black flex items-center gap-0.5 ${v.esSubida ? 'text-rose-600' : 'text-emerald-600'}`}>
-                        {v.esSubida ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-                        {v.porcentaje}
-                      </span>
-                    </div>
-                    <h4 className="font-bold text-xs text-slate-900 group-hover:text-sky-950 leading-snug">
-                      {v.proyecto}
-                    </h4>
-                    <div className="text-lg font-black text-slate-900 font-mono mt-1 flex items-baseline justify-between">
-                      <span>{formatExact(v.actual)}</span>
-                      <span className="text-[10px] text-sky-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Ver 🔍</span>
-                    </div>
-                    <div className="text-[10px] text-slate-400 font-mono">
-                      Mes ant.: {formatCurrency(v.anterior)}
-                    </div>
-                  </div>
-                  <div className="mt-3 pt-2 border-t border-slate-100 text-[11px] text-slate-600 leading-relaxed italic">
-                    "{v.explicacion}"
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Matriz Completa de Cuentas Auxiliares CAPEX (Enero - Septiembre 2026) */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm overflow-x-auto">
-            <h3 className="text-base font-black text-slate-900 mb-3 tracking-tight">
-              Cuentas Auxiliares de Inversiones CAPEX (Enero – Septiembre 2026)
-            </h3>
-            <table className="w-full text-xs text-left">
-              <thead>
-                <tr className="bg-slate-800 text-white font-bold">
-                  <th className="py-2.5 px-3 rounded-l-lg">Cuenta Auxiliar</th>
-                  <th className="py-2.5 px-3">Proyecto / Obra</th>
-                  <th className="py-2.5 px-2 text-right">Ene</th>
-                  <th className="py-2.5 px-2 text-right">Feb</th>
-                  <th className="py-2.5 px-2 text-right">Mar</th>
-                  <th className="py-2.5 px-2 text-right">Abr</th>
-                  <th className="py-2.5 px-2 text-right">May</th>
-                  <th className="py-2.5 px-2 text-right">Jun</th>
-                  <th className="py-2.5 px-2 text-right">Jul</th>
-                  <th className="py-2.5 px-2 text-right">Ago</th>
-                  <th className="py-2.5 px-2.5 text-right bg-sky-900 text-amber-300">Sep</th>
-                  <th className="py-2.5 px-3 text-right rounded-r-lg font-mono">Total 2026 ($)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                {CUENTAS_CAPEX_INTERNOS.map((c) => (
-                  <tr 
-                    key={c.cuentaAuxiliar} 
-                    onClick={() => handleAbrirDesglose(c.cuentaAuxiliar, c.proyecto, esSeptiembre ? c.sep : c.ago)}
-                    className="hover:bg-sky-50/80 cursor-pointer transition-colors group"
-                  >
-                    <td className="py-2.5 px-3">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono font-bold text-sky-800">{c.cuentaAuxiliar}</span>
-                        <Eye className="w-3.5 h-3.5 text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </td>
-                    <td className="py-2.5 px-3 font-bold text-slate-800 group-hover:text-sky-950">
-                      {c.proyecto}
-                    </td>
-                    <td className="py-2.5 px-2 text-right font-mono text-slate-600">{c.ene > 0 ? formatCurrency(c.ene) : '-'}</td>
-                    <td className="py-2.5 px-2 text-right font-mono text-slate-600">{c.feb > 0 ? formatCurrency(c.feb) : '-'}</td>
-                    <td className="py-2.5 px-2 text-right font-mono text-slate-600">{c.mar > 0 ? formatCurrency(c.mar) : '-'}</td>
-                    <td className="py-2.5 px-2 text-right font-mono text-slate-600">{c.abr > 0 ? formatCurrency(c.abr) : '-'}</td>
-                    <td className="py-2.5 px-2 text-right font-mono text-slate-600">{c.may > 0 ? formatCurrency(c.may) : '-'}</td>
-                    <td className="py-2.5 px-2 text-right font-mono text-slate-600">{c.jun > 0 ? formatCurrency(c.jun) : '-'}</td>
-                    <td className="py-2.5 px-2 text-right font-mono text-slate-600">{c.jul > 0 ? formatCurrency(c.jul) : '-'}</td>
-                    <td className="py-2.5 px-2 text-right font-mono text-slate-600">{c.ago > 0 ? formatCurrency(c.ago) : '-'}</td>
-                    <td className="py-2.5 px-2.5 text-right font-mono font-bold bg-sky-50 text-sky-900">{c.sep > 0 ? formatExact(c.sep) : '-'}</td>
-                    <td className="py-2.5 px-3 text-right font-mono font-black text-slate-900">{formatExact(c.total2026)}</td>
-                  </tr>
-                ))}
-                <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
-                  <td colSpan={2} className="py-3 px-3">SUBTOTAL CAPEX OBRAS / PLANTA (MASTER)</td>
-                  <td className="py-3 px-2 text-right font-mono">$162.467</td>
-                  <td className="py-3 px-2 text-right font-mono">$326.380</td>
-                  <td className="py-3 px-2 text-right font-mono">$149.039</td>
-                  <td className="py-3 px-2 text-right font-mono">$92.865</td>
-                  <td className="py-3 px-2 text-right font-mono">$77.901</td>
-                  <td className="py-3 px-2 text-right font-mono">$32.585</td>
-                  <td className="py-3 px-2 text-right font-mono">$45.087</td>
-                  <td className="py-3 px-2 text-right font-mono">$29.017</td>
-                  <td className="py-3 px-2.5 text-right font-mono bg-sky-100 text-sky-900">$34.930,08</td>
-                  <td className="py-3 px-3 text-right font-mono text-sky-950 font-extrabold">$950.271,43</td>
-                </tr>
-                {modoReclasificadoSep && (
-                  <>
-                    <tr className="bg-emerald-50/70 font-bold text-emerald-950">
-                      <td colSpan={2} className="py-2.5 px-3">+ CAPEX Equipos Nuevos Incorporados en Septiembre (6 Equipos)</td>
-                      <td colSpan={8} className="py-2.5 px-2 text-right text-[11px] text-emerald-700 italic">Acondicionamiento de ingreso en Sep (en Oct pasan a OPEX)</td>
-                      <td className="py-2.5 px-2.5 text-right font-mono font-black text-emerald-800">{formatExact(totalEquiposNuevosSep)}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-black text-emerald-800">{formatExact(totalEquiposNuevosSep)}</td>
-                    </tr>
-                    <tr className="bg-amber-50/70 font-bold text-amber-950">
-                      <td colSpan={2} className="py-2.5 px-3">+ CAPEX Extensión de Vida Útil en Flota (Motores / Overhauls)</td>
-                      <td colSpan={8} className="py-2.5 px-2 text-right text-[11px] text-amber-800 italic">Intervenciones capitalizables desde Mantto. Flota</td>
-                      <td className="py-2.5 px-2.5 text-right font-mono font-black text-amber-900">{formatExact(totalVidaUtilSep)}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-black text-amber-900">{formatExact(totalVidaUtilSep)}</td>
-                    </tr>
-                    <tr className="bg-sky-950 text-white font-black">
-                      <td colSpan={2} className="py-3 px-3">TOTAL CAPEX CONSOLIDADO (OBRAS + FLOTA CAPITALIZABLE)</td>
-                      <td className="py-3 px-2 text-right font-mono">$162.467</td>
-                      <td className="py-3 px-2 text-right font-mono">$326.380</td>
-                      <td className="py-3 px-2 text-right font-mono">$149.039</td>
-                      <td className="py-3 px-2 text-right font-mono">$92.865</td>
-                      <td className="py-3 px-2 text-right font-mono">$77.901</td>
-                      <td className="py-3 px-2 text-right font-mono">$32.585</td>
-                      <td className="py-3 px-2 text-right font-mono">$45.087</td>
-                      <td className="py-3 px-2 text-right font-mono">$29.017</td>
-                      <td className="py-3 px-2.5 text-right font-mono text-amber-300">{formatExact(34930.08 + totalEquiposNuevosSep + totalVidaUtilSep)}</td>
-                      <td className="py-3 px-3 text-right font-mono text-emerald-300">{formatExact(950271.43 + totalEquiposNuevosSep + totalVidaUtilSep)}</td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Top Voces de Gastos CAPEX */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm">
-            <h3 className="text-base font-black text-slate-900 mb-3 tracking-tight">
-              Top Rubros y Proyectos en Inversiones CAPEX ({mesActivoRaw.mesLabel} 2026)
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {(esSeptiembre ? TOP_VOCES_CAPEX_SEPTIEMBRE : TOP_VOCES_CAPEX_AGOSTO).map((v) => (
-                <div key={v.rubro} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold text-sky-700 uppercase">{v.categoria}</span>
-                    <span className="font-mono font-black text-slate-900 text-sm">{formatExact(v.monto)}</span>
-                  </div>
-                  <div className="font-bold text-xs text-slate-800 mb-1">{v.rubro}</div>
-                  <div className="text-[11px] text-slate-500 leading-snug">{v.detalle}</div>
-                </div>
-              ))}
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 
         </div>
       )}
 
-      {/* PESTAÑA 4: FLOTA & EQUIPOS OPEX */}
-      {subTab === 'flota' && (
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 7: ADMINISTRATIVO ($31.339,57 USD)                            */}
+      {/* ========================================================================= */}
+      {subTab === 'admon' && (
         <div className="space-y-6">
-          
-          {/* Top 10 Equipos Móviles con Mayor Gasto */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 border-b border-slate-100 pb-3">
+          <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-slate-200 pb-3">
               <div>
                 <h3 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-indigo-600" />
-                  <span>Top 10 Equipos Móviles con Mayor Gasto ({mesActivoRaw.mesLabel} 2026)</span>
+                  <Briefcase className="w-4 h-4 text-amber-600" />
+                  <span>Gastos Administrativos y Departamentales (Septiembre 2026)</span>
                 </h3>
                 <p className="text-xs text-slate-500">
-                  {esSeptiembre 
-                    ? 'Total de los 10 equipos en Master Septiembre: $44.957,33 USD (53,7% del total de flota).'
-                    : 'Total de los 10 equipos en Agosto: $64.839 USD (57% de todo el gasto de flota).'}
+                  Total conciliado con Master Unificado Septiembre: <strong>$31.339,57 USD</strong> (Materiales: $24.629,10 · Servicios: $6.710,47).
                 </p>
               </div>
-              <span className="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-lg">
-                {esSeptiembre ? 'Equipo Líder Sep: GR23 ($10.031,68)' : 'Equipo Líder Ago: GR17 ($23.206)'}
+              <span className="text-xs font-mono font-bold bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1 rounded-lg">
+                Total Admon: $31.339,57 USD
               </span>
             </div>
 
-            {esSeptiembre ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
-                {TOP_10_EQUIPOS_OPEX_SEPTIEMBRE.map((eq, idx) => (
-                  <div 
-                    key={eq.codigo} 
-                    onClick={() => handleAbrirDesglose(eq.cuentaCompleta, eq.nombre, eq.montoSeptiembre)}
-                    className={`p-3.5 rounded-xl border flex flex-col justify-between hover:shadow-md cursor-pointer transition-all group ${
-                      eq.esEquipoNuevo
-                        ? 'bg-emerald-50/70 border-emerald-300 hover:border-emerald-500'
-                        : eq.esCapexVidaUtil
-                          ? 'bg-amber-50/60 border-amber-300 hover:border-amber-500'
-                          : 'bg-slate-50/80 border-slate-200 hover:border-indigo-400'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-mono text-xs font-black text-indigo-800 bg-white px-2 py-0.5 rounded border border-slate-200">
-                          #{idx + 1} · {eq.codigo}
-                        </span>
-                        {eq.esEquipoNuevo ? (
-                          <span className="text-[9px] font-black bg-emerald-600 text-white px-1.5 py-0.5 rounded">EQUIPO NUEVO → CAPEX</span>
-                        ) : eq.esCapexVidaUtil ? (
-                          <span className="text-[9px] font-black bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded">VIDA ÚTIL → CAPEX</span>
-                        ) : (
-                          <span className="text-[10px] font-bold text-slate-500">{eq.tipo}</span>
-                        )}
-                      </div>
-                      <h4 className="font-bold text-xs text-slate-900 mt-1 line-clamp-1" title={eq.nombre}>
-                        {eq.nombre}
-                      </h4>
-                      <div className="text-lg font-black text-slate-900 font-mono mt-1 flex items-baseline justify-between">
-                        <span>{formatExact(eq.montoSeptiembre)}</span>
-                        <span className="text-[10px] text-indigo-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Auditar 🔍</span>
-                      </div>
-                      {modoReclasificadoSep && eq.montoCapexReclasificado > 0 && (
-                        <div className="text-[10px] font-bold text-emerald-800 mt-0.5">
-                          Pasa a CAPEX: {formatExact(eq.montoCapexReclasificado)} | Queda OPEX: {formatExact(eq.montoSeptiembre - eq.montoCapexReclasificado)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-2.5 pt-2 border-t border-slate-200/80 text-[10px] text-slate-600 leading-snug">
-                      {eq.detalle}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
-                {TOP_10_EQUIPOS_OPEX_AGOSTO.map((eq, idx) => (
-                  <div 
-                    key={eq.codigo} 
-                    onClick={() => handleAbrirDesglose(eq.codigo, eq.nombre, eq.montoAgosto)}
-                    className="p-3.5 rounded-xl bg-slate-50/80 border border-slate-200 flex flex-col justify-between hover:border-indigo-400 hover:shadow-md cursor-pointer transition-all group"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-mono text-xs font-black text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
-                          #{idx + 1} · {eq.codigo}
-                        </span>
-                        <span className="text-[10px] font-bold text-slate-500">{eq.tipo}</span>
-                      </div>
-                      <h4 className="font-bold text-xs text-slate-900 mt-1 line-clamp-1" title={eq.nombre}>
-                        {eq.nombre}
-                      </h4>
-                      <div className="text-lg font-black text-slate-900 font-mono mt-1 flex items-baseline justify-between">
-                        <span>{formatCurrency(eq.montoAgosto)}</span>
-                        <span className="text-[10px] text-indigo-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Ver 🔍</span>
-                      </div>
-                    </div>
-                    <div className="mt-2.5 pt-2 border-t border-slate-200 text-[10px] text-slate-600 leading-snug">
-                      {eq.detalle}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Tabla Mensual por Tipo de Activo Productivo (Ene - Sep 2026) */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm overflow-x-auto">
-            <h3 className="text-base font-black text-slate-900 mb-3 tracking-tight">
-              Evolución Mensual por Familia de Activos Móviles (Enero – Septiembre 2026)
-            </h3>
-            <table className="w-full text-xs text-left">
-              <thead>
-                <tr className="bg-slate-800 text-white font-bold">
-                  <th className="py-2.5 px-3 rounded-l-lg">Tipo de Equipo</th>
-                  <th className="py-2.5 px-2 text-right">Ene</th>
-                  <th className="py-2.5 px-2 text-right">Feb</th>
-                  <th className="py-2.5 px-2 text-right">Mar</th>
-                  <th className="py-2.5 px-2 text-right">Abr</th>
-                  <th className="py-2.5 px-2 text-right">May</th>
-                  <th className="py-2.5 px-2 text-right">Jun</th>
-                  <th className="py-2.5 px-2 text-right">Jul</th>
-                  <th className="py-2.5 px-2 text-right">Ago</th>
-                  <th className="py-2.5 px-2.5 text-right bg-indigo-900 text-amber-300">Sep (Master)</th>
-                  <th className="py-2.5 px-3 text-right rounded-r-lg font-mono">Total 2026 ($)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                {TIPOS_EQUIPOS_OPEX_MENSUAL.map((t) => (
-                  <tr key={t.tipo} className="hover:bg-slate-50">
-                    <td className="py-2 px-3 font-bold text-slate-800">{t.tipo}</td>
-                    <td className="py-2 px-2 text-right font-mono text-slate-600">{t.ene > 0 ? formatCurrency(t.ene) : '-'}</td>
-                    <td className="py-2 px-2 text-right font-mono text-slate-600">{t.feb > 0 ? formatCurrency(t.feb) : '-'}</td>
-                    <td className="py-2 px-2 text-right font-mono text-slate-600">{t.mar > 0 ? formatCurrency(t.mar) : '-'}</td>
-                    <td className="py-2 px-2 text-right font-mono text-slate-600">{t.abr > 0 ? formatCurrency(t.abr) : '-'}</td>
-                    <td className="py-2 px-2 text-right font-mono text-slate-600">{t.may > 0 ? formatCurrency(t.may) : '-'}</td>
-                    <td className="py-2 px-2 text-right font-mono text-slate-600">{t.jun > 0 ? formatCurrency(t.jun) : '-'}</td>
-                    <td className="py-2 px-2 text-right font-mono text-slate-600">{t.jul > 0 ? formatCurrency(t.jul) : '-'}</td>
-                    <td className="py-2 px-2 text-right font-mono text-slate-600">{t.ago > 0 ? formatCurrency(t.ago) : '-'}</td>
-                    <td className="py-2 px-2.5 text-right font-mono font-bold bg-indigo-50 text-indigo-900">{t.sep > 0 ? formatExact(t.sep) : '-'}</td>
-                    <td className="py-2 px-3 text-right font-mono font-black text-slate-900">{formatExact(t.total)}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="bg-[#0f2e5a] text-white font-bold">
+                    <th className="py-2.5 px-3">Cuenta Auxiliar</th>
+                    <th className="py-2.5 px-3">Departamento / Gerencia</th>
+                    <th className="py-2.5 px-2.5 text-right">Materiales ($)</th>
+                    <th className="py-2.5 px-2.5 text-right">Servicios ($)</th>
+                    <th className="py-2.5 px-3 text-right bg-[#163a6f] text-amber-300 font-mono">Total Septiembre ($)</th>
+                    <th className="py-2.5 px-3">Principales Consumos y Servicios</th>
                   </tr>
-                ))}
-                <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
-                  <td className="py-3 px-3">TOTAL MANTTO. FLOTA MASTER (SIN RECLASIFICAR)</td>
-                  <td className="py-3 px-2 text-right font-mono">$143.581</td>
-                  <td className="py-3 px-2 text-right font-mono">$102.274</td>
-                  <td className="py-3 px-2 text-right font-mono">$83.194</td>
-                  <td className="py-3 px-2 text-right font-mono">$59.543</td>
-                  <td className="py-3 px-2 text-right font-mono">$68.409</td>
-                  <td className="py-3 px-2 text-right font-mono">$72.213</td>
-                  <td className="py-3 px-2 text-right font-mono">$97.727</td>
-                  <td className="py-3 px-2 text-right font-mono">$113.450</td>
-                  <td className="py-3 px-2.5 text-right font-mono bg-indigo-100 text-indigo-950">$83.729,79</td>
-                  <td className="py-3 px-3 text-right font-mono text-indigo-950">$824.120,75</td>
-                </tr>
-                {modoReclasificadoSep && (
-                  <>
-                    <tr className="bg-rose-50/70 font-bold text-rose-900">
-                      <td className="py-2.5 px-3">− Reclasificado a CAPEX en Septiembre (Equipos Nuevos + Vida Útil)</td>
-                      <td colSpan={8} className="py-2.5 px-2 text-right text-[11px] italic">Se traslada al bloque CAPEX de Septiembre</td>
-                      <td className="py-2.5 px-2.5 text-right font-mono font-black text-rose-700">−{formatExact(montoReclasificadoSep)}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-black text-rose-700">−{formatExact(montoReclasificadoSep)}</td>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {CUENTAS_ADMON_SEPTIEMBRE_2026.map((a) => (
+                    <tr 
+                      key={a.cuenta}
+                      onClick={() => a.cuenta !== 'OTRAS-ADMON' && handleAbrirDesglose(a.cuenta, a.departamento, a.totalSepUsd)}
+                      className="hover:bg-amber-50/50 cursor-pointer transition-colors"
+                    >
+                      <td className="py-2.5 px-3 font-mono font-bold text-[#0f2e5a]">{a.cuenta}</td>
+                      <td className="py-2.5 px-3 font-semibold text-slate-900">{a.departamento}</td>
+                      <td className="py-2.5 px-2.5 text-right font-mono text-slate-600">{formatExact(a.materialesUsd)}</td>
+                      <td className="py-2.5 px-2.5 text-right font-mono text-slate-600">{formatExact(a.serviciosUsd)}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-black text-amber-950 bg-amber-50/50">{formatExact(a.totalSepUsd)}</td>
+                      <td className="py-2.5 px-3 text-[11px] text-slate-600">{a.principalesConsumos}</td>
                     </tr>
-                    <tr className="bg-indigo-950 text-white font-black">
-                      <td className="py-3 px-3">TOTAL MANTTO. FLOTA DEPURADO (OPEX PURO)</td>
-                      <td className="py-3 px-2 text-right font-mono">$143.581</td>
-                      <td className="py-3 px-2 text-right font-mono">$102.274</td>
-                      <td className="py-3 px-2 text-right font-mono">$83.194</td>
-                      <td className="py-3 px-2 text-right font-mono">$59.543</td>
-                      <td className="py-3 px-2 text-right font-mono">$68.409</td>
-                      <td className="py-3 px-2 text-right font-mono">$72.213</td>
-                      <td className="py-3 px-2 text-right font-mono">$97.727</td>
-                      <td className="py-3 px-2 text-right font-mono">$113.450</td>
-                      <td className="py-3 px-2.5 text-right font-mono text-amber-300">{formatExact(opexFlotaEfectivoMes)}</td>
-                      <td className="py-3 px-3 text-right font-mono text-emerald-300">{formatExact(824120.75 - montoReclasificadoSep)}</td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Voces de Gasto de Flota */}
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm">
-            <h3 className="text-base font-black text-slate-900 mb-3 tracking-tight">
-              Voces de Gasto en Mantenimiento de Flota ({mesActivoRaw.mesLabel} 2026)
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-              {(esSeptiembre ? VOCES_GASTO_OPEX_FLOTA_SEPTIEMBRE : VOCES_GASTO_OPEX_FLOTA_AGOSTO).map((v) => (
-                <div key={v.rubro} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold text-indigo-700 uppercase">{v.grupo}</span>
-                    <span className="font-mono font-black text-slate-900 text-sm">{formatExact(v.monto)}</span>
-                  </div>
-                  <div className="font-bold text-xs text-slate-800 mb-1">{v.rubro}</div>
-                  <div className="text-[11px] text-slate-500 leading-snug">{v.detalle}</div>
-                </div>
-              ))}
+                  ))}
+                  <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
+                    <td colSpan={2} className="py-3 px-3">TOTAL GASTOS ADMINISTRATIVOS</td>
+                    <td className="py-3 px-2.5 text-right font-mono">$24.629,10</td>
+                    <td className="py-3 px-2.5 text-right font-mono">$6.710,47</td>
+                    <td className="py-3 px-3 text-right font-mono text-[#0f2e5a] text-sm bg-amber-100">$31.339,57</td>
+                    <td className="py-3 px-3 text-[11px] text-slate-500">Conciliado al 100% con Master Septiembre 2026</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-
         </div>
       )}
 
-      {/* PESTAÑA 5: FLOTA DE 26 GRÚAS */}
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 8: FLOTA 26 GRÚAS                                             */}
+      {/* ========================================================================= */}
       {subTab === 'gruas' && (
         <div className="space-y-6">
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-slate-100 pb-3">
+          <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-slate-200 pb-3">
               <div>
                 <h3 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-sky-600" />
+                  <Cpu className="w-4 h-4 text-[#0f2e5a]" />
                   <span>Control de Flota: 26 Grúas TIMACA (Enero – Septiembre 2026)</span>
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Septiembre 2026: $32.984,63 USD (▲ 1,9% vs Agosto $32.364) | Acumulado Ene-Sep 2026: $366.456,10 USD.
+                  Septiembre: $32.984,63 USD | Acumulado 2026: $366.456,10 USD.
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold bg-sky-50 text-sky-800 border border-sky-200 px-3 py-1 rounded-lg">
-                  26 Grúas Operativas
-                </span>
-              </div>
+              <span className="text-xs font-mono font-bold bg-sky-50 text-[#0f2e5a] border border-sky-200 px-3 py-1 rounded-lg">
+                26 Grúas Operativas
+              </span>
             </div>
 
-            {/* Top 5 Grúas del Mes */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-6">
               {(esSeptiembre ? FLOTA_GRUAS_TIMACA_2026.top5GruasSeptiembre : FLOTA_GRUAS_TIMACA_2026.top5GruasAgosto).map((g) => (
                 <div 
                   key={g.codigo} 
                   onClick={() => g.codigo !== 'OTRAS' && handleAbrirDesglose(g.codigo, g.descripcion, g.monto)}
-                  className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-sky-400 hover:shadow-md cursor-pointer transition-all group"
+                  className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-sky-500 cursor-pointer transition-all"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono font-bold text-slate-500 group-hover:text-sky-700">{g.codigo}</span>
-                    <span className="text-[10px] text-sky-600 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Ver 🔍</span>
-                  </div>
+                  <div className="text-[10px] font-mono font-bold text-slate-500">{g.codigo}</div>
                   <div className="text-base font-black text-slate-900 font-mono mt-0.5">{formatExact(g.monto)}</div>
-                  <div className="text-[11px] text-slate-600 font-medium truncate mt-1" title={g.descripcion}>{g.descripcion}</div>
-                  <div className="text-[10px] font-bold text-sky-600 mt-1">{g.variacion}</div>
+                  <div className="text-[11px] text-slate-600 truncate mt-1" title={g.descripcion}>{g.descripcion}</div>
+                  <div className="text-[10px] font-bold text-sky-700 mt-1">{g.variacion}</div>
                 </div>
               ))}
             </div>
 
-            {/* Tabla Detalle Grúas con Mayor Movimiento */}
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left">
                 <thead>
-                  <tr className="bg-slate-800 text-white font-bold">
-                    <th className="py-2.5 px-3 rounded-l-lg">Código Grúa</th>
+                  <tr className="bg-[#0f2e5a] text-white font-bold">
+                    <th className="py-2.5 px-3">Código Grúa</th>
                     <th className="py-2.5 px-3">Modelo / Serial</th>
                     <th className="py-2.5 px-2 text-right">Ene</th>
                     <th className="py-2.5 px-2 text-right">Feb</th>
@@ -1585,8 +2161,8 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                     <th className="py-2.5 px-2 text-right">Jun</th>
                     <th className="py-2.5 px-2 text-right">Jul</th>
                     <th className="py-2.5 px-2 text-right">Ago</th>
-                    <th className="py-2.5 px-2.5 text-right bg-sky-900 text-amber-300">Sep</th>
-                    <th className="py-2.5 px-3 text-right rounded-r-lg">Variación</th>
+                    <th className="py-2.5 px-2.5 text-right bg-[#163a6f] text-sky-200">Sep</th>
+                    <th className="py-2.5 px-3 text-right">Variación</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
@@ -1594,225 +2170,65 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                     <tr 
                       key={gr.codigo} 
                       onClick={() => handleAbrirDesglose(gr.codigo, gr.proyecto, esSeptiembre ? gr.sep : gr.ago)}
-                      className="hover:bg-sky-50/80 cursor-pointer transition-colors group"
+                      className="hover:bg-sky-50/70 cursor-pointer transition-colors"
                     >
-                      <td className="py-2.5 px-3 font-mono font-bold text-sky-800">{gr.codigo}</td>
-                      <td className="py-2.5 px-3 font-bold text-slate-800">{gr.proyecto}</td>
-                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.ene > 0 ? formatCurrency(gr.ene) : '-'}</td>
-                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.feb > 0 ? formatCurrency(gr.feb) : '-'}</td>
-                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.mar > 0 ? formatCurrency(gr.mar) : '-'}</td>
-                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.abr > 0 ? formatCurrency(gr.abr) : '-'}</td>
-                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.may > 0 ? formatCurrency(gr.may) : '-'}</td>
-                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.jun > 0 ? formatCurrency(gr.jun) : '-'}</td>
-                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.jul > 0 ? formatCurrency(gr.jul) : '-'}</td>
-                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.ago > 0 ? formatCurrency(gr.ago) : '-'}</td>
-                      <td className="py-2.5 px-2.5 text-right font-mono font-bold bg-sky-50 text-sky-900">{formatExact(gr.sep)}</td>
+                      <td className="py-2.5 px-3 font-mono font-bold text-[#0f2e5a]">{gr.codigo}</td>
+                      <td className="py-2.5 px-3 font-semibold text-slate-800">{gr.proyecto}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.ene > 0 ? formatNumber(gr.ene) : '-'}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.feb > 0 ? formatNumber(gr.feb) : '-'}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.mar > 0 ? formatNumber(gr.mar) : '-'}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.abr > 0 ? formatNumber(gr.abr) : '-'}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.may > 0 ? formatNumber(gr.may) : '-'}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.jun > 0 ? formatNumber(gr.jun) : '-'}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.jul > 0 ? formatNumber(gr.jul) : '-'}</td>
+                      <td className="py-2.5 px-2 text-right font-mono text-slate-600">{gr.ago > 0 ? formatNumber(gr.ago) : '-'}</td>
+                      <td className="py-2.5 px-2.5 text-right font-mono font-bold bg-sky-50 text-sky-950">{formatExact(gr.sep)}</td>
                       <td className="py-2.5 px-3 text-right font-bold text-slate-700">{gr.variacion}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-
-            <div className="mt-4 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1.5">
-              <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5 text-sky-600" />
-                <span>Auditoría de Variaciones Técnicas en Grúas:</span>
-              </div>
-              {FLOTA_GRUAS_TIMACA_2026.analisisCausas.map((c, i) => (
-                <p key={i} className="text-slate-600 pl-5 leading-relaxed">• {c}</p>
-              ))}
-            </div>
           </div>
         </div>
       )}
 
-      {/* PESTAÑA 6: MANTTO INFRAESTRUCTURA */}
-      {subTab === 'infra' && (
-        <div className="space-y-6">
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Wrench className="w-4 h-4 text-teal-600" />
-                  <span>Mantenimiento de Infraestructura & Galpones (Enero – Septiembre 2026)</span>
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Septiembre 2026: $41.739,91 USD (▲ 2,9% vs Agosto $40.545) | Acumulado Ene-Sep 2026: $401.562,86 USD.
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold bg-teal-50 text-teal-800 border border-teal-200 px-3 py-1 rounded-lg">
-                  Master Sep: $41.739,91 USD
-                </span>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead>
-                  <tr className="bg-slate-800 text-white font-bold">
-                    <th className="py-2.5 px-3 rounded-l-lg">Cuenta Auxiliar</th>
-                    <th className="py-2.5 px-3">Proyecto / Galpón</th>
-                    <th className="py-2.5 px-2 text-right">Ene</th>
-                    <th className="py-2.5 px-2 text-right">Feb</th>
-                    <th className="py-2.5 px-2 text-right">Mar</th>
-                    <th className="py-2.5 px-2 text-right">Abr</th>
-                    <th className="py-2.5 px-2 text-right">May</th>
-                    <th className="py-2.5 px-2 text-right">Jun</th>
-                    <th className="py-2.5 px-2 text-right">Jul</th>
-                    <th className="py-2.5 px-2 text-right">Ago</th>
-                    <th className="py-2.5 px-2.5 text-right bg-teal-900 text-amber-300">Sep</th>
-                    <th className="py-2.5 px-3 text-right rounded-r-lg font-mono">Total 2026 ($)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {MANTTO_INFRAESTRUCTURA_2026.cuentas.map((c) => (
-                    <tr 
-                      key={c.cuenta} 
-                      onClick={() => handleAbrirDesglose(c.cuenta, c.descripcion, esSeptiembre ? c.sep : c.ago)}
-                      className="hover:bg-teal-50/80 cursor-pointer transition-colors group"
-                    >
-                      <td className="py-2.5 px-3 font-mono font-bold text-teal-800">{c.cuenta}</td>
-                      <td className="py-2.5 px-3 font-bold text-slate-800">{c.descripcion}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.ene > 0 ? formatCurrency(c.ene) : '-'}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.feb > 0 ? formatCurrency(c.feb) : '-'}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.mar > 0 ? formatCurrency(c.mar) : '-'}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.abr > 0 ? formatCurrency(c.abr) : '-'}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.may > 0 ? formatCurrency(c.may) : '-'}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.jun > 0 ? formatCurrency(c.jun) : '-'}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{c.jul > 0 ? formatCurrency(c.jul) : '-'}</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-600">{formatCurrency(c.ago)}</td>
-                      <td className="py-2 px-2.5 text-right font-mono font-bold bg-teal-50 text-teal-900">{formatExact(c.sep)}</td>
-                      <td className="py-2 px-3 text-right font-mono font-black text-slate-900">{formatExact(c.total)}</td>
-                    </tr>
-                  ))}
-                  <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
-                    <td colSpan={2} className="py-3 px-3">TOTAL INFRAESTRUCTURA (OPEX)</td>
-                    <td className="py-3 px-2 text-right font-mono">$145.197</td>
-                    <td className="py-3 px-2 text-right font-mono">$50.329</td>
-                    <td className="py-3 px-2 text-right font-mono">$20.149</td>
-                    <td className="py-3 px-2 text-right font-mono">$25.926</td>
-                    <td className="py-3 px-2 text-right font-mono">$20.031</td>
-                    <td className="py-3 px-2 text-right font-mono">$15.748</td>
-                    <td className="py-3 px-2 text-right font-mono">$41.898</td>
-                    <td className="py-3 px-2 text-right font-mono">$40.545</td>
-                    <td className="py-3 px-2.5 text-right font-mono bg-teal-100 text-teal-900">$41.739,91</td>
-                    <td className="py-3 px-3 text-right font-mono text-teal-950 font-extrabold">$401.562,86</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* PESTAÑA 7: GASTOS ADMINISTRATIVOS (ADMON - $31.339,57) */}
-      {subTab === 'admon' && (
-        <div className="space-y-6">
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Briefcase className="w-4 h-4 text-amber-600" />
-                  <span>Gastos Administrativos y Departamentales (Admon — Septiembre 2026)</span>
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Total conciliado con Master Septiembre 2026: <strong>$31.339,57 USD</strong>. Haz clic en cualquier cuenta para auditar sus despachos y servicios.
-                </p>
-              </div>
-              <span className="text-xs font-mono font-black bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1 rounded-lg">
-                Total Admon Sep: $31.339,57 USD
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead>
-                  <tr className="bg-slate-800 text-white font-bold">
-                    <th className="py-2.5 px-3 rounded-l-lg">Cuenta Auxiliar</th>
-                    <th className="py-2.5 px-3">Departamento / Gerencia</th>
-                    <th className="py-2.5 px-2.5 text-right">Materiales ($)</th>
-                    <th className="py-2.5 px-2.5 text-right">Servicios ($)</th>
-                    <th className="py-2.5 px-3 text-right bg-amber-900 text-amber-200">Total Septiembre ($)</th>
-                    <th className="py-2.5 px-3 rounded-r-lg">Principales Consumos y Servicios del Mes</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {CUENTAS_ADMON_SEPTIEMBRE_2026.map((a) => (
-                    <tr 
-                      key={a.cuenta}
-                      onClick={() => a.cuenta !== 'OTRAS-ADMON' && handleAbrirDesglose(a.cuenta, a.departamento, a.totalSepUsd)}
-                      className="hover:bg-amber-50/60 cursor-pointer transition-colors"
-                    >
-                      <td className="py-2.5 px-3 font-mono font-bold text-amber-800">{a.cuenta}</td>
-                      <td className="py-2.5 px-3 font-bold text-slate-900">{a.departamento}</td>
-                      <td className="py-2.5 px-2.5 text-right font-mono text-slate-600">{formatExact(a.materialesUsd)}</td>
-                      <td className="py-2.5 px-2.5 text-right font-mono text-slate-600">{formatExact(a.serviciosUsd)}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-black bg-amber-50 text-amber-950">{formatExact(a.totalSepUsd)}</td>
-                      <td className="py-2.5 px-3 text-[11px] text-slate-600">{a.principalesConsumos}</td>
-                    </tr>
-                  ))}
-                  <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
-                    <td colSpan={2} className="py-3 px-3">TOTAL GASTOS ADMINISTRATIVOS (ADMON SEPTIEMBRE)</td>
-                    <td className="py-3 px-2.5 text-right font-mono">$24.629,10</td>
-                    <td className="py-3 px-2.5 text-right font-mono">$6.710,47</td>
-                    <td className="py-3 px-3 text-right font-mono bg-amber-200 text-amber-950 text-sm">$31.339,57</td>
-                    <td className="py-3 px-3 text-[11px] text-slate-500">Conciliado con Master Septiembre 2026</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* PESTAÑA 8: MOD MANTENIMIENTO */}
+      {/* ========================================================================= */}
+      {/* SUB-PESTAÑA 9: MANO DE OBRA (MOD FLOTA)                                   */}
+      {/* ========================================================================= */}
       {subTab === 'mod' && (
         <div className="space-y-6">
-          {esSeptiembre && (
-            <div className="bg-sky-50 border border-sky-200 rounded-2xl p-4 text-xs text-sky-950 flex items-start gap-3">
-              <Clock className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
-              <div>
-                <div className="font-black text-sm">Horas Hombre (MOD) de Flota y Proyectos — Septiembre 2026 (En espera de carga definitiva)</div>
-                <p className="mt-1 text-slate-600">
-                  Cuando tengas lista la sábana definitiva de Horas Hombre de Septiembre para Flota y Proyectos Internos, la integraremos aquí para que sume automáticamente al costo de cada equipo y proyecto. Debajo puedes consultar la estructura base de Agosto (4.697 HH · $9.644 USD).
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="bg-white/95 rounded-2xl p-5 border border-slate-300/80 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-slate-100 pb-3">
+          <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-2xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-slate-200 pb-3">
               <div>
                 <h3 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-emerald-600" />
-                  <span>Mano de Obra Directa (MOD) - Taller Mecánico & Mantenimiento (Base Agosto 2026)</span>
+                  <Clock className="w-4 h-4 text-[#0f2e5a]" />
+                  <span>Mano de Obra Directa (MOD) - Taller Mecánico & Mantenimiento</span>
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Nómina operativa de 27 técnicos y mecánicos dedicados al mantenimiento interno.
+                  Nómina operativa de 27 técnicos y mecánicos dedicados al mantenimiento interno (Base: 4.697 HH · $9.644 USD).
                 </p>
               </div>
-              <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-lg">
-                Total MOD Ago: $9.644 USD | 4.697 Horas Hombre
+              <span className="text-xs font-mono font-bold bg-slate-100 text-[#0f2e5a] border border-slate-200 px-3 py-1 rounded-lg">
+                4.697 HH · $9.644 USD
               </span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left">
                 <thead>
-                  <tr className="bg-slate-800 text-white font-bold">
-                    <th className="py-2.5 px-3 rounded-l-lg">Tipo de Equipo</th>
+                  <tr className="bg-[#0f2e5a] text-white font-bold">
+                    <th className="py-2.5 px-3">Tipo de Equipo</th>
                     <th className="py-2.5 px-3 text-center">Cant. Trabajadores</th>
                     <th className="py-2.5 px-3 text-right">Total Horas Hombre</th>
                     <th className="py-2.5 px-3 text-right">Tarifa Promedio ($/HR)</th>
-                    <th className="py-2.5 px-3 text-right rounded-r-lg font-mono">Costo Total MOD ($)</th>
+                    <th className="py-2.5 px-3 text-right font-mono">Costo Total MOD ($)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
                   {MOD_MANTENIMIENTO_FLOTA_AGOSTO.desglosePorTipoEquipo.map((eq) => (
                     <tr key={eq.tipo} className="hover:bg-slate-50">
-                      <td className="py-2 px-3 font-bold text-slate-800">{eq.tipo}</td>
+                      <td className="py-2 px-3 font-semibold text-slate-800">{eq.tipo}</td>
                       <td className="py-2 px-3 text-center font-mono text-slate-700">{eq.trabajadores}</td>
                       <td className="py-2 px-3 text-right font-mono text-slate-700">{eq.totalHH} Hrs</td>
                       <td className="py-2 px-3 text-right font-mono text-slate-600">${formatUnitPriceRaw(eq.tarifaPromedio)}</td>
@@ -1824,7 +2240,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                     <td className="py-3 px-3 text-center font-mono">27 Trabajadores</td>
                     <td className="py-3 px-3 text-right font-mono">4.697 Hrs</td>
                     <td className="py-3 px-3 text-right font-mono">$2,05 / hr</td>
-                    <td className="py-3 px-3 text-right font-mono text-emerald-800 font-extrabold">$9.644 USD</td>
+                    <td className="py-3 px-3 text-right font-mono text-[#0f2e5a] font-extrabold">$9.644 USD</td>
                   </tr>
                 </tbody>
               </table>
@@ -1833,25 +2249,27 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
         </div>
       )}
 
-      {/* ===================== MODAL DE DESGLOSE Y AUDITORÍA DE MONTOS ===================== */}
+      {/* ========================================================================= */}
+      {/* MODAL DE DESGLOSE Y AUDITORÍA DE REGISTROS                                */}
+      {/* ========================================================================= */}
       {selectedActivoParaDesglose && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-xs animate-fade-in overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-300 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden animate-scale-up">
             
-            <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white p-5 flex items-start justify-between gap-4 border-b border-slate-700">
+            <div className="bg-[#0f2e5a] text-white p-5 flex items-start justify-between gap-4 border-b border-[#0c2447]">
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                  <span className="font-mono text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2.5 py-0.5 rounded-lg">
+                  <span className="font-mono text-xs font-black bg-white/20 text-sky-200 px-2.5 py-0.5 rounded-lg">
                     {selectedActivoParaDesglose.codigo}
                   </span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300 bg-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-700">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300 bg-white/10 px-2.5 py-0.5 rounded-lg">
                     {selectedActivoParaDesglose.responsableArea}
                   </span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                   {selectedActivoParaDesglose.titulo}
                 </h3>
-                <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                <p className="text-xs text-sky-200 mt-1 max-w-2xl leading-relaxed">
                   {selectedActivoParaDesglose.descripcionGeneral}
                 </p>
               </div>
@@ -1868,24 +2286,24 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                 )}
                 <button
                   onClick={() => setSelectedActivoParaDesglose(null)}
-                  className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer border border-slate-700"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 bg-slate-100/90 border-b border-slate-200 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 bg-slate-50 border-b border-slate-200 text-xs">
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
-                <div className="text-[10px] uppercase font-bold text-slate-400">Total Ejecutado ({mesActivoRaw.mesLabel})</div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">Total Auditado ({mesActivoRaw.mesLabel})</div>
                 <div className="text-lg font-black text-slate-900 font-mono mt-0.5">
                   {formatExact(selectedActivoParaDesglose.montoAgosto)}
                 </div>
               </div>
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
-                <div className="text-[10px] uppercase font-bold text-slate-400">Ítems Auditados</div>
-                <div className="text-lg font-black text-indigo-900 font-mono mt-0.5">
-                  {selectedActivoParaDesglose.items.length} Registros
+                <div className="text-[10px] uppercase font-bold text-slate-400">Registros Auditados</div>
+                <div className="text-lg font-black text-[#0f2e5a] font-mono mt-0.5">
+                  {selectedActivoParaDesglose.items.length} Ítems
                 </div>
               </div>
               <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
@@ -1901,13 +2319,13 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                 <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs">
                   <table className="w-full text-xs text-left">
                     <thead>
-                      <tr className="bg-slate-800 text-white font-bold">
+                      <tr className="bg-[#0f2e5a] text-white font-bold">
                         <th className="py-2.5 px-3">Comprobante</th>
                         <th className="py-2.5 px-3">Descripción e Ítem Técnico</th>
                         <th className="py-2.5 px-2">Categoría / Rubro</th>
                         <th className="py-2.5 px-2 text-right">Cant.</th>
                         <th className="py-2.5 px-2 text-right">P. Unit ($)</th>
-                        <th className="py-2.5 px-3 text-right bg-sky-900 text-sky-200 font-mono">Monto Total ($)</th>
+                        <th className="py-2.5 px-3 text-right bg-[#163a6f] text-sky-200 font-mono">Monto Total ($)</th>
                         <th className="py-2.5 px-3">Fecha / Solicitante</th>
                       </tr>
                     </thead>
@@ -1962,7 +2380,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               </span>
               <button
                 onClick={() => setSelectedActivoParaDesglose(null)}
-                className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-colors cursor-pointer shadow-xs"
+                className="px-5 py-2 rounded-xl bg-[#0f2e5a] hover:bg-[#163a6f] text-white font-bold transition-colors cursor-pointer shadow-xs"
               >
                 Cerrar
               </button>
