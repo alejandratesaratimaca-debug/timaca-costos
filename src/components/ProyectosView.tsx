@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useCostos } from '../context/CostosContext';
-import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw, formatAmountAuto } from '../utils/dateHelpers';
 import { CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CATEGORIAS_PPT_2026, CUENTAS_CORTAS_MAP, TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT } from '../data/mockCostosTimaca';
 import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual2026';
 import { DESGLOSE_CATEGORIAS_PROYECTOS, COSTOS_INDIRECTOS_POR_CATEGORIAS, COSTOS_INDIRECTOS_CONSOLIDADO_OFICIAL } from '../data/mockDesgloseCategorias';
@@ -2293,10 +2293,24 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Monto Total</span>
                   <span className="font-mono font-black text-blue-700 text-base">
-                    ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')}
+                    ${formatAmountAuto(salidaAuditoria.montoTotal)}
                   </span>
                 </div>
               </div>
+
+              {/* Banner informativo si la cantidad o el costo es 0 (ej. Grúas/Equipos en Standby) */}
+              {salidaAuditoria.cantidad === 0 && (
+                <div className="p-3 bg-amber-50/90 border border-amber-300 rounded-xl space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200 text-amber-950 border border-amber-300">
+                      EQUIPO EN PLANTA SIN ACTIVIDAD OPERATIVA / STANDBY
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-900 leading-relaxed">
+                    Este registro proviene del parte diario de campo en Planta de Pellas. El equipo se reportó presente en sitio pero sin horas operativas facturables en la fecha ({salidaAuditoria.motivo || 'Sin actividad asignada'}). Costo imputado: $0 USD.
+                  </p>
+                </div>
+              )}
 
               {/* Cálculo */}
               <div className="mt-2.5 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
@@ -2304,7 +2318,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                   Cálculo:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
+                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} = ${formatAmountAuto(salidaAuditoria.montoTotal)} USD
                 </span>
               </div>
             </div>

@@ -198,11 +198,20 @@ export function formatCurrency(amount: number, currency: 'USD' | 'VES' = 'USD'):
   return currency === 'USD' ? `$ ${formatted}` : `Bs. ${formatted}`;
 }
 
-export function formatNumber(num: number): string {
+export function formatNumber(num: number, maxDecimals: number = 2): string {
+  const val = Number(num) || 0;
   return new Intl.NumberFormat('es-VE', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(Math.round(num || 0));
+    maximumFractionDigits: Number.isInteger(val) ? 0 : maxDecimals,
+  }).format(val);
+}
+
+export function formatAmountAuto(amount: number): string {
+  const val = Number(amount) || 0;
+  return new Intl.NumberFormat('es-VE', {
+    minimumFractionDigits: Number.isInteger(val) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(val);
 }
 
 export function formatUnitPrice(price: number, currency: 'USD' | 'VES' = 'USD'): string {

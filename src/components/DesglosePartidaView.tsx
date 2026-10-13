@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ItemPartidaDetalle, obtenerDesgloseSubconcepto } from '../data/mockDesglosePartidasDetalle';
 import { getConsolidadoCategoria, HORAS_MAQUINA_CONSOLIDADO_OFICIAL_8_MESES } from '../data/mockDesgloseCategorias';
-import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw, formatAmountAuto } from '../utils/dateHelpers';
 import { CUENTAS_CORTAS_MAP, CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 } from '../data/mockCostosTimaca';
 import { useCostos } from '../context/CostosContext';
 import { isNormalizacion } from '../utils/normalizacionFilter';
@@ -1392,10 +1392,24 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Precio Total</span>
                   <span className="font-mono font-black text-blue-700 text-base">
-                    ${Math.round(modalItem.totalUSD).toLocaleString('de-DE')} USD
+                    ${formatAmountAuto(modalItem.totalUSD)} USD
                   </span>
                 </div>
               </div>
+
+              {/* Banner informativo si la cantidad o el costo es 0 (ej. Grúas/Equipos en Standby) */}
+              {modalItem.cantidad === 0 && (
+                <div className="p-3 bg-amber-50/90 border border-amber-300 rounded-xl space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200 text-amber-950 border border-amber-300">
+                      EQUIPO EN PLANTA SIN ACTIVIDAD OPERATIVA / STANDBY
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-900 leading-relaxed">
+                    Este registro proviene del parte diario de campo en Planta de Pellas. El equipo se reportó presente en sitio pero sin horas operativas facturables en la fecha ({modalItem.motivo || 'Sin actividad asignada'}). Costo imputado: $0 USD.
+                  </p>
+                </div>
+              )}
 
               {/* Cálculo exacto */}
               <div className="mt-2.5 p-2.5 bg-white border border-blue-200 rounded-lg text-xs">
@@ -1403,7 +1417,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                   CÁLCULO:
                 </span>
                 <span className="font-mono text-xs sm:text-sm font-bold text-blue-900">
-                  {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad === 'USE' ? 'SERV' : modalItem.unidad} × ${formatUnitPriceRaw(modalItem.precioFinal)} = ${Math.round(modalItem.totalUSD).toLocaleString('de-DE')} USD
+                  {modalItem.cantidad.toLocaleString('de-DE')} {modalItem.unidad === 'USE' ? 'SERV' : modalItem.unidad} × ${formatUnitPriceRaw(modalItem.precioFinal)} = ${formatAmountAuto(modalItem.totalUSD)} USD
                 </span>
               </div>
             </div>

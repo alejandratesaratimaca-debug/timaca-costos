@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import { useCostos } from '../context/CostosContext';
 import { SalidaCosto } from '../types/costos';
-import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
+import { formatCurrency, formatNumber, formatUnitPriceRaw, formatAmountAuto } from '../utils/dateHelpers';
 import { 
   Search, 
   RotateCcw, 
@@ -869,10 +869,24 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                 <div>
                   <span className="text-neutral-500 block text-[11px]">Monto Total (USD)</span>
                   <span className="font-mono font-black text-blue-700 text-base">
-                    ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')}
+                    ${formatAmountAuto(salidaAuditoria.montoTotal)}
                   </span>
                 </div>
               </div>
+
+              {/* Banner informativo si la cantidad o el costo es 0 (ej. Grúas/Equipos en Standby) */}
+              {salidaAuditoria.cantidad === 0 && (
+                <div className="p-3 bg-amber-50/90 border border-amber-300 rounded-xl space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200 text-amber-950 border border-amber-300">
+                      EQUIPO EN PLANTA SIN ACTIVIDAD OPERATIVA / STANDBY
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-900 leading-relaxed">
+                    Este registro proviene del parte diario de campo en Planta de Pellas. El equipo se reportó presente en sitio pero sin horas operativas facturables en la fecha ({salidaAuditoria.motivo || 'Sin actividad asignada'}). Costo imputado: $0 USD.
+                  </p>
+                </div>
+              )}
 
               {/* Cálculo */}
               <div className="mt-2.5 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-2">
@@ -881,7 +895,7 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
                     Cálculo Auditado (Master Unificado):
                   </span>
                   <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} = ${Math.round(salidaAuditoria.montoTotal).toLocaleString('de-DE')} USD
+                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} = ${formatAmountAuto(salidaAuditoria.montoTotal)} USD
                   </span>
                 </div>
 
