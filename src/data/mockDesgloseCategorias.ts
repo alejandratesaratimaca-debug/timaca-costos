@@ -432,42 +432,43 @@ export const DESGLOSE_CATEGORIAS_PROYECTOS: Record<string, Record<string, FilaDe
 // 1. Matriz Oficial de Costos Indirectos a Prorratear (15 Rubros Oficiales de Costos TIMACA)
 // Coincidencia 100% exacta con la tabla oficial "Costos Indirectos a Prorratear"
 export const COSTOS_INDIRECTOS_POR_CATEGORIAS: FilaDesgloseMensual[] = [
-  { concepto: 'Combustible', ene: 22074, feb: 27425, mar: 32224, abr: 7353, may: 6392, jun: 8628, jul: 9875, ago: 19239, sep: 0, total: 133210 },
-  { concepto: 'Gastos de asociación/Subscripción', ene: 56, feb: 102, mar: 123, abr: 116, may: 56, jun: 55, jul: 0, ago: 0, sep: 0, total: 508 },
-  { concepto: 'Gastos de Seguro', ene: 0, feb: 92, mar: 0, abr: 165, may: 30, jun: 318, jul: 0, ago: 0, sep: 0, total: 605 },
+  { concepto: 'Combustible', ene: 22074, feb: 27425, mar: 32224, abr: 7353, may: 6392, jun: 8628, jul: 9875, ago: 19239, sep: 50413, total: 183623 },
+  { concepto: 'Gastos de asociación/Subscripción', ene: 56, feb: 102, mar: 123, abr: 116, may: 56, jun: 55, jul: 0, ago: 0, sep: 56, total: 564 },
+  { concepto: 'Gastos de Seguro', ene: 0, feb: 92, mar: 0, abr: 165, may: 30, jun: 318, jul: 0, ago: 0, sep: 277, total: 882 },
   { concepto: 'Gastos Funebres', ene: 0, feb: 0, mar: 0, abr: 2176, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 2176 },
-  { concepto: 'Honorarios Profesionales Soporte SIP', ene: 120, feb: 116, mar: 120, abr: 120, may: 120, jun: 120, jul: 120, ago: 120, sep: 0, total: 956 },
-  { concepto: 'Incentivos Laborales (Bonos)', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 6700, sep: 0, total: 6700 },
+  { concepto: 'Honorarios Profesionales Soporte SIP', ene: 120, feb: 116, mar: 120, abr: 120, may: 120, jun: 120, jul: 120, ago: 120, sep: 250, total: 1206 },
+  { concepto: 'Incentivos Laborales (Bonos)', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 6700, total: 6700 },
   { concepto: 'Nomina Interna TIMACA', ene: 88000, feb: 87000, mar: 104000, abr: 95000, may: 153000, jun: 132000, jul: 128000, ago: 125000, sep: 73000, total: 985000 },
-  { concepto: 'Nomina -TALLERES', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 122000, sep: 0, total: 122000 },
+  { concepto: 'Nomina -TALLERES', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 122000, total: 122000 },
   { concepto: 'Otros Servicios Contratados de Admón.', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 14, jul: 0, ago: 0, sep: 0, total: 14 },
-  { concepto: 'Servicios Publicos', ene: 2467, feb: 268, mar: 1344, abr: 1549, may: 1542, jun: 1562, jul: 1562, ago: 1562, sep: 0, total: 11857 },
-  { concepto: 'Servicios Telecomunicaciones', ene: 159, feb: 184, mar: 596, abr: 717, may: 589, jun: 614, jul: 0, ago: 0, sep: 0, total: 2859 },
-  { concepto: 'Sindicato', ene: 57000, feb: 54898, mar: 57000, abr: 57000, may: 57000, jun: 57000, jul: 57000, ago: 57000, sep: 0, total: 453898 },
-  { concepto: 'Timbres Fiscales / Notarias / Registros', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 726, jul: 0, ago: 0, sep: 0, total: 726 },
-  { concepto: 'Vigilancia', ene: 3521, feb: 3391, mar: 3880, abr: 4214, may: 4907, jun: 5718, jul: 4588, ago: 4587, sep: 0, total: 34806 }
+  { concepto: 'Servicios Publicos', ene: 2467, feb: 268, mar: 1344, abr: 1549, may: 1542, jun: 1562, jul: 1562, ago: 1562, sep: 2556, total: 14413 },
+  { concepto: 'Servicios Telecomunicaciones', ene: 159, feb: 184, mar: 596, abr: 717, may: 589, jun: 614, jul: 0, ago: 0, sep: 570, total: 3429 },
+  { concepto: 'Sindicato', ene: 57000, feb: 54898, mar: 57000, abr: 57000, may: 57000, jun: 57000, jul: 57000, ago: 57000, sep: 58952, total: 512850 },
+  { concepto: 'Timbres Fiscales / Notarias / Registros', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 726, jul: 0, ago: 0, sep: 7634, total: 8360 },
+  { concepto: 'Vigilancia', ene: 3521, feb: 3391, mar: 3880, abr: 4214, may: 4907, jun: 5718, jul: 4588, ago: 4587, sep: 4803, total: 39609 },
+  { concepto: 'Gastos de viajes/viáticos nacionales', ene: 351, feb: 393, mar: 2353, abr: 3964, may: 1940, jun: 1523, jul: 2267, ago: 1259, sep: 4124, total: 18174 }
 ];
 
 export const COSTOS_INDIRECTOS_A_PRORRATEAR = COSTOS_INDIRECTOS_POR_CATEGORIAS;
 
 // 2. Matriz Oficial de Costos Indirectos DESGLOSADA POR CUENTAS AUXILIARES (% DE PRORRATEO - 9 Meses Oficiales)
 export const COSTOS_INDIRECTOS_CONSOLIDADO_OFICIAL: FilaDesgloseMensual[] = [
-  { ctaAuxiliar: 'TTE-C-0706', concepto: 'TTE-C-0706 · Línea 1 Pellas (Recuperación Línea 1 Planta de Pellas)', porcentaje: 33.37, ene: 0, feb: 0, mar: 0, abr: 0, may: 116389, jun: 135147, jul: 107485, ago: 202292, sep: 51558, total: 612871 },
+  { ctaAuxiliar: 'TTE-C-0706', concepto: 'TTE-C-0706 · Línea 1 Pellas (Recuperación Línea 1 Planta de Pellas)', porcentaje: 33.37, ene: 0, feb: 0, mar: 0, abr: 0, may: 116389, jun: 135147, jul: 107485, ago: 202292, sep: 205400, total: 766713 },
   { ctaAuxiliar: 'TTE-C-0676', concepto: 'TTE-C-0676 · 2da Línea Pellas (Segunda Línea Planta de Pellas)', porcentaje: 22.27, ene: 109790, feb: 88858, mar: 85824, abr: 90209, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 374680 },
-  { ctaAuxiliar: 'TTE-C-0656', concepto: 'TTE-C-0656 · Bandas Transp. PMH (Rehabilitación de Bandas Transportadoras PMH)', porcentaje: 12.50, ene: 21121, feb: 25237, mar: 34806, abr: 27397, may: 18767, jun: 14129, jul: 26055, ago: 42744, sep: 5466, total: 215721 },
-  { ctaAuxiliar: 'TTE-C-0668', concepto: 'TTE-C-0668 · Briquetas Fase 2 (Fase 2 Planta de Briquetas - FMO)', porcentaje: 8.24, ene: 13655, feb: 12675, mar: 17862, abr: 26676, may: 14875, jun: 11458, jul: 18280, ago: 23119, sep: 2917, total: 141518 },
-  { ctaAuxiliar: 'TTE-C-0680', concepto: 'TTE-C-0680 · Mantenimiento BG II (Servicio de Mantenimiento de BG II)', porcentaje: 4.89, ene: 8561, feb: 6641, mar: 11610, abr: 7982, may: 15560, jun: 8250, jul: 9550, ago: 14136, sep: 1778, total: 84069 },
-  { ctaAuxiliar: 'TTE-C-0678', concepto: 'TTE-C-0678 · Pila HA y HB PMH (Proyecto Pila HA y HB Suministro e Instalación)', porcentaje: 3.98, ene: 583, feb: 2987, mar: 9791, abr: 9479, may: 4722, jun: 14879, jul: 10244, ago: 14355, sep: 1803, total: 68842 },
-  { ctaAuxiliar: 'TTE-C-0671', concepto: 'TTE-C-0671 · 2da Línea PMH (Segunda Línea PMH - Ingeniería y Suministro)', porcentaje: 3.09, ene: 0, feb: 0, mar: 0, abr: 198, may: 2407, jun: 10040, jul: 16865, ago: 22507, sep: 2916, total: 54932 },
+  { ctaAuxiliar: 'TTE-C-0656', concepto: 'TTE-C-0656 · Bandas Transp. PMH (Rehabilitación de Bandas Transportadoras PMH)', porcentaje: 12.50, ene: 21121, feb: 25237, mar: 34806, abr: 27397, may: 18767, jun: 14129, jul: 26055, ago: 42744, sep: 43401, total: 253656 },
+  { ctaAuxiliar: 'TTE-C-0668', concepto: 'TTE-C-0668 · Briquetas Fase 2 (Fase 2 Planta de Briquetas - FMO)', porcentaje: 8.24, ene: 13655, feb: 12675, mar: 17862, abr: 26676, may: 14875, jun: 11458, jul: 18280, ago: 23119, sep: 23474, total: 162075 },
+  { ctaAuxiliar: 'TTE-C-0680', concepto: 'TTE-C-0680 · Mantenimiento BG II (Servicio de Mantenimiento de BG II)', porcentaje: 4.89, ene: 8561, feb: 6641, mar: 11610, abr: 7982, may: 15560, jun: 8250, jul: 9550, ago: 14136, sep: 14353, total: 96644 },
+  { ctaAuxiliar: 'TTE-C-0678', concepto: 'TTE-C-0678 · Pila HA y HB PMH (Proyecto Pila HA y HB Suministro e Instalación)', porcentaje: 3.98, ene: 583, feb: 2987, mar: 9791, abr: 9479, may: 4722, jun: 14879, jul: 10244, ago: 14355, sep: 14576, total: 81615 },
+  { ctaAuxiliar: 'TTE-C-0671', concepto: 'TTE-C-0671 · 2da Línea PMH (Segunda Línea PMH - Ingeniería y Suministro)', porcentaje: 3.09, ene: 0, feb: 0, mar: 0, abr: 198, may: 2407, jun: 10040, jul: 16865, ago: 22507, sep: 22853, total: 74869 },
   { ctaAuxiliar: 'TTE-C-0653', concepto: 'TTE-C-0653 · Rueda Cangilones PMH (Repotenciación Rueda Cangilones DRAVO)', porcentaje: 2.75, ene: 0, feb: 0, mar: 0, abr: 0, may: 41590, jun: 4734, jul: 0, ago: 0, sep: 0, total: 46324 },
   { ctaAuxiliar: 'TTE-C-0693', concepto: 'TTE-C-0693 · Parada Planta Briquetas (Trabajos para Parada de Planta)', porcentaje: 2.41, ene: 1742, feb: 12953, mar: 24937, abr: 969, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 40601 },
-  { ctaAuxiliar: 'TTE-C-0670', concepto: 'TTE-C-0670 · Mtto Briqueteras (Servicio Mtto. Máquinas Briqueteras)', porcentaje: 2.11, ene: 3654, feb: 3690, mar: 4005, abr: 2473, may: 3319, jun: 1646, jul: 6256, ago: 10410, sep: 1309, total: 36761 },
+  { ctaAuxiliar: 'TTE-C-0670', concepto: 'TTE-C-0670 · Mtto Briqueteras (Servicio Mtto. Máquinas Briqueteras)', porcentaje: 2.11, ene: 3654, feb: 3690, mar: 4005, abr: 2473, may: 3319, jun: 1646, jul: 6256, ago: 10410, sep: 10570, total: 46022 },
   { ctaAuxiliar: 'TTE-C-0682', concepto: 'TTE-C-0682 · Personal Zona 60 (Suministro de Personal para Zona 60)', porcentaje: 1.68, ene: 4412, feb: 4910, mar: 5041, abr: 3027, may: 6006, jun: 4883, jul: 0, ago: 0, sep: 0, total: 28280 },
   { ctaAuxiliar: 'TTE-C-0669', concepto: 'TTE-C-0669 · Mtto Dravo (Servicio de Mantenimiento de Dravo)', porcentaje: 0.86, ene: 4274, feb: 4816, mar: 5411, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 14500 },
-  { ctaAuxiliar: 'TTE-C-0694', concepto: 'TTE-C-0694 · Caldera Briquetas (Suministro e Instalación Caldera Briquetas)', porcentaje: 0.54, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 5296, ago: 3818, sep: 482, total: 9596 },
+  { ctaAuxiliar: 'TTE-C-0694', concepto: 'TTE-C-0694 · Caldera Briquetas (Suministro e Instalación Caldera Briquetas)', porcentaje: 0.54, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 5296, ago: 3818, sep: 3877, total: 12991 },
   { ctaAuxiliar: 'TTE-C-0688', concepto: 'TTE-C-0688 · Carga Barcos Wellman (Desmantelamiento Carga Barcos Wellman)', porcentaje: 0.45, ene: 821, feb: 6706, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 7527 },
-  { ctaAuxiliar: 'TTE-C-0655', concepto: 'TTE-C-0655 · Tolva PMH (Interconexión Sistema Transporte Tolva PMH)', porcentaje: 0.39, ene: 4784, feb: 956, mar: 0, abr: 0, may: 0, jun: 0, jul: 150, ago: 683, sep: 86, total: 6660 },
-  { ctaAuxiliar: 'TTE-C-0684', concepto: 'TTE-C-0684 · Gamelas FMO-PMH (Fabricación de Gamelas FMO-PMH)', porcentaje: 0.18, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 965, ago: 2143, sep: 270, total: 3378 },
+  { ctaAuxiliar: 'TTE-C-0655', concepto: 'TTE-C-0655 · Tolva PMH (Interconexión Sistema Transporte Tolva PMH)', porcentaje: 0.39, ene: 4784, feb: 956, mar: 0, abr: 0, may: 0, jun: 0, jul: 150, ago: 683, sep: 694, total: 7268 },
+  { ctaAuxiliar: 'TTE-C-0684', concepto: 'TTE-C-0684 · Gamelas FMO-PMH (Fabricación de Gamelas FMO-PMH)', porcentaje: 0.18, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 965, ago: 2143, sep: 2176, total: 5284 },
   { ctaAuxiliar: 'TTE-C-0654', concepto: 'TTE-C-0654 · Cinta JD-9021 (Proyecto 5B: Cinta JD-9021)', porcentaje: 0.18, ene: 0, feb: 3049, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 3049 },
   { ctaAuxiliar: 'TTE-C-0711', concepto: 'TTE-C-0711 · Módulos Eléctricos TH4 (Retirada Módulos Eléctricos TH4 PMH)', porcentaje: 0.09, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 1589, jul: 0, ago: 0, sep: 0, total: 1589 },
 ];

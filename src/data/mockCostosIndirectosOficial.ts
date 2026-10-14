@@ -98,8 +98,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     may: 0,
     jun: 0,
     jul: 0,
-    ago: 6700,
-    sep: 0,
+    ago: 0,
+    sep: 6700,
     total: 6700
   },
   {
@@ -126,8 +126,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     may: 0,
     jun: 0,
     jul: 0,
-    ago: 122000,
-    sep: 0,
+    ago: 0,
+    sep: 122000,
     total: 122000
   },
   {
@@ -197,8 +197,8 @@ export const TABLA_COSTOS_INDIRECTOS_OFICIAL: FilaCostoIndirectoOficial[] = [
     jun: 726,
     jul: 0,
     ago: 0,
-    sep: 79,
-    total: 805
+    sep: 7634,
+    total: 8360
   },
   {
     id: 'ind-14',
@@ -238,7 +238,7 @@ export const TOTALES_COSTOS_INDIRECTOS_OFICIAL = {
   may: 223636,
   jun: 206755,
   jul: 201145,
-  ago: 336208,
-  sep: 195129,
-  total: 1877442
+  ago: 212978,
+  sep: 341375,
+  total: 1900458
 };

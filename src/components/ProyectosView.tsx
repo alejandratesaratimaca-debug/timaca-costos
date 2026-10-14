@@ -520,7 +520,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
       resumenCategoriasAnual['Servicios'] = TABLA_PPT_DISTRIBUCION_2026[1]?.total2026 || 3059088;
       resumenCategoriasAnual['Mano de Obra Directa'] = TABLA_PPT_DISTRIBUCION_2026[2]?.total2026 || 2773572;
       resumenCategoriasAnual['Horas Maquina'] = TABLA_PPT_DISTRIBUCION_2026[3]?.total2026 || 882928;
-      resumenCategoriasAnual['Costos Indirectos'] = TABLA_PPT_DISTRIBUCION_2026[4]?.total2026 || 1755313;
+      resumenCategoriasAnual['Costos Indirectos'] = TABLA_PPT_DISTRIBUCION_2026[4]?.total2026 || 1900458;
     } else {
       mesesData.forEach(m => {
         Object.entries(m.porCategoria).forEach(([cat, val]) => {
@@ -618,8 +618,8 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
       if (indTotalPry <= 0) return [];
 
       const bolsaMesTotal = isAnual 
-        ? 1755313 
-        : (mesTarget >= 1 && mesTarget <= 9 ? (TABLA_PPT_DISTRIBUCION_2026[4]?.meses[mesTarget - 1] || 73000) : 73000);
+        ? 1900458 
+        : (mesTarget >= 1 && mesTarget <= 9 ? (TABLA_PPT_DISTRIBUCION_2026[4]?.meses[mesTarget - 1] || 341375) : 341375);
       
       const factorPry = bolsaMesTotal > 0 ? indTotalPry / bolsaMesTotal : 0;
 
@@ -715,8 +715,8 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
     const realProj = MATRIZ_REAL_PROYECTOS_MENSUAL_2026[activeCuenta.codigo];
 
     const bolsaTotal = isAnual
-      ? 1755313
-      : (mesTarget >= 1 && mesTarget <= 9 ? (TABLA_PPT_DISTRIBUCION_2026[4]?.meses[mesTarget - 1] || 73000) : 73000);
+      ? 1900458
+      : (mesTarget >= 1 && mesTarget <= 9 ? (TABLA_PPT_DISTRIBUCION_2026[4]?.meses[mesTarget - 1] || 341375) : 341375);
 
     const modTotalBolsa = isAnual
       ? 2773572

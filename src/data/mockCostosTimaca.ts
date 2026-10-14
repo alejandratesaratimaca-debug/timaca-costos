@@ -127,27 +127,27 @@ export const DETALLE_SUBCONCEPTOS_CATEGORIAS: Record<string, {
 export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
-    meses: [618977, 687830, 652727, 370626, 287963, 480586, 301441, 506689, 517459],
-    total2026: 4424298,
-    variacion: '+2%',
-    variacionNum: 2,
+    meses: [618977, 687830, 652727, 370626, 287963, 480586, 301441, 506689, 822503],
+    total2026: 4729342,
+    variacion: '+62%',
+    variacionNum: 62,
     esPositiva: true
   },
   {
     categoria: 'Servicios',
-    meses: [144566, 178897, 296831, 108933, 115232, 1645192, 359194, 117970, 217505],
-    total2026: 3184320,
-    variacion: '+84%',
-    variacionNum: 84,
+    meses: [144566, 178897, 296831, 108933, 115232, 1645192, 359194, 117970, 229748],
+    total2026: 3196563,
+    variacion: '+95%',
+    variacionNum: 95,
     esPositiva: true
   },
   {
     categoria: 'Mano de Obra Directa',
-    meses: [363530, 321366, 305366, 278531, 311564, 262303, 284668, 294353, 351891],
-    total2026: 2773572,
-    variacion: '+20%',
-    variacionNum: 20,
-    esPositiva: true
+    meses: [363530, 321366, 305366, 278531, 311564, 262303, 284668, 294353, 196666],
+    total2026: 2618347,
+    variacion: '-33%',
+    variacionNum: -33,
+    esPositiva: false
   },
   {
     categoria: 'Horas Maquina',
@@ -159,10 +159,10 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 336208, 73000],
-    total2026: 1755313,
-    variacion: '-78%',
-    variacionNum: -78,
+    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 212978, 341375],
+    total2026: 1900458,
+    variacion: '+60%',
+    variacionNum: 60,
     esPositiva: false
   }
 ];
@@ -176,7 +176,7 @@ export const TOTALES_MESES_PPT = [
   { mesNum: 6, mesNombre: 'Junio 2026', total: 2663899 },
   { mesNum: 7, mesNombre: 'Julio 2026', total: 1222380 },
   { mesNum: 8, mesNombre: 'Agosto 2026', total: 1345010 },
-  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1215432 }
+  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1645870 }
 ];
 
 // LISTADO OFICIAL DE LAS 20 CUENTAS AUXILIARES / PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.345.010 USD)
