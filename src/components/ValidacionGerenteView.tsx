@@ -46,7 +46,7 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
   const cuentasPermitidas = currentUser.cuentasAsignadas || [];
 
   // Filtros locales
-  const [selectedMes, setSelectedMes] = useState<string>('8'); // Por defecto Agosto (mes de auditoría activa)
+  const [selectedMes, setSelectedMes] = useState<string>('9'); // Por defecto Septiembre (cierre contable activo)
   const [selectedRubro, setSelectedRubro] = useState<'todos' | 'Materiales Directos' | 'Servicios'>('todos');
   const [selectedEstado, setSelectedEstado] = useState<'todos' | 'Observado' | 'Conforme' | 'Pendiente'>('todos');
   const [selectedCuenta, setSelectedCuenta] = useState<string>('todos');
@@ -458,12 +458,20 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
                 Todo el Año
               </button>
               <button
+                onClick={() => setSelectedMes('9')}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  selectedMes === '9' ? 'bg-blue-600 text-white font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Septiembre 2026 (Activo)
+              </button>
+              <button
                 onClick={() => setSelectedMes('8')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   selectedMes === '8' ? 'bg-blue-600 text-white font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Agosto 2026 (Activo)
+                Agosto 2026
               </button>
               <button
                 onClick={() => setSelectedMes('7')}
@@ -636,7 +644,7 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
         )}
 
         {/* Barra de Filtros Activos y Limpieza Rápida */}
-        {(selectedEstado !== 'todos' || selectedRubro !== 'todos' || selectedCuenta !== 'todos' || selectedMes !== '8' || searchTerm.trim()) && (
+        {(selectedEstado !== 'todos' || selectedRubro !== 'todos' || selectedCuenta !== 'todos' || selectedMes !== '9' || searchTerm.trim()) && (
           <div className="pt-2 border-t border-neutral-100 flex items-center justify-between gap-2 flex-wrap text-xs bg-slate-50/60 p-2 rounded-lg">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Filtros Activos:</span>
@@ -662,10 +670,10 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
                   <button onClick={() => setSelectedCuenta('todos')} className="hover:text-red-600 font-bold ml-0.5">×</button>
                 </span>
               )}
-              {selectedMes !== '8' && (
+              {selectedMes !== '9' && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-200 text-slate-800 border border-slate-300">
-                  <span>Mes: {selectedMes === 'todos' ? 'Todo el año' : selectedMes === '7' ? 'Julio' : selectedMes}</span>
-                  <button onClick={() => setSelectedMes('8')} className="hover:text-red-600 font-bold ml-0.5">×</button>
+                  <span>Mes: {selectedMes === 'todos' ? 'Todo el año' : selectedMes === '8' ? 'Agosto' : selectedMes === '7' ? 'Julio' : `Mes ${selectedMes}`}</span>
+                  <button onClick={() => setSelectedMes('9')} className="hover:text-red-600 font-bold ml-0.5">×</button>
                 </span>
               )}
               {searchTerm.trim() && (

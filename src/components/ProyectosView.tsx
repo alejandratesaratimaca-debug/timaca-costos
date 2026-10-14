@@ -559,7 +559,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
 
     // Subconceptos oficiales para Costos Indirectos (dinámico para cualquier mes y proyecto externo)
     if (selectedCategoryFilter === 'Costos Indirectos') {
-      const mesTarget = selectedEvolutivoMes || (selectedMesNum > 0 ? selectedMesNum : 8);
+      const mesTarget = selectedEvolutivoMes || (selectedMesNum > 0 ? selectedMesNum : 9);
       const isAnual = selectedMesNum === 0 && !selectedEvolutivoMes;
       const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'] as const;
       const mKey = !isAnual && mesTarget >= 1 && mesTarget <= 9 ? mesesKeys[mesTarget - 1] : null;
@@ -817,7 +817,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   // Líneas detalladas de auditoría para Costos Indirectos (imputación contable, staff y soporte operativo)
   const lineasCostosIndirectos = useMemo<SalidaCosto[]>(() => {
     if (selectedCategoryFilter !== 'Costos Indirectos' || !activeCuenta) return [];
-    const mesNumVal = selectedEvolutivoMes || (selectedMesNum > 0 ? selectedMesNum : 8);
+    const mesNumVal = selectedEvolutivoMes || (selectedMesNum > 0 ? selectedMesNum : 9);
 
     const mesLabels: Record<number, string> = {
       1: 'Enero 2026', 2: 'Febrero 2026', 3: 'Marzo 2026', 4: 'Abril 2026',

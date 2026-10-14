@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { 
+  PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026,
   PROYECTOS_CATEGORIAS_AGOSTO_2026, 
   PROYECTOS_CATEGORIAS_ANUAL_2026, 
   FilaProyectoCategoriasPPT 
@@ -37,7 +38,7 @@ interface MatrizProyectosCategoriasViewProps {
   onVolver: () => void;
   onSelectProyecto?: (cuentaAuxiliar: string, categoria?: string) => void;
   onSelectCategoria?: (categoria: string) => void;
-  initialPeriodo?: 'agosto' | 'anual';
+  initialPeriodo?: 'septiembre' | 'agosto' | 'anual';
   initialVista?: 'mensual' | 'proyectos';
 }
 
@@ -45,18 +46,22 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
   onVolver,
   onSelectProyecto,
   onSelectCategoria,
-  initialPeriodo = 'anual',
+  initialPeriodo = 'septiembre',
   initialVista = 'mensual'
 }) => {
   const [vistaActiva, setVistaActiva] = useState<'categorias' | 'proyectos'>('categorias');
-  const [periodo, setPeriodo] = useState<'agosto' | 'anual'>(initialPeriodo);
+  const [periodo, setPeriodo] = useState<'septiembre' | 'agosto' | 'anual'>(initialPeriodo);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [selectedProyectoModal, setSelectedProyectoModal] = useState<FilaProyectoCategoriasPPT | null>(null);
   const [selectedMesModal, setSelectedMesModal] = useState<{ mesIndex: number; mesNombre: string } | null>(null);
 
   // Lista de datos según período para la tabla de proyectos
-  const datasetProyectos = periodo === 'agosto' ? PROYECTOS_CATEGORIAS_AGOSTO_2026 : PROYECTOS_CATEGORIAS_ANUAL_2026;
+  const datasetProyectos = periodo === 'septiembre' 
+    ? PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026 
+    : periodo === 'agosto' 
+    ? PROYECTOS_CATEGORIAS_AGOSTO_2026 
+    : PROYECTOS_CATEGORIAS_ANUAL_2026;
 
   // Filtrado por buscador para proyectos
   const filasFiltradasProyectos = useMemo(() => {
@@ -207,7 +212,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
 
       const ws = XLSX.utils.json_to_sheet(dataExcel);
       XLSX.utils.book_append_sheet(wb, ws, 'Proyectos x Categorias');
-      XLSX.writeFile(wb, `TIMACA_Proyectos_x_Categorias_${periodo === 'agosto' ? 'Agosto_2026' : 'Anual_2026'}.xlsx`);
+      XLSX.writeFile(wb, `TIMACA_Proyectos_x_Categorias_${periodo === 'septiembre' ? 'Septiembre_2026' : periodo === 'agosto' ? 'Agosto_2026' : 'Anual_2026'}.xlsx`);
     }
 
     setDownloadSuccess(true);
@@ -280,6 +285,16 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
           {/* Switcher de período si está en la vista de proyectos */}
           {vistaActiva === 'proyectos' && (
             <div className="flex items-center p-1 bg-blue-50 rounded-xl border border-blue-200 text-xs font-bold">
+              <button
+                onClick={() => setPeriodo('septiembre')}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  periodo === 'septiembre'
+                    ? 'bg-blue-700 text-white shadow-2xs'
+                    : 'text-blue-900 hover:text-blue-950'
+                }`}
+              >
+                Septiembre ($1.22M)
+              </button>
               <button
                 onClick={() => setPeriodo('agosto')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
@@ -636,7 +651,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               />
             </div>
             <div className="text-xs text-neutral-500 font-medium">
-              Mostrando <strong>{filasFiltradasProyectos.length}</strong> proyectos auditados en {periodo === 'agosto' ? 'Agosto 2026' : 'Año Completo 2026'}
+              Mostrando <strong>{filasFiltradasProyectos.length}</strong> proyectos auditados en {periodo === 'septiembre' ? 'Septiembre 2026' : periodo === 'agosto' ? 'Agosto 2026' : 'Año Completo 2026'}
             </div>
           </div>
 

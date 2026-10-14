@@ -84,14 +84,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [hoveredWeek, setHoveredWeek] = useState<number | null>(null);
   const [chartMode, setChartMode] = useState<'mensual' | 'semanal' | 'por-categoria'>('mensual');
   const [selectedCatFocus, setSelectedCatFocus] = useState<string>('Materiales Directos');
-  const [filtroTipoProyecto, setFiltroTipoProyecto] = useState<'todos' | 'externos'>('todos');
-  const [selectedMesFiltro, setSelectedMesFiltro] = useState<number | 'todos'>('todos');
+  const [filtroTipoProyecto, setFiltroTipoProyecto] = useState<'todos' | 'externos'>('externos');
+  const [selectedMesFiltro, setSelectedMesFiltro] = useState<number | 'todos'>(9);
   const [selectedCuentasFiltro, setSelectedCuentasFiltro] = useState<string[]>([]);
   const [filasAMostrar, setFilasAMostrar] = useState<number | 'todas'>(50);
   const [downloadExcelSuccess, setDownloadExcelSuccess] = useState<boolean>(false);
   const [selectedMesModal, setSelectedMesModal] = useState<ResumenMensual | null>(null);
   const [salidaAuditoria, setSalidaAuditoria] = useState<SalidaCosto | null>(null);
-  const [periodoDetalleCategorias, setPeriodoDetalleCategorias] = useState<'anual' | number>('anual');
+  const [periodoDetalleCategorias, setPeriodoDetalleCategorias] = useState<'anual' | number>(9);
   const [adminBannerExpanded, setAdminBannerExpanded] = useState<boolean>(false);
 
   const MESES_CONFIG = [
