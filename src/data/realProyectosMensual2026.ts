@@ -1,7 +1,6 @@
 // Matriz Oficial Real 2026 de Desembolsos Mensuales por Proyecto Externo (Enero a Septiembre 2026)
-// Extraída directamente de insumos auditados y deduplicados 2026
-// Cero datos inventados. Filtros estrictos: Proyectos Externos (TTE-C), Deduplicación estricta de despachos
-// Septiembre 2026 Auditado Oficialmente
+// GENERADA AUTOMÁTICAMENTE POR EL MOTOR DE UNIFICACIÓN DEFINITIVO 2026
+// Filtros estrictos: Proyectos Externos (TTE-C), Deduplicación estricta, Segregación de CAPEX
 
 export interface ProyectoEvolutivoMensual {
   cuentaAuxiliar: string;
@@ -14,197 +13,764 @@ export interface ProyectoEvolutivoMensual {
 export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutivoMensual> = {
   "TTE-C-0676": {
     "cuentaAuxiliar": "TTE-C-0676",
-    "descripcion": "Segunda linea de Planta de Pellas (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0676",
     "meses": [
-      614837.67,
-      486668.06,
-      387356.95,
-      378139.39,
-      34927.78,
-      24049.08,
-      12822.6,
-      4018.44,
-      443.66
+      446172.74,
+      391803.51,
+      278059,
+      351207.15,
+      93405.66,
+      25773.11,
+      14506.8,
+      4449.37,
+      505.18
     ],
     "byCategoriaMes": [
       {
-        "Materiales Directos": 63394.13,
-        "Servicios": 49753.32,
-        "Mano de Obra Directa": 248884.41,
-        "Horas Maquina": 143016.16,
-        "Costos Indirectos": 109789.65
-      },
-      {
-        "Materiales Directos": 39771.05,
-        "Servicios": 73186.54,
-        "Mano de Obra Directa": 187511.41,
-        "Horas Maquina": 97341.46,
-        "Costos Indirectos": 88857.6
-      },
-      {
-        "Materiales Directos": 21458.41,
-        "Servicios": 54952.07,
-        "Mano de Obra Directa": 159974.66,
-        "Horas Maquina": 65147.96,
-        "Costos Indirectos": 85823.85
-      },
-      {
-        "Materiales Directos": 48875.71,
-        "Servicios": 42241.24,
-        "Mano de Obra Directa": 157878.58,
-        "Horas Maquina": 38935.19,
-        "Costos Indirectos": 90208.67
-      },
-      {
-        "Materiales Directos": 8788.75,
-        "Servicios": 1372.75,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 24766.28,
+        "Materiales Directos": 55698.89,
+        "Servicios": 34160.14,
+        "Mano de Obra Directa": 216314.49,
+        "Horas Maquina": 139999.23,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": -352.21,
-        "Servicios": 20600,
+        "Materiales Directos": 42000.69,
+        "Servicios": 75565,
+        "Mano de Obra Directa": 181081.41,
+        "Horas Maquina": 93156.42,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 38009.24,
+        "Servicios": 60320.48,
+        "Mano de Obra Directa": 109974.66,
+        "Horas Maquina": 69754.61,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 151826.78,
+        "Servicios": 24873.57,
+        "Mano de Obra Directa": 139177.7,
+        "Horas Maquina": 35329.09,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 10630.94,
+        "Servicios": 19542.75,
+        "Mano de Obra Directa": 45270,
+        "Horas Maquina": 17961.97,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": -340.48,
+        "Servicios": 16550,
         "Mano de Obra Directa": 0,
-        "Horas Maquina": 3801.29,
+        "Horas Maquina": 9563.59,
         "Costos Indirectos": 0
       },
       {
         "Materiales Directos": 0,
         "Servicios": 15,
         "Mano de Obra Directa": 0,
-        "Horas Maquina": 12807.6,
+        "Horas Maquina": 14491.8,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 4018.44,
+        "Materiales Directos": 4449.37,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 443.66,
+        "Materiales Directos": 505.18,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 1943263.63
+    "totalAnual": 1605882.52
+  },
+  "TTE-C-0693": {
+    "cuentaAuxiliar": "TTE-C-0693",
+    "descripcion": "Proyecto TTE-C-0693",
+    "meses": [
+      3374.75,
+      426539.55,
+      92008.63,
+      2131.43,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 234.75,
+        "Servicios": 0,
+        "Mano de Obra Directa": 3140,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 405334.65,
+        "Servicios": 0,
+        "Mano de Obra Directa": 21204.9,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 20054.93,
+        "Servicios": 40000,
+        "Mano de Obra Directa": 31953.7,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 604.1,
+        "Servicios": 32.33,
+        "Mano de Obra Directa": 1495,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 524054.36
   },
   "TTE-C-0668": {
     "cuentaAuxiliar": "TTE-C-0668",
-    "descripcion": "Fase 2 Planta de briquetas - FMO  (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0668",
     "meses": [
-      191559.33,
-      103494.58,
-      192267.8,
-      169650.56,
-      90009.33,
-      103800.8,
-      165044.18,
-      169770.8,
-      104230.68
+      159574.96,
+      97424.19,
+      157492.15,
+      147153.98,
+      351813.79,
+      86332.64,
+      174707.23,
+      99048.27,
+      133458.54
     ],
     "byCategoriaMes": [
       {
-        "Materiales Directos": 147032.22,
-        "Servicios": 6259.96,
-        "Mano de Obra Directa": 24612,
+        "Materiales Directos": 133248.02,
+        "Servicios": 5605.49,
+        "Mano de Obra Directa": 20721.45,
         "Horas Maquina": 0,
-        "Costos Indirectos": 13655.15
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 69434.99,
-        "Servicios": 4051.33,
+        "Materiales Directos": 76242.27,
+        "Servicios": 3848.89,
         "Mano de Obra Directa": 17333.04,
         "Horas Maquina": 0,
-        "Costos Indirectos": 12675.22
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 144177.87,
-        "Servicios": 12129.49,
+        "Materiales Directos": 129667.36,
+        "Servicios": 9726.39,
         "Mano de Obra Directa": 18098.4,
         "Horas Maquina": 0,
-        "Costos Indirectos": 17862.04
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 92914.21,
-        "Servicios": 8902.48,
-        "Mano de Obra Directa": 41157.5,
+        "Materiales Directos": 92626.94,
+        "Servicios": 9149.54,
+        "Mano de Obra Directa": 45377.5,
         "Horas Maquina": 0,
-        "Costos Indirectos": 26676.37
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 52045.85,
+        "Materiales Directos": 332945.77,
         "Servicios": 2850,
-        "Mano de Obra Directa": 20238.03,
+        "Mano de Obra Directa": 16018.03,
         "Horas Maquina": 0,
-        "Costos Indirectos": 14875.45
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 63944.45,
-        "Servicios": 15336.84,
+        "Materiales Directos": 42183.52,
+        "Servicios": 31087.5,
         "Mano de Obra Directa": 13061.61,
         "Horas Maquina": 0,
-        "Costos Indirectos": 11457.9
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 51252.97,
-        "Servicios": 80289.39,
-        "Mano de Obra Directa": 15221.69,
+        "Materiales Directos": 59336.64,
+        "Servicios": 97118.91,
+        "Mano de Obra Directa": 18251.69,
         "Horas Maquina": 0,
-        "Costos Indirectos": 18280.13
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 105046.51,
-        "Servicios": 30770.46,
-        "Mano de Obra Directa": 10835,
+        "Materiales Directos": 47954.51,
+        "Servicios": 40493.76,
+        "Mano de Obra Directa": 10600,
         "Horas Maquina": 0,
-        "Costos Indirectos": 23118.83
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 69034,
-        "Servicios": 3330.97,
+        "Materiales Directos": 118055.74,
+        "Servicios": 7011.2,
         "Mano de Obra Directa": 8391.6,
         "Horas Maquina": 0,
-        "Costos Indirectos": 23474.11
+        "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 1289828.06
+    "totalAnual": 1407005.75
+  },
+  "TTE-C-0656": {
+    "cuentaAuxiliar": "TTE-C-0656",
+    "descripcion": "Proyecto TTE-C-0656",
+    "meses": [
+      251361.71,
+      625747.69,
+      519826.07,
+      110064.44,
+      126107.88,
+      97085.59,
+      39311.84,
+      66003.03,
+      19306.7
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 204766.01,
+        "Servicios": 13478.74,
+        "Mano de Obra Directa": 33116.96,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 572076.8,
+        "Servicios": 400.89,
+        "Mano de Obra Directa": 41180,
+        "Horas Maquina": 12090,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 260187.33,
+        "Servicios": 134178.74,
+        "Mano de Obra Directa": 44600,
+        "Horas Maquina": 80860,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 46668.06,
+        "Servicios": 7046.38,
+        "Mano de Obra Directa": 48810,
+        "Horas Maquina": 7540,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 51462.84,
+        "Servicios": 4004.48,
+        "Mano de Obra Directa": 26180.56,
+        "Horas Maquina": 44460,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 66349.73,
+        "Servicios": 1647.51,
+        "Mano de Obra Directa": 22978.35,
+        "Horas Maquina": 6110,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 10246.09,
+        "Servicios": 1935.7,
+        "Mano de Obra Directa": 27130.05,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 63946.62,
+        "Servicios": 130,
+        "Mano de Obra Directa": 1926.41,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 14716.68,
+        "Servicios": 828.12,
+        "Mano de Obra Directa": 3761.9,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 1854814.95
+  },
+  "TTE-C-0680": {
+    "cuentaAuxiliar": "TTE-C-0680",
+    "descripcion": "Proyecto TTE-C-0680",
+    "meses": [
+      160313.45,
+      47305.98,
+      36244.55,
+      28992.92,
+      53958.3,
+      36327.76,
+      44121.12,
+      35173.32,
+      50015.11
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 107268.45,
+        "Servicios": 41250,
+        "Mano de Obra Directa": 11795,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 4720.98,
+        "Servicios": 24740,
+        "Mano de Obra Directa": 17845,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 20244.55,
+        "Servicios": 1332.5,
+        "Mano de Obra Directa": 14667.5,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 9717.92,
+        "Servicios": 6960,
+        "Mano de Obra Directa": 12315,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 7731.77,
+        "Servicios": 30070,
+        "Mano de Obra Directa": 16156.53,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 5022.72,
+        "Servicios": 17049.78,
+        "Mano de Obra Directa": 14255.26,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 5662.24,
+        "Servicios": 26628,
+        "Mano de Obra Directa": 11830.88,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 5728.32,
+        "Servicios": 16860,
+        "Mano de Obra Directa": 12585,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2656.08,
+        "Servicios": 35489,
+        "Mano de Obra Directa": 11870.03,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 492452.51
+  },
+  "TTE-C-0670": {
+    "cuentaAuxiliar": "TTE-C-0670",
+    "descripcion": "Proyecto TTE-C-0670",
+    "meses": [
+      11958.31,
+      7405.27,
+      7775.32,
+      7898.21,
+      4620.2,
+      3758.78,
+      6030.4,
+      5010,
+      3420
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 6724.81,
+        "Servicios": 43.5,
+        "Mano de Obra Directa": 5190,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2276.17,
+        "Servicios": 0,
+        "Mano de Obra Directa": 5129.1,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2642.82,
+        "Servicios": 0,
+        "Mano de Obra Directa": 5132.5,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3198.21,
+        "Servicios": 0,
+        "Mano de Obra Directa": 4700,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1025.2,
+        "Servicios": 0,
+        "Mano de Obra Directa": 3595,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 310.37,
+        "Servicios": 0,
+        "Mano de Obra Directa": 3448.41,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 6030.4,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 5010,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 3420,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 57876.49
+  },
+  "TTE-C-0642": {
+    "cuentaAuxiliar": "TTE-C-0642",
+    "descripcion": "Proyecto TTE-C-0642",
+    "meses": [
+      254.87,
+      0.8,
+      0,
+      231.8,
+      0,
+      0,
+      205.94,
+      300.04,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 254.87,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0.8,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 231.8,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 205.94,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 300.04,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 993.45
+  },
+  "TTE-C-0655": {
+    "cuentaAuxiliar": "TTE-C-0655",
+    "descripcion": "Proyecto TTE-C-0655",
+    "meses": [
+      296934.96,
+      39196.67,
+      58153.39,
+      20771.56,
+      84362.91,
+      47082.74,
+      7002,
+      46430.53,
+      27784.13
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 285524.65,
+        "Servicios": 4553.29,
+        "Mano de Obra Directa": 6857.01,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 7031.17,
+        "Servicios": 31175.5,
+        "Mano de Obra Directa": 990,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 10079.21,
+        "Servicios": 48074.18,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 17986.57,
+        "Servicios": 2784.99,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 82904.91,
+        "Servicios": 1458,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 5795.86,
+        "Servicios": 41286.88,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3848.67,
+        "Servicios": 3008.33,
+        "Mano de Obra Directa": 145,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 44203.47,
+        "Servicios": 1329.99,
+        "Mano de Obra Directa": 897.07,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3924.18,
+        "Servicios": 22091.68,
+        "Mano de Obra Directa": 1768.27,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 627718.89
+  },
+  "TTE-C-0669": {
+    "cuentaAuxiliar": "TTE-C-0669",
+    "descripcion": "Proyecto TTE-C-0669",
+    "meses": [
+      9502.63,
+      7881.76,
+      9199.42,
+      0,
+      55.1,
+      0,
+      1184.88,
+      11542.9,
+      5222.17
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 2646.71,
+        "Servicios": 295.92,
+        "Mano de Obra Directa": 6560,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1341.76,
+        "Servicios": 0,
+        "Mano de Obra Directa": 6540,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2265.72,
+        "Servicios": 0,
+        "Mano de Obra Directa": 6933.7,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 55.1,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 1184.88,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 11542.9,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3.87,
+        "Servicios": 0,
+        "Mano de Obra Directa": 5218.3,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 44588.86
   },
   "TTE-C-0641": {
     "cuentaAuxiliar": "TTE-C-0641",
-    "descripcion": "HIB PLANT/ Rehabilitación de las Máquinas Briqueteadoras FMO (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0641",
     "meses": [
-      4505.42,
-      2407.84,
-      39.61,
+      4993.23,
+      2318.07,
+      37.84,
       0,
       0,
       0,
-      8357.85,
+      8569.52,
       0,
-      74.71
+      108.5
     ],
     "byCategoriaMes": [
       {
-        "Materiales Directos": 4505.42,
+        "Materiales Directos": 4993.23,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 2407.84,
+        "Materiales Directos": 2318.07,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 19.11,
+        "Materiales Directos": 17.34,
         "Servicios": 20.5,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -232,7 +798,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 677.85,
+        "Materiales Directos": 889.52,
         "Servicios": 7680,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -246,32 +812,53 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 74.71,
+        "Materiales Directos": 108.5,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 15385.43
+    "totalAnual": 16027.16
   },
-  "TTE-C-0697": {
-    "cuentaAuxiliar": "TTE-C-0697",
-    "descripcion": "Reparación de Generador Eléctrico para Planta de Briquetas FMO (VISCO ORINOCO)",
+  "TTE-C-0674": {
+    "cuentaAuxiliar": "TTE-C-0674",
+    "descripcion": "Proyecto TTE-C-0674",
     "meses": [
-      10.28,
+      14003.22,
+      3028.12,
+      60.66,
+      8,
       0,
       0,
-      10354.9,
       0,
-      16069.76,
-      2318.94,
-      1045.4,
-      855.26
+      0,
+      0
     ],
     "byCategoriaMes": [
       {
-        "Materiales Directos": 10.28,
+        "Materiales Directos": 14003.22,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3028.12,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 60.66,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 8,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -292,7 +879,634 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 698.9,
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 17100
+  },
+  "TTE-C-0653": {
+    "cuentaAuxiliar": "TTE-C-0653",
+    "descripcion": "Proyecto TTE-C-0653",
+    "meses": [
+      10328.6,
+      15518.75,
+      53904.62,
+      667790.89,
+      152842.05,
+      32294.64,
+      28974.75,
+      115645,
+      187196.22
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 10328.6,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2518.75,
+        "Servicios": 13000,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 52876.17,
+        "Servicios": 1028.45,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 661290.19,
+        "Servicios": 64.94,
+        "Mano de Obra Directa": 6435.77,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 46903.6,
+        "Servicios": 3586.42,
+        "Mano de Obra Directa": 33517.02,
+        "Horas Maquina": 68835,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 11741.77,
+        "Servicios": 16172.87,
+        "Mano de Obra Directa": 4380,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 18597.33,
+        "Servicios": 10377.42,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 111599.68,
+        "Servicios": 4045.32,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 167364.06,
+        "Servicios": 19832.16,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 1264495.52
+  },
+  "TTE-C-0640": {
+    "cuentaAuxiliar": "TTE-C-0640",
+    "descripcion": "Proyecto TTE-C-0640",
+    "meses": [
+      39692.84,
+      9501.58,
+      86932.26,
+      16761.48,
+      11495.52,
+      1681.65,
+      9957.53,
+      18384.96,
+      19214.5
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 39692.84,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 9501.58,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 86732.26,
+        "Servicios": 200,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 16661.48,
+        "Servicios": 100,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 11345.52,
+        "Servicios": 150,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1681.65,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 9957.53,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 18384.96,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 19077.03,
+        "Servicios": 137.47,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 213622.32
+  },
+  "TTE-C-0654": {
+    "cuentaAuxiliar": "TTE-C-0654",
+    "descripcion": "Proyecto TTE-C-0654",
+    "meses": [
+      253269.99,
+      1759.78,
+      1656.26,
+      78830,
+      0,
+      0,
+      0,
+      5000,
+      5014.24
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 253269.99,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1394.76,
+        "Servicios": 115.02,
+        "Mano de Obra Directa": 250,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1656.26,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 78830,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 5000,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 4866.43,
+        "Servicios": 147.81,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 345530.27
+  },
+  "TTE-C-0673": {
+    "cuentaAuxiliar": "TTE-C-0673",
+    "descripcion": "Proyecto TTE-C-0673",
+    "meses": [
+      10.3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 10.3,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 10.3
+  },
+  "TTE-C-0682": {
+    "cuentaAuxiliar": "TTE-C-0682",
+    "descripcion": "Proyecto TTE-C-0682",
+    "meses": [
+      8049.99,
+      11197.02,
+      26104.46,
+      7808.82,
+      8493.28,
+      5639.42,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 1869.06,
+        "Servicios": 0,
+        "Mano de Obra Directa": 6180.93,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1124.74,
+        "Servicios": 0,
+        "Mano de Obra Directa": 6692.28,
+        "Horas Maquina": 3380,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1964.46,
+        "Servicios": 0,
+        "Mano de Obra Directa": 6460,
+        "Horas Maquina": 17680,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2068.82,
+        "Servicios": 0,
+        "Mano de Obra Directa": 5740,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 793.28,
+        "Servicios": 0,
+        "Mano de Obra Directa": 6790,
+        "Horas Maquina": 910,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 211.02,
+        "Servicios": 0,
+        "Mano de Obra Directa": 4518.4,
+        "Horas Maquina": 910,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 67292.99
+  },
+  "TTE-C-0689": {
+    "cuentaAuxiliar": "TTE-C-0689",
+    "descripcion": "Proyecto TTE-C-0689",
+    "meses": [
+      177.75,
+      0,
+      21.53,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 177.75,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 21.53,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 199.28
+  },
+  "TTE-C-0671": {
+    "cuentaAuxiliar": "TTE-C-0671",
+    "descripcion": "Proyecto TTE-C-0671",
+    "meses": [
+      189.38,
+      2046.15,
+      81374.91,
+      17270.37,
+      24262.22,
+      605165.07,
+      110613.88,
+      460461.65,
+      444110.49
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 114.38,
+        "Servicios": 75,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2039.15,
+        "Servicios": 7,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 11233.39,
+        "Servicios": 70141.52,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 14326.45,
+        "Servicios": 1693.92,
+        "Mano de Obra Directa": 860,
+        "Horas Maquina": 390,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 17030.12,
+        "Servicios": 1647.1,
+        "Mano de Obra Directa": 2465,
+        "Horas Maquina": 3120,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 197225.83,
+        "Servicios": 396144.37,
+        "Mano de Obra Directa": 11794.87,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 80136.7,
+        "Servicios": 7186.93,
+        "Mano de Obra Directa": 23290.25,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 421250.85,
+        "Servicios": 9065.8,
+        "Mano de Obra Directa": 30145,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 300156.97,
+        "Servicios": 113648.94,
+        "Mano de Obra Directa": 30304.58,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 1745494.12
+  },
+  "TTE-C-0697": {
+    "cuentaAuxiliar": "TTE-C-0697",
+    "descripcion": "Proyecto TTE-C-0697",
+    "meses": [
+      15,
+      0,
+      0,
+      10189.1,
+      0,
+      16101.22,
+      2637.67,
+      11.78,
+      819.52
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 15,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 533.1,
         "Servicios": 9656,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -306,578 +1520,64 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 1069.76,
+        "Materiales Directos": 1101.22,
         "Servicios": 15000,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 518.94,
+        "Materiales Directos": 837.67,
         "Servicios": 1800,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 1045.4,
+        "Materiales Directos": 11.78,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 695.26,
+        "Materiales Directos": 659.52,
         "Servicios": 160,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 30654.54
+    "totalAnual": 29774.29
   },
-  "TTE-C-0656": {
-    "cuentaAuxiliar": "TTE-C-0656",
-    "descripcion": "Rehabilitación de bandas transportadoras de finos y gruesos de la torre #3 a banda JD-8012  PMH - FMO (VISCO ORINOCO)",
+  "TTE-C-0672": {
+    "cuentaAuxiliar": "TTE-C-0672",
+    "descripcion": "Proyecto TTE-C-0672",
     "meses": [
-      177170.64,
-      354467.87,
-      358299.28,
-      103738.96,
-      107989.87,
-      76235.06,
-      65742.31,
-      109519.27,
-      56059.2
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 101887.64,
-        "Servicios": 16092.78,
-        "Mano de Obra Directa": 38068.92,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 21121.3
-      },
-      {
-        "Materiales Directos": 279065.36,
-        "Servicios": 2082.56,
-        "Mano de Obra Directa": 41180,
-        "Horas Maquina": 6903.31,
-        "Costos Indirectos": 25236.64
-      },
-      {
-        "Materiales Directos": 158521.82,
-        "Servicios": 107731.03,
-        "Mano de Obra Directa": 44600,
-        "Horas Maquina": 12640.76,
-        "Costos Indirectos": 34805.67
-      },
-      {
-        "Materiales Directos": 26147.8,
-        "Servicios": 6483.13,
-        "Mano de Obra Directa": 42270,
-        "Horas Maquina": 1440.56,
-        "Costos Indirectos": 27397.47
-      },
-      {
-        "Materiales Directos": 33149.96,
-        "Servicios": 4004.48,
-        "Mano de Obra Directa": 32720.56,
-        "Horas Maquina": 19347.99,
-        "Costos Indirectos": 18766.87
-      },
-      {
-        "Materiales Directos": 35936.02,
-        "Servicios": 1197.51,
-        "Mano de Obra Directa": 22978.35,
-        "Horas Maquina": 1994.62,
-        "Costos Indirectos": 14128.56
-      },
-      {
-        "Materiales Directos": 9297.11,
-        "Servicios": 5274.61,
-        "Mano de Obra Directa": 25116.03,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 26054.56
-      },
-      {
-        "Materiales Directos": 63701.73,
-        "Servicios": 130,
-        "Mano de Obra Directa": 2943.29,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 42744.25
-      },
-      {
-        "Materiales Directos": 6847.78,
-        "Servicios": 2048.4,
-        "Mano de Obra Directa": 3761.9,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 43401.12
-      }
-    ],
-    "totalAnual": 1409222.46
-  },
-  "TTE-C-0655": {
-    "cuentaAuxiliar": "TTE-C-0655",
-    "descripcion": "Interconexión del sistema de transporte de mineral desde la tolva multipropósito hasta carga barcos de despacho internacional PMH - FMO (VISCO ORINOCO)",
-    "meses": [
-      209910.6,
-      85410.31,
-      61744.29,
-      4788.18,
-      78885.24,
-      47750.14,
-      8896.93,
-      32170.01,
-      5390.96
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 191608.84,
-        "Servicios": 4894.02,
-        "Mano de Obra Directa": 8623.37,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 4784.37
-      },
-      {
-        "Materiales Directos": 52288.88,
-        "Servicios": 31175.5,
-        "Mano de Obra Directa": 990,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 955.93
-      },
-      {
-        "Materiales Directos": 13698.38,
-        "Servicios": 48045.91,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 2003.19,
-        "Servicios": 2784.99,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 77427.24,
-        "Servicios": 1458,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 6463.26,
-        "Servicios": 41286.88,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 8062.47,
-        "Servicios": 538.98,
-        "Mano de Obra Directa": 145,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 150.48
-      },
-      {
-        "Materiales Directos": 30304.52,
-        "Servicios": 1182,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 683.49
-      },
-      {
-        "Materiales Directos": 2723.69,
-        "Servicios": 205,
-        "Mano de Obra Directa": 1768.27,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 694
-      }
-    ],
-    "totalAnual": 534946.66
-  },
-  "TTE-C-0669": {
-    "cuentaAuxiliar": "TTE-C-0669",
-    "descripcion": "Servicio de mantenimiento de  Dravo, Shiploader Agrico, Cinta JD-8012, Cinta JD-8016 y Cinta de TH4 (VISCO ORINOCO)",
-    "meses": [
-      17126.93,
-      12562.76,
-      14412.59,
-      0,
-      54.1,
+      130.74,
       0,
       0,
-      9991.69,
-      5221.84
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 4853.92,
-        "Servicios": 295.92,
-        "Mano de Obra Directa": 7703.2,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 4273.89
-      },
-      {
-        "Materiales Directos": 1207.19,
-        "Servicios": 0,
-        "Mano de Obra Directa": 6540,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 4815.57
-      },
-      {
-        "Materiales Directos": 2067.89,
-        "Servicios": 0,
-        "Mano de Obra Directa": 6933.7,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 5411
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 54.1,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 9991.69,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 3.54,
-        "Servicios": 0,
-        "Mano de Obra Directa": 5218.3,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 59369.91
-  },
-  "TTE-C-0706": {
-    "cuentaAuxiliar": "TTE-C-0706",
-    "descripcion": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
-    "meses": [
-      1836.68,
-      1416.27,
-      684.36,
-      5611.15,
-      392976.21,
-      465168.36,
-      520518.54,
-      636351.52,
-      663783.61
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 1836.68,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 1416.27,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 684.36,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 810.32,
-        "Servicios": 48,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 4752.83,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 10779.34,
-        "Servicios": 41445.35,
-        "Mano de Obra Directa": 171093.49,
-        "Horas Maquina": 53268.8,
-        "Costos Indirectos": 116389.23
-      },
-      {
-        "Materiales Directos": 39061.82,
-        "Servicios": 60100.5,
-        "Mano de Obra Directa": 169549.67,
-        "Horas Maquina": 61309,
-        "Costos Indirectos": 135147.37
-      },
-      {
-        "Materiales Directos": 94269.97,
-        "Servicios": 57034.46,
-        "Mano de Obra Directa": 198976.67,
-        "Horas Maquina": 63125.68,
-        "Costos Indirectos": 107484.91
-      },
-      {
-        "Materiales Directos": 74979.83,
-        "Servicios": 63106.4,
-        "Mano de Obra Directa": 206184.43,
-        "Horas Maquina": 89789.22,
-        "Costos Indirectos": 202291.64
-      },
-      {
-        "Materiales Directos": 150871.57,
-        "Servicios": 46335.86,
-        "Mano de Obra Directa": 128160.97,
-        "Horas Maquina": 55577.78,
-        "Costos Indirectos": 282837.43
-      }
-    ],
-    "totalAnual": 2688346.7
-  },
-  "TTE-C-0653": {
-    "cuentaAuxiliar": "TTE-C-0653",
-    "descripcion": "Repotenciación de recuperador de rueda de cangilones (DRAVO) equipo de recuperación PA-9020 – PMH (VISCO ORINOCO)",
-    "meses": [
-      11537.93,
-      15203.22,
-      76237.63,
-      37343.42,
-      155180.08,
-      38949.5,
-      35466.01,
-      64981.41,
-      144767.75
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 11537.93,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 2203.22,
-        "Servicios": 13000,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 74638.88,
-        "Servicios": 1598.75,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 36486.48,
-        "Servicios": 856.94,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 40913.04,
-        "Servicios": 3586.42,
-        "Mano de Obra Directa": 39952.79,
-        "Horas Maquina": 29137.96,
-        "Costos Indirectos": 41589.87
-      },
-      {
-        "Materiales Directos": 14799.82,
-        "Servicios": 15035.95,
-        "Mano de Obra Directa": 4380,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 4733.73
-      },
-      {
-        "Materiales Directos": 25127.09,
-        "Servicios": 10338.92,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 63946.51,
-        "Servicios": 1034.9,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 128296.22,
-        "Servicios": 16471.53,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 579666.95
-  },
-  "TTE-C-0671": {
-    "cuentaAuxiliar": "TTE-C-0671",
-    "descripcion": "Segunda línea PMH - Ingenieria, diseño y suministro, para incremento de capacidad del despacho internacional PMH-FMO (VISCO ORINOCO)",
-    "meses": [
-      189.38,
-      2004.65,
-      81075.05,
-      17081.29,
-      23011.38,
-      418728.73,
-      111542.9,
-      187932.56,
-      207826.76
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 114.38,
-        "Servicios": 75,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 1997.65,
-        "Servicios": 7,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 75133.53,
-        "Servicios": 5941.52,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 15565.25,
-        "Servicios": 693.92,
-        "Mano de Obra Directa": 305,
-        "Horas Maquina": 319.44,
-        "Costos Indirectos": 197.68
-      },
-      {
-        "Materiales Directos": 15862.55,
-        "Servicios": 1647.1,
-        "Mano de Obra Directa": 3020,
-        "Horas Maquina": 74.42,
-        "Costos Indirectos": 2407.31
-      },
-      {
-        "Materiales Directos": 76707.3,
-        "Servicios": 320186.37,
-        "Mano de Obra Directa": 11794.87,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 10040.19
-      },
-      {
-        "Materiales Directos": 73535.77,
-        "Servicios": 4885.58,
-        "Mano de Obra Directa": 16257,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 16864.55
-      },
-      {
-        "Materiales Directos": 132373.65,
-        "Servicios": 5168.94,
-        "Mano de Obra Directa": 27883.25,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 22506.72
-      },
-      {
-        "Materiales Directos": 153367.06,
-        "Servicios": 1302.52,
-        "Mano de Obra Directa": 30304.58,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 22852.6
-      }
-    ],
-    "totalAnual": 1049392.7
-  },
-  "TTE-C-0682": {
-    "cuentaAuxiliar": "TTE-C-0682",
-    "descripcion": "Suministro de personal para zona 6000 de Planta de Briquetas - FMO (VISCO ORINOCO)",
-    "meses": [
-      13875.68,
-      20077.41,
-      47006.35,
-      8832.9,
-      16228.17,
-      11438.42,
       0,
       0,
-      0
+      0,
+      0,
+      0,
+      2009.83
     ],
     "byCategoriaMes": [
       {
-        "Materiales Directos": 1510.78,
+        "Materiales Directos": 130.74,
         "Servicios": 0,
-        "Mano de Obra Directa": 7952.63,
+        "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
-        "Costos Indirectos": 4412.27
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 1109.87,
+        "Materiales Directos": 0,
         "Servicios": 0,
-        "Mano de Obra Directa": 6692.28,
-        "Horas Maquina": 7365.46,
-        "Costos Indirectos": 4909.8
-      },
-      {
-        "Materiales Directos": 1293.86,
-        "Servicios": 0,
-        "Mano de Obra Directa": 6460,
-        "Horas Maquina": 34211.14,
-        "Costos Indirectos": 5041.35
-      },
-      {
-        "Materiales Directos": 1136.05,
-        "Servicios": 0,
-        "Mano de Obra Directa": 4670,
+        "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
-        "Costos Indirectos": 3026.85
-      },
-      {
-        "Materiales Directos": 460.23,
-        "Servicios": 0,
-        "Mano de Obra Directa": 7860,
-        "Horas Maquina": 1902.1,
-        "Costos Indirectos": 6005.84
-      },
-      {
-        "Materiales Directos": 134.51,
-        "Servicios": 0,
-        "Mano de Obra Directa": 4518.4,
-        "Horas Maquina": 1902.1,
-        "Costos Indirectos": 4883.41
+        "Costos Indirectos": 0
       },
       {
         "Materiales Directos": 0,
@@ -895,505 +1595,47 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       },
       {
         "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2009.83,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 117458.93
-  },
-  "TTE-C-0680": {
-    "cuentaAuxiliar": "TTE-C-0680",
-    "descripcion": "Servicio de mantenimiento de BG II (VISCO ORINOCO)",
-    "meses": [
-      112347.98,
-      61031.44,
-      46630.04,
-      41545.63,
-      80673.73,
-      50113.55,
-      51132.92,
-      51179.5,
-      31937.11
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 40905.96,
-        "Servicios": 47451.19,
-        "Mano de Obra Directa": 15430,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 8560.83
-      },
-      {
-        "Materiales Directos": 7984.07,
-        "Servicios": 28561.81,
-        "Mano de Obra Directa": 17845,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 6640.56
-      },
-      {
-        "Materiales Directos": 15150.67,
-        "Servicios": 4991.5,
-        "Mano de Obra Directa": 14877.5,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 11610.37
-      },
-      {
-        "Materiales Directos": 8245.68,
-        "Servicios": 13002.88,
-        "Mano de Obra Directa": 12315,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 7982.07
-      },
-      {
-        "Materiales Directos": 8990.6,
-        "Servicios": 31488.25,
-        "Mano de Obra Directa": 24634.55,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 15560.33
-      },
-      {
-        "Materiales Directos": 6497.66,
-        "Servicios": 21110.17,
-        "Mano de Obra Directa": 14255.26,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 8250.46
-      },
-      {
-        "Materiales Directos": 7269.19,
-        "Servicios": 25108,
-        "Mano de Obra Directa": 9205.88,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 9549.85
-      },
-      {
-        "Materiales Directos": 10028.3,
-        "Servicios": 15060,
-        "Mano de Obra Directa": 11955,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 14136.2
-      },
-      {
-        "Materiales Directos": 3033.65,
-        "Servicios": 2680,
-        "Mano de Obra Directa": 11870.03,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 14353.43
-      }
-    ],
-    "totalAnual": 526591.9
-  },
-  "TTE-C-0674": {
-    "cuentaAuxiliar": "TTE-C-0674",
-    "descripcion": "Renovación de tolvas de cubierta – Boca Grande II (VISCO ORINOCO)",
-    "meses": [
-      13465.33,
-      3123.02,
-      51.28,
-      6,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 13465.33,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 3123.02,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 51.28,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 6,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 16645.63
-  },
-  "TTE-C-0688": {
-    "cuentaAuxiliar": "TTE-C-0688",
-    "descripcion": "Desmantelamiento del Carga Barcos Wellman (VISCO ORINOCO)",
-    "meses": [
-      2808.98,
-      20127.29,
-      4790,
-      0,
-      0,
-      0,
-      758.99,
-      758.99,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 507.85,
-        "Mano de Obra Directa": 1480,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 821.13
-      },
-      {
-        "Materiales Directos": 2868.88,
-        "Servicios": 1242.73,
-        "Mano de Obra Directa": 9310,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 6705.68
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 4790,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 758.99,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 758.99,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 29244.25
-  },
-  "TTE-C-0640": {
-    "cuentaAuxiliar": "TTE-C-0640",
-    "descripcion": "Rehabilitación de la Parrilla Móvil 610TG1/ Planta de Pellas FMO (VISCO ORINOCO)",
-    "meses": [
-      9102.33,
-      9515.89,
-      25000.2,
-      8683.67,
-      9438.12,
-      1212.14,
-      6196.18,
-      13704.63,
-      12020.95
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 9102.33,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 9515.89,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 24800.2,
-        "Servicios": 200,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 8583.67,
-        "Servicios": 100,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 9288.12,
-        "Servicios": 150,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 1212.14,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 6196.18,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 13704.63,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 12018.95,
-        "Servicios": 2,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 94874.11
-  },
-  "TTE-C-0696": {
-    "cuentaAuxiliar": "TTE-C-0696",
-    "descripcion": "Reparación de Reductor OPCO de Planta de Briquetas FMO (VISCO ORINOCO)",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      23591.52,
-      0,
-      110.81,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 351.52,
-        "Servicios": 23240,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 110.81,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 23702.33
-  },
-  "TTE-C-0693": {
-    "cuentaAuxiliar": "TTE-C-0693",
-    "descripcion": "Trabajos para parada de Planta de Briquetas FMO (VISCO ORINOCO)",
-    "meses": [
-      5009.54,
-      138745.15,
-      119077.69,
-      3120.27,
-      9.16,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 127.4,
-        "Servicios": 0,
-        "Mano de Obra Directa": 3140,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 1742.14
-      },
-      {
-        "Materiales Directos": 103206.87,
-        "Servicios": 0,
-        "Mano de Obra Directa": 22584.9,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 12953.38
-      },
-      {
-        "Materiales Directos": 22187.45,
-        "Servicios": 40000,
-        "Mano de Obra Directa": 31953.7,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 24936.54
-      },
-      {
-        "Materiales Directos": 656.33,
-        "Servicios": 0,
-        "Mano de Obra Directa": 1495,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 968.94
-      },
-      {
-        "Materiales Directos": 9.16,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 265961.81
+    "totalAnual": 2140.57
   },
   "TTE-C-0687": {
     "cuentaAuxiliar": "TTE-C-0687",
-    "descripcion": "Reparación de las poleas motriz y de quiebre en la cola de la cinta JD-8016 FMO - PMH (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0687",
     "meses": [
-      2195.51,
+      583.61,
       0,
       0,
       0,
@@ -1405,7 +1647,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
     ],
     "byCategoriaMes": [
       {
-        "Materiales Directos": 2115.51,
+        "Materiales Directos": 503.61,
         "Servicios": 80,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -1468,47 +1710,54 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 2195.51
+    "totalAnual": 583.61
   },
-  "TTE-C-0654": {
-    "cuentaAuxiliar": "TTE-C-0654",
-    "descripcion": "Proyecto 5B: Rehabilitación y extensión de cinta JD-9021 y rehabilitación del carro PA-54108 para conexión de JD-1809 con JD-8012 PMH - FMO (VISCO ORINOCO)",
+  "TTE-C-0681": {
+    "cuentaAuxiliar": "TTE-C-0681",
+    "descripcion": "Proyecto TTE-C-0681",
     "meses": [
-      19319.66,
-      102788.06,
-      4258.21,
-      78830,
+      2115.69,
+      3477.09,
+      31.62,
+      13.28,
+      252.05,
       0,
       0,
       0,
-      290,
-      1301.77
+      26.19
     ],
     "byCategoriaMes": [
       {
-        "Materiales Directos": 17800.89,
-        "Servicios": 1518.77,
+        "Materiales Directos": 1706.19,
+        "Servicios": 0,
         "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
+        "Horas Maquina": 409.5,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 99374.42,
-        "Servicios": 115.02,
-        "Mano de Obra Directa": 250,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 3048.62
-      },
-      {
-        "Materiales Directos": 4258.21,
+        "Materiales Directos": 3477.09,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 78830,
+        "Materiales Directos": 31.62,
         "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 13.28,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 12.05,
+        "Servicios": 240,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
@@ -1535,29 +1784,346 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 290,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 1153.96,
-        "Servicios": 147.81,
+        "Materiales Directos": 0,
+        "Servicios": 26.19,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 206787.7
+    "totalAnual": 5915.92
+  },
+  "TTE-C-0691": {
+    "cuentaAuxiliar": "TTE-C-0691",
+    "descripcion": "Proyecto TTE-C-0691",
+    "meses": [
+      18014,
+      17955.71,
+      8005.25,
+      0,
+      0,
+      0,
+      0,
+      0,
+      15520
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 514,
+        "Servicios": 17500,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 10.71,
+        "Servicios": 17420,
+        "Mano de Obra Directa": 525,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 8005.25,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 15520,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 59494.96
+  },
+  "TTE-C-0688": {
+    "cuentaAuxiliar": "TTE-C-0688",
+    "descripcion": "Proyecto TTE-C-0688",
+    "meses": [
+      1480,
+      10764.88,
+      4790,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2060
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 1480,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1454.88,
+        "Servicios": 0,
+        "Mano de Obra Directa": 9310,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 4790,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 2060,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 19094.88
+  },
+  "TTE-C-0675": {
+    "cuentaAuxiliar": "TTE-C-0675",
+    "descripcion": "Proyecto TTE-C-0675",
+    "meses": [
+      0,
+      2.22,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2.34
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2.22,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2.34,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 4.56
+  },
+  "TTE-C-0678": {
+    "cuentaAuxiliar": "TTE-C-0678",
+    "descripcion": "Proyecto TTE-C-0678",
+    "meses": [
+      1087.98,
+      9564.05,
+      307773.79,
+      48226.95,
+      19967.11,
+      26196.87,
+      58332.8,
+      14895.53,
+      133369.53
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 37.98,
+        "Mano de Obra Directa": 1050,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3059.55,
+        "Servicios": 54.5,
+        "Mano de Obra Directa": 5475,
+        "Horas Maquina": 975,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 249597.79,
+        "Servicios": 0,
+        "Mano de Obra Directa": 12546,
+        "Horas Maquina": 45630,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 14811.95,
+        "Servicios": 1260,
+        "Mano de Obra Directa": 16100,
+        "Horas Maquina": 16055,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 10397.92,
+        "Servicios": 1400,
+        "Mano de Obra Directa": 6089.18,
+        "Horas Maquina": 2080,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 9378.26,
+        "Servicios": 22,
+        "Mano de Obra Directa": 15821.61,
+        "Horas Maquina": 975,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 43838.24,
+        "Servicios": 1268,
+        "Mano de Obra Directa": 13226.56,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 2778.49,
+        "Servicios": 123.45,
+        "Mano de Obra Directa": 11993.59,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 16985.61,
+        "Servicios": 116033.92,
+        "Mano de Obra Directa": 350,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 619414.61
   },
   "TTE-C-0699": {
     "cuentaAuxiliar": "TTE-C-0699",
-    "descripcion": "Fabricación e Instalación de 120 Pigtails del Reformador 3 de Planta de Briquetas FMO (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0699",
     "meses": [
       0,
-      72,
-      38764.83,
+      799.8,
+      294995.37,
       22800,
       3610,
       0,
@@ -1574,14 +2140,14 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 72,
+        "Materiales Directos": 799.8,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 37664.83,
+        "Materiales Directos": 293895.37,
         "Servicios": 1100,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -1630,11 +2196,173 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 65246.83
+    "totalAnual": 322205.17
+  },
+  "TTE-C-0649": {
+    "cuentaAuxiliar": "TTE-C-0649",
+    "descripcion": "Proyecto TTE-C-0649",
+    "meses": [
+      0,
+      1164,
+      383.28,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1164,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 383.28,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 1547.28
+  },
+  "TTE-C-0679": {
+    "cuentaAuxiliar": "TTE-C-0679",
+    "descripcion": "Proyecto TTE-C-0679",
+    "meses": [
+      0,
+      0,
+      690,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 690,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 690
   },
   "TTE-C-0657": {
     "cuentaAuxiliar": "TTE-C-0657",
-    "descripcion": "Reparación estructural de cribas TYCAN M990 T-Class para planta de trituración los barrancos (PTLB)  CR-009 y  CR-010. – Ciudad Piar (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0657",
     "meses": [
       0,
       0,
@@ -1713,100 +2441,667 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
     ],
     "totalAnual": 0.28
   },
-  "TTE-C-0678": {
-    "cuentaAuxiliar": "TTE-C-0678",
-    "descripcion": "Proyecto Pila HA y HB, suministro e instalación de apilador y recuperador de cangilones FMO-PMH (VISCO ORINOCO)",
+  "TTE-C-0700": {
+    "cuentaAuxiliar": "TTE-C-0700",
+    "descripcion": "Proyecto TTE-C-0700",
     "meses": [
-      1670.54,
-      13002.73,
-      101178.14,
-      46648.46,
-      23043.79,
-      37364.23,
-      35468.66,
-      31448.24,
-      28997.06
+      0,
+      0,
+      2389.19,
+      75744.06,
+      7110.05,
+      3660,
+      0,
+      0,
+      0
     ],
     "byCategoriaMes": [
       {
         "Materiales Directos": 0,
-        "Servicios": 37.98,
-        "Mano de Obra Directa": 1050,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 582.56
-      },
-      {
-        "Materiales Directos": 3826.06,
-        "Servicios": 54.5,
-        "Mano de Obra Directa": 5475,
-        "Horas Maquina": 660,
-        "Costos Indirectos": 2987.17
-      },
-      {
-        "Materiales Directos": 42495.56,
         "Servicios": 0,
-        "Mano de Obra Directa": 12546,
-        "Horas Maquina": 36345.75,
-        "Costos Indirectos": 9790.83
-      },
-      {
-        "Materiales Directos": 12815.99,
-        "Servicios": 66,
-        "Mano de Obra Directa": 14625,
-        "Horas Maquina": 9662.25,
-        "Costos Indirectos": 9479.22
-      },
-      {
-        "Materiales Directos": 9623.69,
-        "Servicios": 6,
-        "Mano de Obra Directa": 7564.18,
-        "Horas Maquina": 1127.91,
-        "Costos Indirectos": 4722.01
-      },
-      {
-        "Materiales Directos": 6586.25,
-        "Servicios": 22,
-        "Mano de Obra Directa": 15821.61,
-        "Horas Maquina": 55.82,
-        "Costos Indirectos": 14878.55
-      },
-      {
-        "Materiales Directos": 14081.63,
-        "Servicios": 1268,
-        "Mano de Obra Directa": 9875,
+        "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
-        "Costos Indirectos": 10244.03
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 1645.68,
-        "Servicios": 102.5,
-        "Mano de Obra Directa": 15345.16,
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
-        "Costos Indirectos": 14354.9
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 13823.1,
-        "Servicios": 248.45,
-        "Mano de Obra Directa": 350,
+        "Materiales Directos": 2389.19,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
-        "Costos Indirectos": 14575.51
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 75669.06,
+        "Servicios": 75,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 7110.05,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3660,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 318821.85
+    "totalAnual": 88903.3
+  },
+  "TTE-C-0692": {
+    "cuentaAuxiliar": "TTE-C-0692",
+    "descripcion": "Proyecto TTE-C-0692",
+    "meses": [
+      0,
+      0,
+      27603.96,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 28.96,
+        "Servicios": 27575,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 27603.96
+  },
+  "TTE-C-0698": {
+    "cuentaAuxiliar": "TTE-C-0698",
+    "descripcion": "Proyecto TTE-C-0698",
+    "meses": [
+      0,
+      0,
+      2600,
+      24,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 2600,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 12,
+        "Servicios": 12,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 2624
+  },
+  "TTE-C-0704": {
+    "cuentaAuxiliar": "TTE-C-0704",
+    "descripcion": "Proyecto TTE-C-0704",
+    "meses": [
+      0,
+      0,
+      0,
+      19655.55,
+      8998.26,
+      15575.95,
+      269.12,
+      0,
+      130
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 19655.55,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 8998.26,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 15575.95,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 269.12,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 130,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 44628.88
+  },
+  "TTE-C-0706": {
+    "cuentaAuxiliar": "TTE-C-0706",
+    "descripcion": "Proyecto TTE-C-0706",
+    "meses": [
+      174723,
+      175738,
+      200847,
+      200143.69,
+      441396.75,
+      1339778.13,
+      600567.18,
+      762270.78,
+      739096.75
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 1326,
+        "Costos Indirectos": 173397
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 2262,
+        "Costos Indirectos": 173476
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 1560,
+        "Costos Indirectos": 199287
+      },
+      {
+        "Materiales Directos": 795.26,
+        "Servicios": 48,
+        "Mano de Obra Directa": 23762.65,
+        "Horas Maquina": 7127.78,
+        "Costos Indirectos": 168410
+      },
+      {
+        "Materiales Directos": 18895.66,
+        "Servicios": 5105.35,
+        "Mano de Obra Directa": 132088.51,
+        "Horas Maquina": 61671.22,
+        "Costos Indirectos": 223636
+      },
+      {
+        "Materiales Directos": 46879.31,
+        "Servicios": 861700.5,
+        "Mano de Obra Directa": 154819.67,
+        "Horas Maquina": 69623.65,
+        "Costos Indirectos": 206755
+      },
+      {
+        "Materiales Directos": 86617.7,
+        "Servicios": 46719.84,
+        "Mano de Obra Directa": 205619.17,
+        "Horas Maquina": 60465.47,
+        "Costos Indirectos": 201145
+      },
+      {
+        "Materiales Directos": 86189.31,
+        "Servicios": 196643.11,
+        "Mano de Obra Directa": 179090.16,
+        "Horas Maquina": 87370.2,
+        "Costos Indirectos": 212978
+      },
+      {
+        "Materiales Directos": 136384.47,
+        "Servicios": 97912.2,
+        "Mano de Obra Directa": 253160.97,
+        "Horas Maquina": 46519.11,
+        "Costos Indirectos": 205120
+      }
+    ],
+    "totalAnual": 4634561.28
+  },
+  "TTE-C-0705": {
+    "cuentaAuxiliar": "TTE-C-0705",
+    "descripcion": "Proyecto TTE-C-0705",
+    "meses": [
+      0,
+      0,
+      0,
+      634995.44,
+      24.22,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 634995.44,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 24.22,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 635019.66
+  },
+  "TTE-C-0696": {
+    "cuentaAuxiliar": "TTE-C-0696",
+    "descripcion": "Proyecto TTE-C-0696",
+    "meses": [
+      0,
+      0,
+      0,
+      0,
+      38840,
+      0,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 15600,
+        "Servicios": 23240,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 38840
+  },
+  "TTE-C-0707": {
+    "cuentaAuxiliar": "TTE-C-0707",
+    "descripcion": "Proyecto TTE-C-0707",
+    "meses": [
+      0,
+      0,
+      0,
+      0,
+      3192.56,
+      1577.72,
+      0,
+      0,
+      0
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3192.56,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 1510.76,
+        "Servicios": 66.96,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 4770.28
   },
   "TTE-C-0694": {
     "cuentaAuxiliar": "TTE-C-0694",
-    "descripcion": "Suministro e Instalación de la Caldera BF-6002 para el Area 6000 de Planta de Briquetas FMO (VISCO ORINICO)",
+    "descripcion": "Proyecto TTE-C-0694",
     "meses": [
       0,
       0,
       0,
       17.69,
-      803.14,
-      1340369.04,
-      102884.75,
-      13139.63,
-      46735.85
+      611.57,
+      201341.08,
+      98433.06,
+      9989.81,
+      41969.09
     ],
     "byCategoriaMes": [
       {
@@ -1831,63 +3126,63 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 17.69,
-        "Servicios": 0,
+        "Materiales Directos": 0,
+        "Servicios": 17.69,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 789.14,
+        "Materiales Directos": 597.57,
         "Servicios": 14,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 200344.04,
-        "Servicios": 1139000,
+        "Materiales Directos": 316.08,
+        "Servicios": 200000,
         "Mano de Obra Directa": 1025,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 8457.29,
+        "Materiales Directos": 8276.34,
         "Servicios": 85051.72,
-        "Mano de Obra Directa": 4080,
+        "Mano de Obra Directa": 5105,
         "Horas Maquina": 0,
-        "Costos Indirectos": 5295.74
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 4876.17,
+        "Materiales Directos": 5379.81,
         "Servicios": 0,
-        "Mano de Obra Directa": 4445,
+        "Mano de Obra Directa": 4610,
         "Horas Maquina": 0,
-        "Costos Indirectos": 3818.46
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 35589.12,
-        "Servicios": 3849.59,
+        "Materiales Directos": 32930.52,
+        "Servicios": 5618.57,
         "Mano de Obra Directa": 3420,
         "Horas Maquina": 0,
-        "Costos Indirectos": 3877.14
+        "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 1503950.1
+    "totalAnual": 352362.3
   },
   "TTE-C-0711": {
     "cuentaAuxiliar": "TTE-C-0711",
-    "descripcion": "Servicio de retirada de modulos electricos actuales e instalacion de nuevos modulos suministrados por VISCO - TH4 - PMH - FMO (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0711",
     "meses": [
       0,
       0,
       0,
       0,
-      829.39,
-      3291.62,
-      2103.2,
-      334.06,
-      1178.5
+      1227.99,
+      1626.82,
+      1518.39,
+      214.44,
+      1231.75
     ],
     "byCategoriaMes": [
       {
@@ -1919,127 +3214,46 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 829.39,
+        "Materiales Directos": 1227.99,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 232.81,
+        "Materiales Directos": 156.82,
         "Servicios": 0,
         "Mano de Obra Directa": 1470,
         "Horas Maquina": 0,
-        "Costos Indirectos": 1588.81
+        "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 2103.2,
+        "Materiales Directos": 1518.39,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 334.06,
+        "Materiales Directos": 214.44,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 1178.5,
+        "Materiales Directos": 1231.75,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 7736.77
-  },
-  "TTE-C-0670": {
-    "cuentaAuxiliar": "TTE-C-0670",
-    "descripcion": "Servicio de mantenimiento Maquinas Briqueteras - Planta de Briquetas (VISCO ORINOCO)",
-    "meses": [
-      17030.81,
-      11128.86,
-      10827.99,
-      7774.96,
-      8673.34,
-      5304.22,
-      11116.18,
-      15180.38,
-      13990.37
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 6707.11,
-        "Servicios": 84.5,
-        "Mano de Obra Directa": 6585.47,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 3653.73
-      },
-      {
-        "Materiales Directos": 2310.15,
-        "Servicios": 0,
-        "Mano de Obra Directa": 5129.1,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 3689.61
-      },
-      {
-        "Materiales Directos": 1690.14,
-        "Servicios": 0,
-        "Mano de Obra Directa": 5132.5,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 4005.35
-      },
-      {
-        "Materiales Directos": 1487.23,
-        "Servicios": 0,
-        "Mano de Obra Directa": 3815,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 2472.73
-      },
-      {
-        "Materiales Directos": 874.13,
-        "Servicios": 0,
-        "Mano de Obra Directa": 4480,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 3319.21
-      },
-      {
-        "Materiales Directos": 210.16,
-        "Servicios": 0,
-        "Mano de Obra Directa": 3448.41,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 1645.65
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 4860.4,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 6255.78
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 4770,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 10410.38
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 3420,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 10570.37
-      }
-    ],
-    "totalAnual": 101027.11
+    "totalAnual": 5819.39
   },
   "TTE-C-0663": {
     "cuentaAuxiliar": "TTE-C-0663",
-    "descripcion": "Reacondicionamiento etapa III en Boca Grande 2  / Refurbish stage III - in BCII (Generators AGG) (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0663",
     "meses": [
       0,
       0,
@@ -2047,9 +3261,9 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       0,
       120,
       0,
-      10,
+      14,
       665,
-      141.24
+      257.48
     ],
     "byCategoriaMes": [
       {
@@ -2095,7 +3309,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 10,
+        "Materiales Directos": 14,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -2109,504 +3323,18 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 141.24,
+        "Materiales Directos": 257.48,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 936.24
-  },
-  "TTE-C-0700": {
-    "cuentaAuxiliar": "TTE-C-0700",
-    "descripcion": "Fabricación de placas y ancajes (ORINOCO)",
-    "meses": [
-      0,
-      0,
-      614.86,
-      20501.11,
-      726.69,
-      245.22,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 614.86,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 20426.11,
-        "Servicios": 75,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 726.69,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 245.22,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 22087.88
-  },
-  "TTE-C-0704": {
-    "cuentaAuxiliar": "TTE-C-0704",
-    "descripcion": "Segundo Lote - Fabricación de placas y ancajes (ORINOCO)",
-    "meses": [
-      0,
-      0,
-      0,
-      1428.72,
-      12496.62,
-      23420.76,
-      291.02,
-      0,
-      140
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 1428.72,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 12496.62,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 23420.76,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 291.02,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 140,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 37777.12
-  },
-  "TTE-C-0681": {
-    "cuentaAuxiliar": "TTE-C-0681",
-    "descripcion": "Adicionales Proyecto 2da linea de Planta de Pellas (VISCO ORINOCO)",
-    "meses": [
-      1541.46,
-      2896.35,
-      13.7,
-      4.28,
-      244.21,
-      0,
-      34.99,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 1281.5,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 259.96,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 2896.35,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 13.7,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 4.28,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 4.21,
-        "Servicios": 240,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 34.99,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 4734.99
-  },
-  "TTE-C-0642": {
-    "cuentaAuxiliar": "TTE-C-0642",
-    "descripcion": "Rehabilitation of ship loader / Rehabilitación de Carga Barco FMO (VISCO ORINOCO)",
-    "meses": [
-      171.44,
-      0.8,
-      0,
-      246.44,
-      0,
-      0,
-      243.59,
-      358.91,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 171.44,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0.8,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 246.44,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 243.59,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 358.91,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 1021.18
-  },
-  "TTE-C-0672": {
-    "cuentaAuxiliar": "TTE-C-0672",
-    "descripcion": "Extensión de banda transportadora JD 8016A y JD 8016B PMH – FMO (VISCO ORINOCO)",
-    "meses": [
-      148.56,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1492.22
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 148.56,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 1492.22,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 1640.78
-  },
-  "TTE-C-0707": {
-    "cuentaAuxiliar": "TTE-C-0707",
-    "descripcion": "Lote 4 - Proyecto cerro redondo - Componentes empotrados para la parte de construcción civil del sistema de procesamiento de minerales (ORINOCO)",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      4236.54,
-      4139.29,
-      34.99,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 4236.54,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 4072.33,
-        "Servicios": 66.96,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 34.99,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 8410.82
+    "totalAnual": 1056.48
   },
   "TTE-C-0666": {
     "cuentaAuxiliar": "TTE-C-0666",
-    "descripcion": "Reparacion de pista o canales para enrrollar la guaya del eje del empujador de vagones FMO-PMH (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0666",
     "meses": [
       0,
       0,
@@ -2614,7 +3342,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       0,
       0,
       298.91,
-      74.07,
+      129.03,
       0,
       0
     ],
@@ -2662,7 +3390,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 74.07,
+        "Materiales Directos": 129.03,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -2683,254 +3411,11 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 372.98
-  },
-  "TTE-C-0692": {
-    "cuentaAuxiliar": "TTE-C-0692",
-    "descripcion": "Adicionales Mantenimiento BG",
-    "meses": [
-      0,
-      8000,
-      17508.73,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 8000,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 33.73,
-        "Servicios": 17475,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 25508.73
-  },
-  "TTE-C-0649": {
-    "cuentaAuxiliar": "TTE-C-0649",
-    "descripcion": "Rehabilitación de -Boca Grande 2 (VISCO ORINOCO)",
-    "meses": [
-      0,
-      1164,
-      430.72,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 1164,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 430.72,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 1594.72
-  },
-  "TTE-C-0691": {
-    "cuentaAuxiliar": "TTE-C-0691",
-    "descripcion": "Reparacion de la Grua #1 en la estacion de transferencia de Boca Grande II (VISCO ORINOCO)",
-    "meses": [
-      17996.1,
-      19943.75,
-      10105.25,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 496.1,
-        "Servicios": 17500,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 1998.75,
-        "Servicios": 17420,
-        "Mano de Obra Directa": 525,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 10105.25,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 48045.1
+    "totalAnual": 427.94
   },
   "TTE-C-0603": {
     "cuentaAuxiliar": "TTE-C-0603",
-    "descripcion": "Mantenimiento / Reparación de 08 Motores Hidráulicos Flender 515 (Venprecar)",
+    "descripcion": "Proyecto TTE-C-0603",
     "meses": [
       0,
       0,
@@ -2938,7 +3423,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       0,
       0,
       0,
-      19.61,
+      115.55,
       0,
       0
     ],
@@ -2986,7 +3471,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 19.61,
+        "Materiales Directos": 115.55,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -3007,254 +3492,11 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 19.61
-  },
-  "TTE-C-0679": {
-    "cuentaAuxiliar": "TTE-C-0679",
-    "descripcion": "Levantamiento y reparación de apilador PA-9016 FMO-PMH (VISCO ORINOCO)",
-    "meses": [
-      0,
-      0,
-      2202,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 2202,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 2202
-  },
-  "TTE-C-0689": {
-    "cuentaAuxiliar": "TTE-C-0689",
-    "descripcion": "Rehabilitación de eje y conjunto de rodamientos (DELL’ ACQUA)",
-    "meses": [
-      193.71,
-      0,
-      17.9,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 193.71,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 17.9,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 211.61
-  },
-  "TTE-C-0705": {
-    "cuentaAuxiliar": "TTE-C-0705",
-    "descripcion": "Pieza adicional MA - Fabricación de placas y anclajes (ORINOCO)",
-    "meses": [
-      0,
-      0,
-      0,
-      13089.89,
-      261.93,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 13089.89,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 261.93,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 13351.82
+    "totalAnual": 115.55
   },
   "TTE-C-0713": {
     "cuentaAuxiliar": "TTE-C-0713",
-    "descripcion": "Lote 5 - Proyecto cerro redondo componente empotrados para la parte de construcción civil del sistema de procesamiento de minerales (ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0713",
     "meses": [
       0,
       0,
@@ -3262,7 +3504,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       0,
       0,
       0,
-      145.24,
+      307.92,
       0,
       0
     ],
@@ -3310,7 +3552,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 145.24,
+        "Materiales Directos": 307.92,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -3331,11 +3573,11 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 145.24
+    "totalAnual": 307.92
   },
-  "TTE-C-0684": {
-    "cuentaAuxiliar": "TTE-C-0684",
-    "descripcion": "Fabricación de Gamelas FMO-PMH (VISCO ORINOCO)",
+  "TTE-C-0706}": {
+    "cuentaAuxiliar": "TTE-C-0706}",
+    "descripcion": "Proyecto TTE-C-0706}",
     "meses": [
       0,
       0,
@@ -3343,9 +3585,9 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       0,
       0,
       0,
-      1894.72,
-      2143.13,
-      2176.07
+      0,
+      20.05,
+      0
     ],
     "byCategoriaMes": [
       {
@@ -3393,40 +3635,40 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       {
         "Materiales Directos": 0,
         "Servicios": 0,
-        "Mano de Obra Directa": 930,
+        "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
-        "Costos Indirectos": 964.72
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 20.05,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
       },
       {
         "Materiales Directos": 0,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
-        "Costos Indirectos": 2143.13
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 2176.07
+        "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 6213.92
+    "totalAnual": 20.05
   },
-  "TTE-C-0675": {
-    "cuentaAuxiliar": "TTE-C-0675",
-    "descripcion": "Reparación motor / reductor de polea motriz boom conveyor - BG II (VISCO ORINOCO)",
+  "TTE-C-0667": {
+    "cuentaAuxiliar": "TTE-C-0667",
+    "descripcion": "Proyecto TTE-C-0667",
     "meses": [
       0,
-      2.47,
       0,
       0,
       0,
       0,
       0,
       0,
-      2.52
+      0,
+      65.94
     ],
     "byCategoriaMes": [
       {
@@ -3437,13 +3679,6 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 2.47,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
         "Materiales Directos": 0,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
@@ -3486,20 +3721,189 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       },
       {
-        "Materiales Directos": 2.52,
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 65.94,
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 4.99
+    "totalAnual": 65.94
+  },
+  "TTE-C-0578": {
+    "cuentaAuxiliar": "TTE-C-0578",
+    "descripcion": "Proyecto TTE-C-0578",
+    "meses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      613.3
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 13.3,
+        "Servicios": 600,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 613.3
+  },
+  "TTE-C-0718": {
+    "cuentaAuxiliar": "TTE-C-0718",
+    "descripcion": "Proyecto TTE-C-0718",
+    "meses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      6334.48
+    ],
+    "byCategoriaMes": [
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 0,
+        "Servicios": 0,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      },
+      {
+        "Materiales Directos": 3796.48,
+        "Servicios": 2538,
+        "Mano de Obra Directa": 0,
+        "Horas Maquina": 0,
+        "Costos Indirectos": 0
+      }
+    ],
+    "totalAnual": 6334.48
   },
   "TTE-C-0683": {
     "cuentaAuxiliar": "TTE-C-0683",
-    "descripcion": "Fase 3 Planta de Briquetas - FMO (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0683",
     "meses": [
-      5,
+      2.33,
       0,
       45,
       0,
@@ -3511,7 +3915,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
     ],
     "byCategoriaMes": [
       {
-        "Materiales Directos": -10,
+        "Materiales Directos": -12.67,
         "Servicios": 15,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
@@ -3574,173 +3978,11 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 50
-  },
-  "TTE-C-0698": {
-    "cuentaAuxiliar": "TTE-C-0698",
-    "descripcion": "Reentubado de un (1) Generador de Vapor de Planta de Briquetas FMO (VISCO ORINOCO)",
-    "meses": [
-      0,
-      0,
-      2600,
-      162,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 2600,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 150,
-        "Servicios": 12,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 2762
-  },
-  "TTE-C-0673": {
-    "cuentaAuxiliar": "TTE-C-0673",
-    "descripcion": "Reparación de polea de izaje grúa #3 BOCA GRANDE E/T (VISCO ORINOCO)",
-    "meses": [
-      16,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 16,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 16
+    "totalAnual": 47.33
   },
   "TTE-C-0710": {
     "cuentaAuxiliar": "TTE-C-0710",
-    "descripcion": "Tratamiento y Análisis del Aceite de los Transformadores de Planta de Briquetas FMO (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0710",
     "meses": [
       0,
       0,
@@ -3821,7 +4063,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
   },
   "TTE-C-0703": {
     "cuentaAuxiliar": "TTE-C-0703",
-    "descripcion": "Servicio reparación moto vibradores tolvas BGII (VISCO ORINOCO)",
+    "descripcion": "Proyecto TTE-C-0703",
     "meses": [
       0,
       0,
@@ -3900,9 +4142,9 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
     ],
     "totalAnual": 1210
   },
-  "TTE-C-0578": {
-    "cuentaAuxiliar": "TTE-C-0578",
-    "descripcion": "Reconstrucción de aspas de agitadores del área 41 (Bauxilum)",
+  "TTE-C-0684": {
+    "cuentaAuxiliar": "TTE-C-0684",
+    "descripcion": "Proyecto TTE-C-0684",
     "meses": [
       0,
       0,
@@ -3910,169 +4152,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       0,
       0,
       0,
-      0,
-      0,
-      17.1
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 17.1,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 17.1
-  },
-  "TTE-C-0667": {
-    "cuentaAuxiliar": "TTE-C-0667",
-    "descripcion": "Reparaciones principales en Top Gas Scrubber - Planta de Briquetas",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      56.22
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 56.22,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 56.22
-  },
-  "TTE-C-0702": {
-    "cuentaAuxiliar": "TTE-C-0702",
-    "descripcion": "Suministro y reemplazo de elementos mecánicos",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
+      930,
       0,
       0
     ],
@@ -4122,7 +4202,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       {
         "Materiales Directos": 0,
         "Servicios": 0,
-        "Mano de Obra Directa": 0,
+        "Mano de Obra Directa": 930,
         "Horas Maquina": 0,
         "Costos Indirectos": 0
       },
@@ -4141,411 +4221,6 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 0
-  },
-  "TTE-C-0677": {
-    "cuentaAuxiliar": "TTE-C-0677",
-    "descripcion": "Mantenimiento y Reparaciones Estructurales",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 0
-  },
-  "TTE-C-0718": {
-    "cuentaAuxiliar": "TTE-C-0718",
-    "descripcion": "Arandela de presión M20 DIN-127 Pavonada",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1533.2
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 1495.2,
-        "Servicios": 38,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 1533.2
-  },
-  "TTE-C-0651": {
-    "cuentaAuxiliar": "TTE-C-0651",
-    "descripcion": "Mantenimiento preventivo y correctivo PMH",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 0
-  },
-  "TTE-C-0638": {
-    "cuentaAuxiliar": "TTE-C-0638",
-    "descripcion": "Mantenimiento de tuberías y conexiones de vapor",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 0
-  },
-  "TTE-C-0624": {
-    "cuentaAuxiliar": "TTE-C-0624",
-    "descripcion": "Servicio de inspección y calibración de instrumentación",
-    "meses": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    "byCategoriaMes": [
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      },
-      {
-        "Materiales Directos": 0,
-        "Servicios": 0,
-        "Mano de Obra Directa": 0,
-        "Horas Maquina": 0,
-        "Costos Indirectos": 0
-      }
-    ],
-    "totalAnual": 0
+    "totalAnual": 930
   }
 };
