@@ -440,13 +440,14 @@ export const COSTOS_INDIRECTOS_POR_CATEGORIAS: FilaDesgloseMensual[] = [
   { concepto: 'Incentivos Laborales (Bonos)', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 6700, total: 6700 },
   { concepto: 'Nomina Interna TIMACA', ene: 88000, feb: 87000, mar: 104000, abr: 95000, may: 153000, jun: 132000, jul: 128000, ago: 125000, sep: 73000, total: 985000 },
   { concepto: 'Nomina -TALLERES', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 122000, total: 122000 },
-  { concepto: 'Otros Servicios Contratados de Admón.', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 14, jul: 0, ago: 0, sep: 0, total: 14 },
+  { concepto: 'Otros Servicios Contratados de Admón.', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 14, jul: 0, ago: 0, sep: 9991, total: 10005 },
   { concepto: 'Servicios Publicos', ene: 2467, feb: 268, mar: 1344, abr: 1549, may: 1542, jun: 1562, jul: 1562, ago: 1562, sep: 2556, total: 14413 },
   { concepto: 'Servicios Telecomunicaciones', ene: 159, feb: 184, mar: 596, abr: 717, may: 589, jun: 614, jul: 0, ago: 0, sep: 570, total: 3429 },
   { concepto: 'Sindicato', ene: 57000, feb: 54898, mar: 57000, abr: 57000, may: 57000, jun: 57000, jul: 57000, ago: 57000, sep: 58952, total: 512850 },
   { concepto: 'Timbres Fiscales / Notarias / Registros', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 726, jul: 0, ago: 0, sep: 7634, total: 8360 },
   { concepto: 'Vigilancia', ene: 3521, feb: 3391, mar: 3880, abr: 4214, may: 4907, jun: 5718, jul: 4588, ago: 4587, sep: 4803, total: 39609 },
-  { concepto: 'Gastos de viajes/viáticos nacionales', ene: 351, feb: 393, mar: 2353, abr: 3964, may: 1940, jun: 1523, jul: 2267, ago: 1259, sep: 4124, total: 18174 }
+  { concepto: 'Gastos de viajes/viáticos nacionales', ene: 351, feb: 393, mar: 2353, abr: 3964, may: 1940, jun: 1523, jul: 2267, ago: 1259, sep: 4124, total: 18174 },
+  { concepto: 'Gastos de Servicios Bancarios', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 49, total: 49 }
 ];
 
 export const COSTOS_INDIRECTOS_A_PRORRATEAR = COSTOS_INDIRECTOS_POR_CATEGORIAS;

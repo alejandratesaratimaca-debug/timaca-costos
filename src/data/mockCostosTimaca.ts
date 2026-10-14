@@ -123,30 +123,30 @@ export const DETALLE_SUBCONCEPTOS_CATEGORIAS: Record<string, {
 };
 
 // Matriz de Distribución Mensual por Categoría (Tabla 3. Distribución anual de proyectos externos - Oficial 2026)
-// Coincidencia 100% milimétrica con Nuevas Tablas Informesssssssssssss.xlsx (Hoja Externos 2026: $11.804.998 USD)
+// Coincidencia 100% milimétrica con Nuevas Tablas Informesssssssssssss.xlsx (Hoja Externos 2026: $24.831.717 USD)
 export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
-    meses: [618977, 687830, 652727, 370626, 287963, 480586, 301441, 506689, 582500],
-    total2026: 4893220,
-    variacion: '+62%',
-    variacionNum: 62,
+    meses: [622579, 688287, 652797, 371398, 288539, 554855, 316934, 513081, 822503],
+    total2026: 4830974,
+    variacion: '+60%',
+    variacionNum: 60,
     esPositiva: true
   },
   {
     categoria: 'Servicios',
-    meses: [144566, 178897, 296831, 108933, 115232, 1645192, 359194, 117970, 74878],
-    total2026: 3043635,
-    variacion: '+95%',
-    variacionNum: 95,
-    esPositiva: true
+    meses: [232372, 9713796, 296831, 108933, 428946, 2517047, 1113483, 344155, 229748],
+    total2026: 14985312,
+    variacion: '-33%',
+    variacionNum: -33,
+    esPositiva: false
   },
   {
     categoria: 'Mano de Obra Directa',
-    meses: [363530, 321366, 305366, 278531, 311564, 262303, 284668, 294353, 196666],
-    total2026: 2618347,
-    variacion: '-33%',
-    variacionNum: -33,
+    meses: [339370, 269666, 255366, 229531, 261564, 202303, 212668, 277936, 196666],
+    total2026: 2245070,
+    variacion: '-29%',
+    variacionNum: -29,
     esPositiva: false
   },
   {
@@ -159,24 +159,24 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 212978, 420754],
-    total2026: 2029159,
-    variacion: '+60%',
-    variacionNum: 60,
+    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 336208, 205120],
+    total2026: 1887434,
+    variacion: '-39%',
+    variacionNum: -39,
     esPositiva: false
   }
 ];
 
 export const TOTALES_MESES_PPT = [
-  { mesNum: 1, mesNombre: 'Enero 2026', total: 1445583 },
-  { mesNum: 2, mesNombre: 'Febrero 2026', total: 1475255 },
-  { mesNum: 3, mesNombre: 'Marzo 2026', total: 1603241 },
-  { mesNum: 4, mesNombre: 'Abril 2026', total: 981610 },
-  { mesNum: 5, mesNombre: 'Mayo 2026', total: 1068020 },
-  { mesNum: 6, mesNombre: 'Junio 2026', total: 2663899 },
-  { mesNum: 7, mesNombre: 'Julio 2026', total: 1222380 },
-  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1345010 },
-  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1330375 }
+  { mesNum: 1, mesNombre: 'Enero 2026', total: 1512831 },
+  { mesNum: 2, mesNombre: 'Febrero 2026', total: 10958911 },
+  { mesNum: 3, mesNombre: 'Marzo 2026', total: 1553311 },
+  { mesNum: 4, mesNombre: 'Abril 2026', total: 933382 },
+  { mesNum: 5, mesNombre: 'Mayo 2026', total: 1332311 },
+  { mesNum: 6, mesNombre: 'Junio 2026', total: 3550023 },
+  { mesNum: 7, mesNombre: 'Julio 2026', total: 1920163 },
+  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1561170 },
+  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1509615 }
 ];
 
 // LISTADO OFICIAL DE LAS 20 CUENTAS AUXILIARES / PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.345.010 USD)

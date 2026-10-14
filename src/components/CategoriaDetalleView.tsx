@@ -1463,7 +1463,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                   </span>
                 </div>
                 <p className="text-[11px] text-neutral-600 mt-0.5">
-                  Visualización: {modoIndirectos === 'categorias' ? '14 Rubros Contables Oficiales de Gastos Indirectos' : 'Distribución por Cuentas Auxiliares de Proyectos (% Prorrateo)'} {selectedProyectoCodigo !== 'TODOS' ? `(Filtrado para el proyecto ${selectedProyectoCodigo})` : '(Consolidado General 100% TIMACA)'}.
+                  Visualización: {modoIndirectos === 'categorias' ? '16 Rubros Contables Oficiales de Gastos Indirectos' : 'Distribución por Cuentas Auxiliares de Proyectos (% Prorrateo)'} {selectedProyectoCodigo !== 'TODOS' ? `(Filtrado para el proyecto ${selectedProyectoCodigo})` : '(Consolidado General 100% TIMACA)'}.
                 </p>
               </div>
             </div>
@@ -1547,7 +1547,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
             <div className="flex items-center gap-2">
               <Info className="w-4 h-4 text-amber-700 shrink-0" />
               <span>
-                Estás visualizando únicamente la cuenta auxiliar <strong>{selectedProyectoCodigo}</strong>. Para ver cómo se desglosa el costo de este proyecto en los <strong>15 rubros contables</strong> (Nómina, Sindicato, etc.), haz clic en:
+                Estás visualizando únicamente la cuenta auxiliar <strong>{selectedProyectoCodigo}</strong>. Para ver cómo se desglosa el costo de este proyecto en los <strong>16 rubros contables</strong> (Nómina, Sindicato, etc.), haz clic en:
               </span>
             </div>
             <button
@@ -1824,7 +1824,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                   : selectedCat === 'Mano de Obra Directa'
                   ? 'Septiembre auditado en $378.249 USD: Cuadrillas operativas ($253.249) + Staff Fijo Pellas ($125.000).'
                   : selectedCat === 'Costos Indirectos'
-                  ? 'Septiembre auditado en $73.000 USD: Nómina Interna TIMACA.'
+                  ? 'Septiembre auditado en $341.375 USD ($341.374,77) en la Bolsa General (16 rubros), prorrateado a Proyectos Externos en $205.120 USD (Línea 1 Pellas: 60.17%).'
                   : 'Septiembre con cierre preliminar en curso.')
               : (alcanceProyectos === 'externos' && selectedCat === 'Materiales Directos'
                   ? 'Agosto cuadrado en $506.689 USD: Proyectos externos TTE ($495.913) + Cierre contable compras en tránsito ($10.776).'
