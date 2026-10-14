@@ -1816,8 +1816,8 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
           <span className="italic">
             {selectedProyectoCodigo === 'TTE-C-0706' && selectedCat === 'Materiales Directos'
               ? (selectedMesNum === 9
-                  ? 'Septiembre auditado en $123.685 USD según consumos reales de almacén y Modelo Estrella (1.965 registros).'
-                  : 'Cifras sincronizadas al 100% con Modelo_Estrella_Costos_TIMACA.xlsx (Hoja Detalle_Materiales).')
+                  ? 'Septiembre auditado en $150.872 USD ($150.871,57) según tabla dinámica oficial de consumos de almacén (46 categorías).'
+                  : 'Cifras sincronizadas al 100% con la tabla dinámica oficial de almacén.')
               : selectedMesNum === 9
               ? (selectedCat === 'Materiales Directos'
                   ? 'Septiembre auditado en $166.893 USD según consumos reales de almacén (9 Septiembre.xlsx).'

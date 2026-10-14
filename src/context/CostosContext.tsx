@@ -13,7 +13,7 @@ import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual
 import { parseFechaToDetails } from '../utils/dateHelpers';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 
-const STORAGE_KEY = 'TIMACA_COSTOS_V137_SEPTIEMBRE_2026_EXCLUSIVO';
+const STORAGE_KEY = 'TIMACA_COSTOS_V138_PELLAS_46_CATEGORIAS_OFICIAL';
 
 interface CostosContextType {
   salidas: SalidaCosto[];
