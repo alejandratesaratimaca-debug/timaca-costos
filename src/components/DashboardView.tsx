@@ -1248,7 +1248,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                     {/* 10. Monto Total (USD) */}
                     <td className="py-2.5 px-3 text-right whitespace-nowrap font-mono font-bold tabular-nums text-neutral-900 text-xs bg-slate-50/50">
-                      ${Math.round(s.montoTotal).toLocaleString('de-DE')}
+                      ${formatAmountAuto(s.montoTotal)}
                     </td>
 
                     {/* 11. Motivo */}

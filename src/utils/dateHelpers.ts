@@ -191,10 +191,11 @@ export function parseFechaToDetails(fechaStr: string, semanaExplicit?: number) {
 }
 
 export function formatCurrency(amount: number, currency: 'USD' | 'VES' = 'USD'): string {
+  const val = Number(amount) || 0;
   const formatted = new Intl.NumberFormat('es-VE', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(Math.round(amount || 0));
+    minimumFractionDigits: Number.isInteger(val) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(val);
   return currency === 'USD' ? `$ ${formatted}` : `Bs. ${formatted}`;
 }
 

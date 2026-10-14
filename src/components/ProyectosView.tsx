@@ -2188,7 +2188,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                             ${formatUnitPriceRaw(s.montoUnitario)}
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono tabular-nums font-black text-blue-950 bg-blue-50/50">
-                            ${Math.round(s.montoTotal).toLocaleString('de-DE')}
+                            ${formatAmountAuto(s.montoTotal)}
                           </td>
                         </tr>
                       );

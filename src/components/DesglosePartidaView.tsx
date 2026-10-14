@@ -1270,7 +1270,7 @@ export const DesglosePartidaView: React.FC<DesglosePartidaViewProps> = ({
                     ${formatUnitPriceRaw(it.precioFinal)}
                   </td>
                   <td className="py-3 px-3.5 text-right font-mono font-black tabular-nums text-blue-950 bg-blue-50/50 text-sm">
-                    ${Math.round(it.totalUSD).toLocaleString('de-DE')}
+                    ${formatAmountAuto(it.totalUSD)}
                   </td>
                   <td className="py-3 px-3 text-center">
                     <span className="text-xs font-bold text-blue-700 bg-blue-50 group-hover:bg-blue-600 group-hover:text-white border border-blue-200 px-2.5 py-1 rounded-lg transition-all">
