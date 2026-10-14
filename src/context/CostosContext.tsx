@@ -13,8 +13,6 @@ import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual
 import { parseFechaToDetails } from '../utils/dateHelpers';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 
-const STORAGE_KEY = 'TIMACA_COSTOS_V138_PELLAS_46_CATEGORIAS_OFICIAL';
-
 interface CostosContextType {
   salidas: SalidaCosto[];
   filteredSalidas: SalidaCosto[];
@@ -105,35 +103,23 @@ const DEFAULT_VALIDACIONES: Record<string, {
 
 export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [salidas, setSalidas] = useState<SalidaCosto[]>(() => {
-    let initialList: SalidaCosto[] = [];
+    // Limpieza proactiva de cualquier almacenamiento local obsoleto de datos de costos
     try {
-      // Limpiar versiones obsoletas que pudieran contener montos erróneos de pruebas
       if (typeof window !== 'undefined' && window.localStorage) {
         Object.keys(localStorage).forEach((k) => {
-          if (k.startsWith('TIMACA_COSTOS_') && k !== STORAGE_KEY) {
+          if (k.startsWith('TIMACA_COSTOS_')) {
             localStorage.removeItem(k);
           }
         });
       }
-
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 5000) {
-          initialList = parsed;
-        } else {
-          localStorage.removeItem(STORAGE_KEY);
-        }
-      }
     } catch (e) {
-      console.error('Error cargando storage de costos', e);
+      console.error('Error limpiando almacenamiento previo de costos', e);
     }
 
-    if (initialList.length === 0) {
-      initialList = generateInitialMockCostos();
-    }
+    // Carga directa y fresca de la base oficial auditada (CERO dependencia de caché de navegador)
+    const initialList: SalidaCosto[] = generateInitialMockCostos();
 
-    // Aplicar validaciones almacenadas o semilla inicial
+    // Aplicar validaciones almacenadas de gerentes o semilla inicial
     try {
       let valMap = DEFAULT_VALIDACIONES;
       const savedVal = localStorage.getItem(VALIDACIONES_STORAGE_KEY);
@@ -172,15 +158,8 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   });
 
-  // Guardar en LocalStorage si hay espacio disponible
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(salidas));
-    } catch {
-      // Si el dataset excede la cuota de 5MB de localStorage del navegador,
-      // se mantiene en memoria durante la sesión sin generar excepciones en consola
-    }
-  }, [salidas]);
+  // Los datos oficiales se mantienen siempre frescos desde la fuente de código en memoria,
+  // eliminando la necesidad de que el usuario limpie la caché para ver actualizaciones.
 
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
