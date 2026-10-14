@@ -127,16 +127,16 @@ export const DETALLE_SUBCONCEPTOS_CATEGORIAS: Record<string, {
 export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
-    meses: [618977, 687830, 652727, 370626, 287963, 480586, 301441, 506689, 822503],
-    total2026: 4729342,
+    meses: [618977, 687830, 652727, 370626, 287963, 480586, 301441, 506689, 1806576],
+    total2026: 5713415,
     variacion: '+62%',
     variacionNum: 62,
     esPositiva: true
   },
   {
     categoria: 'Servicios',
-    meses: [144566, 178897, 296831, 108933, 115232, 1645192, 359194, 117970, 229748],
-    total2026: 3196563,
+    meses: [144566, 178897, 296831, 108933, 115232, 1645192, 359194, 117970, 76820],
+    total2026: 3043635,
     variacion: '+95%',
     variacionNum: 95,
     esPositiva: true
@@ -159,8 +159,8 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 212978, 341375],
-    total2026: 1900458,
+    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 212978, 470075],
+    total2026: 2029159,
     variacion: '+60%',
     variacionNum: 60,
     esPositiva: false
@@ -176,7 +176,7 @@ export const TOTALES_MESES_PPT = [
   { mesNum: 6, mesNombre: 'Junio 2026', total: 2663899 },
   { mesNum: 7, mesNombre: 'Julio 2026', total: 1222380 },
   { mesNum: 8, mesNombre: 'Agosto 2026', total: 1345010 },
-  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1645870 }
+  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 2605714 }
 ];
 
 // LISTADO OFICIAL DE LAS 20 CUENTAS AUXILIARES / PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.345.010 USD)
@@ -213,32 +213,244 @@ export const CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026: CuentaAuxiliarProyecto[] = 
 
 // LISTADO OFICIAL DE LAS CUENTAS AUXILIARES / PROYECTOS EXTERNOS DE SEPTIEMBRE 2026 ($1.215.432 USD CONSOLIDADO)
 export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 = [
-  { cuentaAuxiliar: 'TTE-C-0706', proyecto: 'Recuperación de Línea 1 de Planta de Pellas', proyectoCorto: 'Línea 1 Pellas', montoSeptiembre: 412928, porcentaje: 33.97 },
-  { cuentaAuxiliar: 'TTE-C-0671', proyecto: 'Segunda línea PMH - Ingeniería, diseño y suministro', proyectoCorto: '2da Línea PMH', montoSeptiembre: 227250, porcentaje: 18.69 },
-  { cuentaAuxiliar: 'TTE-C-0653', proyecto: 'Repotenciación de rueda de cangilones (DRAVO) PMH', proyectoCorto: 'Rueda Cangilones PMH', montoSeptiembre: 157554, porcentaje: 12.96 },
-  { cuentaAuxiliar: 'TTE-C-0676', proyecto: 'Segunda linea de Planta de Pellas', proyectoCorto: '2da Línea Pellas', montoSeptiembre: 141207, porcentaje: 11.62 },
-  { cuentaAuxiliar: 'TTE-C-0668', proyecto: 'Fase 2 Planta de briquetas - FMO', proyectoCorto: 'Briquetas Fase 2', montoSeptiembre: 82418, porcentaje: 6.78 },
-  { cuentaAuxiliar: 'TTE-C-0694', proyecto: 'Suministro e Instalación de la Caldera BF-6002', proyectoCorto: 'Caldera Briquetas', montoSeptiembre: 45589, porcentaje: 3.75 },
-  { cuentaAuxiliar: 'TTE-C-0680', proyecto: 'Servicio de mantenimiento de BG II', proyectoCorto: 'Mantenimiento BG II', montoSeptiembre: 43888, porcentaje: 3.61 },
-  { cuentaAuxiliar: 'TTE-C-0655', proyecto: 'Interconexión del sist. de transporte desde tolva PMH', proyectoCorto: 'Tolva PMH', montoSeptiembre: 27030, porcentaje: 2.22 },
-  { cuentaAuxiliar: 'TTE-C-0656', proyecto: 'Rehabilitación de bandas transportadoras PMH', proyectoCorto: 'Bandas Transp. PMH', montoSeptiembre: 25255, porcentaje: 2.08 },
-  { cuentaAuxiliar: 'TTE-C-0678', proyecto: 'Proyecto Pila HA y HB, suministro e instalación PMH', proyectoCorto: 'Pila HA y HB PMH', montoSeptiembre: 14472, porcentaje: 1.19 },
-  { cuentaAuxiliar: 'TTE-C-0640', proyecto: 'Rehabilitación de la Parrilla Móvil 610TG1 / Pellas', proyectoCorto: 'Parrilla Móvil Pellas', montoSeptiembre: 13956, porcentaje: 1.15 },
-  { cuentaAuxiliar: 'TTE-C-0669', proyecto: 'Servicio de mantenimiento de Dravo y Shiploader', proyectoCorto: 'Mtto Dravo / Shiploader', montoSeptiembre: 7502, porcentaje: 0.62 },
-  { cuentaAuxiliar: 'TTE-C-0670', proyecto: 'Servicio de mtto. Maquinas Briqueteras', proyectoCorto: 'Mtto Briqueteras', montoSeptiembre: 4595, porcentaje: 0.38 },
-  { cuentaAuxiliar: 'TTE-C-0654', proyecto: 'Proyecto 5B: Rehabilitación de cinta JD-9021 PMH', proyectoCorto: 'Cinta JD-9021', montoSeptiembre: 3818, porcentaje: 0.31 },
-  { cuentaAuxiliar: 'TTE-C-0688', proyecto: 'Desmantelamiento del Carga Barcos Wellman', proyectoCorto: 'Carga Barcos Wellman', montoSeptiembre: 2060, porcentaje: 0.17 },
-  { cuentaAuxiliar: 'TTE-C-0718', proyecto: 'Arandela de presión M20 DIN-127 Pavonada', proyectoCorto: 'Arandelas M20', montoSeptiembre: 1533, porcentaje: 0.13 },
-  { cuentaAuxiliar: 'TTE-C-0672', proyecto: 'Extensión de banda transportadora JD 8016A/B PMH', proyectoCorto: 'Banda JD 8016A/B', montoSeptiembre: 1237, porcentaje: 0.10 },
-  { cuentaAuxiliar: 'TTE-C-0711', proyecto: 'Servicio de retirada e instalación módulos eléctricos TH4', proyectoCorto: 'Módulos Eléctricos TH4', montoSeptiembre: 1201, porcentaje: 0.10 },
-  { cuentaAuxiliar: 'TTE-C-0697', proyecto: 'Reparación de Generador Eléctrico (Briquetas)', proyectoCorto: 'Generador Briquetas', montoSeptiembre: 855, porcentaje: 0.07 },
-  { cuentaAuxiliar: 'TTE-C-0578', proyecto: 'Reconstrucción de aspas de agitadores del área 41 (Bauxilum)', proyectoCorto: 'Aspas Agitadores Bauxilum', montoSeptiembre: 614, porcentaje: 0.05 },
-  { cuentaAuxiliar: 'TTE-C-0663', proyecto: 'Reacondicionamiento etapa III en Boca Grande 2', proyectoCorto: 'Boca Grande 2 Etapa III', montoSeptiembre: 169, porcentaje: 0.01 },
-  { cuentaAuxiliar: 'TTE-C-0704', proyecto: 'Segundo Lote - Fabricación de placas y anclajes', proyectoCorto: 'Placas y Anclajes', montoSeptiembre: 140, porcentaje: 0.01 },
-  { cuentaAuxiliar: 'TTE-C-0641', proyecto: 'HIB PLANT / Rehabilitación de las Máquinas Briqueteadoras FMO', proyectoCorto: 'Rehab. Briqueteadoras', montoSeptiembre: 75, porcentaje: 0.01 },
-  { cuentaAuxiliar: 'TTE-C-0667', proyecto: 'Reparaciones principales en Top Gas Scrubber - Planta de Briquetas', proyectoCorto: 'Top Gas Scrubber', montoSeptiembre: 59, porcentaje: 0.00 },
-  { cuentaAuxiliar: 'TTE-C-0681', proyecto: 'Adicionales Proyecto 2da línea de Planta de Pellas', proyectoCorto: 'Adicionales 2da Línea Pellas', montoSeptiembre: 26, porcentaje: 0.00 },
-  { cuentaAuxiliar: 'TTE-C-0675', proyecto: 'Reparación motor / reductor boom conveyor BG II', proyectoCorto: 'Motor Boom BG II', montoSeptiembre: 3, porcentaje: 0.00 }
+  {
+    "cuentaAuxiliar": "TTE-C-0706",
+    "proyecto": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+    "proyectoCorto": "Línea 1 Pellas",
+    "montoSeptiembre": 805700.19,
+    "porcentaje": 30.92
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0671",
+    "proyecto": "Segunda línea PMH - Ingeniería, diseño y suministro",
+    "proyectoCorto": "2da Línea PMH",
+    "montoSeptiembre": 312572.45,
+    "porcentaje": 12
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0655",
+    "proyecto": "Interconexión del sist. de transporte desde tolva PMH",
+    "proyectoCorto": "Tolva PMH",
+    "montoSeptiembre": 253925.43,
+    "porcentaje": 9.74
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0668",
+    "proyecto": "Fase 2 Planta de briquetas - FMO",
+    "proyectoCorto": "Briquetas Fase 2",
+    "montoSeptiembre": 235538.78,
+    "porcentaje": 9.04
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0653",
+    "proyecto": "Repotenciación de rueda de cangilones (DRAVO) PMH",
+    "proyectoCorto": "Rueda Cangilones PMH",
+    "montoSeptiembre": 200526.5,
+    "porcentaje": 7.7
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0649",
+    "proyecto": "Mantenimiento de sistemas principales PMH",
+    "proyectoCorto": "Sistemas PMH",
+    "montoSeptiembre": 163146.75,
+    "porcentaje": 6.26
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0654",
+    "proyecto": "Proyecto 5B: Rehabilitación de cinta JD-9021 PMH",
+    "proyectoCorto": "Cinta JD-9021",
+    "montoSeptiembre": 134354.59,
+    "porcentaje": 5.16
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0656",
+    "proyecto": "Rehabilitación de bandas transportadoras PMH",
+    "proyectoCorto": "Bandas Transp. PMH",
+    "montoSeptiembre": 85260.74,
+    "porcentaje": 3.27
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0694",
+    "proyecto": "Suministro e Instalación de la Caldera BF-6002",
+    "proyectoCorto": "Caldera Briquetas",
+    "montoSeptiembre": 70427.77,
+    "porcentaje": 2.7
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0676",
+    "proyecto": "Segunda linea de Planta de Pellas (VISCO ORINOCO)",
+    "proyectoCorto": "2da Línea Pellas",
+    "montoSeptiembre": 58483.7,
+    "porcentaje": 2.24
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0640",
+    "proyecto": "Rehabilitación de la Parrilla Móvil 610TG1 / Pellas",
+    "proyectoCorto": "Parrilla Móvil Pellas",
+    "montoSeptiembre": 47684.07,
+    "porcentaje": 1.83
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0677",
+    "proyecto": "Mantenimiento y Reparaciones Estructurales",
+    "proyectoCorto": "Rep. Estructurales",
+    "montoSeptiembre": 45606.53,
+    "porcentaje": 1.75
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0678",
+    "proyecto": "Proyecto Pila HA y HB, suministro e instalación PMH",
+    "proyectoCorto": "Pila HA y HB PMH",
+    "montoSeptiembre": 44533.03,
+    "porcentaje": 1.71
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0680",
+    "proyecto": "Servicio de mantenimiento de BG II",
+    "proyectoCorto": "Mantenimiento BG II",
+    "montoSeptiembre": 39678.09,
+    "porcentaje": 1.52
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0641",
+    "proyecto": "HIB PLANT / Rehabilitación de las Máquinas Briqueteadoras FMO",
+    "proyectoCorto": "Rehab. Briqueteadoras",
+    "montoSeptiembre": 37406.8,
+    "porcentaje": 1.44
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0670",
+    "proyecto": "Servicio de mtto. Maquinas Briqueteras",
+    "proyectoCorto": "Mtto Briqueteras",
+    "montoSeptiembre": 24712.32,
+    "porcentaje": 0.95
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0674",
+    "proyecto": "Mantenimiento de tolvas y sistemas de alimentación",
+    "proyectoCorto": "Tolvas Alimentación",
+    "montoSeptiembre": 18999.09,
+    "porcentaje": 0.73
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0669",
+    "proyecto": "Servicio de mantenimiento de Dravo y Shiploader",
+    "proyectoCorto": "Mtto Dravo / Shiploader",
+    "montoSeptiembre": 6773.01,
+    "porcentaje": 0.26
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0651",
+    "proyecto": "Mantenimiento preventivo y correctivo PMH",
+    "proyectoCorto": "Mtto PMH",
+    "montoSeptiembre": 5662.69,
+    "porcentaje": 0.22
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0684",
+    "proyecto": "Fabricación de Gamelas FMO-PMH",
+    "proyectoCorto": "Gamelas FMO-PMH",
+    "montoSeptiembre": 2996.48,
+    "porcentaje": 0.11
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0672",
+    "proyecto": "Extensión de banda transportadora JD 8016A/B PMH",
+    "proyectoCorto": "Banda JD 8016A/B",
+    "montoSeptiembre": 2920.3,
+    "porcentaje": 0.11
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0711",
+    "proyecto": "Servicio de retirada e instalación módulos eléctricos TH4",
+    "proyectoCorto": "Módulos Eléctricos TH4",
+    "montoSeptiembre": 2313.2,
+    "porcentaje": 0.09
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0702",
+    "proyecto": "Suministro y reemplazo de elementos mecánicos",
+    "proyectoCorto": "Elementos Mecánicos",
+    "montoSeptiembre": 1869.66,
+    "porcentaje": 0.07
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0697",
+    "proyecto": "Reparación de Generador Eléctrico (Briquetas)",
+    "proyectoCorto": "Generador Briquetas",
+    "montoSeptiembre": 1541.2,
+    "porcentaje": 0.06
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0718",
+    "proyecto": "Arandela de presión M20 DIN-127 Pavonada",
+    "proyectoCorto": "Arandelas M20",
+    "montoSeptiembre": 1533.2,
+    "porcentaje": 0.06
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0663",
+    "proyecto": "Reacondicionamiento etapa III en Boca Grande 2",
+    "proyectoCorto": "Boca Grande 2 Etapa III",
+    "montoSeptiembre": 753.7,
+    "porcentaje": 0.03
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0704",
+    "proyecto": "Segundo Lote - Fabricación de placas y anclajes",
+    "proyectoCorto": "Placas y Anclajes",
+    "montoSeptiembre": 280,
+    "porcentaje": 0.01
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0642",
+    "proyecto": "Rehabilitación de Carga Barco FMO (Ship loader)",
+    "proyectoCorto": "Ship Loader FMO",
+    "montoSeptiembre": 216.12,
+    "porcentaje": 0.01
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0667",
+    "proyecto": "Reparaciones principales en Top Gas Scrubber - Planta de Briquetas",
+    "proyectoCorto": "Top Gas Scrubber",
+    "montoSeptiembre": 112.44,
+    "porcentaje": 0
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0673",
+    "proyecto": "Reparaciones mecánicas en área de transferencias",
+    "proyectoCorto": "Área Transferencias",
+    "montoSeptiembre": 95.36,
+    "porcentaje": 0
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0638",
+    "proyecto": "Mantenimiento de tuberías y conexiones de vapor",
+    "proyectoCorto": "Tuberías y Vapor",
+    "montoSeptiembre": 38.17,
+    "porcentaje": 0
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0578",
+    "proyecto": "Reconstrucción de aspas de agitadores del área 41 (Bauxilum)",
+    "proyectoCorto": "Aspas Agitadores Bauxilum",
+    "montoSeptiembre": 34.2,
+    "porcentaje": 0
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0624",
+    "proyecto": "Servicio de inspección y calibración de instrumentación",
+    "proyectoCorto": "Calibración Instrumentación",
+    "montoSeptiembre": 12.49,
+    "porcentaje": 0
+  },
+  {
+    "cuentaAuxiliar": "TTE-C-0675",
+    "proyecto": "Reparación motor / reductor boom conveyor BG II",
+    "proyectoCorto": "Motor Boom BG II",
+    "montoSeptiembre": 5.04,
+    "porcentaje": 0
+  }
 ];
 
 // LISTADO EXACTO DE LA TABLA DINÁMICA DE RECURSOS HUMANOS (MANO DE OBRA DIRECTA AGOSTO 2026)

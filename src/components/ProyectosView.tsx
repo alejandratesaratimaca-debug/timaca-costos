@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useCostos } from '../context/CostosContext';
 import { formatCurrency, formatNumber, formatUnitPriceRaw, formatAmountAuto } from '../utils/dateHelpers';
-import { CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CATEGORIAS_PPT_2026, CUENTAS_CORTAS_MAP, TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT } from '../data/mockCostosTimaca';
+import { CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026, CATEGORIAS_PPT_2026, CUENTAS_CORTAS_MAP, TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT } from '../data/mockCostosTimaca';
 import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual2026';
 import { DESGLOSE_CATEGORIAS_PROYECTOS, COSTOS_INDIRECTOS_POR_CATEGORIAS, COSTOS_INDIRECTOS_CONSOLIDADO_OFICIAL } from '../data/mockDesgloseCategorias';
 import { calcularUsoPresupuesto, getPresupuestoPorCuenta } from '../data/presupuestosOficiales';
@@ -170,41 +170,16 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
         });
       });
     } else if (selectedMesNum === 9) {
-      // En Septiembre 2026 acumulamos todas las salidas auditadas del mes 9
-      salidasFiltradasMes.forEach(s => {
-        const cod = s.cuentaAuxiliarCodigo;
-        if (!cod || !cod.startsWith('TTE-C-')) return;
-        const pCorto = CUENTAS_CORTAS_MAP[cod] || s.cuentaAuxiliarNombre || s.proyecto;
-        if (!mapa.has(cod)) {
-          mapa.set(cod, {
-            codigo: cod,
-            nombre: s.cuentaAuxiliarNombre || s.proyecto,
-            proyectoCorto: pCorto,
-            totalMonto: s.montoTotal,
-            salidasCount: 1,
-            salidas: [s]
-          });
-        } else {
-          const cur = mapa.get(cod)!;
-          cur.salidasCount += 1;
-          cur.totalMonto += s.montoTotal;
-          cur.salidas.push(s);
-        }
-      });
-
-      // Sumamos la cuota oficial de Costos Indirectos de Septiembre a cada proyecto externo
-      mapa.forEach((item, cod) => {
-        const rowCif = COSTOS_INDIRECTOS_CONSOLIDADO_OFICIAL.find(r => r.ctaAuxiliar === cod);
-        let cifSep = 0;
-        if (rowCif && rowCif.sep !== undefined && rowCif.sep > 0) {
-          cifSep = rowCif.sep;
-        } else {
-          const modPry = item.salidas
-            .filter(s => getMacroCategory(s) === 'Mano de Obra Directa')
-            .reduce((acc, s) => acc + s.montoTotal, 0);
-          cifSep = modPry > 0 ? Math.round(73000 * (modPry / 351891)) : 0;
-        }
-        item.totalMonto += cifSep;
+      // En Septiembre 2026 usamos las 34 cuentas auxiliares consolidadas al 100% desde Master Unificado ($2.605.714,09 USD)
+      CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026.forEach(item => {
+        mapa.set(item.cuentaAuxiliar, {
+          codigo: item.cuentaAuxiliar,
+          nombre: item.proyecto,
+          proyectoCorto: item.proyectoCorto,
+          totalMonto: item.montoSeptiembre,
+          salidasCount: 0,
+          salidas: []
+        });
       });
     } else {
       // Para otros meses o Todo el Año (selectedMesNum === 0), poblamos desde la matriz real de proyectos externos
@@ -213,7 +188,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
         let montoPeriodo = 0;
         if (selectedMesNum === 0) {
           montoPeriodo = data.totalAnual;
-        } else if (selectedMesNum >= 1 && selectedMesNum <= 8) {
+        } else if (selectedMesNum >= 1 && selectedMesNum <= 9) {
           montoPeriodo = data.meses[selectedMesNum - 1] || 0;
         }
 
@@ -353,47 +328,21 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
       CATEGORIAS_PPT_2026.forEach(cat => {
         const cur = mapCat.get(cat)!;
         if (effectiveMes === 0) {
-          // Todo el Año: suma de los 8 meses oficiales de matriz + salidas auditadas de septiembre
-          if (realProj) {
+          // Todo el Año: suma de los 9 meses oficiales consolidados
+          if (realProj && realProj.byCategoriaMes) {
             let sumAnual = 0;
             realProj.byCategoriaMes.forEach(mesCat => {
               sumAnual += (mesCat[cat] || 0);
             });
-            if (cat === 'Costos Indirectos') {
-              const rowCif = COSTOS_INDIRECTOS_CONSOLIDADO_OFICIAL.find(r => r.ctaAuxiliar === activeCuenta.codigo);
-              const cifSep = rowCif?.sep || 0;
-              cur.total = sumAnual + cifSep;
-              cur.count = (cur.total > 0 ? 1 : 0) + cur.count;
-            } else {
-              const salidasSepCat = activeCuenta.salidas.filter(s => s.mes === 9 && getMacroCategory(s) === cat);
-              const sepSum = salidasSepCat.reduce((acc, s) => acc + s.montoTotal, 0);
-              cur.total = sumAnual + sepSum;
-            }
+            cur.total = Math.round(sumAnual * 100) / 100;
           } else {
             cur.total = cur.salidas.reduce((acc, s) => acc + s.montoTotal, 0);
           }
-        } else if (effectiveMes >= 1 && effectiveMes <= 8) {
-          // Meses 1 a 8: matriz oficial PPT
+        } else if (effectiveMes >= 1 && effectiveMes <= 9) {
+          // Meses 1 a 9 (incluye Septiembre con MOD, Materiales, Horas Máquina, CIF y Servicios):
           if (realProj && realProj.byCategoriaMes && realProj.byCategoriaMes[effectiveMes - 1]) {
             cur.total = realProj.byCategoriaMes[effectiveMes - 1][cat] || 0;
           } else {
-            cur.total = cur.salidas.reduce((acc, s) => acc + s.montoTotal, 0);
-          }
-        } else if (effectiveMes === 9) {
-          if (cat === 'Costos Indirectos') {
-            const rowCif = COSTOS_INDIRECTOS_CONSOLIDADO_OFICIAL.find(r => r.ctaAuxiliar === activeCuenta.codigo);
-            if (rowCif && rowCif.sep !== undefined && rowCif.sep > 0) {
-              cur.total = rowCif.sep;
-            } else {
-              const modBolsaSep = 351891;
-              const modPrySep = activeCuenta.salidas
-                .filter(s => s.mes === 9 && getMacroCategory(s) === 'Mano de Obra Directa')
-                .reduce((acc, s) => acc + s.montoTotal, 0);
-              cur.total = modBolsaSep > 0 && modPrySep > 0 ? Math.round(73000 * (modPrySep / modBolsaSep)) : 0;
-            }
-            cur.count = cur.total > 0 ? 1 : 0;
-          } else {
-            // Mes 9 (Septiembre): suma exacta de todas las salidas auditadas del mes 9 para esta categoría
             cur.total = cur.salidas.reduce((acc, s) => acc + s.montoTotal, 0);
           }
         }
