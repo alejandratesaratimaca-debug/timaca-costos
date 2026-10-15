@@ -9,6 +9,7 @@ import { DESPACHOS_REALES_TTE_C_0656_AGOSTO } from './realUnificadaAugust2026';
 import { SALIDAS_REALES_AGOSTO_2026 } from './realSalidasUnificada2026';
 import { REGISTROS_REALES_MESES_1_A_7 } from './realConsolidadoMeses2026';
 import { SALIDAS_REALES_SEPTIEMBRE_2026 } from './realSalidasSeptiembre2026';
+import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from './realProyectosMensual2026';
 
 export { CUENTAS_CORTAS_MAP, TABLA_COSTOS_INDIRECTOS_OFICIAL };
 
@@ -122,29 +123,29 @@ export const DETALLE_SUBCONCEPTOS_CATEGORIAS: Record<string, {
   }
 };
 
-// Matriz de Distribución Mensual por Categoría (Tabla 3. Distribución anual de proyectos externos - Oficial 2026)
-// Coincidencia 100% milimétrica con Nuevas Tablas Informesssssssssssss.xlsx (Hoja Externos 2026: $24.831.717 USD)
+// Matriz Oficial de Distribución Mensual por Categoría (Consolidado Oficial Proyectos Externos 2026)
+// Coincidencia 100% milimétrica con Consolidado_Oficial_2026_Limpio.xlsx: $11.708.732 USD
 export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
-    meses: [622579, 688287, 652797, 371398, 288539, 554855, 316934, 513081, 822503],
-    total2026: 4830974,
-    variacion: '+60%',
-    variacionNum: 60,
+    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 371927, 868067],
+    total2026: 3967415,
+    variacion: '+133%',
+    variacionNum: 133,
     esPositiva: true
   },
   {
     categoria: 'Servicios',
-    meses: [232372, 9713796, 296831, 108933, 428946, 2517047, 1113483, 344155, 229748],
-    total2026: 14985312,
-    variacion: '-33%',
-    variacionNum: -33,
+    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 117970, 76820],
+    total2026: 2881425,
+    variacion: '-35%',
+    variacionNum: -35,
     esPositiva: false
   },
   {
     categoria: 'Mano de Obra Directa',
-    meses: [339370, 269666, 255366, 229531, 261564, 202303, 212668, 277936, 196666],
-    total2026: 2245070,
+    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 277936, 196666],
+    total2026: 2218230,
     variacion: '-29%',
     variacionNum: -29,
     esPositiva: false
@@ -159,27 +160,27 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 336208, 205120],
-    total2026: 1887434,
-    variacion: '-39%',
-    variacionNum: -39,
+    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 207508, 205120],
+    total2026: 1758733,
+    variacion: '-1%',
+    variacionNum: -1,
     esPositiva: false
   }
 ];
 
 export const TOTALES_MESES_PPT = [
-  { mesNum: 1, mesNombre: 'Enero 2026', total: 1512831 },
-  { mesNum: 2, mesNombre: 'Febrero 2026', total: 10958911 },
-  { mesNum: 3, mesNombre: 'Marzo 2026', total: 1553311 },
-  { mesNum: 4, mesNombre: 'Abril 2026', total: 933382 },
-  { mesNum: 5, mesNombre: 'Mayo 2026', total: 1332311 },
-  { mesNum: 6, mesNombre: 'Junio 2026', total: 3550023 },
-  { mesNum: 7, mesNombre: 'Julio 2026', total: 1920163 },
-  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1561170 },
-  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1509615 }
+  { mesNum: 1, mesNombre: 'Enero 2026', total: 1027830 },
+  { mesNum: 2, mesNombre: 'Febrero 2026', total: 1250858 },
+  { mesNum: 3, mesNombre: 'Marzo 2026', total: 1399893 },
+  { mesNum: 4, mesNombre: 'Abril 2026', total: 1009467 },
+  { mesNum: 5, mesNombre: 'Mayo 2026', total: 874248 },
+  { mesNum: 6, mesNombre: 'Junio 2026', total: 2590801 },
+  { mesNum: 7, mesNombre: 'Julio 2026', total: 1088254 },
+  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1065130 },
+  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1402251 }
 ];
 
-// LISTADO OFICIAL DE LAS 20 CUENTAS AUXILIARES / PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.345.010 USD)
+// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.065.130 USD)
 export interface CuentaAuxiliarProyecto {
   cuentaAuxiliar: string;
   proyecto: string;
@@ -188,208 +189,39 @@ export interface CuentaAuxiliarProyecto {
   porcentaje: number;
 }
 
-export const CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026: CuentaAuxiliarProyecto[] = [
-  { cuentaAuxiliar: 'TTE-C-0706', proyecto: 'Recuperación de Línea 1 de Planta de Pellas', proyectoCorto: 'Línea 1 Pellas', montoAgosto: 636352, porcentaje: 47.31 },
-  { cuentaAuxiliar: 'TTE-C-0671', proyecto: 'Segunda línea PMH - Ingeniería, diseño y suministro', proyectoCorto: '2da Línea PMH', montoAgosto: 187959, porcentaje: 13.97 },
-  { cuentaAuxiliar: 'TTE-C-0668', proyecto: 'Fase 2 Planta de briquetas - FMO', proyectoCorto: 'Briquetas Fase 2', montoAgosto: 169771, porcentaje: 12.62 },
-  { cuentaAuxiliar: 'TTE-C-0656', proyecto: 'Rehabilitación de bandas transportadoras PMH', proyectoCorto: 'Bandas Transp. PMH', montoAgosto: 109519, porcentaje: 8.14 },
-  { cuentaAuxiliar: 'TTE-C-0653', proyecto: 'Repotenciación de rueda de cangilones (DRAVO) PMH', proyectoCorto: 'Rueda Cangilones PMH', montoAgosto: 64981, porcentaje: 4.83 },
-  { cuentaAuxiliar: 'TTE-C-0680', proyecto: 'Servicio de mantenimiento de BG II', proyectoCorto: 'Mantenimiento BG II', montoAgosto: 51180, porcentaje: 3.81 },
-  { cuentaAuxiliar: 'TTE-C-0655', proyecto: 'Interconexión del sist. de transporte desde tolva PMH', proyectoCorto: 'Tolva PMH', montoAgosto: 32170, porcentaje: 2.39 },
-  { cuentaAuxiliar: 'TTE-C-0678', proyecto: 'Proyecto Pila HA y HB, suministro e instalación PMH', proyectoCorto: 'Pila HA y HB PMH', montoAgosto: 31448, porcentaje: 2.34 },
-  { cuentaAuxiliar: 'TTE-C-0670', proyecto: 'Servicio de mtto. Maquinas Briqueteras', proyectoCorto: 'Mtto Briqueteras', montoAgosto: 15180, porcentaje: 1.13 },
-  { cuentaAuxiliar: 'TTE-C-0640', proyecto: 'Rehabilitación de la Parrilla Móvil 610TG1 / Pellas', proyectoCorto: 'Parrilla Móvil Pellas', montoAgosto: 13705, porcentaje: 1.02 },
-  { cuentaAuxiliar: 'TTE-C-0694', proyecto: 'Suministro e Instalación de la Caldera - Briquetas', proyectoCorto: 'Caldera Briquetas', montoAgosto: 13140, porcentaje: 0.98 },
-  { cuentaAuxiliar: 'TTE-C-0669', proyecto: 'Servicio de mantenimiento de Dravo', proyectoCorto: 'Mtto Dravo', montoAgosto: 9992, porcentaje: 0.74 },
-  { cuentaAuxiliar: 'TTE-C-0676', proyecto: 'Segunda linea de Planta de Pellas', proyectoCorto: '2da Línea Pellas', montoAgosto: 4018, porcentaje: 0.30 },
-  { cuentaAuxiliar: 'TTE-C-0684', proyecto: 'Fabricación de Gamelas FMO-PMH', proyectoCorto: 'Gamelas FMO-PMH', montoAgosto: 2143, porcentaje: 0.16 },
-  { cuentaAuxiliar: 'TTE-C-0697', proyecto: 'Reparación de Generador Eléctrico (Briquetas)', proyectoCorto: 'Generador Briquetas', montoAgosto: 1045, porcentaje: 0.08 },
-  { cuentaAuxiliar: 'TTE-C-0688', proyecto: 'Desmantelamiento del Carga Barcos Wellman', proyectoCorto: 'Carga Barcos Wellman', montoAgosto: 759, porcentaje: 0.06 },
-  { cuentaAuxiliar: 'TTE-C-0663', proyecto: 'Reacondicionamiento etapa III en Boca Grande 2', proyectoCorto: 'Boca Grande 2 Etapa III', montoAgosto: 665, porcentaje: 0.05 },
-  { cuentaAuxiliar: 'TTE-C-0642', proyecto: 'Rehabilitación de Carga Barco FMO (Ship loader)', proyectoCorto: 'Ship Loader FMO', montoAgosto: 359, porcentaje: 0.03 },
-  { cuentaAuxiliar: 'TTE-C-0711', proyecto: 'Servicio de retirada de modulos eléctricos TH4 PMH', proyectoCorto: 'Módulos Eléctricos TH4', montoAgosto: 334, porcentaje: 0.02 },
-  { cuentaAuxiliar: 'TTE-C-0654', proyecto: 'Proyecto 5B: Rehabilitación de cinta JD-9021', proyectoCorto: 'Cinta JD-9021', montoAgosto: 290, porcentaje: 0.02 }
-];
+const projsListAll = Object.values(MATRIZ_REAL_PROYECTOS_MENSUAL_2026);
+const totAgostoExacto = 1065130;
 
-// LISTADO OFICIAL DE LAS CUENTAS AUXILIARES / PROYECTOS EXTERNOS DE SEPTIEMBRE 2026 ($1.215.432 USD CONSOLIDADO)
-export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 = [
-  {
-    "cuentaAuxiliar": "TTE-C-0706",
-    "proyecto": "Recuperación Línea 1 de Planta de Pellas",
-    "proyectoCorto": "Línea 1 Pellas",
-    "montoSeptiembre": 663783.61,
-    "porcentaje": 49.89
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0671",
-    "proyecto": "Segunda línea PMH - Ingeniería, diseño y suministro",
-    "proyectoCorto": "2da Línea PMH",
-    "montoSeptiembre": 207826.76,
-    "porcentaje": 15.62
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0653",
-    "proyecto": "Repotenciación de rueda de cangilones (DRAVO) PMH",
-    "proyectoCorto": "Rueda Cangilones PMH",
-    "montoSeptiembre": 144767.75,
-    "porcentaje": 10.88
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0668",
-    "proyecto": "Fase 2 Planta de briquetas - FMO",
-    "proyectoCorto": "Briquetas Fase 2",
-    "montoSeptiembre": 104230.68,
-    "porcentaje": 7.83
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0656",
-    "proyecto": "Rehabilitación de bandas transportadoras PMH",
-    "proyectoCorto": "Bandas Transp. PMH",
-    "montoSeptiembre": 56059.2,
-    "porcentaje": 4.21
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0694",
-    "proyecto": "Suministro e Instalación de la Caldera - Briquetas",
-    "proyectoCorto": "Caldera Briquetas",
-    "montoSeptiembre": 46735.85,
-    "porcentaje": 3.51
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0680",
-    "proyecto": "Servicio de mantenimiento de BG II",
-    "proyectoCorto": "Mantenimiento BG II",
-    "montoSeptiembre": 31937.11,
-    "porcentaje": 2.4
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0678",
-    "proyecto": "Proyecto Pila HA y HB, suministro e instalación PMH",
-    "proyectoCorto": "Pila HA y HB PMH",
-    "montoSeptiembre": 28997.06,
-    "porcentaje": 2.18
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0670",
-    "proyecto": "Servicio de mtto. Maquinas Briqueteras",
-    "proyectoCorto": "Mtto Briqueteras",
-    "montoSeptiembre": 13990.37,
-    "porcentaje": 1.05
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0640",
-    "proyecto": "Rehabilitación de la Parrilla Móvil 610TG1 / Pellas",
-    "proyectoCorto": "Parrilla Móvil Pellas",
-    "montoSeptiembre": 12020.95,
-    "porcentaje": 0.9
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0655",
-    "proyecto": "Interconexión del sist. de transporte desde tolva PMH",
-    "proyectoCorto": "Tolva PMH",
-    "montoSeptiembre": 5390.96,
-    "porcentaje": 0.41
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0669",
-    "proyecto": "Servicio de mantenimiento de Dravo, Shiploader",
-    "proyectoCorto": "Mtto Dravo",
-    "montoSeptiembre": 5221.84,
-    "porcentaje": 0.39
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0684",
-    "proyecto": "Fabricación de Gamelas FMO-PMH",
-    "proyectoCorto": "Gamelas FMO-PMH",
-    "montoSeptiembre": 2176.07,
-    "porcentaje": 0.16
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0718",
-    "proyecto": "Arandela de presión M20 DIN-127 Pavonada",
-    "proyectoCorto": "Arandela M20",
-    "montoSeptiembre": 1533.2,
-    "porcentaje": 0.12
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0672",
-    "proyecto": "Extensión de banda transportadora JD 8016A y B",
-    "proyectoCorto": "Extensión JD 8016",
-    "montoSeptiembre": 1492.22,
-    "porcentaje": 0.11
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0654",
-    "proyecto": "Proyecto 5B: Rehabilitación y extensión de cinta JD-9021",
-    "proyectoCorto": "Cinta JD-9021",
-    "montoSeptiembre": 1301.77,
-    "porcentaje": 0.1
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0711",
-    "proyecto": "Servicio de retirada de modulos eléctricos TH4 PMH",
-    "proyectoCorto": "Módulos Eléctricos TH4",
-    "montoSeptiembre": 1178.5,
-    "porcentaje": 0.09
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0697",
-    "proyecto": "Reparación de Generador Eléctrico para Planta de Briquetas",
-    "proyectoCorto": "Generador Briquetas",
-    "montoSeptiembre": 855.26,
-    "porcentaje": 0.06
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0676",
-    "proyecto": "Segunda linea de Planta de Pellas (VISCO ORINOCO)",
-    "proyectoCorto": "2da Línea Pellas",
-    "montoSeptiembre": 443.66,
-    "porcentaje": 0.03
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0663",
-    "proyecto": "Reacondicionamiento etapa III en Boca Grande 2",
-    "proyectoCorto": "Boca Grande 2 Etapa III",
-    "montoSeptiembre": 141.24,
-    "porcentaje": 0.01
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0704",
-    "proyecto": "Segundo Lote - Fabricación de placas y ancajes",
-    "proyectoCorto": "Placas y Anclajes L2",
-    "montoSeptiembre": 140,
-    "porcentaje": 0.01
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0641",
-    "proyecto": "HIB PLANT/ Rehabilitación de las Máquinas Briqueteras",
-    "proyectoCorto": "HIB Plant Briqueteras",
-    "montoSeptiembre": 74.71,
-    "porcentaje": 0.01
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0667",
-    "proyecto": "Reparaciones principales en Top Gas Scrubber",
-    "proyectoCorto": "Top Gas Scrubber",
-    "montoSeptiembre": 56.22,
-    "porcentaje": 0
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0578",
-    "proyecto": "Reconstrucción de aspas de agitadores del área 41",
-    "proyectoCorto": "Aspas Agitadores",
-    "montoSeptiembre": 17.1,
-    "porcentaje": 0
-  },
-  {
-    "cuentaAuxiliar": "TTE-C-0675",
-    "proyecto": "Reparación motor / reductor de polea motriz banda PMH",
-    "proyectoCorto": "Motor Reductor PMH",
-    "montoSeptiembre": 2.52,
-    "porcentaje": 0
-  }
-];
+export const CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026: CuentaAuxiliarProyecto[] = projsListAll
+  .filter(p => (p.meses[7] || 0) > 0)
+  .sort((a, b) => (b.meses[7] || 0) - (a.meses[7] || 0))
+  .map(p => {
+    const val = Math.round((p.meses[7] || 0) * 100) / 100;
+    return {
+      cuentaAuxiliar: p.cuentaAuxiliar,
+      proyecto: p.descripcion,
+      proyectoCorto: CUENTAS_CORTAS_MAP[p.cuentaAuxiliar] || p.descripcion,
+      montoAgosto: val,
+      porcentaje: totAgostoExacto > 0 ? Math.round((val / totAgostoExacto) * 10000) / 100 : 0
+    };
+  });
 
+// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE SEPTIEMBRE 2026 ($1.402.251 USD)
+const totSepExacto = 1402251;
+
+export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 = projsListAll
+  .filter(p => (p.meses[8] || 0) > 0)
+  .sort((a, b) => (b.meses[8] || 0) - (a.meses[8] || 0))
+  .map(p => {
+    const val = Math.round((p.meses[8] || 0) * 100) / 100;
+    return {
+      cuentaAuxiliar: p.cuentaAuxiliar,
+      proyecto: p.descripcion,
+      proyectoCorto: CUENTAS_CORTAS_MAP[p.cuentaAuxiliar] || p.descripcion,
+      montoSeptiembre: val,
+      porcentaje: totSepExacto > 0 ? Math.round((val / totSepExacto) * 10000) / 100 : 0
+    };
+  });
 
 // LISTADO EXACTO DE LA TABLA DINÁMICA DE RECURSOS HUMANOS (MANO DE OBRA DIRECTA AGOSTO 2026)
 export interface DetalleNominaRRHH {

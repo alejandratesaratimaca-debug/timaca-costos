@@ -809,8 +809,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             const montoActual = periodoDetalleCategorias === 'anual' ? montoAnual : montoMes;
             
             const totalBase = periodoDetalleCategorias === 'anual' 
-              ? 11804998 
-              : (TOTALES_MESES_PPT[mesIdx]?.total || 1345010);
+              ? TOTALES_MESES_PPT.reduce((sum, m) => sum + m.total, 0)
+              : (TOTALES_MESES_PPT[mesIdx]?.total || 0);
             const pctActual = totalBase > 0 ? (((montoActual || 0) / totalBase) * 100).toFixed(1) : '0';
 
             return (

@@ -251,16 +251,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
     } else {
       if (selectedMesNum === 8) {
         setNotasGestion(
-          `Para el mes de agosto de 2026, el gasto consolidado en proyectos externos cerró en $1,35M USD ($1.345.010,00 USD), registrando un repunte operativo (+10% vs julio). La ejecución estuvo fuertemente traccionada por Línea 1 Pellas ($636.352 USD), Segunda Línea PMH ($187.959 USD), Briquetas Fase 2 ($169.771 USD) y Bandas Torre #3 ($109.519 USD).\n\n` +
-          `El megaproyecto Línea 1 Pellas (TTE-C-0706) acumula $2.024.563 USD con un avance financiero del 7% sobre su contrato total de $29,72M USD, manteniendo una cuadrilla estabilizada en 238 trabajadores promedio y un despliegue intensivo de maniobras de izaje con la grúa Demag AC200 ($89.789 USD en horas máquina).\n\n` +
-          `La categoría Materiales Directos presentó un repunte de +68% ($506.689 USD), concentrado en materiales eléctricos para la repotenciación DRAVO y Bandas PMH, y acero para la Segunda Línea PMH. Los Servicios Directos se situaron en $117.970 USD (-67%) al concluir los fletes de importación mayores que dinamizaron junio y julio.`
+          `Para el mes de agosto de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.065.130,00 USD, manteniendo una rigurosa disciplina de costos y avance en 51 frentes activos.\n\n` +
+          `La ejecución estuvo fuertemente liderada por Línea 1 Pellas ($516.652 USD), Segunda Línea PMH ($189.095 USD), Bandas PMH ($92.438 USD) y Briquetas Fase 2 ($79.809 USD).\n\n` +
+          `En cuanto a las categorías: Materiales Directos totalizó $371.927 USD, Mano de Obra Directa $277.936 USD, Costos Indirectos $207.508 USD, Servicios $117.970 USD y Horas Máquina $89.789 USD.`
         );
       } else if (selectedMesNum === 9) {
         setNotasGestion(
-          `Para el mes de septiembre de 2026, el gasto consolidado en proyectos externos cerró en $1.041.504,00 USD (-23% vs agosto), manteniendo la tracción operacional en 189 cuentas auxiliares y frentes activos.\n\n` +
-          `La ejecución estuvo liderada por el megaproyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $305.289 USD (29,3% del mes, acumulando $2.068.019 USD y un 7,0% sobre el contrato total de $29,72M USD), Segunda Línea PMH ($193.958 USD / 18,6%) y Repotenciación de Rueda de Cangilones DRAVO ($154.004 USD / 14,8%).\n\n` +
-          `La Mano de Obra Directa cerró en $351.891 USD (33,8% del gasto mensual, 61.866 horas-hombre), calculada bajo el método contable de devengado diario por días hábiles trabajados (Semanas 35 a 39) más la asignación mensual de Honorarios de Staff Pellas Línea 1 ($125.000 USD).\n\n` +
-          `Los Materiales Directos alcanzaron $524.340 USD (+3% vs agosto), focalizados en acero estructural y repotenciación eléctrica, mientras que los Servicios Directos se situaron en $92.273 USD y los Costos Indirectos en $73.000 USD.`
+          `Para el mes de septiembre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.402.251,00 USD (+32% vs agosto), acumulando un total anual consolidado de $11.708.732,00 USD en los 9 meses de 2026.\n\n` +
+          `La ejecución estuvo liderada por el megaproyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $609.028 USD (43,4% del mes), Segunda Línea PMH ($281.101 USD / 20,0%), Repotenciación de Rueda de Cangilones DRAVO ($199.356 USD / 14,2%), Briquetas Fase 2 ($139.623 USD / 10,0%) y Caldera Briquetas ($65.089 USD / 4,6%).\n\n` +
+          `La categoría Materiales Directos creció a $868.067 USD (+133% vs agosto) por intensificación de suministros y acero estructural, Mano de Obra Directa se situó en $196.666 USD, Costos Indirectos auditados en $205.120 USD, Servicios en $76.820 USD y Horas Máquina en $55.578 USD.`
         );
       } else {
         const mesNombre = activeMonth?.mesLabel || `Mes ${selectedMesNum}`;
@@ -689,9 +688,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
                       {selectedMesNum === 8 ? (
-                        <>Repunte Operativo (<strong className="text-emerald-700">+10%</strong>): El gasto del mes subió a <strong className="text-[#0b2545]">$1,35M USD ($1.345.010 USD)</strong> (+$123K vs julio), reflejando una mayor actividad general en las obras.</>
+                        <>Gasto mensual auditado de <strong className="text-[#0b2545]">$1,07M USD ($1.065.130 USD)</strong> con 51 frentes activos y tracción sostenida en Línea 1 Pellas ($517K) y 2da Línea PMH ($189K).</>
                       ) : selectedMesNum === 9 ? (
-                        <>Cierre Consolidado (<strong className="text-amber-700">-23%</strong>): El gasto del mes se situó en <strong className="text-[#0b2545]">$1,04M USD ($1.041.504 USD)</strong> (-$303K vs agosto), con {cuentasAuxiliaresMes.length} proyectos activos y tracción en Línea 1 Pellas, 2da Línea PMH y Cangilones DRAVO.</>
+                        <>Cierre Consolidado (<strong className="text-emerald-700">+32%</strong>): El gasto del mes se situó en <strong className="text-[#0b2545]">$1,40M USD ($1.402.251 USD)</strong>, acumulando <strong className="text-blue-900">$11.708.732 USD</strong> en el ejercicio 2026 con aceleración en Línea 1 Pellas ($609K), 2da Línea PMH ($281K) y DRAVO ($199K).</>
                       ) : selectedMesNum > 1 ? (
                         <>Ejecución mensual de <strong className="text-[#0b2545]">{formatCurrency(activeMonth?.totalMonto || 0)}</strong> ({variacionTotalMes >= 0 ? `+${variacionTotalMes}%` : `${variacionTotalMes}%`} respecto a {mesAnterior?.mesLabel?.split(' ')[0]}) con {cuentasAuxiliaresMes.length} cuentas activas.</>
                       ) : (
@@ -917,8 +916,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       {/* Pure SVG Waterfall Chart */}
                       <div className="pt-4 overflow-x-auto">
                         {(() => {
-                          const prevTotal = mesAnterior?.totalMonto || 1345010;
-                          const currTotal = activeMonth?.totalMonto || 1097082;
+                          const prevTotal = mesAnterior?.totalMonto || 1065130;
+                          const currTotal = activeMonth?.totalMonto || 1402251;
 
                           // Compute individual category deltas
                           const steps = [
