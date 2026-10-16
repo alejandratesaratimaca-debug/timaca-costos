@@ -4787,7 +4787,6 @@ const colsTrf = (recibidas) => [
   { t: 'Responsable', v: r => r.resp ? r.resp.nombre : '—' },
   { t: 'Proyecto / OT', v: r => r.proyecto || '—' },
   { t: 'Supervisor', v: r => r.sup || '—' },
-  { t: 'Líneas', v: r => r.lineas.length, cls: 'num' },
   { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
   { t: 'Procesado por', v: r => r.procesadoPor ? r.procesadoPor.nombre : '' },
   { t: 'Fecha procesamiento', v: r => r.procesadoEn ? fFH(r.procesadoEn) : '', s: r => r.procesadoEn || '' },
@@ -4809,11 +4808,9 @@ VISTAS.trfRec = p => {
   }
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const perm = puede('recibir', S.ctx);
-  const pend = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN');
   const recarga = `ir('trfRec',{f:$('frEst').value,desde:$('frDesde').value,hasta:$('frHasta').value})`;
   $('area').innerHTML = cab('Transferencias recibidas', `Transferencias enviadas a ${esc(almNombre(S.ctx))}. Tiene ${DB.config.plazoHoras} horas para aceptar o rechazar cada una; si no, el material regresa al almacén de origen.`, botonesExport('gRec', 'Transferencias recibidas ' + almNombre(S.ctx)))
     + (perm ? '' : avisoSinPermiso('Su usuario no tiene permiso para recibir transferencias en este almacén. Puede consultarlas, pero no aceptarlas ni rechazarlas.'))
-    + (pend.length ? `<div class="franja-est naranja" style="margin-bottom:12px;font-size:12.5px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px"><span>⏱️ Tiene <b>${pend.length}</b> transferencia(s) pendiente(s) por aceptar en este almacén. Plazo reglamentario: 12 horas desde el despacho.</span>${pend.length === 1 ? `<div>${cronoHTML(pend[0], true)}</div>` : ''}</div>` : '')
     + `<div class="fila-filtros">
         ${campo('Estatus', `<select id="frEst" onchange="${recarga}">${opciones([['PENDIENTE DE RECEPCIÓN', 'Por aceptar'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['TODAS', 'Todas']], f.est)}</select>`)}
         ${campo('Desde', `<input type="date" id="frDesde" value="${f.desde}" onchange="${recarga}">`)}
@@ -5746,16 +5743,53 @@ VISTAS.mAcc = p => {
    ===================================================================== */
 const alertaMin = () => Number(DB.config.alertaMin) || 30;
 function fmtCrono(ms) { if (ms <= 0) return '00:00:00'; const t = Math.floor(ms / 1000); return `${pad(Math.floor(t / 3600))}:${pad(Math.floor(t % 3600 / 60))}:${pad(t % 60)}`; }
-function claseCrono(ms) { return ms <= alertaMin() * 60000 ? 'rojo' : ms <= 2 * 3600000 ? 'ambar' : 'verde'; }
+function claseCrono(ms) { return ms <= 5 * 60000 ? 'rojo' : ms <= 30 * 60000 ? 'ambar' : 'verde'; }
 /* Reloj en vivo: <span class="crono"> se actualiza cada segundo */
 function cronoHTML(v, grande) {
   const ms = new Date(v.vence) - ahora();
   return `<span class="crono ${claseCrono(ms)} ${grande ? 'grande' : ''}" data-vence="${v.vence}" data-ini="${v.fecha}">⏱ ${fmtCrono(ms)}</span>`;
 }
-const S_ALERTA = { avisados: new Set(), ocultos: new Set() };
+const S_ALERTA = { avisados30: new Set(), avisados5: new Set(), ocultos: new Set() };
 function pendientesPorAceptar() {
   if (!S.u || enMaestro() || !puede('recibir', S.ctx)) return [];
   return DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN').sort((a, b) => a.vence.localeCompare(b.vence));
+}
+function verificarAlertasTransferencias() {
+  if (!S.u || enMaestro()) return;
+  const pend = pendientesPorAceptar();
+  const ahoraMs = ahora().getTime();
+  pend.forEach(v => {
+    const msRestantes = new Date(v.vence).getTime() - ahoraMs;
+    const minRestantes = msRestantes / 60000;
+
+    // 1. Notificación preventiva a los 30 minutos
+    if (minRestantes <= 30 && minRestantes > 5 && !S_ALERTA.avisados30.has(v.num)) {
+      S_ALERTA.avisados30.add(v.num);
+      notificarSistema(
+        '⏱ Transferencia por vencer: 30 min restantes',
+        `A la transferencia ${v.num} enviada desde ${almNombre(v.origen)} le quedan 30 minutos para ser aceptada en ${almNombre(v.destino)}.`,
+        'info',
+        { doc: v.num }
+      );
+    }
+
+    // 2. Notificación crítica y urgente a los 5 minutos
+    if (minRestantes <= 5 && minRestantes > 0 && !S_ALERTA.avisados5.has(v.num)) {
+      S_ALERTA.avisados5.add(v.num);
+      notificarSistema(
+        '🚨 ¡URGENTE! Transferencia por vencer en 5 minutos',
+        `A la transferencia ${v.num} enviada desde ${almNombre(v.origen)} le quedan solo 5 minutos antes de vencer y retornar al almacén de origen.`,
+        'err',
+        { doc: v.num }
+      );
+      if ($('modalFondo').style.display !== 'flex' && $('vistaImpresion').style.display !== 'block') {
+        abrirModal('🚨 Transferencia por vencer en 5 minutos', `<div class="franja-est rojo" style="justify-content:center">${cronoHTML(v, true)}</div>
+          <p class="ayuda-txt">A la transferencia <b>${v.num}</b> enviada por <b>${esc(almNombre(v.origen))}</b> le quedan <b>menos de 5 minutos</b> para ser aceptada en ${esc(almNombre(v.destino))}.</p>
+          <p class="ayuda-txt" style="margin-top:8px">Si el reloj llega a 00:00:00, la transferencia <b>vencerá automáticamente</b>: el material no ingresará al inventario y regresará a ${esc(almNombre(v.origen))}.</p>`,
+          [{ t: 'Recordarme después', cls: 'btn-claro', fn: cerrarModal }, { t: 'Ver y aceptar ahora', cls: 'btn-verde', fn: () => { cerrarModal(); ir('doc', { num: v.num, back: 'trfRec' }); } }]);
+      }
+    }
+  });
 }
 function tickCronos() {
   if (!S.u) return;
@@ -5769,16 +5803,17 @@ function tickCronos() {
   document.querySelectorAll('.crono-barra i').forEach(el => {
     const ini = new Date(el.dataset.ini), fin = new Date(el.dataset.vence);
     const pct = Math.max(0, Math.min(100, (fin - ahora()) / (fin - ini) * 100));
-    el.style.width = pct + '%'; el.style.background = pct * (fin - ini) / 100 <= alertaMin() * 60000 ? 'var(--rojo)' : pct < 25 ? 'var(--ambar)' : 'var(--verde)';
+    el.style.width = pct + '%'; el.style.background = pct * (fin - ini) / 100 <= 5 * 60000 ? 'var(--rojo)' : pct * (fin - ini) / 100 <= 30 * 60000 ? 'var(--ambar)' : 'var(--verde)';
   });
   if (vencio && procesarVencimientos()) { toast('Una transferencia venció sin ser aceptada y su material regresó al almacén de origen.', 'err'); pintarMenu(); refrescar(); }
+  verificarAlertasTransferencias();
   pintarBannerAlerta();
 }
-/* Aviso cuando quedan pocos minutos para aceptar */
+/* Aviso flotante cuando quedan pocos minutos para aceptar */
 function pintarBannerAlerta() {
   const caja = $('bannerTrf'); if (!caja) return;
   const enPantalla = S.vista === 'doc' && S.param ? S.param.num : null;
-  const urg = pendientesPorAceptar().filter(v => (new Date(v.vence) - ahora()) <= alertaMin() * 60000 && !S_ALERTA.ocultos.has(v.num) && v.num !== enPantalla);
+  const urg = pendientesPorAceptar().filter(v => (new Date(v.vence) - ahora()) <= 30 * 60000 && !S_ALERTA.ocultos.has(v.num) && v.num !== enPantalla);
   if (!urg.length) { caja.style.display = 'none'; caja.innerHTML = ''; return; }
   const firma = urg.map(v => v.num).join('|');
   if (caja.dataset.firma !== firma) {
@@ -5790,16 +5825,6 @@ function pintarBannerAlerta() {
       <button class="btn btn-navy btn-mini" onclick="ir('doc',{num:'${v.num}',back:'trfRec'})">Ver y aceptar ahora</button></div>`).join('');
   }
   caja.style.display = 'block';
-  // Ventana emergente una sola vez por transferencia al cruzar el umbral
-  const nueva = urg.find(v => !S_ALERTA.avisados.has(v.num));
-  if (!caja.innerHTML) return;
-  if (nueva && $('modalFondo').style.display !== 'flex' && $('vistaImpresion').style.display !== 'block') {
-    urg.forEach(v => S_ALERTA.avisados.add(v.num));
-    abrirModal('⚠️ Transferencia por vencer', `<div class="franja-est rojo" style="justify-content:center">${cronoHTML(nueva, true)}</div>
-      <p class="ayuda-txt">A la transferencia <b>${nueva.num}</b> enviada por <b>${esc(almNombre(nueva.origen))}</b> le quedan menos de <b>${alertaMin()} minutos</b> para ser aceptada.</p>
-      <p class="ayuda-txt" style="margin-top:8px">Si no la acepta o rechaza a tiempo, <b>vencerá automáticamente</b>: el material no ingresará a su catálogo y regresará a ${esc(almNombre(nueva.origen))}, que tendrá que enviarla de nuevo.</p>`,
-      [{ t: 'Recordarme después', cls: 'btn-claro', fn: cerrarModal }, { t: 'Ver y aceptar ahora', cls: 'btn-verde', fn: () => { cerrarModal(); ir('doc', { num: nueva.num, back: 'trfRec' }); } }]);
-  }
 }
 function urgOcultar() { pendientesPorAceptar().forEach(v => S_ALERTA.ocultos.add(v.num)); $('bannerTrf').style.display = 'none'; }
 
