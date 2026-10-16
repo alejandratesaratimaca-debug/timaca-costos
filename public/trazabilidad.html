@@ -516,8 +516,23 @@ const CATEGORIAS_OFICIALES = [
   'Herramientas neumáticas e hidráulicas',
   'Herramientas de fabricación'
 ];
+const UMBS_OFICIALES = [
+  'UND',
+  'KG',
+  'LT',
+  'MT',
+  'CJ',
+  'CL',
+  'PAR',
+  'JGO',
+  'PZA',
+  'ROL',
+  'M2',
+  'M3'
+];
 const EST_COLOR = {
-  'NO FINALIZADO': 'gris', 'FINALIZADO': 'azul', 'APROBADO': 'verde', 'ANULADO': 'rojo',
+  'PENDIENTE DE APROBACIÓN': 'naranja', 'APROBADA': 'verde', 'ANULADA': 'rojo',
+  'NO FINALIZADO': 'naranja', 'FINALIZADO': 'naranja', 'APROBADO': 'verde', 'ANULADO': 'rojo',
   'PENDIENTE DE RECEPCIÓN': 'gris', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
   'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris',
@@ -526,6 +541,11 @@ const EST_COLOR = {
   'SUFICIENTE': 'verde', 'LIMITANTE': 'naranja', 'NO EXISTE': 'gris'
 };
 const estB = e => `<span class="est est-${EST_COLOR[e] || 'gris'}">${esc(e)}</span>`;
+const formatoEstSol = e => {
+  if (e === 'APROBADO' || e === 'APROBADA') return 'APROBADA';
+  if (e === 'ANULADO' || e === 'ANULADA') return 'ANULADA';
+  return 'PENDIENTE DE APROBACIÓN';
+};
 
 /* ----------------------------- Persistencia ----------------------------- */
 const ALMS_TODOS_OFICIALES = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
@@ -960,6 +980,15 @@ function asegurarCategoriasOficiales() {
 
 function tipoCajaDe(id) { return (DB.cajasTipos || []).find(c => c.id === id); }
 
+function asegurarEstatusSolicitudes() {
+  if (!DB || !Array.isArray(DB.solicitudes)) return;
+  DB.solicitudes.forEach(s => {
+    if (s.estatus === 'APROBADO') s.estatus = 'APROBADA';
+    else if (s.estatus === 'ANULADO') s.estatus = 'ANULADA';
+    else if (s.estatus === 'FINALIZADO' || s.estatus === 'NO FINALIZADO') s.estatus = 'PENDIENTE DE APROBACIÓN';
+  });
+}
+
 function cargarDatos() {
   try {
     const r = localStorage.getItem(LS_KEY);
@@ -973,6 +1002,7 @@ function cargarDatos() {
         limpiarModuloCajasViejo();
         asegurarPlanificacionCajas();
         asegurarCategoriasOficiales();
+        asegurarEstatusSolicitudes();
         guardar();
         return;
       }
@@ -985,6 +1015,7 @@ function cargarDatos() {
   limpiarModuloCajasViejo();
   asegurarPlanificacionCajas();
   asegurarCategoriasOficiales();
+  asegurarEstatusSolicitudes();
   guardar();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
@@ -1146,47 +1177,40 @@ function validarSolicitud(d, finalizar) {
   validarStock(d.origen, d.lineas);
 }
 function guardarSolicitud(d, finalizar) {
-  validarSolicitud(d, finalizar);
+  validarSolicitud(d, true);
   let s = d.num ? solDe(d.num) : null;
   if (s) {
-    if (s.estatus === 'APROBADO') throw new Error(`Esta solicitud ya fue aprobada y tiene vale emitido (${s.vale || 'VALE'}). Las solicitudes aprobadas no se pueden editar.`);
-    if (s.estatus === 'ANULADO') throw new Error('No se pueden modificar solicitudes anuladas.');
+    if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') throw new Error(`Esta solicitud ya fue aprobada y tiene vale emitido (${s.vale || 'VALE'}). Por regla estricta, las asignaciones y préstamos aprobados no se pueden editar.`);
+    if (s.estatus === 'ANULADO' || s.estatus === 'ANULADA') throw new Error('No se pueden modificar solicitudes anuladas.');
   }
   const editando = !!s;
   if (!s) {
-    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'NO FINALIZADO' };
+    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'PENDIENTE DE APROBACIÓN' };
     DB.solicitudes.push(s);
-    bit('SOLICITUD CREADA', s.num);
   }
   Object.assign(s, {
     tipo: d.tipo, origen: d.origen, destino: d.destino, resp: d.resp, sup: d.sup, proyecto: d.proyecto, cuenta: d.cuenta,
     fechaReq: d.tipo === 'PRH' ? d.fechaReq : '', fechaDev: d.tipo === 'PRH' ? d.fechaDev : '', fechaAsig: d.tipo === 'ASI' ? d.fechaAsig : '',
-    obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l))
+    obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l)),
+    estatus: 'PENDIENTE DE APROBACIÓN',
+    finalizadaEn: nowISO()
   });
-  if (finalizar) {
-    s.estatus = 'FINALIZADO';
-    s.finalizadaEn = nowISO();
-    bit(editando ? 'SOLICITUD EDITADA Y FINALIZADA' : 'SOLICITUD FINALIZADA', s.num);
-    notificarSistema(editando ? 'Solicitud actualizada' : 'Nueva solicitud generada', `Se actualizó la solicitud ${s.num} (${s.tipo}) para ${s.resp ? s.resp.nombre : 'custodio'} en ${almNombre(s.origen)}. Pendiente de aprobación por supervisión.`, 'info', { doc: s.num });
-  } else {
-    s.estatus = 'NO FINALIZADO';
-    if (editando) bit('SOLICITUD MODIFICADA', s.num);
-  }
+  bit(editando ? 'SOLICITUD MODIFICADA' : 'SOLICITUD CREADA', s.num);
+  notificarSistema(editando ? 'Solicitud actualizada' : 'Nueva solicitud generada', `Se ${editando ? 'actualizó' : 'generó'} la solicitud ${s.num} (${s.tipo}) en ${almNombre(s.origen)}. Pendiente de aprobación.`, 'info', { doc: s.num });
   guardar();
   return s;
 }
 function eliminarSolicitud(numSol) {
   const s = solDe(numSol);
   if (!s) return;
-  if (s.estatus === 'APROBADO') throw new Error(`No se puede eliminar una solicitud APROBADA con vale emitido (${s.vale}).`);
-  if (s.estatus !== 'NO FINALIZADO' && s.estatus !== 'FINALIZADO') throw new Error('Solo se pueden eliminar solicitudes no aprobadas.');
+  if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') throw new Error(`No se puede eliminar una solicitud APROBADA con vale emitido (${s.vale}).`);
   if (!S.u.admin && s.generadoPor.usuario !== S.u.usuario) throw new Error('Solo quien generó la solicitud puede eliminarla.');
   DB.solicitudes = DB.solicitudes.filter(x => x.num !== numSol);
   bit('SOLICITUD ELIMINADA', numSol); guardar();
 }
 function aprobarSolicitud(numSol, aprobGer) {
   const s = solDe(numSol);
-  if (!s || s.estatus !== 'FINALIZADO') throw new Error('Solo se aprueban solicitudes FINALIZADAS.');
+  if (!s || (s.estatus !== 'PENDIENTE DE APROBACIÓN' && s.estatus !== 'FINALIZADO')) throw new Error('Solo se pueden aprobar solicitudes pendientes de aprobación.');
   if (!puede('aprobar', s.origen)) throw new Error('No tiene permiso para aprobar solicitudes de ' + almNombre(s.origen) + '.');
   if (s.generadoPor.usuario === S.u.usuario) throw new Error('No puede aprobar una solicitud generada por usted.');
   const tipoA = s.lineas.some(l => item(l.id).tipoA);
@@ -1208,18 +1232,18 @@ function aprobarSolicitud(numSol, aprobGer) {
     mov({ doc: v.num, tipo: s.tipo, id: l.id, cant: l.cant, origen: s.origen, destino: s.destino, estAnt: 'DISPONIBLE', estNue: destinoEst, resp: s.resp.nombre, cedula: s.resp.cedula, obs: s.proyecto });
   });
   v.hist.push({ ev: 'Solicitud ' + s.num + ' aprobada', fecha: nowISO(), usr: S.u.nombre, color: 'verde' });
-  Object.assign(s, { estatus: 'APROBADO', procesadoPor: quien(), procesadoEn: nowISO(), vale: v.num, aprobGer: tipoA ? aprobGer : '' });
+  Object.assign(s, { estatus: 'APROBADA', procesadoPor: quien(), procesadoEn: nowISO(), vale: v.num, aprobGer: tipoA ? aprobGer : '' });
   bit('SOLICITUD APROBADA', `${s.num} → ${v.num}`); guardar();
   notificarSistema('Solicitud aprobada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue APROBADA por ${S.u.nombre}. Se generó el vale ${v.num}.`, 'ok', { doc: v.num });
   return v;
 }
 function anularSolicitud(numSol, motivo) {
   const s = solDe(numSol);
-  if (!s || s.estatus !== 'FINALIZADO') throw new Error('Solo se anulan solicitudes FINALIZADAS.');
+  if (!s || (s.estatus !== 'PENDIENTE DE APROBACIÓN' && s.estatus !== 'FINALIZADO')) throw new Error('Solo se pueden anular solicitudes pendientes de aprobación.');
   if (!puede('aprobar', s.origen)) throw new Error('No tiene permiso para anular solicitudes de ' + almNombre(s.origen) + '.');
   if (s.generadoPor.usuario === S.u.usuario) throw new Error('No puede anular una solicitud generada por usted.');
   if (!String(motivo || '').trim()) throw new Error('El motivo de anulación es obligatorio.');
-  Object.assign(s, { estatus: 'ANULADO', procesadoPor: quien(), procesadoEn: nowISO(), motivo });
+  Object.assign(s, { estatus: 'ANULADA', procesadoPor: quien(), procesadoEn: nowISO(), motivo });
   bit('SOLICITUD ANULADA', `${s.num}: ${motivo}`); guardar();
   notificarSistema('Solicitud anulada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue ANULADA por ${S.u.nombre}. Motivo: ${motivo}.`, 'err', { doc: s.num });
 }
@@ -2093,6 +2117,7 @@ function semilla() {
   /* Transferencias pendientes (una por vencer) */
   como('central', T(0, -11), () => crearTransferencia({ origen: 'CENTRAL', destino: 'ECO', obs: 'Reposición de EPP', lineas: [L('EP000301', 15, 'NUEVO'), L('EP000401', 25, 'NUEVO')] }));
   como('central', T(0, -3), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PELLAS', obs: 'Requerimiento Planta Pellas TTE-C-0681', lineas: [L('HE000101', 5), L('HE000110', 6)] }));
+  como('pellas', T(0, -2), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de herramientas a Almacén Central', lineas: [L('HE000102', 2), L('HE000140', 1)] }));
 
   /* Costos y bitácora del Maestro */
   como('gerencia', T(5), () => { const pc = S.ctx; S.ctx = 'MAESTRO'; cambiarCosto(IT('HE000110').id, 52, 'Actualización de proveedor'); S.ctx = pc; });
@@ -2411,7 +2436,7 @@ function menuDef() {
       ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
   }
   const c = S.ctx;
-  const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus === 'FINALIZADO').length;
+  const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA').length;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
   const pendExt = (DB.extSol || []).filter(x => x.alm === c && x.estatus === 'PENDIENTE').length;
   const m = [
@@ -3478,10 +3503,7 @@ VISTAS.cajasTipos = p => {
                 <div style="width:90px">
                   <label style="font-size:11px;font-weight:700;color:var(--texto-2);display:block;margin-bottom:3px">Unidad</label>
                   <select id="dirInpUmb">
-                    <option value="UND">UND</option>
-                    <option value="JGO">JGO</option>
-                    <option value="PAR">PAR</option>
-                    <option value="KIT">KIT</option>
+                    ${opciones(UMBS_OFICIALES, 'UND')}
                   </select>
                 </div>
                 <div style="width:95px">
@@ -3849,11 +3871,11 @@ VISTAS.solNueva = p => {
   if (p && p.num) {
     const s = solDe(p.num);
     if (!s) return ir('sol');
-    if (s.estatus === 'APROBADO') {
+    if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') {
       toast(`La solicitud ${s.num} ya fue APROBADA (Vale ${s.vale || ''}). Por norma de control interno, las asignaciones y préstamos aprobados no se pueden editar.`, 'err');
       return ir('sol', { sel: s.num });
     }
-    if (s.estatus === 'ANULADO') {
+    if (s.estatus === 'ANULADO' || s.estatus === 'ANULADA') {
       toast(`La solicitud ${s.num} está ANULADA y no se puede editar.`, 'err');
       return ir('sol', { sel: s.num });
     }
@@ -4176,8 +4198,8 @@ function finalizarFormulario(finalizar) {
   run(() => {
     const t = F.tipo;
     if (t === 'PRH' || t === 'ASI') {
-      const s = guardarSolicitud({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, finalizar);
-      toast(finalizar ? `Solicitud ${s.num} finalizada y enviada a aprobación de: ${aprobadoresDe(s.origen).join(', ') || 'supervisor autorizado'}.` : `Solicitud ${s.num} guardada como NO FINALIZADO.`, 'ok');
+      const s = guardarSolicitud({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, true);
+      toast(`Solicitud ${s.num} guardada (PENDIENTE DE APROBACIÓN).`, 'ok');
       ir('sol', { sel: s.num });
     } else if (t === 'TRF') {
       if (F.num) {
@@ -4223,12 +4245,12 @@ function finalizarFormulario(finalizar) {
    ===================================================================== */
 function pintarSolicitud() {
   const t = F.tipo, s = F.num ? solDe(F.num) : null;
-  const est = s ? s.estatus : 'NO FINALIZADO';
+  const est = s ? formatoEstSol(s.estatus) : 'PENDIENTE DE APROBACIÓN';
   const L = txt => `<div class="lb">${txt}</div>`;
   const fechas = t === 'PRH'
     ? L('Fecha requerida') + `<div class="vl"><input type="date" id="fFReq" value="${F.fechaReq}"></div>` + L('Fecha de devolución') + `<div class="vl"><input type="date" id="fFDev" value="${F.fechaDev}"></div>`
     : L('Fecha de asignación') + `<div class="vl"><input type="date" id="fFAsig" value="${F.fechaAsig}"></div><div class="vacio"></div>`;
-  $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al finalizar, la solicitud pasa a aprobación del supervisor del almacén.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
+  $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al guardar, la solicitud queda PENDIENTE DE APROBACIÓN para el supervisor.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
     + `<div class="form-reg"><div class="sipf">
       ${L('Empresa')}<div class="vl"><input value="TIMACA" readonly></div>
       ${L('Número')}<div class="vl"><input id="sNum" value="${esc(F.num || '')}" placeholder="Se asigna al salvar" readonly></div>
@@ -4246,12 +4268,12 @@ function pintarSolicitud() {
       ${fechas}
       ${L('Almacén origen')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
       ${L('Destino / Área solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
-      ${L('Estatus')}<div class="vl">${estB(est)}<button class="btn btn-navy btn-mini" onclick="salvarSolicitud()">💾 Salvar</button></div>
+      ${L('Estatus')}<div class="vl">${estB(est)}</div>
     </div>
     <div class="carga" style="margin-top:14px"><div class="carga-h">CARGA DE MATERIAL</div>${filaCaptura()}<div id="fLineas"></div></div>
     <div class="pie-form"><div class="totales" id="fTotales"></div><div class="der">
       <button class="btn btn-claro" onclick="ir('sol')">Cancelar</button>
-      <button class="btn btn-verde" onclick="finalizarFormulario(true)">✔ Finalizar solicitud</button>
+      <button class="btn btn-verde" onclick="finalizarFormulario(true)">💾 Guardar solicitud</button>
       <button class="btn btn-azul" disabled title="El vale se genera cuando el supervisor aprueba la solicitud">🖨 Imprimir vale</button>
     </div></div></div>${datalistPersonal()}`;
   bindResponsableProyecto();
@@ -4266,8 +4288,8 @@ function cambiarTipoSol(t) {
 function salvarSolicitud() {
   leerCabecera();
   run(() => {
-    const s = guardarSolicitud({ num: F.num, tipo: F.tipo, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, false);
-    F.num = s.num; $('sNum').value = s.num; toast(`Solicitud ${s.num} guardada (NO FINALIZADO). Puede seguir editándola.`, 'ok');
+    const s = guardarSolicitud({ num: F.num, tipo: F.tipo, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, true);
+    F.num = s.num; $('sNum').value = s.num; toast(`Solicitud ${s.num} guardada (PENDIENTE DE APROBACIÓN). Puede seguir editándola.`, 'ok');
   });
 }
 function bindResponsableProyecto() {
@@ -4380,7 +4402,7 @@ function pintarEntrada() {
         <div class="campo" style="position:relative"><label>Código</label><input id="eCod" autocomplete="off" placeholder="Nuevo o existente"></div>
         <div class="campo" style="grid-column:span 2"><label>Descripción</label><input id="eDesc"></div>
         ${campo('Módulo', `<select id="eMod" onchange="condEntrada()">${opciones(Object.entries(MODULOS))}</select>`)}
-        ${campo('Categoría', `<select id="eCat">${opciones(CATEGORIAS_OFICIALES, 'Herramientas manuales')}</select>`)}${campo('Unidad', `<input id="eUmb" list="dlUmb" value="UND">`)}
+        ${campo('Categoría', `<select id="eCat">${opciones(CATEGORIAS_OFICIALES, 'Herramientas manuales')}</select>`)}${campo('Unidad', `<select id="eUmb">${opciones(UMBS_OFICIALES, 'UND')}</select>`)}
         ${campo('Marca', `<input id="eMarca" placeholder="Ej. STANLEY">`)}${campo('Modelo', `<input id="eModelo">`)}${campo('Serial (ítem único)', `<input id="eSerial" placeholder="Opcional">`)}
         ${campo('Condición', `<select id="eCond"></select>`)}${campo('Cantidad', `<input id="eCant" type="number" min="1" value="1" style="text-align:center;font-weight:800">`)}
         <div class="campo" style="justify-content:flex-end"><label>&nbsp;</label><button class="btn-salvar" onclick="agregarEntrada()">Agregar ítem</button></div>
@@ -4389,12 +4411,16 @@ function pintarEntrada() {
     <div class="pie-form"><div class="totales" id="eTot"></div><div class="der">
       ${bloq ? `<button class="btn btn-claro" onclick="ir('ent')">Nueva entrada</button>` : `<button class="btn btn-claro" onclick="ir('cCatAlm')">Cancelar</button><button class="btn btn-verde" onclick="registrarEntradaUI()">✔ Registrar entrada</button>`}
       <button class="btn btn-azul" ${bloq ? '' : 'disabled'} onclick="imprimirVale('${E.hecho || ''}')">🖨 Imprimir vale</button>
-    </div></div></div>
-    <datalist id="dlUmb">${umbs.map(c => `<option value="${esc(c)}">`).join('')}</datalist>`;
+    </div></div></div>`;
   if (!bloq) {
     condEntrada();
     bindAC('eCod', q => { q = q.trim().toLowerCase(); if (q.length < 2) return []; const g = {}; DB.catalogo.filter(i => (i.cod + ' ' + i.desc).toLowerCase().includes(q)).forEach(i => g[i.cod] = g[i.cod] || i); return Object.values(g).slice(0, 15).map(i => ({ val: i, html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(MODULOS[i.mod])} · ${esc(i.cat)} · código existente</small>` })); },
-      i => { E.base = i; $('eCod').value = i.cod; $('eDesc').value = i.desc; $('eMod').value = i.mod; $('eCat').value = i.cat; $('eUmb').value = i.umb; ['eDesc', 'eMod', 'eCat', 'eUmb'].forEach(x => $(x).disabled = true); condEntrada(); $('eMarca').focus(); });
+      i => { E.base = i; $('eCod').value = i.cod; $('eDesc').value = i.desc; $('eMod').value = i.mod; $('eCat').value = i.cat;
+        if ($('eUmb')) {
+          if (!UMBS_OFICIALES.includes(i.umb)) $('eUmb').innerHTML = opciones(UMBS_OFICIALES.concat([i.umb]), i.umb);
+          else $('eUmb').value = i.umb;
+        }
+        ['eDesc', 'eMod', 'eCat', 'eUmb'].forEach(x => $(x).disabled = true); condEntrada(); $('eMarca').focus(); });
     $('eCod').addEventListener('input', () => { if (E.base) { E.base = null; ['eDesc', 'eMod', 'eCat', 'eUmb'].forEach(x => $(x).disabled = false); } });
   }
   pintarLineasEntrada();
@@ -4447,8 +4473,8 @@ VISTAS.doc = p => {
   const color = EST_COLOR[est] === 'ambar' ? 'naranja' : (EST_COLOR[est] || 'gris');
   let franjaDer = '';
   if (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN') franjaDer = `<span style="display:flex;align-items:center;gap:10px">Tiempo restante para aceptar: ${cronoHTML(d, true)}</span>`;
-  else if (d.procesadoEn) franjaDer = `${est === 'APROBADO' ? 'Aprobada' : est === 'ANULADO' ? 'Anulada' : 'Procesada'} por <b>${esc(d.procesadoPor.nombre)}</b> el ${fFH(d.procesadoEn)}${d.motivo ? ' · Motivo: ' + esc(d.motivo) : ''}`;
-  else if (esSol && est === 'FINALIZADO') franjaDer = 'Pendiente de aprobación del supervisor de ' + esc(almNombre(d.origen));
+  else if (d.procesadoEn) franjaDer = `${(est === 'APROBADO' || est === 'APROBADA') ? 'Aprobada' : (est === 'ANULADO' || est === 'ANULADA') ? 'Anulada' : 'Procesada'} por <b>${esc(d.procesadoPor.nombre)}</b> el ${fFH(d.procesadoEn)}${d.motivo ? ' · Motivo: ' + esc(d.motivo) : ''}`;
+  else if (esSol && (est === 'FINALIZADO' || est === 'PENDIENTE DE APROBACIÓN')) franjaDer = 'Pendiente de aprobación del supervisor de ' + esc(almNombre(d.origen));
   const R = (lbl, v) => campo(lbl, `<input value="${esc(v ?? '')}" readonly>`);
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
     + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', almNombre(d.destino));
@@ -4520,9 +4546,9 @@ VISTAS.doc = p => {
     : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
   const und = d.lineas.reduce((a, l) => a + l.cant, 0);
   const acciones = accionesDoc(d, esSol, p);
-  const nota = esSol ? (d.estatus === 'FINALIZADO' ? motivoNoAprueba(d) : d.estatus === 'APROBADO' ? (d.vale ? `Vale ${d.vale} emitido.` : '') : '') : '';
+  const nota = esSol ? ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') ? motivoNoAprueba(d) : (d.estatus === 'APROBADO' || d.estatus === 'APROBADA') ? (d.vale ? `Vale ${d.vale} emitido.` : '') : '') : '';
   $('area').innerHTML = cab(esSol ? 'Solicitud ' + d.num : TIPOS[t].titulo.charAt(0) + TIPOS[t].titulo.slice(1).toLowerCase() + ' ' + d.num, 'Vista de solo lectura: muestra exactamente lo registrado.', `<button class="btn btn-claro" onclick="${p.back ? `ir('${p.back}')` : 'history.back()'}">Volver</button>`)
-    + `<div class="franja-est ${color}" style="${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'flex-wrap:wrap' : ''}"><span>Estatus: ${estB(est)}</span><span>${franjaDer}</span>${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? `<div class="crono-barra"><i data-ini="${d.fecha}" data-vence="${d.vence}"></i></div><span style="font-size:12px;color:var(--texto-2)">${d.destino === S.ctx ? `Si no la acepta o rechaza antes de que el reloj llegue a cero, la transferencia vencerá y el material regresará a ${esc(almNombre(d.origen))}.` : `${esc(almNombre(d.destino))} debe aceptarla antes de que el reloj llegue a cero; si no, el material regresará automáticamente a ${esc(almNombre(d.origen))}.`}</span>` : ''}</div>${nota ? `<div class="franja-est ${d.estatus === 'APROBADO' ? 'verde' : 'naranja'}"><span>ℹ️ ${esc(nota)}</span></div>` : ''}
+    + `<div class="franja-est ${color}" style="${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'flex-wrap:wrap' : ''}"><span>Estatus: ${estB(est)}</span><span>${franjaDer}</span>${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? `<div class="crono-barra"><i data-ini="${d.fecha}" data-vence="${d.vence}"></i></div><span style="font-size:12px;color:var(--texto-2)">${d.destino === S.ctx ? `Si no la acepta o rechaza antes de que el reloj llegue a cero, la transferencia vencerá y el material regresará a ${esc(almNombre(d.origen))}.` : `${esc(almNombre(d.destino))} debe aceptarla antes de que el reloj llegue a cero; si no, el material regresará automáticamente a ${esc(almNombre(d.origen))}.`}</span>` : ''}</div>${nota ? `<div class="franja-est ${(d.estatus === 'APROBADO' || d.estatus === 'APROBADA') ? 'verde' : 'naranja'}"><span>ℹ️ ${esc(nota)}</span></div>` : ''}
     <div class="form-reg"><div class="f3">${c}</div>${extraTxt}${d.obs ? campo('Observación', `<input value="${esc(d.obs)}" readonly>`) : ''}
       <div class="carga"><div class="carga-h">CARGA DE MATERIAL</div>
         <div style="overflow:auto"><table class="grid"><thead>${esDevch ? '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th class="cen">Entregado</th><th class="cen">Recibido</th><th class="cen">Diferencia</th><th class="cen">Condición</th><th class="cen">Reportes Incidentes</th></tr>' : '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th>' + (conSaldo ? '<th class="cen">Devuelto</th><th class="cen">Saldo</th>' : '') + '</tr>'}</thead><tbody>${filas}</tbody></table></div>
@@ -4534,7 +4560,7 @@ VISTAS.doc = p => {
 };
 function aprobadoresDe(alm) { return DB.usuarios.filter(u => u.activo && !u.admin && u.perm.aprobar.includes(alm)).map(u => u.nombre); }
 function motivoNoAprueba(s) {
-  if (s.estatus !== 'FINALIZADO') return '';
+  if (s.estatus !== 'FINALIZADO' && s.estatus !== 'PENDIENTE DE APROBACIÓN') return '';
   const quienes = aprobadoresDe(s.origen); const lista = quienes.length ? quienes.join(', ') : 'un supervisor autorizado';
   if (s.generadoPor.usuario === S.u.usuario) return `Usted generó esta solicitud, por lo que no puede aprobarla. Debe aceptarla: ${lista}.`;
   if (!puede('aprobar', s.origen)) return `Su usuario no tiene permiso de aprobación en ${almNombre(s.origen)}. Puede aceptarla: ${lista}.`;
@@ -4544,7 +4570,7 @@ function accionesDoc(d, esSol, p) {
   let h = '';
   if (enMaestro()) return esSol ? '' : `<button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>`;
   if (esSol) {
-    if (d.estatus === 'FINALIZADO' && d.origen === S.ctx) {
+    if ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') && d.origen === S.ctx) {
       const ok = puede('aprobar', d.origen) && d.generadoPor.usuario !== S.u.usuario;
       h += `<button class="btn btn-rojo" ${ok ? '' : 'disabled'} onclick="accionAnular('${d.num}')">Anular solicitud</button><button class="btn btn-verde" ${ok ? '' : 'disabled'} onclick="accionAprobar('${d.num}')">Aceptar solicitud</button>`;
     }
@@ -4584,11 +4610,16 @@ VISTAS.sol = p => {
   const filtro = (p && p.f) || 'TODAS', tab = (p && p.tab) || 'alm';
   let rows = DB.solicitudes.filter(s => s.origen === S.ctx);
   if (tab === 'mias') rows = rows.filter(s => s.generadoPor.usuario === S.u.usuario);
-  if (filtro !== 'TODAS') rows = rows.filter(s => s.estatus === filtro);
+  if (filtro !== 'TODAS') {
+    if (filtro === 'PENDIENTE DE APROBACIÓN') rows = rows.filter(s => s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA');
+    else if (filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
+    else if (filtro === 'ANULADA') rows = rows.filter(s => s.estatus === 'ANULADO' || s.estatus === 'ANULADA');
+    else rows = rows.filter(s => s.estatus === filtro);
+  }
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const cols = [
     { t: 'Número', k: 'num', f: r => {
-      const editable = r.estatus !== 'APROBADO' && r.estatus !== 'ANULADO';
+      const editable = r.estatus !== 'APROBADO' && r.estatus !== 'APROBADA' && r.estatus !== 'ANULADO' && r.estatus !== 'ANULADA';
       return `<a href="javascript:void(0)" onclick="event.stopPropagation();${editable ? `ir('solNueva',{num:'${r.num}'})` : `ir('doc',{num:'${r.num}',back:'sol'})`}" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="${editable ? 'Haga clic para editar la solicitud ' + r.num : 'Haga clic para visualizar'}">${esc(r.num)}</a>`;
     }},
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
@@ -4598,12 +4629,12 @@ VISTAS.sol = p => {
     { t: 'Proyecto / OT', k: 'proyecto', td: 'wrap' },
     { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '' },
     { t: 'Generado por', v: r => r.generadoPor.nombre },
-    { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) },
+    { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) },
     { t: 'Vale', v: r => r.vale || '' }
   ];
   $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido) de ' + esc(almNombre(S.ctx)) + '.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
-    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones(['TODAS', 'NO FINALIZADO', 'FINALIZADO', 'APROBADO', 'ANULADO'], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
+    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE APROBACIÓN', 'Pendiente de aprobación'], ['APROBADA', 'Aprobada'], ['ANULADA', 'Anulada']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
     + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
@@ -4621,19 +4652,20 @@ function tiraSol(s) {
   if ($('tsCuenta')) $('tsCuenta').textContent = s.cuenta || '—';
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
-  const noAprobada = s.estatus !== 'APROBADO' && s.estatus !== 'ANULADO';
-  $('bEdit').disabled = !noAprobada;
-  $('bDel').disabled = !noAprobada;
+  const editable = s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA';
+  $('bEdit').disabled = !editable;
+  $('bDel').disabled = !editable;
   $('bVer').disabled = false; $('bImp').disabled = !s.vale;
-  const info = s.estatus === 'FINALIZADO' ? (motivoNoAprueba(s) || '')
-    : s.estatus === 'APROBADO' ? (s.procesadoPor ? `Aprobada por ${s.procesadoPor.nombre}. Vale ${s.vale || ''} emitido.` : (s.vale ? `Vale ${s.vale} emitido.` : ''))
-    : s.estatus === 'NO FINALIZADO' ? ''
-    : s.estatus === 'ANULADO' ? 'Anulada: ' + (s.motivo || '') : '';
-  $('tsInfo').innerHTML = info ? `<div class="franja-est ${s.estatus === 'APROBADO' ? 'verde' : s.estatus === 'ANULADO' ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>${esc(info)}</span></div>` : '';
+  const esApr = s.estatus === 'APROBADO' || s.estatus === 'APROBADA';
+  const esAnu = s.estatus === 'ANULADO' || s.estatus === 'ANULADA';
+  const info = esApr ? (s.procesadoPor ? `Aprobada por ${s.procesadoPor.nombre}. Vale ${s.vale || ''} emitido.` : (s.vale ? `Vale ${s.vale} emitido.` : ''))
+    : esAnu ? 'Anulada: ' + (s.motivo || '')
+    : (motivoNoAprueba(s) || '');
+  $('tsInfo').innerHTML = info ? `<div class="franja-est ${esApr ? 'verde' : esAnu ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>${esc(info)}</span></div>` : '';
 }
 function accionEliminarSol() {
   const s = selDe('gSol');
-  if (s.estatus === 'APROBADO') return toast('No se puede eliminar una solicitud aprobada.', 'err');
+  if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') return toast('No se puede eliminar una solicitud aprobada.', 'err');
   confirmar(`¿Eliminar la solicitud <b>${s.num}</b>?`, () => { eliminarSolicitud(s.num); toast('Solicitud eliminada.', 'ok'); refrescar(); }, 'Eliminar');
 }
 
@@ -4641,10 +4673,12 @@ function accionEliminarSol() {
    APROBACIÓN (supervisores autorizados del almacén origen)
    ===================================================================== */
 VISTAS.aprobar = p => {
-  const filtro = (p && p.f) || 'FINALIZADO';
+  const filtro = (p && p.f) || 'PENDIENTE DE APROBACIÓN';
   const tienePerm = puede('aprobar', S.ctx);
-  let rows = DB.solicitudes.filter(s => s.origen === S.ctx && s.estatus !== 'NO FINALIZADO');
-  if (filtro !== 'TODAS') rows = rows.filter(s => s.estatus === filtro);
+  let rows = DB.solicitudes.filter(s => s.origen === S.ctx);
+  if (filtro === 'PENDIENTE DE APROBACIÓN') rows = rows.filter(s => s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA');
+  else if (filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
+  else if (filtro === 'ANULADA') rows = rows.filter(s => s.estatus === 'ANULADO' || s.estatus === 'ANULADA');
   rows.sort((a, b) => (b.finalizadaEn || b.fecha).localeCompare(a.finalizadaEn || a.fecha));
   const cols = [
     { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
@@ -4655,15 +4689,15 @@ VISTAS.aprobar = p => {
     { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '—' },
     { t: 'Generado por', v: r => r.generadoPor ? r.generadoPor.nombre : '—' },
     { t: 'Tipo A', v: r => r.lineas.some(l => (item(l.id) || {}).tipoA) ? 'SI' : 'NO', cls: 'cen' },
-    { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }
+    { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) }
   ];
-  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes finalizadas de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
+  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes pendientes de aprobación de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
     + (tienePerm ? '' : avisoSinPermiso('Su usuario no tiene permiso de aprobación en este almacén. Puede consultar las solicitudes, pero no aceptarlas ni anularlas.'))
     + `<div class="fila-filtros">
-        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['FINALIZADO', 'Pendientes de aprobación'], ['APROBADO', 'Aprobadas'], ['ANULADO', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
+        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['PENDIENTE DE APROBACIÓN', 'Pendientes de aprobación'], ['APROBADA', 'Aprobadas'], ['ANULADA', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
         ${buscador('gApr', 'Buscar por número, cuenta auxiliar, proyecto, responsable…')}
       </div>`
-    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'FINALIZADO' ? 'No hay solicitudes pendientes de aprobación en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
+    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'PENDIENTE DE APROBACIÓN' ? 'No hay solicitudes pendientes de aprobación en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taCuenta"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
     <div id="taMotivo"></div>
     <div class="barra-btn">
@@ -4678,7 +4712,7 @@ function tiraApr(s) {
   if ($('taCuenta')) $('taCuenta').textContent = s.cuenta || '—';
   $('taProy').textContent = s.proyecto;
   $('taResp').textContent = s.resp ? s.resp.nombre : '';
-  const ok = s.estatus === 'FINALIZADO' && puede('aprobar', s.origen) && s.generadoPor.usuario !== S.u.usuario;
+  const ok = (s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA') && puede('aprobar', s.origen) && s.generadoPor.usuario !== S.u.usuario;
   $('aVer').disabled = false; $('aOk').disabled = !ok; $('aNo').disabled = !ok;
   const m = motivoNoAprueba(s);
   $('aOk').title = m; $('aNo').title = m;
@@ -4687,7 +4721,7 @@ function tiraApr(s) {
 function accionAprobar(n) {
   const s = solDe(n);
   const tipoA = s.lineas.filter(l => item(l.id).tipoA);
-  const despues = v => { cerrarModal(); toast(`Solicitud ${n} aprobada. Vale ${v.num} generado.`, 'ok'); pintarMenu(); abrirModal('Solicitud aprobada', `<p class="ayuda-txt">La solicitud <b>${n}</b> quedó aprobada y se generó el vale <b>${v.num}</b>. Las existencias de ${esc(almNombre(v.origen))} fueron actualizadas.<br><br>El personal del almacén verá la solicitud como <b>APROBADO</b> en "Solicitudes del almacén" y desde allí imprimirá el vale original para las firmas.</p>`, [{ t: 'Entendido', cls: 'btn-navy', fn: () => { cerrarModal(); refrescar(); } }]); };
+  const despues = v => { cerrarModal(); toast(`Solicitud ${n} aprobada. Vale ${v.num} generado.`, 'ok'); pintarMenu(); abrirModal('Solicitud aprobada', `<p class="ayuda-txt">La solicitud <b>${n}</b> quedó aprobada y se generó el vale <b>${v.num}</b>. Las existencias de ${esc(almNombre(v.origen))} fueron actualizadas.<br><br>El personal del almacén verá la solicitud como <b>APROBADA</b> en "Solicitudes del almacén" y desde allí imprimirá el vale original para las firmas.</p>`, [{ t: 'Entendido', cls: 'btn-navy', fn: () => { cerrarModal(); refrescar(); } }]); };
   if (tipoA.length) {
     abrirModal('Aprobación de Gerencia requerida', `<p class="ayuda-txt" style="margin-bottom:10px">La solicitud contiene ítems Tipo A: <b>${tipoA.map(l => esc(l.cod + ' · ' + l.desc)).join(', ')}</b>. Indique el número de aprobación de Gerencia para continuar.</p>${campo('N° de aprobación de Gerencia', '<input id="mdGer">')}`,
       [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Aceptar solicitud', cls: 'btn-verde', fn: () => run(() => despues(aprobarSolicitud(n, $('mdGer').value))) }]);
@@ -4702,25 +4736,46 @@ const colsTrf = (recibidas) => [
   { t: 'N° vale', k: 'num', f: r => (!recibidas && r.estatus === 'PENDIENTE DE RECEPCIÓN') ? `<a href="javascript:void(0)" onclick="event.stopPropagation();editarTransferencia('${r.num}')" style="color:var(--azul);font-weight:800;text-decoration:underline" title="Haga clic para editar la transferencia ${r.num}">${esc(r.num)}</a>` : `<b>${esc(r.num)}</b>` },
   { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
+  { t: 'Tiempo restante (12 h)', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
+  { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (r.estatus === 'RECIBIDA' ? 'ACEPTADA' : r.estatus)) },
   { t: 'Realizado por', v: r => r.realizadoPor.nombre },
   { t: 'Quién despacha', v: r => r.despacha || r.realizadoPor.nombre },
   { t: 'Responsable', v: r => r.resp ? r.resp.nombre : '—' },
   { t: 'Proyecto / OT', v: r => r.proyecto || '—' },
   { t: 'Supervisor', v: r => r.sup || '—' },
-  { t: 'Líneas', v: r => r.lineas.length, cls: 'num' }, { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
-  { t: 'Tiempo restante', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
-  { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) },
-  { t: 'Procesado por', v: r => r.procesadoPor ? r.procesadoPor.nombre : '' }, { t: 'Fecha procesamiento', v: r => r.procesadoEn ? fFH(r.procesadoEn) : '', s: r => r.procesadoEn || '' },
-  { t: 'Motivo', v: r => r.motivo || '' }];
+  { t: 'Líneas', v: r => r.lineas.length, cls: 'num' },
+  { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
+  { t: 'Procesado por', v: r => r.procesadoPor ? r.procesadoPor.nombre : '' },
+  { t: 'Fecha procesamiento', v: r => r.procesadoEn ? fFH(r.procesadoEn) : '', s: r => r.procesadoEn || '' },
+  { t: 'Motivo', v: r => r.motivo || '' }
+];
 VISTAS.trfRec = p => {
-  const filtro = (p && p.f) || 'PENDIENTE DE RECEPCIÓN';
-  let rows = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx);
-  if (filtro !== 'TODAS') rows = rows.filter(v => v.estatus === filtro);
+  p = p || {};
+  const f = {
+    est: p.f || p.est || 'PENDIENTE DE RECEPCIÓN',
+    desde: p.desde || sumarDias(hoy(), -90),
+    hasta: p.hasta || hoy()
+  };
+  let rows = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && fechaLocal(new Date(v.fecha)) >= f.desde && fechaLocal(new Date(v.fecha)) <= f.hasta);
+  if (f.est !== 'TODAS') {
+    if (f.est === 'POR ACEPTAR' || f.est === 'PENDIENTE DE RECEPCIÓN') rows = rows.filter(v => v.estatus === 'PENDIENTE DE RECEPCIÓN');
+    else if (f.est === 'ACEPTADAS' || f.est === 'RECIBIDA') rows = rows.filter(v => v.estatus === 'RECIBIDA');
+    else if (f.est === 'RECHAZADAS' || f.est === 'RECHAZADA') rows = rows.filter(v => v.estatus === 'RECHAZADA');
+    else rows = rows.filter(v => v.estatus === f.est);
+  }
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const perm = puede('recibir', S.ctx);
-  $('area').innerHTML = cab('Transferencias recibidas', `Transferencias enviadas a ${esc(almNombre(S.ctx))}. Tiene ${DB.config.plazoHoras} horas para aceptar o rechazar cada una; si no, el material regresa al almacén de origen.`)
+  const pend = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN');
+  const recarga = `ir('trfRec',{f:$('frEst').value,desde:$('frDesde').value,hasta:$('frHasta').value})`;
+  $('area').innerHTML = cab('Transferencias recibidas', `Transferencias enviadas a ${esc(almNombre(S.ctx))}. Tiene ${DB.config.plazoHoras} horas para aceptar o rechazar cada una; si no, el material regresa al almacén de origen.`, botonesExport('gRec', 'Transferencias recibidas ' + almNombre(S.ctx)))
     + (perm ? '' : avisoSinPermiso('Su usuario no tiene permiso para recibir transferencias en este almacén. Puede consultarlas, pero no aceptarlas ni rechazarlas.'))
-    + `<div class="fila-filtros">${campo('Estatus', `<select onchange="ir('trfRec',{f:this.value})">${opciones([['PENDIENTE DE RECEPCIÓN', 'Pendientes de recepción'], 'RECIBIDA', 'RECHAZADA', 'VENCIDA', ['TODAS', 'Todas']], filtro)}</select>`)}${buscador('gRec')}</div>`
+    + (pend.length ? `<div class="franja-est naranja" style="margin-bottom:12px;font-size:12.5px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px"><span>⏱️ Tiene <b>${pend.length}</b> transferencia(s) pendiente(s) por aceptar en este almacén. Plazo reglamentario: 12 horas desde el despacho.</span>${pend.length === 1 ? `<div>${cronoHTML(pend[0], true)}</div>` : ''}</div>` : '')
+    + `<div class="fila-filtros">
+        ${campo('Estatus', `<select id="frEst" onchange="${recarga}">${opciones([['PENDIENTE DE RECEPCIÓN', 'Por aceptar'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['TODAS', 'Todas']], f.est)}</select>`)}
+        ${campo('Desde', `<input type="date" id="frDesde" value="${f.desde}" onchange="${recarga}">`)}
+        ${campo('Hasta', `<input type="date" id="frHasta" value="${f.hasta}" onchange="${recarga}">`)}
+        ${buscador('gRec')}
+      </div>`
     + grid('gRec', colsTrf(true), rows, { onSel: v => tiraTrf(v, 'r'), pag: 15, vacio: 'No hay transferencias para mostrar.' })
     + `<div class="sel-strip"><span class="lbl">Transferencia seleccionada</span><span class="box" id="trNum"></span><span class="box" id="trInfo" style="flex:1"></span></div>
     <div class="barra-btn">
@@ -4733,7 +4788,9 @@ VISTAS.trfRec = p => {
 };
 function tiraTrf(v, k) {
   if (k === 'r') {
-    $('trNum').textContent = v.num; $('trInfo').textContent = `Desde ${almNombre(v.origen)} · ${v.realizadoPor.nombre} · ${v.estatus}`;
+    $('trNum').textContent = v.num;
+    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
+    $('trInfo').innerHTML = `${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(v) + ' · ' : ''}Desde <b>${esc(almNombre(v.origen))}</b> · ${esc(v.realizadoPor.nombre)} · ${estB(estTxt)}`;
     const ok = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('recibir', v.destino);
     $('rVer').disabled = false; $('rImp').disabled = false; $('rOk').disabled = !ok; $('rNo').disabled = !ok;
   } else {
@@ -5082,13 +5139,22 @@ VISTAS.cCatAlm = p => {
   if (!todos) rows = rows.filter(r => r.total > 0);
   if (est) rows = rows.filter(r => r.estado === est);
   rows.sort((a, b) => a.it.cod.localeCompare(b.it.cod) || (a.it.serial || '').localeCompare(b.it.serial || ''));
-  const hayCil = rows.some(r => r.it.mod === 'CILINDRO');
-  const cols = [{ t: 'Código', v: r => r.it.cod, f: r => `<b>${esc(r.it.cod)}</b>` }, { t: 'Descripción', v: r => r.it.desc, td: 'wrap' }, { t: 'Marca / Modelo', v: r => `${r.it.marca} / ${r.it.modelo}`, td: 'wrap' }, { t: 'Serial', v: r => r.it.serial || '' },
-    { t: 'Categoría', v: r => r.it.cat, td: 'wrap' }, { t: 'Unidad', v: r => r.it.umb, cls: 'cen' }, { t: 'Estado', v: r => r.estado, f: r => estB(r.estado) },
+  const cols = [
+    { t: 'Código', v: r => r.it.cod, f: r => `<b>${esc(r.it.cod)}</b>` },
+    { t: 'Descripción', v: r => r.it.desc, td: 'wrap' },
+    { t: 'Marca / Modelo', v: r => `${r.it.marca} / ${r.it.modelo}`, td: 'wrap' },
+    { t: 'Serial', v: r => r.it.serial || '' },
+    { t: 'Categoría', v: r => r.it.cat, td: 'wrap' },
+    { t: 'Unidad', v: r => r.it.umb, cls: 'cen' },
+    { t: 'Estado', v: r => r.estado, f: r => estB(r.estado) },
     { t: 'Disponibles', k: 'disp', cls: 'cen', td: 'col-disp', sum: true },
-    ].concat(hayCil ? [{ t: 'Vacíos', k: 'vacio', cls: 'cen', td: 'col-vac', sum: true }] : []).concat([
-    { t: 'Prestados', k: 'prest', cls: 'cen', td: 'col-prest', sum: true }, { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig', sum: true }, { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan', sum: true },
-    { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall', sum: true }, { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext', sum: true }, { t: 'Total', k: 'total', cls: 'cen', td: 'col-total', sum: true }]);
+    { t: 'Prestados', k: 'prest', cls: 'cen', td: 'col-prest', sum: true },
+    { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig', sum: true },
+    { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan', sum: true },
+    { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall', sum: true },
+    { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext', sum: true },
+    { t: 'Total', k: 'total', cls: 'cen', td: 'col-total', sum: true }
+  ];
   const rec = `ir('cCatAlm',{mod:$('caMod').value,cat:$('caCat').value,est:$('caEst').value,todos:$('caTod').checked})`;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
   $('area').innerHTML = cab('📦 Catálogo del almacén', 'Existencia de cada ítem por estado. El total suma cada fila y cada columna. Lo recibido por transferencia se agrega automáticamente al aceptarla.',
@@ -5102,7 +5168,7 @@ VISTAS.cCatAlm = p => {
     + grid('gCatA', cols, rows, { pag: 50, totales: true, compacto: true, onSel: r => { $('caKdx').disabled = false; $('caTit').textContent = `${r.it.cod} · ${r.it.desc} · ${r.it.marca} / ${r.it.modelo}${r.it.serial ? ' · ' + r.it.serial : ''}`; }, vacio: 'No hay ítems con existencia en este almacén.' })
     + `<div class="sel-strip"><span class="lbl">Ítem seleccionado</span><span class="box" id="caTit" style="flex:1"></span></div>
     <div class="barra-btn"><button class="btn-sip" onclick="ir('ent')">➕ Entrada de ítems</button><button class="btn-sip" id="caKdx" disabled onclick="const r=selDe('gCatA');ir('cKardex',{q:r.it.serial||r.it.cod})">📜 Ver kardex del ítem</button></div>
-    <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Vacío = cilindros vacíos para transferir o devolver · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
+    <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
 };
 VISTAS.cExist = p => VISTAS.cCatAlm(p);
 
@@ -5114,7 +5180,7 @@ VISTAS.cExistAnterior = p => {
   const rows = Object.entries(DB.exi[S.ctx] || {}).map(([id, e]) => Object.assign({ it: item(+id) }, e)).filter(r => r.it && (!mod || r.it.mod === mod) && (totalExi(r) - r.pend) > 0);
   const cols = [{ t: 'Código', v: r => r.it.cod }, { t: 'Descripción', v: r => r.it.desc }, { t: 'Marca / Modelo', v: r => `${r.it.marca} / ${r.it.modelo}` }, { t: 'Serial', v: r => r.it.serial || '' },
     { t: 'Módulo', v: r => r.it.mod, f: r => chipMod(r.it.mod) }, { t: 'Categoría', v: r => r.it.cat }, { t: 'UMB', v: r => r.it.umb },
-    { t: 'Disponible', k: 'disp', cls: 'cen', td: 'col-disp' }, { t: 'Vacíos', k: 'vacio', cls: 'cen', td: 'col-vac' }, { t: 'En préstamo', k: 'prest', cls: 'cen', td: 'col-prest' }, { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig' },
+    { t: 'Disponible', k: 'disp', cls: 'cen', td: 'col-disp' }, { t: 'En préstamo', k: 'prest', cls: 'cen', td: 'col-prest' }, { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig' },
     { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan' }, { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall' }, { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext' }, { t: 'Total', v: r => totalExi(r) - r.pend, cls: 'cen', td: 'col-total' }];
   $('area').innerHTML = cab('Existencias del almacén', 'Catálogo de ' + esc(almNombre(S.ctx)) + ' con su existencia por estado.', botonesExport('gEx', 'Existencias ' + almNombre(S.ctx)))
     + `<div class="fila-filtros">${campo('Módulo', `<select onchange="ir('cExist',{mod:this.value})"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}${buscador('gEx')}</div>`
@@ -6143,7 +6209,7 @@ function editarItem(it) {
   const n = !it; it = it || { cod: '', desc: '', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: '', modelo: '', serial: '', umb: 'UND', tipoA: false, talla: '', vida: 0, activo: true, costo: 0 };
   const I = (id, l, v) => campo(l, `<input id="${id}" value="${esc(v)}">`);
   abrirModal(n ? 'Nuevo ítem' : 'Editar ítem ' + it.cod, `<div class="f3">${I('ciCod', 'Código', it.cod)}${I('ciDesc', 'Descripción', it.desc)}${campo('Módulo', `<select id="ciMod">${opciones(Object.entries(MODULOS), it.mod)}</select>`)}
-    ${campo('Categoría', `<select id="ciCat">${opciones(CATEGORIAS_OFICIALES, it.cat || 'Herramientas manuales')}</select>`)}${I('ciMar', 'Marca', it.marca)}${I('ciMod2', 'Modelo', it.modelo)}${I('ciSer', 'Serial (solo ítems únicos)', it.serial)}${I('ciUmb', 'Unidad (UMB)', it.umb)}
+    ${campo('Categoría', `<select id="ciCat">${opciones(CATEGORIAS_OFICIALES, it.cat || 'Herramientas manuales')}</select>`)}${I('ciMar', 'Marca', it.marca)}${I('ciMod2', 'Modelo', it.modelo)}${I('ciSer', 'Serial (solo ítems únicos)', it.serial)}${campo('Unidad (UMB)', `<select id="ciUmb">${opciones(UMBS_OFICIALES.includes(it.umb) ? UMBS_OFICIALES : UMBS_OFICIALES.concat([it.umb]), it.umb || 'UND')}</select>`)}
     ${campo('Tipo A (requiere aprobación de Gerencia)', `<select id="ciTA">${opciones([['0', 'NO'], ['1', 'SI']], it.tipoA ? '1' : '0')}</select>`)}${I('ciTal', 'Talla (EPP)', it.talla)}${I('ciVid', 'Vida útil en días (EPP)', it.vida)}
     ${campo('Estado', `<select id="ciAct">${opciones([['1', 'ACTIVO'], ['0', 'INACTIVO']], it.activo ? '1' : '0')}</select>`)}</div>`,
     [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Guardar', cls: 'btn-verde', fn: () => run(() => {
