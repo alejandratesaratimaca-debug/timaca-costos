@@ -510,7 +510,7 @@ const EST_COLOR = {
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
   'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris',
   'EN INVESTIGACIÓN': 'naranja', 'RECUPERADO': 'verde', 'ACTIVO': 'verde', 'INACTIVO': 'gris',
-  'DISPONIBLE': 'verde', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
+  'DISPONIBLE': 'verde', 'VACÍO': 'naranja', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
   'SUFICIENTE': 'verde', 'LIMITANTE': 'naranja', 'NO EXISTE': 'gris'
 };
 const estB = e => `<span class="est est-${EST_COLOR[e] || 'gris'}">${esc(e)}</span>`;
@@ -1163,6 +1163,7 @@ function crearTransferencia(d) {
     proyecto: d.proyecto || '',
     cuenta: d.cuenta || '',
     despacha: d.despacha || S.u.nombre,
+    salidaTimaca: d.salidaTimaca || '',
     obs: d.obs || '',
     lineas,
     estatus: 'PENDIENTE DE RECEPCIÓN'
@@ -1247,7 +1248,7 @@ function procesarVencimientos() {
 }
 
 /* ---------- Devoluciones (persona → almacén que prestó) ---------- */
-function registrarDevolucion(valeNum, items, recibe, obs) {
+function registrarDevolucion(valeNum, items, recibe, obs, salidaTimaca) {
   const v = valeDe(valeNum);
   if (!v || !['PRH', 'ASI'].includes(v.tipo)) throw new Error('Indique un vale de préstamo o asignación válido.');
   if (v.origen !== S.ctx && !S.u.admin) throw new Error('La devolución se registra en el almacén que realizó el préstamo: ' + almNombre(v.origen) + '.');
@@ -1259,7 +1260,7 @@ function registrarDevolucion(valeNum, items, recibe, obs) {
     const l = v.lineas[x.i]; const c = Number(x.cant);
     if (c > saldoLinea(l)) throw new Error(`La cantidad a devolver de ${l.cod} supera el saldo pendiente (${saldoLinea(l)}).`);
   });
-  const dv = nuevoVale('DEV', { origen: v.origen, destino: v.origen, resp: v.resp, sup: v.sup, proyecto: v.proyecto, cuenta: v.cuenta, ref: v.num, obs: obs || '', extra: { recibe } });
+  const dv = nuevoVale('DEV', { origen: v.origen, destino: v.origen, resp: v.resp, sup: v.sup, proyecto: v.proyecto, cuenta: v.cuenta, ref: v.num, obs: obs || '', extra: { recibe }, salidaTimaca: salidaTimaca || '' });
   sel.forEach(x => {
     const l = v.lineas[x.i]; const c = Number(x.cant); const cond = x.cond;
     const e = exi(v.origen, l.id);
@@ -1448,7 +1449,7 @@ function registrarEntrada(d) {
 function estadoCatalogo(e, it) {
   if (it && !it.activo) return 'INACTIVO';
   if (e.disp > 0) return 'DISPONIBLE';
-  if (e.vacio > 0) return 'VACÍO (POR RECARGAR)';
+  if (e.vacio > 0) return 'VACÍO';
   if (e.prest + e.asig + (e.cajas || 0) > 0) return 'SIN DISPONIBILIDAD';
   if (e.dan + e.rep + e.ext > 0) return 'FUERA DE SERVICIO';
   return 'SIN EXISTENCIA';
@@ -1873,7 +1874,7 @@ function semilla() {
   const s1 = sol('pellas', T(24), 'PRH', 'PELLAS', 'V-4.031.435', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('CI000101', 1, 'LLENO', 'OX-0002'), L('HE000120', 1)], { fechaReq: D(-24), fechaDev: D(-10) });
   const v1 = como('drivero', T(24, 1), () => aprobarSolicitud(s1.num));
   como('pellas', T(12), () => registrarDevolucion(v1.num, [{ i: 0, cant: 1, cond: 'VACÍO' }, { i: 1, cant: 1, cond: 'BUENO' }], 'Luis Alvarado', 'Cilindro devuelto vacío'));
-  const t5 = como('pellas', T(11), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de cilindro vacío para recarga', lineas: [L('CI000101', 1, 'VACÍO', 'OX-0002')] }));
+  const t5 = como('pellas', T(11), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de cilindro vacío', lineas: [L('CI000101', 1, 'VACÍO', 'OX-0002')] }));
   como('central', T(11, 4), () => aceptarTransferencia(t5.num));
 
   /* Préstamos en Central */
@@ -3687,7 +3688,8 @@ function pintarFormulario() {
       + campo('Cargo', `<input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Se completa al elegir el responsable">`)
       + campo('Cuenta auxiliar', `<input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Se completa al elegir el proyecto">`)
       + campo('Proyecto / Orden de trabajo', `<input id="fProy" ${ro} autocomplete="off" placeholder="Escriba el proyecto u OT" value="${esc(F.proyecto)}">`)
-      + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`);
+      + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`)
+      + campo('N° de salida TIMACA (opcional)', `<input id="fSalidaTimaca" ${ro} placeholder="Opcional" value="${esc(F.salidaTimaca || '')}">`);
   } else if (t === 'PRH' || t === 'ASI') {
     cabecera += campo('Almacén destino', `<select id="fDestino" ${ro}>${DB.almacenes.map(a => `<option value="${a.c}" ${a.c === F.destino ? 'selected' : ''}>${esc(a.n)}</option>`).join('')}</select>`);
   } else {
@@ -3744,6 +3746,7 @@ function leerCabecera() {
   if (g('fDestino') !== undefined) F.destino = g('fDestino');
   if (g('fDespacha') !== undefined) F.despacha = g('fDespacha').trim();
   if (g('fSup') !== undefined) F.sup = g('fSup').trim();
+  if (g('fSalidaTimaca') !== undefined) F.salidaTimaca = g('fSalidaTimaca').trim();
   if (g('fFReq') !== undefined) F.fechaReq = g('fFReq');
   if (g('fFDev') !== undefined) F.fechaDev = g('fFDev');
   if (g('fFAsig') !== undefined) F.fechaAsig = g('fFAsig');
@@ -3918,6 +3921,7 @@ function finalizarFormulario(finalizar) {
         proyecto: F.proyecto,
         cuenta: F.cuenta,
         despacha: F.despacha || S.u.nombre,
+        salidaTimaca: F.salidaTimaca || '',
         obs: F.obs,
         lineas: F.lineas
       });
@@ -4484,7 +4488,7 @@ VISTAS.dev = p => {
     cuerpo = `<div class="form-reg"><div class="f3">
         ${campo('Vale', `<input value="${v.num} · ${TIPOS[v.tipo].n}" readonly>`)}${campo('Responsable custodio', `<input value="${esc(v.resp.nombre)}" readonly>`)}${campo('Cédula', `<input value="${esc(v.resp.cedula)}" readonly>`)}
         ${campo('Proyecto / OT', `<input value="${esc(v.proyecto)}" readonly>`)}${campo(v.tipo === 'PRH' ? 'Fecha de devolución' : 'Fecha de asignación', `<input value="${fF(v.fechaDev || v.fechaAsig)}" readonly>`)}${campo('Estado del vale', `<div style="padding-top:6px">${estB(estadoVale(v))}</div>`)}
-        ${campo('Recibido por', `<input id="dvRecibe" autocomplete="off" value="${esc(S.u.nombre)}">`)}${campo('Observación', `<input id="dvObs" placeholder="Opcional">`)}<div></div>
+        ${campo('Recibido por', `<input id="dvRecibe" autocomplete="off" value="${esc(S.u.nombre)}">`)}${campo('N° de salida TIMACA (opcional)', `<input id="dvSalidaTimaca" placeholder="Opcional" value="${esc(v.salidaTimaca || '')}">`)}${campo('Observación', `<input id="dvObs" placeholder="Opcional">`)}
       </div>
       <div class="carga"><div class="carga-h">ÍTEMS CON SALDO PENDIENTE</div>
       <div style="overflow:auto"><table class="grid"><thead><tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th class="cen">Entregado</th><th class="cen">Devuelto</th><th class="cen">Saldo</th><th class="cen">Cant. a devolver</th><th>Condición de retorno</th></tr></thead>
@@ -4499,7 +4503,12 @@ VISTAS.dev = p => {
 };
 function accionDevolver(n) {
   const items = [...document.querySelectorAll('.dvCant')].map(inp => ({ i: +inp.dataset.i, cant: Number(inp.value), cond: document.querySelector(`.dvCond[data-i="${inp.dataset.i}"]`).value }));
-  run(() => { const dv = registrarDevolucion(n, items, $('dvRecibe').value.trim(), $('dvObs').value); toast(`Devolución ${dv.num} registrada.`, 'ok'); hechoDoc(dv, 'dev'); });
+  run(() => {
+    const salidaTimaca = $('dvSalidaTimaca') ? $('dvSalidaTimaca').value.trim() : '';
+    const dv = registrarDevolucion(n, items, $('dvRecibe').value.trim(), $('dvObs').value, salidaTimaca);
+    toast(`Devolución ${dv.num} registrada.`, 'ok');
+    hechoDoc(dv, 'dev');
+  });
 }
 function hechoDoc(v, volver) {
   $('area').innerHTML = cab(TIPOS[v.tipo].n + ' registrada') + `<div class="franja-est verde"><span>Se generó el vale <b>${v.num}</b>${v.ref ? ' con referencia a ' + v.ref : ''}.</span></div>
@@ -4711,7 +4720,7 @@ VISTAS.dash = p => {
     aviso(porAceptar.length, porAceptar.length ? `Transferencias por aceptar · la más próxima vence en ${cronoHTML(porAceptar[0])}` : 'Transferencias por aceptar', ['trfRec'], porAceptar.length ? 'naranja' : 'verde'),
     aviso(envPend.length, `Transferencias enviadas pendientes · ${envRiesgo.length} vencen en menos de 2 horas`, ['trfEnv', { est: 'PENDIENTE DE RECEPCIÓN' }], envRiesgo.length ? 'rojo' : ''),
     aviso(envMal.length, 'Transferencias enviadas rechazadas o vencidas (últimos 7 días)', ['trfEnv'], envMal.length ? 'rojo' : 'verde'),
-    vacios ? aviso(vacios, c === 'CENTRAL' ? 'Cilindros vacíos en Central para enviar a recarga' : 'Cilindros vacíos por enviar a Central', ['cCil'], 'naranja') : ''
+    vacios ? aviso(vacios, c === 'CENTRAL' ? 'Cilindros vacíos en Central' : 'Cilindros vacíos por transferir a Central', ['cCil'], 'naranja') : ''
   ].join('');
   // Movimientos de los últimos 30 días por tipo (documentos)
   const desde = new Date(ahora().getTime() - 30 * 86400000).toISOString();
@@ -4765,13 +4774,13 @@ VISTAS.cCatAlm = p => {
     `${botonesExport('gCatA', 'Catálogo ' + almNombre(S.ctx))} <button class="btn btn-navy btn-mini" onclick="ir('ent')">➕ Entrada de ítems</button>`)
     + (pendRec ? `<div class="franja-est naranja"><span>Tiene <b>${pendRec}</b> transferencia(s) por aceptar. Su material se sumará al catálogo al aceptarlas.</span><button class="btn btn-navy btn-mini" onclick="ir('trfRec')">Ver transferencias recibidas</button></div>` : '')
     + `<div class="fila-filtros">${campo('Módulo', `<select id="caMod" onchange="${rec}"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}
-      ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO (POR RECARGAR)', 'SIN DISPONIBILIDAD', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
+      ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO', 'SIN DISPONIBILIDAD', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
       <label style="font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center;padding-bottom:9px"><input type="checkbox" id="caTod" ${todos ? 'checked' : ''} onchange="${rec}"> Incluir ítems sin existencia</label>
       ${buscador('gCatA', 'Buscar código, descripción, marca, serial…')}</div>`
     + grid('gCatA', cols, rows, { pag: 50, totales: true, compacto: true, onSel: r => { $('caKdx').disabled = false; $('caTit').textContent = `${r.it.cod} · ${r.it.desc} · ${r.it.marca} / ${r.it.modelo}${r.it.serial ? ' · ' + r.it.serial : ''}`; }, vacio: 'No hay ítems con existencia en este almacén.' })
     + `<div class="sel-strip"><span class="lbl">Ítem seleccionado</span><span class="box" id="caTit" style="flex:1"></span></div>
     <div class="barra-btn"><button class="btn-sip" onclick="ir('ent')">➕ Entrada de ítems</button><button class="btn-sip" id="caKdx" disabled onclick="const r=selDe('gCatA');ir('cKardex',{q:r.it.serial||r.it.cod})">📜 Ver kardex del ítem</button></div>
-    <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Vacío = cilindros vacíos pendientes de recarga · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
+    <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Vacío = cilindros vacíos para transferir o devolver · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
 };
 VISTAS.cExist = p => VISTAS.cCatAlm(p);
 
@@ -4862,9 +4871,29 @@ function accInc(a) {
 VISTAS.cVales = p => {
   const tipo = (p && p.tipo) || '';
   let rows = DB.vales.filter(v => (v.origen === S.ctx || (v.tipo === 'TRF' && v.destino === S.ctx)) && (!tipo || v.tipo === tipo)).sort((a, b) => b.fecha.localeCompare(a.fecha));
-  const cols = [{ t: 'N° vale', k: 'num' }, { t: 'Tipo', v: r => TIPOS[r.tipo].n }, { t: 'Fecha', v: r => fFH(r.fecha), s: r => r.fecha }, { t: 'Origen → Destino', v: r => `${almNombre(r.origen)} → ${almNombre(r.destino)}` },
-    { t: 'Responsable / Realizado por', v: r => r.resp ? r.resp.nombre : r.realizadoPor.nombre }, { t: 'Referencia', v: r => r.ref || r.solicitud || '' }, { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
-    { t: 'Impresiones', v: r => r.impresiones || 0, cls: 'num' }, { t: 'Estado', v: r => estadoVale(r), f: r => estB(estadoVale(r)) }];
+  const cols = [
+    { t: 'N° de Vale', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
+    { t: 'Tipo', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo },
+    { t: 'Fecha', v: r => fFH(r.fecha), s: r => r.fecha },
+    { t: 'Origen', v: r => almNombre(r.origen).replace('Almacén ', '') },
+    { t: 'Destino', v: r => almNombre(r.destino).replace('Almacén ', '') },
+    { t: 'Cuenta Auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.cuenta)}</span>` : '—' },
+    { t: 'Proyecto', v: r => r.proyecto || '—', td: 'wrap' },
+    { t: 'Despachado por', v: r => r.despacha || (r.realizadoPor ? (r.realizadoPor.nombre || r.realizadoPor) : '—') },
+    { t: 'N° de Referencia', v: r => r.ref || r.solicitud || '—' },
+    { t: 'Cantidad', v: r => (r.lineas || []).reduce((a, l) => a + (Number(l.cant) || 1), 0), cls: 'num' },
+    { t: 'Responsable', v: r => r.resp ? (r.resp.nombre || r.resp) : '—' },
+    { t: 'Cédula', v: r => (r.resp && r.resp.cedula) ? r.resp.cedula : '—' },
+    { t: 'Cargo', v: r => (r.resp && r.resp.cargo) ? r.resp.cargo : '—' },
+    { t: 'Supervisor', v: r => r.sup || r.supervisor || '—' },
+    { t: 'N° de Salida TIMACA', v: r => r.salidaTimaca || r.numSalida || '—' },
+    { t: 'Cant. Retornada', v: r => r.tipo === 'DEV' ? (r.lineas || []).reduce((a, l) => a + (Number(l.cant) || 0), 0) : ['PRH', 'ASI'].includes(r.tipo) ? ((r.lineas || []).reduce((a, l) => a + (Number(l.dev) || 0), 0) || '—') : '—', cls: 'num' },
+    { t: 'Saldo por Devolver', v: r => ['PRH', 'ASI'].includes(r.tipo) ? saldoVale(r) : '—', cls: 'num' },
+    { t: 'Condición de Retorno', v: r => { const conds = (r.lineas || []).map(l => l.condicion || l.cond || l.condRet).filter(Boolean); return conds.length ? [...new Set(conds)].join(', ') : (r.tipo === 'DEV' ? 'ÓPTIMO' : '—'); } },
+    { t: 'Días de Atraso', v: r => (r.tipo === 'PRH' && r.fechaDev && r.fechaDev < hoy() && saldoVale(r) > 0) ? diasEntre(r.fechaDev, hoy()) : 0, cls: 'num', f: r => { const d = (r.tipo === 'PRH' && r.fechaDev && r.fechaDev < hoy() && saldoVale(r) > 0) ? diasEntre(r.fechaDev, hoy()) : 0; return d > 0 ? `<span style="color:#dc2626;font-weight:700">${d} días</span>` : '<span style="color:#6b7280">0</span>'; } },
+    { t: 'Status', v: r => estadoVale(r), f: r => estB(estadoVale(r)) },
+    { t: 'Observaciones', v: r => r.obs || r.observaciones || '—', td: 'wrap' }
+  ];
   $('area').innerHTML = cab('Vales emitidos', 'Todos los vales del almacén, disponibles para visualizar e imprimir.', botonesExport('gVal', 'Vales emitidos ' + almNombre(S.ctx)))
     + `<div class="fila-filtros">${campo('Tipo de vale', `<select onchange="ir('cVales',{tipo:this.value})"><option value="">Todos</option>${opciones(['PRH', 'ASI', 'TRF', 'ENT', 'DEV', 'DAN', 'EXT', 'PLZ', ].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}${buscador('gVal')}</div>`
     + grid('gVal', cols, rows, { pag: 15, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
@@ -4901,7 +4930,8 @@ VISTAS.cCil = () => {
   const cols = [{ t: 'Serial', v: r => r.it.serial }, { t: 'Código', v: r => r.it.cod }, { t: 'Gas / Descripción', v: r => r.it.desc }, { t: 'Capacidad', v: r => r.it.modelo }, { t: 'Proveedor', v: r => r.it.marca }, { t: 'Estado', v: r => estado(r.e) }];
   $('area').innerHTML = cab('Cilindros por serial', 'Ubicación y estado de cada cilindro bajo responsabilidad de ' + esc(almNombre(S.ctx)) + '.', botonesExport('gCil', 'Cilindros ' + almNombre(S.ctx)))
     + (S.ctx !== 'CENTRAL' && rows.some(r => r.e.vacio) && puede('transferir', S.ctx) ? `<div class="franja-est naranja"><span>Hay cilindros vacíos en este almacén. Envíelos a Central con una transferencia.</span><button class="btn btn-navy btn-mini" onclick="ir('trfNueva')">Nueva transferencia</button></div>` : '')
-    + grid('gCil', cols, rows, { onSel: r => ir('cKardex', { q: r.it.serial }), vacio: 'No hay cilindros en este almacén.' });
+    + grid('gCil', cols, rows, { onSel: r => ir('cKardex', { q: r.it.serial }), vacio: 'No hay cilindros en este almacén.' })
+    + `<div class="barra-btn"><button class="btn-sip" onclick="ir('trfNueva')">🚚 Transferir cilindros</button><button class="btn-sip" onclick="ir('dev')">↩ Devolver cilindros</button></div>`;
 };
 
 /* =====================================================================
