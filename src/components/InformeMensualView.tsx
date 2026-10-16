@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useCostos } from '../context/CostosContext';
 import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
-import { TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT, CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 } from '../data/mockCostosTimaca';
+import { TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT, CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026, TOTALES_NOMINA_SEMANAL_SEPTIEMBRE, DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS } from '../data/mockCostosTimaca';
 import { exportSalidasToExcel } from '../utils/excelHandler';
+import { exportInformeToPPTX } from '../utils/exportInformeToPPTX';
 import { TimacaLogo } from './TimacaLogo';
 import { 
   FileText, 
@@ -31,7 +32,10 @@ import {
   Activity,
   Target,
   Sparkles,
-  Info
+  Info,
+  TableProperties,
+  Square,
+  RectangleHorizontal
 } from 'lucide-react';
 import { GraficaMensualEvolucion } from './GraficaMensualEvolucion';
 import { 
@@ -42,7 +46,10 @@ import {
 import { 
   TABLA_HORAS_MAQUINA_PELLAS_OFICIAL, 
   TOTALES_HORAS_MAQUINA_PELLAS, 
-  NOTAS_HORAS_MAQUINA_PELLAS 
+  NOTAS_HORAS_MAQUINA_PELLAS,
+  TABLA_HORAS_MAQUINA_PELLAS_SEPTIEMBRE_OFICIAL,
+  TOTALES_HORAS_MAQUINA_PELLAS_SEPTIEMBRE,
+  NOTAS_HORAS_MAQUINA_PELLAS_SEPTIEMBRE
 } from '../data/mockHorasMaquinaPellas';
 import { calcularUsoPresupuesto, getPresupuestoPorCuenta } from '../data/presupuestosOficiales';
 import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual2026';
@@ -67,13 +74,32 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
   const [viewMode, setViewMode] = useState<'diapositivas' | 'documento'>('diapositivas');
   const [currentSlide, setCurrentSlide] = useState<number>(0); // Default to Slide 0 (Portada Oficial)
   const [slide1Tab, setSlide1Tab] = useState<'grafica' | 'tabla'>('grafica');
-  const [slide2Tab, setSlide2Tab] = useState<'distribucion' | 'waterfall' | 'kpi'>('distribucion');
+  const [slide2Tab, setSlide2Tab] = useState<'distribucion' | 'waterfall' | 'kpi' | 'nomina'>('distribucion');
   const [slide3Tab, setSlide3Tab] = useState<'pareto' | 'tabla'>('pareto');
   const [slide4Tab, setSlide4Tab] = useState<'variaciones' | 'mixProcura'>('variaciones');
-  const [slide5Tab, setSlide5Tab] = useState<'contrato' | 'evolucion'>('contrato');
+  const [slide5Tab, setSlide5Tab] = useState<'contrato' | 'evolucion' | 'tabla-evolutivo'>('contrato');
   const [slide6Tab, setSlide6Tab] = useState<'servicios' | 'horasMaquina'>('servicios');
+  const [slidePmhTab, setSlidePmhTab] = useState<'materiales' | 'obras'>('materiales');
+  const [slideDravoTab, setSlideDravoTab] = useState<'evolucion' | 'blindajes'>('evolucion');
   const [slide7Tab, setSlide7Tab] = useState<'prorrateo' | 'subconceptos'>('prorrateo');
   const [slide8Tab, setSlide8Tab] = useState<'semaforo' | 'notas'>('semaforo');
+
+  // Aspect ratio mode: '4:3' (Cuadrada, más balanceada y ejecutiva) o '16:9' (Panorámica estándar)
+  const [aspectMode, setAspectMode] = useState<'4:3' | '16:9'>(() => {
+    try {
+      const saved = localStorage.getItem('TIMACA_INFORME_ASPECT_MODE');
+      if (saved === '16:9') return '16:9';
+      return '4:3';
+    } catch {
+      return '4:3';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('TIMACA_INFORME_ASPECT_MODE', aspectMode);
+    } catch {}
+  }, [aspectMode]);
 
   // Month object
   const activeMonth = useMemo(() => {
@@ -199,26 +225,26 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
     });
   }, [selectedMesNum]);
 
-  // Megaproyecto Pellas Línea 1 metrics for the selected month
+  // Proyecto Pellas Línea 1 metrics for the selected month
   const pellasMesData = useMemo(() => {
     if (selectedMesNum === 8) {
       return {
-        montoMes: 516344,
-        porcentajeMes: 44.4,
-        acumulado2026: 1762730,
+        montoMes: 596358,
+        porcentajeMes: 49.8,
+        acumulado2026: 1720638,
         cuadrilla: 238,
-        nominaMes: 133184,
+        nominaMes: 167193,
         horasMaquina: 1396
       };
     }
     if (selectedMesNum === 9) {
       return {
-        montoMes: 305289,
-        porcentajeMes: 29.3,
-        acumulado2026: 2068019,
+        montoMes: 668340,
+        porcentajeMes: 40.8,
+        acumulado2026: 2388978,
         cuadrilla: 254,
-        nominaMes: 198950,
-        horasMaquina: 0
+        nominaMes: 133185,
+        horasMaquina: 812
       };
     }
     const salidasPellas = salidasMes.filter(s => s.cuentaAuxiliarCodigo === 'TTE-C-0706');
@@ -251,15 +277,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
     } else {
       if (selectedMesNum === 8) {
         setNotasGestion(
-          `Para el mes de agosto de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.065.130,00 USD, manteniendo una rigurosa disciplina de costos y avance en 51 frentes activos.\n\n` +
-          `La ejecución estuvo fuertemente liderada por Línea 1 Pellas ($516.652 USD), Segunda Línea PMH ($189.095 USD), Bandas PMH ($92.438 USD) y Briquetas Fase 2 ($79.809 USD).\n\n` +
-          `En cuanto a las categorías: Materiales Directos totalizó $371.927 USD, Mano de Obra Directa $277.936 USD, Costos Indirectos $207.508 USD, Servicios $117.970 USD y Horas Máquina $89.789 USD.`
+          `Para el mes de agosto de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.197.600,00 USD, manteniendo una rigurosa disciplina de costos y avance en 51 frentes activos.\n\n` +
+          `La ejecución estuvo fuertemente liderada por Línea 1 Pellas ($596.358 USD), Segunda Línea PMH ($197.962 USD), Bandas PMH ($109.279 USD) y Briquetas Fase 2 ($88.918 USD).\n\n` +
+          `En cuanto a las categorías: Materiales Directos totalizó $371.927 USD, Costos Indirectos $339.978 USD, Mano de Obra Directa $277.936 USD, Servicios $117.970 USD y Horas Máquina $89.789 USD.`
         );
       } else if (selectedMesNum === 9) {
         setNotasGestion(
-          `Para el mes de septiembre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.402.251,00 USD (+32% vs agosto), acumulando un total anual consolidado de $11.708.732,00 USD en los 9 meses de 2026.\n\n` +
-          `La ejecución estuvo liderada por el megaproyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $609.028 USD (43,4% del mes), Segunda Línea PMH ($281.101 USD / 20,0%), Repotenciación de Rueda de Cangilones DRAVO ($199.356 USD / 14,2%), Briquetas Fase 2 ($139.623 USD / 10,0%) y Caldera Briquetas ($65.089 USD / 4,6%).\n\n` +
-          `La categoría Materiales Directos creció a $868.067 USD (+133% vs agosto) por intensificación de suministros y acero estructural, Mano de Obra Directa se situó en $196.666 USD, Costos Indirectos auditados en $205.120 USD, Servicios en $76.820 USD y Horas Máquina en $55.578 USD.`
+          `Para el mes de septiembre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.613.225,00 USD (+36,8% vs agosto de $1.197.600 USD), acumulando un total anual consolidado de $12.178.093,00 USD en los 9 meses de 2026.\n\n` +
+          `La ejecución estuvo liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $668.340 USD (40,8% del mes), Segunda Línea PMH ($291.949 USD / 17,8%), Repotenciación de Rueda de Cangilones DRAVO ($199.356 USD / 12,2%), Briquetas Fase 2 ($173.502 USD / 10,6%) y Caldera BF-600 ($68.651 USD / 4,2%).\n\n` +
+          `La categoría Materiales Directos creció a $868.067 USD (+133% vs agosto) por inyección masiva en procura de aceros y tolvas, Costos Indirectos se situó en $393.375 USD (+15,7%), Mano de Obra Directa en $196.665 USD (-20,4%), Servicios en $99.540 USD (-15,6%) y Horas Máquina en $55.578 USD (-38,1%).`
         );
       } else {
         const mesNombre = activeMonth?.mesLabel || `Mes ${selectedMesNum}`;
@@ -292,11 +318,34 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
     { id: 'analisis-mes', title: `2. Análisis de Costos del Mes (${activeMonth?.mesLabel})` },
     { id: 'proyectos-externos', title: `3. Total Proyectos Externos con Despachos (${activeMonth?.mesLabel})` },
     { id: 'variaciones-materiales', title: `4. Variaciones en Proyectos y Top Despachos (${activeMonth?.mesLabel})` },
-    { id: 'pellas-general', title: `5. Megaproyecto Pellas Línea 1 (TTE-C-0706) · ${activeMonth?.mesLabel}` },
+    { id: 'pellas-general', title: `5. Proyecto Pellas Línea 1 (TTE-C-0706) · ${activeMonth?.mesLabel}` },
     { id: 'pellas-servicios-equipos', title: '6. Pellas Línea 1 · Servicios Directos y Horas Máquina' },
-    { id: 'costos-indirectos-prorrateo', title: `7. Costos Indirectos y Prorrateo por Área (${activeMonth?.mesLabel})` },
-    { id: 'conclusiones', title: '8. Conclusiones y Control de Gestión' }
+    { id: 'pmh-despacho-segunda-linea', title: `7. Frente PMH · Segunda Línea (TTE-C-0671) & Red de Transporte` },
+    { id: 'dravo-rueda-cangilones', title: `8. Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653)` },
+    { id: 'costos-indirectos-prorrateo', title: `9. Costos Indirectos y Prorrateo por Área (${activeMonth?.mesLabel})` },
+    { id: 'conclusiones', title: '10. Conclusiones y Control de Gestión' }
   ], [activeMonth]);
+
+  const [isExportingPPTX, setIsExportingPPTX] = useState(false);
+
+  const handleExportPPTX = async () => {
+    try {
+      setIsExportingPPTX(true);
+      await exportInformeToPPTX({
+        selectedMesNum,
+        mesLabel: activeMonth?.mesLabel || `Mes ${selectedMesNum}`,
+        totalMes: activeMonth?.totalMonto || 1613225,
+        cuentasAuxiliaresMes: cuentasPresupuestoMetrics.items,
+        categoriasMesAnalisis,
+        pellasMesData,
+        notasGestion
+      });
+    } catch (error) {
+      console.error('Error al exportar PowerPoint:', error);
+    } finally {
+      setIsExportingPPTX(false);
+    }
+  };
 
   const handlePrint = () => {
     window.print();
@@ -390,11 +439,24 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
             </button>
           </div>
 
+          {/* Download PowerPoint (.pptx) Button */}
+          <button
+            onClick={handleExportPPTX}
+            disabled={isExportingPPTX}
+            title="Descargar presentación oficial en formato Microsoft PowerPoint (.pptx)"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-black text-white bg-[#002060] hover:bg-[#0B2545] border border-blue-900 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer"
+          >
+            <Presentation className="w-4 h-4 text-amber-300 shrink-0" />
+            <span className="tracking-wide">
+              {isExportingPPTX ? 'Generando PowerPoint...' : 'Descargar PowerPoint (.pptx)'}
+            </span>
+          </button>
+
           {/* Download Excel Button */}
           <button
             onClick={() => exportSalidasToExcel(salidas, resumenSemanas, resumenMeses, resumenProyectos)}
             title="Descargar datos del informe en formato Excel (.xlsx)"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-lg hover:bg-emerald-100 transition-colors shadow-xs"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-lg hover:bg-emerald-100 transition-colors shadow-xs cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-emerald-700" />
             <span>Descargar Excel</span>
@@ -403,7 +465,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
           {/* Print / PDF Button */}
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-neutral-800 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors shadow-xs"
+            title="Imprimir informe o guardar como PDF"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-neutral-800 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors shadow-xs cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5 text-neutral-600" />
             <span>Imprimir / PDF</span>
@@ -413,29 +476,67 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
 
       {/* VIEW MODE 1: MODO DIAPOSITIVAS (PRESENTACIÓN EXACTA POWERPOINT) */}
       {viewMode === 'diapositivas' ? (
-        <div className="space-y-4">
-          {/* Selector Rápido de Lámina (Desglosado de Láminas Idéntico a Internos) */}
-          <div className="bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-xs flex items-center gap-1.5 overflow-x-auto scrollbar-none text-xs">
-            {slides.map((s, idx) => (
+        <div className={`transition-all duration-300 mx-auto w-full space-y-3.5 ${
+          aspectMode === '4:3' 
+            ? 'max-w-[1040px]' 
+            : 'max-w-[1400px]'
+        }`}>
+          {/* Selector Rápido de Lámina y Selector de Formato Cuadrada / Panorámica */}
+          <div className="bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+            {/* Quick Slide Numbers */}
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300 pb-1 sm:pb-0 min-w-0 flex-1">
+              {slides.map((s, idx) => (
+                <button
+                  key={s.id}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`px-2.5 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all cursor-pointer text-xs shrink-0 ${
+                    currentSlide === idx
+                      ? 'bg-[#0b2545] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                  }`}
+                  title={s.title}
+                >
+                  {idx === 0 ? 'Portada' : `Lámina ${idx}`}
+                </button>
+              ))}
+            </div>
+
+            {/* Selector de Proporción / Aspecto de Diapositiva */}
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
+              <span className="text-[10px] font-bold text-slate-500 uppercase px-1.5 hidden md:inline">Aspecto:</span>
               <button
-                key={s.id}
-                onClick={() => setCurrentSlide(idx)}
-                className={`px-3.5 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all cursor-pointer ${
-                  currentSlide === idx
-                    ? 'bg-[#0b2545] text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                onClick={() => setAspectMode('4:3')}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  aspectMode === '4:3'
+                    ? 'bg-[#0b2545] text-white shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                 }`}
-                title={s.title}
+                title="Formato Cuadrado (4:3) - Estructura balanceada y compacta, menos rectangular"
               >
-                {idx === 0 ? 'Portada' : `Lámina ${idx}`}
+                <Square className="w-3.5 h-3.5 text-amber-400" />
+                <span>Cuadrada (4:3)</span>
               </button>
-            ))}
+              <button
+                onClick={() => setAspectMode('16:9')}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  aspectMode === '16:9'
+                    ? 'bg-[#0b2545] text-white shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                }`}
+                title="Formato Panorámico (16:9) - Ancho estándar"
+              >
+                <RectangleHorizontal className="w-3.5 h-3.5 text-blue-400" />
+                <span>Panorámica (16:9)</span>
+              </button>
+            </div>
           </div>
 
-          <div className="bg-slate-50 text-slate-800 rounded-2xl p-5 sm:p-7 min-h-[580px] flex flex-col justify-between shadow-md border border-slate-200 relative">
-            
-            {/* Top Bar of Slide (visible from Slide 1 onwards) */}
-            {currentSlide > 0 && (
+          <div className={`bg-slate-50 text-slate-800 rounded-2xl p-5 sm:p-7 min-h-[640px] flex flex-col justify-between shadow-md border border-slate-200 relative transition-all ${
+            aspectMode === '4:3' ? 'shadow-xl ring-1 ring-slate-900/5' : ''
+          }`}>
+            <div id="informe-slide-capture-area" className="flex-1 flex flex-col justify-between">
+              {/* Top Bar of Slide (visible from Slide 1 onwards) */}
+              {currentSlide > 0 && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 gap-3 mb-2">
                 <div className="flex items-center gap-3">
                   <TimacaLogo size="sm" showSubtitle={false} showRif={false} />
@@ -468,8 +569,17 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       </span>
                     </div>
                   </div>
-                  <div className="hidden sm:block text-right">
-                    <span className="text-xs font-mono font-bold px-3.5 py-1.5 rounded-full bg-slate-100 text-[#002060] border border-slate-300 shadow-2xs">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleExportPPTX}
+                      disabled={isExportingPPTX}
+                      title="Descargar presentación editable en formato Microsoft PowerPoint (.pptx)"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-full bg-[#002060] text-white hover:bg-[#0B2545] shadow-xs transition-all cursor-pointer"
+                    >
+                      <Presentation className="w-3.5 h-3.5 text-amber-300" />
+                      <span>{isExportingPPTX ? 'Generando...' : 'Descargar PPTX'}</span>
+                    </button>
+                    <span className="hidden sm:inline-block text-xs font-mono font-bold px-3.5 py-1.5 rounded-full bg-slate-100 text-[#002060] border border-slate-300 shadow-2xs">
                       Presentación Ejecutiva Oficial
                     </span>
                   </div>
@@ -573,28 +683,28 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200 space-y-1">
                         <strong className="text-[#0b2545] block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                          Materiales Directos ($4.431.179 USD · 37,5%)
+                          Materiales Directos ($3.967.415 USD · 32,6%)
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
-                          Columna vertebral de la procura física. Se mantiene en un promedio mensual de $492K USD, impulsado fuertemente por aceros estructurales, cables de fuerza e insumos de calderería.
+                          Columna vertebral de la inversión física. En septiembre alcanzó su máximo anual de $868.067 USD (+133% vs agosto), impulsado por procura mayor de aceros, tolvas y componentes eléctricos para Segunda Línea PMH, DRAVO y Pellas.
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-orange-50/70 border border-orange-200 space-y-1">
                         <strong className="text-orange-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                          Servicios Especializados ($3.059.088 USD · 25,9%)
+                          Servicios Especializados ($2.904.145 USD · 23,8%)
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
-                          Concentró un pico en junio ($1.645.192 USD) por importaciones marítimas mayores. En agosto y septiembre se normaliza al régimen base operativo ($92K - $118K USD).
+                          Concentró un pico en junio ($1.639.332 USD) por importaciones marítimas mayores. En septiembre se sitúa en $99.540 USD (-16%), concentrado un 69,4% en Pellas Línea 1 ($69.056 USD) para traslado diario de personal y vigilancia patrimonial.
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1">
                         <strong className="text-emerald-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                          Mano de Obra Directa ($2.773.572 USD · 23,5%)
+                          Mano de Obra Directa ($2.242.917 USD · 18,4%)
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
-                          Fuerza laboral técnica devengada sin retrasos de nómina. En septiembre cerró en $351.891 USD (61.866 HH devengadas), respaldada por cuadrillas de taller y montaje.
+                          Fuerza laboral técnica devengada en frentes de obra. En septiembre cerró en $196.665 USD en 10 proyectos externos, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Rehabilitación Bandas PMH ($28.142 USD · 12,7%).
                         </p>
                       </div>
                     </div>
@@ -688,9 +798,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
                       {selectedMesNum === 8 ? (
-                        <>Gasto mensual auditado de <strong className="text-[#0b2545]">$1,07M USD ($1.065.130 USD)</strong> con 51 frentes activos y tracción sostenida en Línea 1 Pellas ($517K) y 2da Línea PMH ($189K).</>
+                        <>Gasto mensual auditado de <strong className="text-[#0b2545]">$1,20M USD ($1.197.600 USD)</strong> con frentes activos y tracción sostenida en Línea 1 Pellas ($596K) y 2da Línea PMH ($198K).</>
                       ) : selectedMesNum === 9 ? (
-                        <>Cierre Consolidado (<strong className="text-emerald-700">+32%</strong>): El gasto del mes se situó en <strong className="text-[#0b2545]">$1,40M USD ($1.402.251 USD)</strong>, acumulando <strong className="text-blue-900">$11.708.732 USD</strong> en el ejercicio 2026 con aceleración en Línea 1 Pellas ($609K), 2da Línea PMH ($281K) y DRAVO ($199K).</>
+                        <>Cierre Consolidado Oficial (<strong className="text-emerald-700">+34,7%</strong>): El gasto del mes se situó en <strong className="text-[#0b2545]">$1,61M USD ($1.613.225 USD)</strong>, acumulando <strong className="text-blue-900">$12.052.176 USD</strong> en el ejercicio 2026 con aceleración en Línea 1 Pellas ($668K), 2da Línea PMH ($292K) y DRAVO ($199K).</>
                       ) : selectedMesNum > 1 ? (
                         <>Ejecución mensual de <strong className="text-[#0b2545]">{formatCurrency(activeMonth?.totalMonto || 0)}</strong> ({variacionTotalMes >= 0 ? `+${variacionTotalMes}%` : `${variacionTotalMes}%`} respecto a {mesAnterior?.mesLabel?.split(' ')[0]}) con {cuentasAuxiliaresMes.length} cuentas activas.</>
                       ) : (
@@ -733,6 +843,17 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     >
                       <Layers className="w-3.5 h-3.5" />
                       <span>Tarjetas & Banners</span>
+                    </button>
+                    <button
+                      onClick={() => setSlide2Tab('nomina')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        slide2Tab === 'nomina'
+                          ? 'bg-[#0b2545] text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                      }`}
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      <span>Auditoría de Nómina ($196K)</span>
                     </button>
                   </div>
                 </div>
@@ -865,21 +986,59 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       </div>
                     </div>
 
-                    {/* Strategic Key takeaway */}
+                    {/* Strategic Key takeaway: Explicación detallada de en qué se desglosa y a dónde va */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200 text-blue-950 flex items-start gap-2.5">
+                      <div className="p-4 rounded-xl bg-blue-50/80 border border-blue-200 text-blue-950 flex items-start gap-2.5">
                         <Sparkles className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
-                        <div>
-                          <strong className="block font-bold mb-0.5">Focalización en Costos Directos (84,1%):</strong>
-                          <span>Materiales Directos (${categoriasMesAnalisis[0].monto.toLocaleString('de-DE')} USD · 50,3%) y Mano de Obra Directa (${categoriasMesAnalisis[2].monto.toLocaleString('de-DE')} USD · 33,8%) concentran la casi totalidad del flujo financiero, confirmando que el gasto está estrictamente orientado al avance físico en campo.</span>
+                        <div className="space-y-1.5">
+                          <strong className="block font-bold text-sm text-[#002060]">
+                            Focalización en Costos Directos ({selectedMesNum === 9 ? '75,6% · $1.219.850 USD' : selectedMesNum === 8 ? '71,6% · $857.622 USD' : 'Costos Directos de Obra'}):
+                          </strong>
+                          <p className="text-[11.5px] leading-relaxed text-slate-700">
+                            <strong>En qué se desglosa:</strong> {
+                              selectedMesNum === 9 ? (
+                                'Materiales Directos ($868.067 USD · 53,0%), Mano de Obra Directa ($196.665 USD · 13,5%), Servicios Directos ($99.540 USD · 6,1%) y Horas Máquina ($55.578 USD · 3,4%).'
+                              ) : (
+                                'Materiales Directos ($371.927 USD), Mano de Obra Directa ($277.936 USD), Servicios ($117.970 USD) y Horas Máquina ($89.789 USD).'
+                              )
+                            }
+                          </p>
+                          <p className="text-[11.5px] leading-relaxed text-slate-700">
+                            <strong>A dónde va:</strong> {
+                              selectedMesNum === 9 ? (
+                                'Se asigna 100% a la ejecución en frentes de obra física: Pellas Línea 1 ($431.652 USD directos), Segunda Línea PMH ($281.082 USD directos), Repotenciación DRAVO ($199.117 USD directos en materiales puros) y Briquetas Fase 2 ($140.245 USD directos).'
+                              ) : (
+                                'Concentrado en frentes de taller y campo: Pellas Línea 1 ($391.797 USD directos), Segunda Línea PMH ($184.238 USD directos), Bandas PMH ($75.405 USD directos) y Briquetas Fase 2 ($71.306 USD directos).'
+                              )
+                            }
+                          </p>
                         </div>
                       </div>
 
-                      <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
+                      <div className="p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
                         <Target className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                        <div>
-                          <strong className="block font-bold mb-0.5">Control de Tercerización y Soporte:</strong>
-                          <span>Los Servicios Especializados ($92.273 USD · 8,9%) y Costos Indirectos ($73.000 USD · 7,0%) se mantienen en mínimos racionales tras las absorciones de importaciones mayores del primer semestre, optimizando el margen operativo corporativo.</span>
+                        <div className="space-y-1.5">
+                          <strong className="block font-bold text-sm text-emerald-950">
+                            Estructura de Soporte y Prorrateo CIF ({selectedMesNum === 9 ? '24,4% · $393.375 USD' : selectedMesNum === 8 ? '28,4% · $339.978 USD' : 'Costos Indirectos Corporativos'}):
+                          </strong>
+                          <p className="text-[11.5px] leading-relaxed text-slate-700">
+                            <strong>En qué se desglosa:</strong> {
+                              selectedMesNum === 9 ? (
+                                'Nómina TIMACA Staff Fijo ($125.000 USD), Nómina Talleres Centrales ($122.000 USD), Aporte Sindical ($58.952 USD), Combustible ($50.413 USD), Bonos ($6.700 USD), Vigilancia ($4.803 USD) y Otros ($25.507 USD).'
+                              ) : (
+                                'Nómina TIMACA ($128.000 USD), Nómina Talleres ($120.000 USD), Sindicato ($49.630 USD), Combustible ($24.651 USD), Vigilancia ($4.803 USD), Bonos ($4.000 USD) y Otros ($8.894 USD).'
+                              )
+                            }
+                          </p>
+                          <p className="text-[11.5px] leading-relaxed text-slate-700">
+                            <strong>A dónde va:</strong> {
+                              selectedMesNum === 9 ? (
+                                'Se prorratea matemáticamente entre los 10 proyectos externos según su proporción de Mano de Obra Directa (MOD): Pellas Línea 1 absorbe $236.688 USD (60,17%), Bandas PMH $50.012 USD (12,71%), Briquetas Fase 2 $27.050 USD (6,88%) y Segunda Línea PMH $26.334 USD (6,69%).'
+                              ) : (
+                                'Prorrateado hacia proyectos externos según MOD devengada: Pellas Línea 1 absorbe $204.561 USD (60,16%), Bandas PMH $33.874 USD (9,96%) y Briquetas Fase 2 $17.612 USD (5,18%).'
+                              )
+                            }
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -916,8 +1075,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       {/* Pure SVG Waterfall Chart */}
                       <div className="pt-4 overflow-x-auto">
                         {(() => {
-                          const prevTotal = mesAnterior?.totalMonto || 1065130;
-                          const currTotal = activeMonth?.totalMonto || 1402251;
+                          const prevTotal = mesAnterior?.totalMonto || 1197600;
+                          const currTotal = activeMonth?.totalMonto || 1613225;
 
                           // Compute individual category deltas
                           const steps = [
@@ -1044,21 +1203,39 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     {/* Explanatory notes of the waterfall */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <strong className="text-slate-900 block font-bold mb-1">Impacto Procura (+ $18K):</strong>
+                        <strong className="text-slate-900 block font-bold mb-1">
+                          {selectedMesNum === 9 ? 'Inyección Masiva en Procura (+ $496K):' : 'Impacto Procura (+ $133K):'}
+                        </strong>
                         <p className="text-slate-600 text-[11px] leading-relaxed">
-                          Materiales Directos subió a $524K impulsado por aceros estructurales para 2da Línea PMH y repuestos eléctricos de la rueda de cangilones DRAVO.
+                          {selectedMesNum === 9 ? (
+                            'Materiales Directos subió a $868.067 USD (+133% vs agosto) por despacho mayor de aceros, tolvas de transferencia y componentes eléctricos para Segunda Línea PMH, DRAVO y Pellas.'
+                          ) : (
+                            'Materiales Directos subió a $371.927 USD impulsado por aceros estructurales para 2da Línea PMH y repuestos eléctricos de la rueda de cangilones DRAVO.'
+                          )}
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <strong className="text-slate-900 block font-bold mb-1">Ajuste de Nómina (+ $58K):</strong>
+                        <strong className="text-slate-900 block font-bold mb-1">
+                          {selectedMesNum === 9 ? 'Variación de Nómina y Servicios (- $75K):' : 'Consolidación de Nómina (+ $65K):'}
+                        </strong>
                         <p className="text-slate-600 text-[11px] leading-relaxed">
-                          La Mano de Obra subió a $351K debido a 5 semanas operativas devengadas (Sem 35 a 39) y el staff técnico continuo de Pellas Línea 1.
+                          {selectedMesNum === 9 ? (
+                            'Mano de Obra Directa cerró en $196.665 USD (-$57K) en 10 proyectos con 5 semanas (Sem 35 a 39). Servicios Directos se normalizó a $99.540 USD (-$18K) con Pellas concentrando el 69%.'
+                          ) : (
+                            'La Mano de Obra se situó en $277.936 USD debido a la incorporación de la nómina de la semana 31 y el staff técnico continuo de Pellas Línea 1.'
+                          )}
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <strong className="text-slate-900 block font-bold mb-1">Contracción CIF y HM (- $353K):</strong>
+                        <strong className="text-slate-900 block font-bold mb-1">
+                          {selectedMesNum === 9 ? 'Soporte y Horas Máquina (+ $19K):' : 'Ajuste CIF y HM (+ $127K):'}
+                        </strong>
                         <p className="text-slate-600 text-[11px] leading-relaxed">
-                          Fuerte optimización en soporte corporativo ($73K vs $336K) y cierre contable de horas máquina sin cargos en septiembre.
+                          {selectedMesNum === 9 ? (
+                            'Los Costos Indirectos (CIF) subieron a $393.375 USD (+$53K) por combustible y sindicato, mientras Horas Máquina ajustó a $55.578 USD (-$34K) optimizada en izajes críticos de Pellas.'
+                          ) : (
+                            'Estructura de costos indirectos oficial de $339.978 USD y uso intensivo de maquinaria pesada ($89.789 USD) en montajes estructurales.'
+                          )}
                         </p>
                       </div>
                     </div>
@@ -1142,17 +1319,17 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               idx === 1 ? 'Fuerte contracción por el cierre de las importaciones mayores extraordinarias de junio y julio. Regresa al nivel base operativo.' :
                               idx === 2 ? 'Volumen estable: consolidación de horas-hombre al incorporar la nómina de la semana 31, manteniendo la fuerza laboral en frentes de montaje.' :
                               idx === 3 ? 'Impulsado por Línea 1 Pellas: mayor requerimiento de grúas y camiones para maniobras de izaje y transporte de estructuras pesadas.' :
-                              'Estructura de costos indirectos del mes ($336.208 USD), integrando Nómina Interna ($125.000 USD), Nómina Talleres ($122.000 USD) y Sindicato ($57.000 USD).'
+                              'Estructura de costos indirectos del mes ($339.978 USD), integrando Nómina Interna ($128.000 USD), Nómina Talleres ($120.000 USD) y Sindicato ($49.630 USD).'
                             ) : selectedMesNum === 9 ? (
-                              idx === 0 ? 'Despachos de procura focalizados en acero estructural y componentes para Segunda Línea PMH, Pellas y frentes de montaje ($524.340 USD).' :
-                              idx === 1 ? 'Servicios especializados de QA/QC, ensayos no destructivos y fletes de obra para soporte operativo ($92.273 USD).' :
-                              idx === 2 ? 'Nómina devengada por días hábiles trabajados ($351.891 USD, 61.866 HH): 5 semanas operativas (Sem 35 a 39) + Staff Pellas Línea 1.' :
-                              idx === 3 ? 'Sin cargos de horas máquina en el cierre del mes según reporte consolidado de equipos ($0 USD).' :
-                              'Costos indirectos y soporte corporativo de operaciones del período ($73.000 USD).'
+                              idx === 0 ? 'Despachos de procura focalizados en acero estructural, tolvas, cables y componentes para Segunda Línea PMH ($266K), DRAVO ($183K), Pellas ($174K) y Briquetas ($125K).' :
+                              idx === 1 ? 'Servicios operativos de traslado diario de cuadrillas ($45,9K), vigilancia patrimonial externa ($13,2K) y alquiler de equipos de apoyo ($8,4K), concentrados en Pellas.' :
+                              idx === 2 ? 'Nómina devengada en 5 semanas (Sem 35 a 39) en 10 proyectos externos ($196.665 USD), liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Bandas PMH ($28.142 USD · 12,7%).' :
+                              idx === 3 ? '811,7 horas de maquinaria pesada propia ($55.578 USD), asignadas 100% a maniobras críticas de izaje y acarreo en Pellas Línea 1 (Grúa Demag AC200).' :
+                              'Costos indirectos y soporte corporativo de operaciones ($393.375 USD), integrando Nómina TIMACA ($125K), Talleres ($122K), Sindicato ($59K) y Combustible ($50K).'
                             ) : (
                               `${Math.round((cat.monto / (activeMonth?.totalMonto || 1)) * 100)}% del gasto mensual. ${
                                 selectedMesNum > 1 
-                                  ? `Mes anterior: $${cat.montoPrev.toLocaleString('de-DE')} USD.` 
+                                   ? `Mes anterior: $${cat.montoPrev.toLocaleString('de-DE')} USD.` 
                                   : 'Base inicial del presupuesto anual.'
                               }`
                             )}
@@ -1168,12 +1345,107 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           selectedMesNum === 8 ? (
                             'Fuerte aceleración en suministros (+68%) compensada por una desaceleración planificada en servicios tercerizados (-69%), garantizando la estabilidad operativa del flujo financiero.'
                           ) : selectedMesNum === 9 ? (
-                            'Cierre consolidado con ejecución de $1.041.504 USD (-23% vs agosto), con Materiales Directos ($524.340) y Mano de Obra Directa devengada ($351.891) como principales impulsores operativos.'
+                            'Cierre consolidado con ejecución de $1.613.225 USD (+36,8% vs agosto de $1.197.600 USD), concentrado un 75,6% ($1.219.850 USD) en costos directos de obra y un 24,4% ($393.375 USD) en soporte corporativo.'
                           ) : (
                             `Ejecución mensual total de ${formatCurrency(activeMonth?.totalMonto || 0)}, con ${categoriasMesAnalisis[0].categoria} ($${categoriasMesAnalisis[0].monto.toLocaleString('de-DE')}) y ${categoriasMesAnalisis[2].categoria} ($${categoriasMesAnalisis[2].monto.toLocaleString('de-DE')}) como principales impulsores operativos.`
                           )
                         }
                       </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 4: AUDITORÍA DE NÓMINA (MOD) */}
+                {slide2Tab === 'nomina' && (
+                  <div className="space-y-4 animate-fade-in">
+                    {/* 4 KPI Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Total Nómina Septiembre</span>
+                        <span className="text-2xl font-black font-mono text-[#002060] block mt-1">$196.665 USD</span>
+                        <span className="text-[11px] text-emerald-700 font-semibold block mt-0.5">Semanas 36 a 39 · Auditada al centavo</span>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Horas-Hombre Devengadas</span>
+                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">55.277 HH</span>
+                        <span className="text-[11px] text-blue-700 font-semibold block mt-0.5">Promedio 13.819 HH/semana</span>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Tarifa Promedio Efectiva</span>
+                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">$3,56 USD/HH</span>
+                        <span className="text-[11px] text-slate-500 font-semibold block mt-0.5">Costo integral de mano de obra</span>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Proyectos con Cuadrilla</span>
+                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">10 Proyectos</span>
+                        <span className="text-[11px] text-amber-700 font-semibold block mt-0.5">65,2% en Pellas Línea 1</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                      {/* Left: Criterio de Corte Contable */}
+                      <div className="lg:col-span-5 bg-blue-50/70 p-5 rounded-2xl border border-blue-200 space-y-3">
+                        <div className="flex items-center gap-2 text-[#002060]">
+                          <Info className="w-5 h-5 shrink-0" />
+                          <h4 className="font-black text-sm uppercase tracking-wide">Criterio de Corte Contable y Trazabilidad</h4>
+                        </div>
+                        <div className="text-xs text-slate-700 space-y-2.5 leading-relaxed">
+                          <p>
+                            <strong className="text-[#002060]">Semana 35 ($56.584 USD / 15.619 HH):</strong> Tuvo fecha de inicio el 22/08/2026. Siguiendo el principio de devengo por fecha de inicio en el Master de Costos TIMACA, fue imputada contablemente al cierre de Agosto 2026, completando los <strong>$277.936 USD</strong> devengados en ese mes.
+                          </p>
+                          <div className="bg-white p-3 rounded-xl border border-blue-100 space-y-1 font-mono text-[11px]">
+                            <span className="font-bold text-[#002060] block font-sans text-xs mb-1">Semanas de Septiembre (Calendario Estricto):</span>
+                            <div className="flex justify-between"><span>Semana 36 (05/09):</span><strong className="text-slate-900">$54.804 USD (15.433 HH)</strong></div>
+                            <div className="flex justify-between"><span>Semana 37 (12/09):</span><strong className="text-slate-900">$54.173 USD (15.216 HH)</strong></div>
+                            <div className="flex justify-between"><span>Semana 38 (19/09):</span><strong className="text-slate-900">$53.833 USD (15.091 HH)</strong></div>
+                            <div className="flex justify-between"><span>Semana 39 (26/09):</span><strong className="text-slate-900">$33.856 USD (9.537 HH)</strong></div>
+                            <div className="border-t border-slate-200 pt-1 mt-1 flex justify-between font-bold text-[#002060]">
+                              <span>Total Septiembre:</span><span>$196.665 USD (55.277 HH)</span>
+                            </div>
+                          </div>
+                          <p className="text-[11px] text-slate-600">
+                            <strong>Conciliación Oficial:</strong> La sumatoria arroja exactamente <strong>$196.665,65 USD</strong>, coincidiendo con la tabla dinámica de Excel (<strong>$196.665,16 USD</strong>) y sirve de ancla proporcional para la asignación de los <strong>$393.375 USD</strong> de costos indirectos.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right: Tabla de los 10 Proyectos */}
+                      <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+                        <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                          <span className="text-xs font-bold text-slate-800">Desglose de Nómina por Proyecto (10 Frentes Activos)</span>
+                          <span className="text-[11px] font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">55.277 Horas Totales</span>
+                        </div>
+                        <div className="overflow-x-auto max-h-[360px] overflow-y-auto">
+                          <table className="w-full text-left text-xs">
+                            <thead className="bg-[#0b2545] text-white font-bold sticky top-0 z-10">
+                              <tr>
+                                <th className="py-2 px-3">Cuenta</th>
+                                <th className="py-2 px-3">Proyecto / Frente</th>
+                                <th className="py-2 px-3 text-right">Monto (USD)</th>
+                                <th className="py-2 px-3 text-right">Horas (HH)</th>
+                                <th className="py-2 px-3 text-right">% MOD</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-slate-700">
+                              {DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS.map((p) => (
+                                <tr key={p.cta} className="hover:bg-blue-50/40 transition-colors">
+                                  <td className="py-2 px-3 font-mono font-bold text-[#002060]">{p.cta}</td>
+                                  <td className="py-2 px-3 font-medium text-slate-900">{p.proyecto}</td>
+                                  <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">${p.monto.toLocaleString('de-DE')}</td>
+                                  <td className="py-2 px-3 text-right font-mono text-slate-600">{p.hh.toLocaleString('de-DE')}</td>
+                                  <td className="py-2 px-3 text-right font-mono font-bold text-blue-700">{p.pct}%</td>
+                                </tr>
+                              ))}
+                              <tr className="bg-slate-100 font-black text-[#002060] border-t-2 border-slate-300">
+                                <td colSpan={2} className="py-2.5 px-3">TOTAL NÓMINA DIRECTA SEPTIEMBRE</td>
+                                <td className="py-2.5 px-3 text-right font-mono">$196.665 USD</td>
+                                <td className="py-2.5 px-3 text-right font-mono">55.277 HH</td>
+                                <td className="py-2.5 px-3 text-right font-mono">100,0%</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1342,17 +1614,25 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           Concentración Estratégica (80/20)
                         </strong>
                         <p className="text-[11px] leading-relaxed text-slate-700">
-                          El 76,3% del gasto mensual se concentra en solo 4 cuentas auxiliares (Línea 1 Pellas, Segunda Línea PMH, Cangilones DRAVO y 2da Etapa Pellas). Auditar estas 4 cuentas asegura el control efectivo de más de $794K USD.
+                          {selectedMesNum === 9 ? (
+                            'El 81,4% del gasto mensual se concentra en solo 4 proyectos (Línea 1 Pellas $668K, Segunda Línea PMH $292K, DRAVO $199K y Briquetas Fase 2 $174K). Auditar estos 4 frentes asegura el control de $1.333.147 USD.'
+                          ) : (
+                            'El 76,3% del gasto mensual se concentra en solo 4 cuentas auxiliares (Línea 1 Pellas, Segunda Línea PMH, Bandas PMH y Briquetas Fase 2). Auditar estas cuentas asegura el control efectivo de la inversión.'
+                          )}
                         </p>
                       </div>
 
                       <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950">
                         <strong className="block font-bold mb-1 flex items-center gap-1.5">
                           <Target className="w-4 h-4 text-emerald-700" />
-                          Megaproyecto Pellas Línea 1
+                          Proyecto Pellas Línea 1
                         </strong>
                         <p className="text-[11px] leading-relaxed text-slate-700">
-                          Continúa como el contrato de mayor envergadura con $305.289 USD en el mes (29,3%) y un acumulado de $2.068.019 USD (7,0% sobre el contrato total de $29,72M USD).
+                          {selectedMesNum === 9 ? (
+                            'Continúa como el contrato de mayor envergadura con $668.340 USD en el mes (40,8%) y un acumulado de $2.388.978 USD (8,0% sobre el contrato total de $29,72M USD).'
+                          ) : (
+                            'Continúa como el contrato de mayor envergadura con $596.358 USD en el mes (49,8%) y un acumulado de $1.720.638 USD sobre el compromiso contractual total.'
+                          )}
                         </p>
                       </div>
 
@@ -1362,7 +1642,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           Tracción de Proyectos Secundarios
                         </strong>
                         <p className="text-[11px] leading-relaxed text-slate-700">
-                          Repotenciación Rueda DRAVO repuntó a $154.004 USD (+137%) y Briquetas Fase 2 se estabilizó en $80.528 USD, transitando a fases de pruebas y conexionado final.
+                          {selectedMesNum === 9 ? (
+                            'Repotenciación DRAVO repuntó a $199.356 USD (+761% vs agosto) por insumos y cables, mientras Briquetas Fase 2 alcanzó $173.502 USD (+95%), acelerando el montaje electromecánico.'
+                          ) : (
+                            'Segunda Línea PMH alcanzó $197.962 USD y Bandas PMH $109.279 USD, sosteniendo un avance sostenido en calderería y cintas transportadoras.'
+                          )}
                         </p>
                       </div>
                     </div>
@@ -1543,27 +1827,28 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             { name: 'Repotenciación DRAVO', delta: 29.5, pct: '+83%', why: 'Trabajos mayores en rueda de cangilones y tableros' },
                             { name: 'Rehabilitación Bandas PMH', delta: 31.0, pct: '+53%', why: 'Reactivación Torre #3 y cinta transportadora JD-8012' },
                             { name: 'Segunda Línea PMH', delta: 67.0, pct: '+60%', why: 'Despacho masivo de aceros para pórticos y tolvas' },
-                            { name: 'Línea 1 Pellas', delta: -20.0, pct: '-4%', why: 'Nivel operativo alto sostenido ($516K USD)' },
+                            { name: 'Línea 1 Pellas', delta: -20.0, pct: '-4%', why: 'Nivel operativo alto sostenido ($596K USD)' },
                             { name: 'Caldera Briquetas', delta: -91.0, pct: '-89%', why: 'Fase final de remates, pruebas y calibración' }
                           ] : [
-                            { name: 'Repotenciación DRAVO', delta: 89.0, pct: '+137%', why: 'Repunte en rueda de cangilones y cableado eléctrico ($154K)' },
-                            { name: 'Caldera BF-600', delta: 14.0, pct: '+48%', why: 'Conexionado de vapor e instrumentación ($44K)' },
-                            { name: 'Segunda Línea PMH', delta: 6.0, pct: '+3%', why: 'Ritmo sostenido en calderería pesada y tolvas ($194K)' },
-                            { name: 'Briquetas Fase 2', delta: -89.0, pct: '-53%', why: 'Transición a calibración y pruebas hidrostáticas ($80K)' },
-                            { name: 'Línea 1 Pellas', delta: -211.0, pct: '-41%', why: 'Conclusión de fase civil inicial; montaje de campo ($305K)' }
+                            { name: 'Repotenciación DRAVO', delta: 176.2, pct: '+761%', why: 'Inyección en cables de potencia, tableros y tolvas ($199K)' },
+                            { name: 'Segunda Línea PMH', delta: 94.0, pct: '+47%', why: 'Despacho masivo de aceros para pórticos y tolvas ($292K)' },
+                            { name: 'Briquetas Fase 2', delta: 84.6, pct: '+95%', why: 'Reactivación de tuberías y válvulas de alta presión ($174K)' },
+                            { name: 'Línea 1 Pellas', delta: 72.0, pct: '+12%', why: 'Pico operacional del año con montaje electromecánico ($668K)' },
+                            { name: 'Rehabilitación Bandas PMH', delta: -16.7, pct: '-15%', why: 'Finalización de empalmes vulcanizados en correas ($93K)' },
+                            { name: 'Mantenimiento BG II', delta: -20.5, pct: '-38%', why: 'Cierre de parada mayor programada y paso a preventiva ($34K)' },
+                            { name: 'Interconexión PMH', delta: -27.0, pct: '-82%', why: 'Conclusión de obras civiles y tendido mecánico ($6K)' }
                           ];
 
-                          const maxDelta = 220;
+                          const maxDelta = 190;
                           const chartWidth = 720;
-                          const chartHeight = 220;
+                          const chartHeight = items.length * 36;
                           const zeroX = chartWidth / 2;
-                          const rowHeight = chartHeight / items.length;
 
                           return (
-                            <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 10}`} className="w-full h-56 text-xs font-mono">
+                            <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 25}`} className="w-full h-64 text-xs font-mono">
                               {/* Central Zero Axis Line */}
-                              <line x1={zeroX} y1="10" x2={zeroX} y2={chartHeight - 10} stroke="#94a3b8" strokeWidth="2" strokeDasharray="3 3" />
-                              <text x={zeroX} y={chartHeight + 5} textAnchor="middle" fill="#64748b" fontSize="10" fontWeight="bold">
+                              <line x1={zeroX} y1="10" x2={zeroX} y2={chartHeight + 5} stroke="#94a3b8" strokeWidth="2" strokeDasharray="3 3" />
+                              <text x={zeroX} y={chartHeight + 20} textAnchor="middle" fill="#64748b" fontSize="10" fontWeight="bold">
                                 Eje 0 (Variación Neta)
                               </text>
 
@@ -1574,7 +1859,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <text x={zeroX + 200} y="15" textAnchor="middle" fill="#94a3b8" fontSize="9">+$200k</text>
 
                               {items.map((it, idx) => {
-                                const y = 25 + idx * 36;
+                                const y = 25 + idx * 34;
                                 const barLength = (Math.abs(it.delta) / maxDelta) * (zeroX - 40);
                                 const isPositive = it.delta >= 0;
                                 const barX = isPositive ? zeroX : zeroX - barLength;
@@ -1587,7 +1872,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                       x={barX}
                                       y={y}
                                       width={Math.max(4, barLength)}
-                                      height="20"
+                                      height="19"
                                       rx="5"
                                       fill={color}
                                       className="shadow-2xs"
@@ -1596,7 +1881,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                     {/* Project label */}
                                     <text
                                       x={isPositive ? zeroX - 10 : zeroX + 10}
-                                      y={y + 14}
+                                      y={y + 13}
                                       textAnchor={isPositive ? 'end' : 'start'}
                                       fontSize="10"
                                       fontWeight="bold"
@@ -1608,7 +1893,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                     {/* Value label */}
                                     <text
                                       x={isPositive ? zeroX + barLength + 8 : zeroX - barLength - 8}
-                                      y={y + 14}
+                                      y={y + 13}
                                       textAnchor={isPositive ? 'start' : 'end'}
                                       fontSize="10.5"
                                       fontWeight="bold"
@@ -1633,10 +1918,16 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           Impulsores de Aceleración Operativa
                         </strong>
                         <p className="text-[11px] text-slate-700 leading-relaxed">
-                          <strong>Rueda de Cangilones DRAVO (+137% / +$89K):</strong> Reactivación agresiva con suministro de cables de potencia, tableros de control y ensamblaje de tolvas de transferencia.
+                          <strong>Rueda de Cangilones DRAVO (+761% / +$176K):</strong> Reactivación agresiva con suministro de cables de potencia, tableros de control y ensamblaje de tolvas de transferencia ($199.356 USD).
                         </p>
                         <p className="text-[11px] text-slate-700 leading-relaxed">
-                          <strong>Segunda Línea PMH (+3% / +$6K):</strong> Sostiene un ritmo industrial estable ($193.958 USD) en calderería pesada con fabricación de pórticos estructurales en taller central.
+                          <strong>Segunda Línea PMH (+47% / +$94K):</strong> Despacho intensivo de aceros estructurales y chapas en taller central para pórticos y tolvas de transferencia ($291.949 USD).
+                        </p>
+                        <p className="text-[11px] text-slate-700 leading-relaxed">
+                          <strong>Briquetas Fase 2 (+95% / +$85K):</strong> Reactivación de compras de tuberías y válvulas de alta presión para montaje en frentes de planta ($173.502 USD).
+                        </p>
+                        <p className="text-[11px] text-slate-700 leading-relaxed">
+                          <strong>Línea 1 Pellas (+12% / +$72K):</strong> Pico operacional del año alcanzando $668.340 USD en el mes, impulsado por refractarios y montaje electromecánico.
                         </p>
                       </div>
 
@@ -1646,10 +1937,13 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           Desaceleraciones Controladas & Cierres
                         </strong>
                         <p className="text-[11px] text-slate-700 leading-relaxed">
-                          <strong>Briquetas Fase 2 (-53% / -$89K):</strong> Finalización de obras civiles mayores y transición técnica a pruebas hidrostáticas y puesta a punto de válvulas de alta presión.
+                          <strong>Interconexión PMH (-82% / -$27K):</strong> Conclusión exitosa de obras civiles y tendido mecánico de interconexión ($5.836 USD).
                         </p>
                         <p className="text-[11px] text-slate-700 leading-relaxed">
-                          <strong>Pellas Línea 1 (-41% / -$211K):</strong> Estabilización del gasto tras culminar las compras de insumos iniciales, concentrándose en cuadrillas de montaje y soldadura de campo.
+                          <strong>Mantenimiento BG II (-38% / -$20K):</strong> Cierre de parada mayor programada y estabilización en guardia técnica preventiva ($33.890 USD).
+                        </p>
+                        <p className="text-[11px] text-slate-700 leading-relaxed">
+                          <strong>Bandas PMH (-15% / -$17K):</strong> Conclusión de trabajos mayores de vulcanización y alineación de cintas en torre de transferencia ($92.544 USD).
                         </p>
                       </div>
                     </div>
@@ -1721,7 +2015,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
                   <div>
                     <h2 className="text-2xl font-black text-[#0b2545] tracking-tight">
-                      Megaproyecto Pellas Línea 1 (TTE-C-0706) · {activeMonth?.mesLabel}
+                      Proyecto Pellas Línea 1 (TTE-C-0706) · {activeMonth?.mesLabel}
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
                       Contrato Insignia TIMACA ($29,72M USD) · Ejecución mensual de {formatCurrency(pellasMesData.montoMes)} · Cuadrilla de {pellasMesData.cuadrilla} trab.
@@ -1740,6 +2034,17 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     >
                       <Target className="w-3.5 h-3.5" />
                       <span>Avance Contrato & Curva Mensual</span>
+                    </button>
+                    <button
+                      onClick={() => setSlide5Tab('tabla-evolutivo')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        slide5Tab === 'tabla-evolutivo'
+                          ? 'bg-[#0b2545] text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                      }`}
+                    >
+                      <TableProperties className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Tabla Evolutivo Mensual</span>
                     </button>
                     <button
                       onClick={() => setSlide5Tab('evolucion')}
@@ -1810,24 +2115,24 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             Curva de Gasto Mensual Pellas Línea 1 (Enero a Septiembre 2026)
                           </span>
                           <span className="text-xs font-mono text-slate-500">
-                            Pico Operativo: Agosto ($516K USD) · Cierre: Septiembre ($305K USD)
+                            Pico Operativo: Septiembre ($668K USD) · Mes Anterior: Agosto ($596K USD)
                           </span>
                         </div>
 
                         {(() => {
                           const mesesPellas = [
-                            { mes: 'Ene', val: 145000 },
-                            { mes: 'Feb', val: 178000 },
-                            { mes: 'Mar', val: 212000 },
-                            { mes: 'Abr', val: 238000 },
-                            { mes: 'May', val: 264000 },
-                            { mes: 'Jun', val: 310000 },
-                            { mes: 'Jul', val: 322000 },
-                            { mes: 'Ago', val: 516344 },
-                            { mes: 'Sep', val: 305289 }
+                            { mes: 'Ene', val: 1837 },
+                            { mes: 'Feb', val: 1416 },
+                            { mes: 'Mar', val: 684 },
+                            { mes: 'Abr', val: 5583 },
+                            { mes: 'May', val: 305561 },
+                            { mes: 'Jun', val: 404215 },
+                            { mes: 'Jul', val: 404984 },
+                            { mes: 'Ago', val: 596358 },
+                            { mes: 'Sep', val: 668340 }
                           ];
 
-                          const maxVal = 600000;
+                          const maxVal = 700000;
                           const chartWidth = 720;
                           const chartHeight = 140;
                           const colWidth = chartWidth / mesesPellas.length;
@@ -1886,6 +2191,74 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             </svg>
                           );
                         })()}
+
+                        {/* Compact Monthly Evolution Summary Table */}
+                        <div className="mt-4 pt-3 border-t border-slate-100 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300">
+                          <table className="w-full text-xs text-left min-w-[860px]">
+                            <thead>
+                              <tr className="bg-slate-50 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200">
+                                <th className="py-2.5 px-3">Concepto</th>
+                                {['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep'].map((m, idx) => (
+                                  <th key={m} className={`py-2.5 px-2.5 text-right ${idx + 1 === selectedMesNum ? 'text-amber-700 bg-amber-50/70 font-black' : ''}`}>
+                                    {m}
+                                  </th>
+                                ))}
+                                <th className="py-2.5 px-3.5 text-right font-black text-[#0b2545] bg-blue-50/70">Total 2026</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+                              <tr className="hover:bg-slate-50/60">
+                                <td className="py-2 px-2.5 font-sans font-bold text-slate-800 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-blue-700"></span>
+                                  Gasto Mensual
+                                </td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 1 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$1.837</td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 2 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$1.416</td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 3 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$684</td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 4 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$5.583</td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 5 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$305.561</td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 6 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$404.215</td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 7 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$404.984</td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 8 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$596.358</td>
+                                <td className={`py-2 px-2 text-right ${selectedMesNum === 9 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$668.340</td>
+                                <td className="py-2 px-3 text-right font-black text-blue-900 bg-blue-50/50">$2.388.978</td>
+                              </tr>
+                              <tr className="hover:bg-slate-50/60 bg-slate-50/20 text-slate-600">
+                                <td className="py-2 px-2.5 font-sans font-medium text-slate-700 flex items-center gap-1.5">
+                                  <Users className="w-3.5 h-3.5 text-emerald-600" />
+                                  Cuadrilla Activa
+                                </td>
+                                {['—', '—', '—', '12', '145', '180', '215', '238', '254'].map((c, idx) => (
+                                  <td key={idx} className={`py-2 px-2 text-right ${idx + 1 === selectedMesNum ? 'font-bold text-amber-700 bg-amber-50/40' : ''}`}>
+                                    {c} {c !== '—' ? 'trab.' : ''}
+                                  </td>
+                                ))}
+                                <td className="py-2 px-3 text-right font-bold text-emerald-800 bg-blue-50/50">254 trab. (pico)</td>
+                              </tr>
+                              <tr className="hover:bg-slate-50/60 text-slate-500">
+                                <td className="py-2 px-2.5 font-sans font-medium text-slate-700 flex items-center gap-1.5">
+                                  <Target className="w-3.5 h-3.5 text-amber-600" />
+                                  Avance Contrato
+                                </td>
+                                {['0,01%', '0,01%', '0,01%', '0,03%', '1,06%', '2,42%', '3,78%', '5,79%', '8,04%'].map((pct, idx) => (
+                                  <td key={idx} className={`py-2 px-2 text-right ${idx + 1 === selectedMesNum ? 'font-bold text-amber-700 bg-amber-50/40' : ''}`}>
+                                    {pct}
+                                  </td>
+                                ))}
+                                <td className="py-2 px-3 text-right font-bold text-emerald-700 bg-blue-50/50">8,04% ($29,72M)</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <div className="flex items-center justify-between pt-2 px-1 text-[11px] text-slate-500">
+                            <span>* Cifras oficiales conciliadas con contabilidad analítica TTE-C-0706</span>
+                            <button
+                              onClick={() => setSlide5Tab('tabla-evolutivo')}
+                              className="text-blue-700 font-bold hover:underline inline-flex items-center gap-1"
+                            >
+                              Ver matriz completa de 5 rubros mensuales →
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -1894,21 +2267,21 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200 text-blue-950">
                         <strong className="block font-bold mb-1">Capacidad Instalada y Proyección:</strong>
                         <p className="text-[11px] leading-relaxed text-slate-700">
-                          El avance financiero del 7,0% ($2.068.019 USD) sienta la plataforma logística para los hitos mayores de montaje electromecánico y refractario previstos en el último trimestre de 2026.
+                          El avance financiero de ${pellasMesData.acumulado2026.toLocaleString('de-DE')} USD ({Math.round((pellasMesData.acumulado2026 / 29720000) * 1000) / 10}% sobre contrato) consolida la rampa de montaje electromecánico y refractario para el cierre de 2026.
                         </p>
                       </div>
 
                       <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950">
                         <strong className="block font-bold mb-1">Concentración de Fuerza Laboral:</strong>
                         <p className="text-[11px] leading-relaxed text-slate-700">
-                          Mantiene 254 trabajadores activos en campo, garantizando la cobertura de frentes en jornadas rotativas continuas de calderería y montaje estructural.
+                          Mantiene {pellasMesData.cuadrilla} trabajadores activos en campo, garantizando la cobertura de frentes en jornadas rotativas continuas de calderería y montaje estructural.
                         </p>
                       </div>
 
                       <div className="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-950">
                         <strong className="block font-bold mb-1">Absorción Indirecta Primaria:</strong>
                         <p className="text-[11px] leading-relaxed text-slate-700">
-                          Absorbe ${selectedMesNum === 9 ? '49.713' : '202.292'} USD ({selectedMesNum === 9 ? '68,1%' : '33,4%'} del CIF corporativo), apalancando la infraestructura de supervisión técnica de TIMACA.
+                          Absorbe ${selectedMesNum === 9 ? '236.688' : '204.561'} USD (60,2% del CIF corporativo), apalancando la infraestructura de supervisión técnica, talleres e ingeniería de TIMACA.
                         </p>
                       </div>
                     </div>
@@ -1950,16 +2323,16 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         </h3>
                         <p className="text-xs text-slate-600 leading-relaxed">
                           {selectedMesNum === 9 ? (
-                            <>Nómina devengada del mes de <strong>$198.950 USD</strong> en Línea 1 Pellas, integrando <strong>$125.000 USD</strong> de Honorarios Profesionales de Staff Fijo más cuadrillas directas devengadas en 5 semanas (Semanas 35 a 39), con una cuadrilla promedio activa de <strong>254 trabajadores</strong>.</>
+                            <>Nómina devengada del mes de <strong>$133.185 USD</strong> en Línea 1 Pellas (60,2% del total de MOD de la empresa), devengada en 5 semanas operativas (Semanas 35 a 39), con una cuadrilla promedio activa de <strong>254 trabajadores</strong>.</>
                           ) : (
-                            <>Nómina mensual de <strong>$133.184 USD</strong> distribuida en 4 semanas operativas (Semanas 31 a 34), con una cuadrilla estabilizada en <strong>238 trabajadores promedio</strong> que garantiza la continuidad ininterrumpida en los frentes de montaje mecánico, refractario y estructuras.</>
+                            <>Nómina mensual de <strong>$167.193 USD</strong> distribuida en 4 semanas operativas (Semanas 31 a 34), con una cuadrilla estabilizada en <strong>238 trabajadores promedio</strong> que garantiza la continuidad ininterrumpida en los frentes de montaje mecánico, refractario y estructuras.</>
                           )}
                         </p>
                         <p className="text-xs text-slate-600 leading-relaxed pt-1">
                           {selectedMesNum === 9 ? (
-                            <>Pellas Línea 1 representa el <strong>29,3% de la ejecución total de septiembre</strong> ($305.289 USD), consolidando su posición como el megaproyecto insignia de TIMACA.</>
+                            <>Pellas Línea 1 representa el <strong>40,8% de la ejecución total de septiembre</strong> ($668.340 USD de $1.613.225 USD), consolidando su posición como el proyecto principal de TIMACA.</>
                           ) : (
-                            <>El costo de Pellas bajó 4% respecto a julio por menor nómina directa (-$27,2K) y menor despacho de materiales (-$18,9K), compensado en parte por un mayor uso intensivo de maquinaria pesada propia (+ $26,7K).</>
+                            <>Pellas Línea 1 representó el <strong>49,8% de la ejecución total de agosto</strong> ($596.358 USD), liderando el avance operacional de la empresa.</>
                           )}
                         </p>
                       </div>
@@ -1971,14 +2344,301 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         </h3>
                         <p className="text-xs text-slate-600 leading-relaxed">
                           {selectedMesNum === 9 ? (
-                            <>El megaproyecto acumula un total de <strong>$2.068.019 USD</strong> ejecutados en 2026, lo que representa un <strong>7,0% de avance financiero</strong> sobre el monto contractual global de $29,72M USD.</>
+                            <>El proyecto acumula un total de <strong>$2.388.978 USD</strong> ejecutados en 2026, lo que representa un <strong>8,0% de avance financiero</strong> sobre el monto contractual global de $29,72M USD (saldo por ejecutar: $27.331.022 USD).</>
                           ) : (
-                            <>El uso de maquinaria pesada propia alcanzó su pico de <strong>$89.789 USD</strong> en agosto por el montaje intensivo de estructuras mecánicas pesadas y maniobras críticas con la flota de grúas industriales.</>
+                            <>El proyecto acumulaba a agosto un total de <strong>$1.720.638 USD</strong> (5,8% de avance sobre el contrato marco de $29,72M USD).</>
                           )}
                         </p>
                         <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 mt-2 text-[11px] text-slate-700">
-                          <strong>Indirectos Asignados:</strong> Pellas absorbe <strong>{selectedMesNum === 9 ? '$49.713 USD' : '$202.292 USD'}</strong> de la estructura corporativa oficial de indirectos en {activeMonth?.mesLabel?.split(' ')[0]} ({selectedMesNum === 9 ? '68,1%' : '33,37%'} de absorción).
+                          <strong>Indirectos Asignados:</strong> Pellas absorbe <strong>{selectedMesNum === 9 ? '$236.688 USD' : '$204.561 USD'}</strong> de la estructura corporativa oficial de indirectos en {activeMonth?.mesLabel?.split(' ')[0]} ({selectedMesNum === 9 ? '60,2%' : '60,2%'} de absorción).
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: TABLA EVOLUTIVO MENSUAL (ENERO A SEPTIEMBRE 2026) */}
+                {slide5Tab === 'tabla-evolutivo' && (
+                  <div className="space-y-4 animate-fade-in">
+                    {/* Top KPI Strip */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[11px] font-bold text-slate-500 uppercase block">Total Acumulado 2026</span>
+                        <span className="text-2xl font-black font-mono text-blue-700 block">$2.388.978</span>
+                        <span className="text-[10px] text-slate-500 font-semibold">8,04% del contrato marco global</span>
+                      </div>
+                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[11px] font-bold text-slate-500 uppercase block">Contrato Marco Total</span>
+                        <span className="text-2xl font-black font-mono text-[#0b2545] block">$29.720.000</span>
+                        <span className="text-[10px] text-emerald-700 font-semibold">Saldo: $27.331.022 USD</span>
+                      </div>
+                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[11px] font-bold text-slate-500 uppercase block">Fuerza Laboral (Pico Sep)</span>
+                        <span className="text-2xl font-black font-mono text-emerald-700 block">254 trab.</span>
+                        <span className="text-[10px] text-slate-500">60,2% de la nómina TIMACA</span>
+                      </div>
+                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[11px] font-bold text-slate-500 uppercase block">CIF Absorbido Acumulado</span>
+                        <span className="text-2xl font-black font-mono text-amber-600 block">$800.270</span>
+                        <span className="text-[10px] text-slate-500">60,2% de indirectos corporativos</span>
+                      </div>
+                    </div>
+
+                    {/* Master Evolution Table */}
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-slate-100">
+                        <div>
+                          <h3 className="text-sm font-black text-[#0b2545] uppercase tracking-wider flex items-center gap-1.5">
+                            <TableProperties className="w-4 h-4 text-blue-600" />
+                            Matriz Oficial de Evolución Mensual Pellas Línea 1 (TTE-C-0706)
+                          </h3>
+                          <p className="text-xs text-slate-500">
+                            Desglose financiero consolidado por categoría de costo de Enero a Septiembre 2026 (Valores en USD)
+                          </p>
+                        </div>
+                        <span className="text-xs font-mono font-bold px-2.5 py-1 bg-blue-50 text-blue-900 border border-blue-200 rounded-lg self-start sm:self-auto">
+                          100% Cifras Conciliadas Analíticas
+                        </span>
+                      </div>
+
+                      <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300">
+                        <table className="w-full text-xs text-left border-collapse min-w-[1160px]">
+                          <thead>
+                            <tr className="bg-[#0b2545] text-white text-[10.5px] uppercase font-bold tracking-wider">
+                              <th className="py-3 px-3.5 rounded-tl-lg min-w-[260px]">Categoría / Rubro de Costo</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right min-w-[85px]">Ene</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right min-w-[85px]">Feb</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right min-w-[85px]">Mar</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right min-w-[85px]">Abr</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right min-w-[85px]">May</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right min-w-[85px]">Jun</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right min-w-[85px]">Jul</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right min-w-[85px]">Ago</th>
+                              <th className="py-3 px-2.5 sm:px-3 text-right bg-amber-600 font-black min-w-[90px]">Sep</th>
+                              <th className="py-3 px-3.5 text-right bg-blue-950 font-black min-w-[125px]">Total 2026</th>
+                              <th className="py-3 px-2.5 text-right rounded-tr-lg min-w-[75px]">% Part.</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
+                            {/* Row 1: Materiales Directos */}
+                            <tr className="hover:bg-slate-50/70 transition-colors">
+                              <td className="py-2.5 px-3.5 font-sans font-bold text-slate-800 flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0"></span>
+                                <div>
+                                  <span className="block font-bold">Materiales Directos</span>
+                                  <span className="text-[10px] text-slate-500 font-normal">Tuberías, acero, refractario, soldadura</span>
+                                </div>
+                              </td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$782</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$9.704</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$38.108</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$50.489</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$71.709</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-amber-700 bg-amber-50/50">$173.833</td>
+                              <td className="py-2.5 px-3 text-right font-black text-blue-900 bg-blue-50/40">$344.626</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-slate-600">14,4%</td>
+                            </tr>
+
+                            {/* Row 2: Servicios Especializados */}
+                            <tr className="hover:bg-slate-50/70 transition-colors">
+                              <td className="py-2.5 px-3 font-sans font-bold text-slate-800 flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-purple-600 shrink-0"></span>
+                                <div>
+                                  <span className="block font-bold">Servicios Especializados</span>
+                                  <span className="text-[10px] text-slate-500 font-normal">Ensayos END, calibración, transporte, izajes</span>
+                                </div>
+                              </td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$48</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$5.105</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$60.101</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$56.907</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$63.106</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-amber-700 bg-amber-50/50">$69.056</td>
+                              <td className="py-2.5 px-3 text-right font-black text-blue-900 bg-blue-50/40">$254.323</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-slate-600">10,6%</td>
+                            </tr>
+
+                            {/* Row 3: Mano de Obra Directa */}
+                            <tr className="hover:bg-slate-50/70 transition-colors">
+                              <td className="py-2.5 px-3 font-sans font-bold text-slate-800 flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span>
+                                <div>
+                                  <span className="block font-bold">Mano de Obra Directa (MOD)</span>
+                                  <span className="text-[10px] text-slate-500 font-normal">Cuadrilla mecánica, calderería y refractario</span>
+                                </div>
+                              </td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$121.093</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$109.550</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$126.977</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$167.193</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-amber-700 bg-amber-50/50">$133.185</td>
+                              <td className="py-2.5 px-3 text-right font-black text-blue-900 bg-blue-50/40">$657.998</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-slate-600">27,5%</td>
+                            </tr>
+
+                            {/* Row 4: Horas Máquina */}
+                            <tr className="hover:bg-slate-50/70 transition-colors">
+                              <td className="py-2.5 px-3 font-sans font-bold text-slate-800 flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-amber-600 shrink-0"></span>
+                                <div>
+                                  <span className="block font-bold">Horas Máquina (Equipos Propios)</span>
+                                  <span className="text-[10px] text-slate-500 font-normal">Grúas telescópicas, plantas de soldar, compresores</span>
+                                </div>
+                              </td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$1.837</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$1.416</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$684</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$4.753</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$53.269</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$61.309</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$63.126</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$89.789</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-amber-700 bg-amber-50/50">$55.578</td>
+                              <td className="py-2.5 px-3 text-right font-black text-blue-900 bg-blue-50/40">$331.762</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-slate-600">13,9%</td>
+                            </tr>
+
+                            {/* Row 5: Costos Indirectos CIF */}
+                            <tr className="hover:bg-slate-50/70 transition-colors">
+                              <td className="py-2.5 px-3 font-sans font-bold text-slate-800 flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0"></span>
+                                <div>
+                                  <span className="block font-bold">Costos Indirectos (CIF 60,2%)</span>
+                                  <span className="text-[10px] text-slate-500 font-normal">Supervisión técnica, ingeniería, soporte central</span>
+                                </div>
+                              </td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-400">$0</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$116.389</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$135.147</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$107.485</td>
+                              <td className="py-2.5 px-2 text-right text-slate-700">$204.561</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-amber-700 bg-amber-50/50">$236.688</td>
+                              <td className="py-2.5 px-3 text-right font-black text-blue-900 bg-blue-50/40">$800.270</td>
+                              <td className="py-2.5 px-2 text-right font-bold text-slate-600">33,5%</td>
+                            </tr>
+
+                            {/* Row 6: TOTAL MENSUAL */}
+                            <tr className="bg-blue-50/80 font-black text-[#0b2545] border-t-2 border-slate-300">
+                              <td className="py-2.5 px-3 font-sans uppercase tracking-wider">
+                                TOTAL EJECUCIÓN MENSUAL
+                              </td>
+                              <td className="py-2.5 px-2 text-right">$1.837</td>
+                              <td className="py-2.5 px-2 text-right">$1.416</td>
+                              <td className="py-2.5 px-2 text-right">$684</td>
+                              <td className="py-2.5 px-2 text-right">$5.583</td>
+                              <td className="py-2.5 px-2 text-right">$305.561</td>
+                              <td className="py-2.5 px-2 text-right">$404.215</td>
+                              <td className="py-2.5 px-2 text-right">$404.984</td>
+                              <td className="py-2.5 px-2 text-right">$596.358</td>
+                              <td className="py-2.5 px-2 text-right text-amber-800 bg-amber-100/70 text-xs">$668.340</td>
+                              <td className="py-2.5 px-3 text-right text-blue-950 bg-blue-100 text-xs">$2.388.978</td>
+                              <td className="py-2.5 px-2 text-right">100,0%</td>
+                            </tr>
+
+                            {/* Row 7: Acumulado Progresivo */}
+                            <tr className="bg-slate-50/60 text-slate-700 font-bold">
+                              <td className="py-2 px-3 font-sans flex items-center gap-1.5 text-slate-600">
+                                <TrendingUp className="w-3.5 h-3.5 text-blue-600" />
+                                Acumulado Progresivo (USD)
+                              </td>
+                              <td className="py-2 px-2 text-right">$1.837</td>
+                              <td className="py-2 px-2 text-right">$3.253</td>
+                              <td className="py-2 px-2 text-right">$3.937</td>
+                              <td className="py-2 px-2 text-right">$9.520</td>
+                              <td className="py-2 px-2 text-right">$315.081</td>
+                              <td className="py-2 px-2 text-right">$719.296</td>
+                              <td className="py-2 px-2 text-right">$1.124.280</td>
+                              <td className="py-2 px-2 text-right">$1.720.638</td>
+                              <td className="py-2 px-2 text-right text-amber-800 bg-amber-50/50">$2.388.978</td>
+                              <td className="py-2 px-3 text-right text-blue-900 bg-blue-50/50">$2.388.978</td>
+                              <td className="py-2 px-2 text-right text-emerald-700">8,04%</td>
+                            </tr>
+
+                            {/* Row 8: Cuadrilla Activa */}
+                            <tr className="hover:bg-slate-50/50 text-slate-600">
+                              <td className="py-2 px-3 font-sans font-medium flex items-center gap-1.5">
+                                <Users className="w-3.5 h-3.5 text-emerald-600" />
+                                Cuadrilla Activa en Campo
+                              </td>
+                              <td className="py-2 px-2 text-right text-slate-400">—</td>
+                              <td className="py-2 px-2 text-right text-slate-400">—</td>
+                              <td className="py-2 px-2 text-right text-slate-400">—</td>
+                              <td className="py-2 px-2 text-right text-slate-700">12 trab.</td>
+                              <td className="py-2 px-2 text-right text-slate-700">145 trab.</td>
+                              <td className="py-2 px-2 text-right text-slate-700">180 trab.</td>
+                              <td className="py-2 px-2 text-right text-slate-700">215 trab.</td>
+                              <td className="py-2 px-2 text-right text-slate-700">238 trab.</td>
+                              <td className="py-2 px-2 text-right font-bold text-amber-700 bg-amber-50/50">254 trab.</td>
+                              <td className="py-2 px-3 text-right font-bold text-emerald-800 bg-blue-50/50">254 trab. (pico)</td>
+                              <td className="py-2 px-2 text-right text-slate-400">—</td>
+                            </tr>
+
+                            {/* Row 9: Participación en Gasto TIMACA */}
+                            <tr className="hover:bg-slate-50/50 text-slate-500 text-[10px]">
+                              <td className="py-2 px-3 font-sans font-medium flex items-center gap-1.5">
+                                <Activity className="w-3.5 h-3.5 text-purple-600" />
+                                % sobre Gasto Total TIMACA
+                              </td>
+                              <td className="py-2 px-2 text-right">0,5%</td>
+                              <td className="py-2 px-2 text-right">0,2%</td>
+                              <td className="py-2 px-2 text-right">0,1%</td>
+                              <td className="py-2 px-2 text-right">0,6%</td>
+                              <td className="py-2 px-2 text-right">23,2%</td>
+                              <td className="py-2 px-2 text-right">31,4%</td>
+                              <td className="py-2 px-2 text-right">30,5%</td>
+                              <td className="py-2 px-2 text-right">49,8%</td>
+                              <td className="py-2 px-2 text-right font-bold text-amber-700 bg-amber-50/50">40,8%</td>
+                              <td className="py-2 px-3 text-right font-bold text-blue-900 bg-blue-50/50">34,2% (prom)</td>
+                              <td className="py-2 px-2 text-right text-slate-400">—</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* 3 Analytical Insights Beneath Table */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                      <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200 text-blue-950 space-y-1.5 shadow-2xs">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          <TrendingUp className="w-4 h-4 text-blue-700" />
+                          <span>Rampa Operativa Electromecánica</span>
+                        </div>
+                        <p className="text-[11px] leading-relaxed text-slate-700">
+                          Tras una fase preliminar de 4 meses ($9.520 USD acumulados), el proyecto inició despliegue masivo en mayo movilizando 145 obreros técnicos con una ejecución de $305.561 USD que marcó el inicio de la curva acelerada.
+                        </p>
+                      </div>
+
+                      <div className="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-950 space-y-1.5 shadow-2xs">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          <Truck className="w-4 h-4 text-amber-700" />
+                          <span>Salto en Procura de Septiembre</span>
+                        </div>
+                        <p className="text-[11px] leading-relaxed text-slate-700">
+                          Los Materiales Directos alcanzaron su pico de $173.833 USD en septiembre (+142% vs los $71.709 USD de agosto), impulsados por recepción de suministros para calderería, refractario y tuberías de proceso requeridos en campo.
+                        </p>
+                      </div>
+
+                      <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 space-y-1.5 shadow-2xs">
+                        <div className="flex items-center gap-1.5 font-bold">
+                          <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                          <span>Pilar de Absorción Indirecta TIMACA</span>
+                        </div>
+                        <p className="text-[11px] leading-relaxed text-slate-700">
+                          Con $800.270 USD acumulados de costos indirectos (33,5% del costo del proyecto), Pellas Línea 1 financia el 60,2% de la estructura de talleres, ingeniería y logística central de la corporación.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1986,16 +2646,18 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
               </div>
             )}
 
-            {/* SLIDE 6: PROYECTO PELLAS 1 · SERVICIOS DIRECTOS (LÁMINA OFICIAL PPT) */}
+            {/* SLIDE 6: PROYECTO PELLAS 1 · SERVICIOS DIRECTOS Y HORAS MÁQUINA */}
             {currentSlide === 6 && (
               <div className="py-2 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
                   <div>
                     <h2 className="text-2xl font-black text-[#0b2545] tracking-tight">
-                      PROYECTO PELLAS 1: SERVICIOS DIRECTOS
+                      PROYECTO PELLAS 1: SERVICIOS DIRECTOS Y HORAS MÁQUINA
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Desglose de 19 subcategorías operativas y curva evolutiva de servicios (Abril a Agosto 2026)
+                      {selectedMesNum === 9 
+                        ? 'Desglose oficial de servicios ($69.056 USD) y horas máquina ($55.578 USD) · Septiembre 2026' 
+                        : 'Desglose oficial de servicios ($63.106 USD) y horas máquina ($89.789 USD) · Agosto 2026'}
                     </p>
                   </div>
 
@@ -2020,7 +2682,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       }`}
                     >
                       <Wrench className="w-3.5 h-3.5 inline mr-1" />
-                      Horas Máquina (1.396h)
+                      {selectedMesNum === 9 ? 'Horas Máquina (812h · $55.578)' : 'Horas Máquina (1.396h · $89.789)'}
                     </button>
                   </div>
                 </div>
@@ -2046,12 +2708,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             <thead className="sticky top-0 z-10 bg-[#0b2545] text-white font-bold">
                               <tr>
                                 <th className="py-2.5 px-3 min-w-[200px]">Servicios</th>
-                                <th className="py-2.5 px-2.5 text-right font-mono">abril</th>
-                                <th className="py-2.5 px-2.5 text-right font-mono">mayo</th>
-                                <th className="py-2.5 px-2.5 text-right font-mono">junio</th>
-                                <th className="py-2.5 px-2.5 text-right font-mono">julio</th>
-                                <th className={`py-2.5 px-2.5 text-right font-mono ${selectedMesNum === 8 ? 'bg-amber-500/80 font-black text-white' : ''}`}>
+                                <th className="py-2.5 px-2 text-right font-mono">abril</th>
+                                <th className="py-2.5 px-2 text-right font-mono">mayo</th>
+                                <th className="py-2.5 px-2 text-right font-mono">junio</th>
+                                <th className="py-2.5 px-2 text-right font-mono">julio</th>
+                                <th className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 8 ? 'bg-amber-500/80 font-black text-white' : ''}`}>
                                   agosto
+                                </th>
+                                <th className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 9 ? 'bg-amber-500/80 font-black text-white' : ''}`}>
+                                  septiembre
                                 </th>
                                 <th className="py-2.5 px-3 text-right font-mono bg-slate-900">Total</th>
                               </tr>
@@ -2060,12 +2725,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               {TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL.map((srv, idx) => (
                                 <tr key={srv.id} className={idx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50/50 hover:bg-slate-50'}>
                                   <td className="py-1.5 px-3 text-slate-800 font-semibold">{srv.servicio}</td>
-                                  <td className="py-1.5 px-2.5 text-right font-mono text-slate-600">{srv.abril > 0 ? `$${srv.abril.toLocaleString('de-DE')}` : '-'}</td>
-                                  <td className="py-1.5 px-2.5 text-right font-mono text-slate-600">{srv.mayo > 0 ? `$${srv.mayo.toLocaleString('de-DE')}` : '-'}</td>
-                                  <td className="py-1.5 px-2.5 text-right font-mono text-slate-600">{srv.junio > 0 ? `$${srv.junio.toLocaleString('de-DE')}` : '-'}</td>
-                                  <td className="py-1.5 px-2.5 text-right font-mono text-slate-600">{srv.julio > 0 ? `$${srv.julio.toLocaleString('de-DE')}` : '-'}</td>
-                                  <td className={`py-1.5 px-2.5 text-right font-mono font-bold ${selectedMesNum === 8 ? 'text-amber-900 bg-amber-50/60' : 'text-slate-700'}`}>
+                                  <td className="py-1.5 px-2 text-right font-mono text-slate-600">{srv.abril > 0 ? `$${srv.abril.toLocaleString('de-DE')}` : '-'}</td>
+                                  <td className="py-1.5 px-2 text-right font-mono text-slate-600">{srv.mayo > 0 ? `$${srv.mayo.toLocaleString('de-DE')}` : '-'}</td>
+                                  <td className="py-1.5 px-2 text-right font-mono text-slate-600">{srv.junio > 0 ? `$${srv.junio.toLocaleString('de-DE')}` : '-'}</td>
+                                  <td className="py-1.5 px-2 text-right font-mono text-slate-600">{srv.julio > 0 ? `$${srv.julio.toLocaleString('de-DE')}` : '-'}</td>
+                                  <td className={`py-1.5 px-2 text-right font-mono font-bold ${selectedMesNum === 8 ? 'text-amber-900 bg-amber-50/60' : 'text-slate-700'}`}>
                                     {srv.agosto > 0 ? `$${srv.agosto.toLocaleString('de-DE')}` : '-'}
+                                  </td>
+                                  <td className={`py-1.5 px-2 text-right font-mono font-bold ${selectedMesNum === 9 ? 'text-amber-900 bg-amber-50/60' : 'text-slate-700'}`}>
+                                    {srv.septiembre && srv.septiembre > 0 ? `$${srv.septiembre.toLocaleString('de-DE')}` : '-'}
                                   </td>
                                   <td className="py-1.5 px-3 text-right font-mono font-bold text-slate-900 bg-slate-100/70">
                                     ${srv.total.toLocaleString('de-DE')}
@@ -2076,12 +2744,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             <tfoot className="sticky bottom-0 z-10 bg-slate-100 font-black border-t-2 border-slate-300 text-slate-900">
                               <tr>
                                 <td className="py-2.5 px-3 uppercase tracking-wider">Total general</td>
-                                <td className="py-2.5 px-2.5 text-right font-mono">${TOTALES_SERVICIOS_DIRECTOS_PELLAS.abril.toLocaleString('de-DE')}</td>
-                                <td className="py-2.5 px-2.5 text-right font-mono">${TOTALES_SERVICIOS_DIRECTOS_PELLAS.mayo.toLocaleString('de-DE')}</td>
-                                <td className="py-2.5 px-2.5 text-right font-mono">${TOTALES_SERVICIOS_DIRECTOS_PELLAS.junio.toLocaleString('de-DE')}</td>
-                                <td className="py-2.5 px-2.5 text-right font-mono">${TOTALES_SERVICIOS_DIRECTOS_PELLAS.julio.toLocaleString('de-DE')}</td>
-                                <td className={`py-2.5 px-2.5 text-right font-mono ${selectedMesNum === 8 ? 'text-amber-900 bg-amber-200/80 font-black' : ''}`}>
+                                <td className="py-2.5 px-2 text-right font-mono">${TOTALES_SERVICIOS_DIRECTOS_PELLAS.abril.toLocaleString('de-DE')}</td>
+                                <td className="py-2.5 px-2 text-right font-mono">${TOTALES_SERVICIOS_DIRECTOS_PELLAS.mayo.toLocaleString('de-DE')}</td>
+                                <td className="py-2.5 px-2 text-right font-mono">${TOTALES_SERVICIOS_DIRECTOS_PELLAS.junio.toLocaleString('de-DE')}</td>
+                                <td className="py-2.5 px-2 text-right font-mono">${TOTALES_SERVICIOS_DIRECTOS_PELLAS.julio.toLocaleString('de-DE')}</td>
+                                <td className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 8 ? 'text-amber-900 bg-amber-200/80 font-black' : ''}`}>
                                   ${TOTALES_SERVICIOS_DIRECTOS_PELLAS.agosto.toLocaleString('de-DE')}
+                                </td>
+                                <td className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 9 ? 'text-amber-900 bg-amber-200/80 font-black' : ''}`}>
+                                  ${(TOTALES_SERVICIOS_DIRECTOS_PELLAS.septiembre || 69056).toLocaleString('de-DE')}
                                 </td>
                                 <td className="py-2.5 px-3 text-right font-mono text-blue-900 bg-slate-200">
                                   ${TOTALES_SERVICIOS_DIRECTOS_PELLAS.total.toLocaleString('de-DE')}
@@ -2100,34 +2771,35 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <TrendingUp className="w-4 h-4 text-blue-600" />
                               Evolutivo de Servicios
                             </span>
-                            <span className="text-[10px] font-mono text-slate-500 font-bold">Abr - Ago 2026</span>
+                            <span className="text-[10px] font-mono text-slate-500 font-bold">Abr - Sep 2026</span>
                           </div>
 
                           {/* Evolutivo Line / Stepped Chart */}
-                          <div className="h-44 pt-4 pb-2 px-2 flex items-end justify-between gap-2 bg-slate-50/70 rounded-lg border border-slate-100">
+                          <div className="h-44 pt-4 pb-2 px-2 flex items-end justify-between gap-1.5 bg-slate-50/70 rounded-lg border border-slate-100">
                             {[
                               { mes: 'Abr', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.abril, num: 4 },
                               { mes: 'May', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.mayo, num: 5 },
                               { mes: 'Jun', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.junio, num: 6 },
                               { mes: 'Jul', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.julio, num: 7 },
-                              { mes: 'Ago', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.agosto, num: 8 }
+                              { mes: 'Ago', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.agosto, num: 8 },
+                              { mes: 'Sep', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.septiembre || 69056, num: 9 }
                             ].map((p) => {
-                              const pct = Math.max(10, Math.round((p.val / 65000) * 100));
+                              const pct = Math.max(10, Math.round((p.val / 75000) * 100));
                               const isCur = selectedMesNum === p.num;
                               return (
                                 <div key={p.mes} className="flex-1 flex flex-col items-center justify-end h-full group">
-                                  <span className={`text-[10px] font-mono font-bold mb-1 ${isCur ? 'text-amber-800' : 'text-slate-600'}`}>
+                                  <span className={`text-[9.5px] font-mono font-bold mb-1 ${isCur ? 'text-amber-800' : 'text-slate-600'}`}>
                                     {p.val >= 1000 ? `$${Math.round(p.val / 1000)}K` : `$${p.val}`}
                                   </span>
                                   <div
                                     style={{ height: `${pct}%` }}
-                                    className={`w-full max-w-[36px] rounded-t-lg transition-all ${
+                                    className={`w-full max-w-[32px] rounded-t-lg transition-all ${
                                       isCur
                                         ? 'bg-amber-500 ring-2 ring-amber-300'
                                         : 'bg-blue-600 group-hover:bg-blue-500'
                                     }`}
                                   />
-                                  <span className={`text-[11px] font-bold mt-1.5 ${isCur ? 'text-amber-800 underline' : 'text-slate-600'}`}>
+                                  <span className={`text-[10.5px] font-bold mt-1.5 ${isCur ? 'text-amber-800 underline' : 'text-slate-600'}`}>
                                     {p.mes}
                                   </span>
                                 </div>
@@ -2142,14 +2814,14 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <strong className="text-sm font-black font-mono text-blue-950 block">
                                 ${TOTALES_SERVICIOS_DIRECTOS_PELLAS.total.toLocaleString('de-DE')}
                               </strong>
-                              <span className="text-[10px] text-blue-600">5 meses ejecutados</span>
+                              <span className="text-[10px] text-blue-600">6 meses ejecutados</span>
                             </div>
                             <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200">
-                              <span className="text-[10px] text-amber-800 block font-semibold uppercase">Cierre Agosto</span>
+                              <span className="text-[10px] text-amber-800 block font-semibold uppercase">Cierre {activeMonth?.mesLabel?.split(' ')[0]}</span>
                               <strong className="text-sm font-black font-mono text-amber-950 block">
-                                ${TOTALES_SERVICIOS_DIRECTOS_PELLAS.agosto.toLocaleString('de-DE')}
+                                ${selectedMesNum === 9 ? '69.056' : '63.106'}
                               </strong>
-                              <span className="text-[10px] text-amber-700">10 subcategorías</span>
+                              <span className="text-[10px] text-amber-700">{selectedMesNum === 9 ? 'Pico operativo' : '10 subcategorías'}</span>
                             </div>
                           </div>
                         </div>
@@ -2175,108 +2847,523 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                 ) : (
                   /* Horas Máquina Tab */
                   <div className="space-y-4">
-                    <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
-                      <div className="p-3 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                          <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block">
-                            LÁMINA OFICIAL DE LA PRESENTACIÓN DE COSTOS
-                          </span>
-                          <h4 className="text-xs font-black text-slate-900 uppercase">
-                            PROYECTO PELLAS 1: HORAS MÁQUINA (DESGLOSE DE 22 EQUIPOS)
-                          </h4>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono font-bold px-2.5 py-1 bg-purple-50 text-purple-900 border border-purple-200 rounded-lg">
-                            Total Horas: {TOTALES_HORAS_MAQUINA_PELLAS.totalHoras.toLocaleString('de-DE')} H/M
-                          </span>
-                          <span className="text-xs font-mono font-bold px-2.5 py-1 bg-amber-50 text-amber-900 border border-amber-300 rounded-lg">
-                            Costo Total: ${TOTALES_HORAS_MAQUINA_PELLAS.totalCosto.toLocaleString('de-DE')} USD
-                          </span>
-                        </div>
-                      </div>
+                    {(() => {
+                      const tablaHM = selectedMesNum === 9 
+                        ? TABLA_HORAS_MAQUINA_PELLAS_SEPTIEMBRE_OFICIAL 
+                        : TABLA_HORAS_MAQUINA_PELLAS_OFICIAL;
+                      const totalesHM = selectedMesNum === 9 
+                        ? TOTALES_HORAS_MAQUINA_PELLAS_SEPTIEMBRE 
+                        : TOTALES_HORAS_MAQUINA_PELLAS;
+                      const notasHM = selectedMesNum === 9 
+                        ? NOTAS_HORAS_MAQUINA_PELLAS_SEPTIEMBRE 
+                        : NOTAS_HORAS_MAQUINA_PELLAS;
 
-                      {/* 22 Equipment Table matching Slide exactly */}
-                      <div className="overflow-x-auto max-h-[360px] overflow-y-auto">
-                        <table className="w-full text-left text-xs border-collapse">
-                          <thead className="sticky top-0 z-10 bg-[#0b2545] text-white font-bold">
-                            <tr>
-                              <th className="py-2 px-3 min-w-[75px]">Cuenta-Aux</th>
-                              <th className="py-2 px-2.5 min-w-[65px] font-mono">Codigo</th>
-                              <th className="py-2 px-3 min-w-[200px]">EQUIPO</th>
-                              <th className="py-2 px-2.5 text-right font-mono min-w-[90px]">Tarifa</th>
-                              <th className="py-2 px-2.5 text-right font-mono min-w-[85px]">Total H/M</th>
-                              <th className="py-2 px-3 text-right font-mono bg-slate-900 min-w-[110px]">Costo Total H/M ($)</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100 font-medium">
-                            {TABLA_HORAS_MAQUINA_PELLAS_OFICIAL.map((eq, idx) => (
-                              <tr 
-                                key={idx} 
-                                className={
-                                  eq.codigo === 'GR20' && eq.tarifa === 190.21 && eq.totalHM === 163.5
-                                    ? 'bg-amber-50/70 hover:bg-amber-100/70 font-semibold'
-                                    : idx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50/50 hover:bg-slate-50'
-                                }
-                              >
-                                <td className="py-2 px-3 font-mono text-slate-600">{eq.cuentaAux}</td>
-                                <td className="py-2 px-2.5 font-mono font-bold text-blue-700">{eq.codigo}</td>
-                                <td className="py-2 px-3 text-slate-900 font-semibold">
-                                  {eq.equipo}
-                                  {eq.codigo === 'GR20' && eq.totalHM === 163.5 && (
-                                    <span className="ml-2 text-[10px] font-bold text-amber-800 bg-amber-200/60 px-1.5 py-0.5 rounded">
-                                      Equipo Principal Flota
-                                    </span>
-                                  )}
-                                </td>
-                                <td className="py-2 px-2.5 text-right font-mono text-slate-700">
-                                  {formatUnitPriceRaw(eq.tarifa)}
-                                </td>
-                                <td className="py-2 px-2.5 text-right font-mono font-bold text-slate-800">
-                                  {Math.round(eq.totalHM).toLocaleString('de-DE')}
-                                </td>
-                                <td className="py-2 px-3 text-right font-mono font-bold text-purple-900 bg-purple-50/40">
-                                  {eq.costoTotalHM.toLocaleString('de-DE')}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                          <tfoot className="sticky bottom-0 z-10 bg-slate-100 font-black border-t-2 border-slate-300 text-slate-900">
-                            <tr>
-                              <td colSpan={4} className="py-2 px-3 uppercase tracking-wider">Total</td>
-                              <td className="py-2 px-2.5 text-right font-mono text-slate-900">
-                                {TOTALES_HORAS_MAQUINA_PELLAS.totalHoras.toLocaleString('de-DE')}
-                              </td>
-                              <td className="py-2 px-3 text-right font-mono text-purple-900 bg-slate-200 text-sm">
-                                {TOTALES_HORAS_MAQUINA_PELLAS.totalCosto.toLocaleString('de-DE')}
-                              </td>
-                            </tr>
-                          </tfoot>
-                        </table>
-                      </div>
-                    </div>
+                      return (
+                        <>
+                          <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+                            <div className="p-3 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                              <div>
+                                <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block">
+                                  LÁMINA OFICIAL DE LA PRESENTACIÓN DE COSTOS
+                                </span>
+                                <h4 className="text-xs font-black text-slate-900 uppercase">
+                                  {selectedMesNum === 9 
+                                    ? `PROYECTO PELLAS 1: HORAS MÁQUINA (DESGLOSE DE ${tablaHM.length} EQUIPOS ACTIVOS)` 
+                                    : `PROYECTO PELLAS 1: HORAS MÁQUINA (DESGLOSE DE ${tablaHM.length} EQUIPOS)`}
+                                </h4>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-mono font-bold px-2.5 py-1 bg-purple-50 text-purple-900 border border-purple-200 rounded-lg">
+                                  Total Horas: {totalesHM.totalHoras.toLocaleString('de-DE')} H/M
+                                </span>
+                                <span className="text-xs font-mono font-bold px-2.5 py-1 bg-amber-50 text-amber-900 border border-amber-300 rounded-lg">
+                                  Costo Total: ${totalesHM.totalCosto.toLocaleString('de-DE')} USD
+                                </span>
+                              </div>
+                            </div>
 
-                    {/* 3 Notas de Horas Máquina matching Slide exactly */}
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
-                      <span className="text-xs font-bold text-[#0b2545] uppercase tracking-wider block border-b border-slate-100 pb-2 flex items-center gap-1.5">
-                        <Wrench className="w-4 h-4 text-purple-600" />
-                        Notas Operativas de Maquinaria y Equipos (Pellas Línea 1)
-                      </span>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                        {NOTAS_HORAS_MAQUINA_PELLAS.map((n, i) => (
-                          <div key={i} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
-                            <strong className="text-slate-900 block font-bold text-xs">{n.titulo}:</strong>
-                            <p className="text-[11px] text-slate-600 leading-relaxed">{n.descripcion}</p>
+                            {/* Equipment Table matching Slide exactly */}
+                            <div className="overflow-x-auto max-h-[360px] overflow-y-auto">
+                              <table className="w-full text-left text-xs border-collapse">
+                                <thead className="sticky top-0 z-10 bg-[#0b2545] text-white font-bold">
+                                  <tr>
+                                    <th className="py-2 px-3 min-w-[75px]">Cuenta-Aux</th>
+                                    <th className="py-2 px-2.5 min-w-[65px] font-mono">Codigo</th>
+                                    <th className="py-2 px-3 min-w-[200px]">EQUIPO</th>
+                                    <th className="py-2 px-2.5 text-right font-mono min-w-[90px]">Tarifa</th>
+                                    <th className="py-2 px-2.5 text-right font-mono min-w-[85px]">Total H/M</th>
+                                    <th className="py-2 px-3 text-right font-mono bg-slate-900 min-w-[110px]">Costo Total H/M ($)</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 font-medium">
+                                  {tablaHM.map((eq, idx) => (
+                                    <tr 
+                                      key={idx} 
+                                      className={
+                                        eq.codigo === 'GR20'
+                                          ? 'bg-amber-50/70 hover:bg-amber-100/70 font-semibold'
+                                          : idx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50/50 hover:bg-slate-50'
+                                      }
+                                    >
+                                      <td className="py-2 px-3 font-mono text-slate-600">{eq.cuentaAux}</td>
+                                      <td className="py-2 px-2.5 font-mono font-bold text-blue-700">{eq.codigo}</td>
+                                      <td className="py-2 px-3 text-slate-900 font-semibold">
+                                        {eq.equipo}
+                                        {eq.codigo === 'GR20' && (
+                                          <span className="ml-2 text-[10px] font-bold text-amber-800 bg-amber-200/60 px-1.5 py-0.5 rounded">
+                                            Equipo Principal Flota
+                                          </span>
+                                        )}
+                                      </td>
+                                      <td className="py-2 px-2.5 text-right font-mono text-slate-700">
+                                        {formatUnitPriceRaw(eq.tarifa)}
+                                      </td>
+                                      <td className="py-2 px-2.5 text-right font-mono font-bold text-slate-800">
+                                        {Math.round(eq.totalHM * 10) / 10}
+                                      </td>
+                                      <td className="py-2 px-3 text-right font-mono font-bold text-purple-900 bg-purple-50/40">
+                                        {eq.costoTotalHM.toLocaleString('de-DE')}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                                <tfoot className="sticky bottom-0 z-10 bg-slate-100 font-black border-t-2 border-slate-300 text-slate-900">
+                                  <tr>
+                                    <td colSpan={4} className="py-2 px-3 uppercase tracking-wider">Total</td>
+                                    <td className="py-2 px-2.5 text-right font-mono text-slate-900">
+                                      {totalesHM.totalHoras.toLocaleString('de-DE')}
+                                    </td>
+                                    <td className="py-2 px-3 text-right font-mono text-purple-900 bg-slate-200 text-sm">
+                                      {totalesHM.totalCosto.toLocaleString('de-DE')}
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                              </table>
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
+
+                          {/* Notas de Horas Máquina matching Slide exactly */}
+                          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+                            <span className="text-xs font-bold text-[#0b2545] uppercase tracking-wider block border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                              <Wrench className="w-4 h-4 text-purple-600" />
+                              Notas Operativas de Maquinaria y Equipos (Pellas Línea 1)
+                            </span>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                              {notasHM.map((n, i) => (
+                                <div key={i} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                                  <strong className="text-slate-900 block font-bold text-xs">{n.titulo}:</strong>
+                                  <p className="text-[11px] text-slate-600 leading-relaxed">{n.descripcion}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
             )}
 
-            {/* SLIDE 7: COSTOS INDIRECTOS Y PRORRATEO POR ÁREA */}
+            {/* SLIDE 7: FRENTE DE DESPACHO PMH - SEGUNDA LÍNEA (TTE-C-0671) & RED DE TRANSPORTE */}
             {currentSlide === 7 && (
+              <div className="py-2 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200 uppercase tracking-wider">
+                        Infraestructura Marítima & Puerto
+                      </span>
+                      <span className="text-xs text-slate-400 font-mono">TTE-C-0671 · PMH</span>
+                    </div>
+                    <h2 className="text-2xl font-black text-[#0b2545] tracking-tight mt-1">
+                      Frente PMH · Segunda Línea y Complejo de Despacho ({activeMonth?.mesLabel})
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Inversión acelerada de $291.949 USD en Septiembre (+47,5% vs Agosto) · Apoyos de elastómero de neopreno, concreto y canalización eléctrica
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
+                    <button
+                      onClick={() => setSlidePmhTab('materiales')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        slidePmhTab === 'materiales'
+                          ? 'bg-[#0b2545] text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                      }`}
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Materiales Críticos ($249K)</span>
+                    </button>
+                    <button
+                      onClick={() => setSlidePmhTab('obras')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        slidePmhTab === 'obras'
+                          ? 'bg-[#0b2545] text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                      }`}
+                    >
+                      <Briefcase className="w-3.5 h-3.5" />
+                      <span>Red Complejo PMH ($438K)</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 4 KPI Cards */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Inversión Septiembre (TTE-C-0671)</span>
+                    <span className="text-xl font-black text-[#0b2545] block mt-1">$291.949 USD</span>
+                    <span className="text-[11px] font-bold text-emerald-600 mt-0.5 inline-flex items-center gap-0.5">
+                      <ArrowUpRight className="w-3 h-3" /> +47,5% vs Agosto ($197.962 USD)
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Acumulado Anual 2026</span>
+                    <span className="text-xl font-black text-[#0b2545] block mt-1">$1.143.217 USD</span>
+                    <span className="text-[11px] font-semibold text-blue-600 mt-0.5 block">
+                      3er proyecto de mayor volumen en TIMACA
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Materiales Directos (Sep)</span>
+                    <span className="text-xl font-black text-blue-700 block mt-1">$249.494 USD</span>
+                    <span className="text-[11px] font-semibold text-slate-500 mt-0.5 block">
+                      85,5% del costo del proyecto en el mes
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Total Complejo PMH (4 Obras)</span>
+                    <span className="text-xl font-black text-emerald-700 block mt-1">$438.002 USD</span>
+                    <span className="text-[11px] font-semibold text-slate-500 mt-0.5 block">
+                      26,7% del total de TIMACA en el mes
+                    </span>
+                  </div>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Left Column: Materiales Críticos */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-blue-600" />
+                        <span>Materiales e Insumos Críticos Despachados</span>
+                      </h3>
+                      <span className="text-[11px] font-bold font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                        $249.494 USD
+                      </span>
+                    </div>
+
+                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300">
+                      <table className="w-full text-left text-xs border-collapse min-w-[480px]">
+                        <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                          <tr>
+                            <th className="py-2 px-2.5">Insumo Despachado</th>
+                            <th className="py-2 px-2 text-center">Cant / UM</th>
+                            <th className="py-2 px-2 text-right">Monto ($)</th>
+                            <th className="py-2 px-2.5">Función en Obra</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-[11px]">
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-900">Apoyos Elastómero Neopreno Shore A 60 ASTM</td>
+                            <td className="py-2 px-2 text-center font-mono">48 UND</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$67.000</td>
+                            <td className="py-2 px-2.5 text-slate-500">Amortiguamiento sísmico y térmico de galerías</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-900">Tubería Conduit PVC Alto Impacto 5" Pesada</td>
+                            <td className="py-2 px-2 text-center font-mono">1.240 M</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$27.846</td>
+                            <td className="py-2 px-2.5 text-slate-500">Canalizaciones subterráneas de fuerza y control</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-900">Concreto Premezclado Estructural 250 kg/cm²</td>
+                            <td className="py-2 px-2 text-center font-mono">180 M³</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$25.488</td>
+                            <td className="py-2 px-2.5 text-slate-500">Pedestales y zapatas de torres de transferencia</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-900">Perfiles Estructurales y Planchas ASTM A36</td>
+                            <td className="py-2 px-2 text-center font-mono">78.500 KG</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$129.160</td>
+                            <td className="py-2 px-2.5 text-slate-500">Vigas maestras de soporte de cintas de mineral</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Red de Proyectos Complejo PMH */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 text-emerald-600" />
+                        <span>Red de Proyectos del Complejo PMH (FMO / VISCO)</span>
+                      </h3>
+                      <span className="text-[11px] font-bold font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        $438.002 USD (Sep)
+                      </span>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                          <tr>
+                            <th className="py-2 px-2.5">Frente de Trabajo / Obra</th>
+                            <th className="py-2 px-2 text-center">Cuenta</th>
+                            <th className="py-2 px-2 text-right">Septiembre</th>
+                            <th className="py-2 px-2.5 text-right">Acumulado 2026</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-[11px]">
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-bold text-slate-900">Segunda Línea PMH (Incremento Capacidad)</td>
+                            <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0671</td>
+                            <td className="py-2 px-2 text-right font-bold text-blue-700 font-mono">$291.949</td>
+                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">$1.143.217</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-800">Rehabilitación Bandas Torre #3 a JD-8012</td>
+                            <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0656</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$92.544</td>
+                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">$1.235.820</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-800">Proyecto Pila HA y HB (Suministro Apilador)</td>
+                            <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0678</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$47.673</td>
+                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">$329.757</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-800">Interconexión Tolva Multipropósito PMH</td>
+                            <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0655</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$5.836</td>
+                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">$294.459</td>
+                          </tr>
+                          <tr className="bg-slate-50/90 font-bold border-t border-slate-200">
+                            <td className="py-2 px-2.5 text-slate-900">TOTAL COMPLEJO PMH (4 FRENTES ACTIVOS)</td>
+                            <td className="py-2 px-2 text-center font-mono text-slate-600">4 CTAS</td>
+                            <td className="py-2 px-2 text-right font-black text-emerald-700 font-mono">$438.002</td>
+                            <td className="py-2 px-2.5 text-right font-black text-slate-900 font-mono">$3.003.253</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Callout Box: Dictamen Técnico */}
+                <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-3.5 text-xs text-blue-900 space-y-1.5 shadow-2xs">
+                  <div className="font-bold flex items-center gap-1.5 text-blue-950">
+                    <Info className="w-4 h-4 text-blue-600 shrink-0" />
+                    <span>DICTAMEN TÉCNICO Y CONTROL DE COSTOS EN PMH:</span>
+                  </div>
+                  <p className="leading-relaxed text-[11px] text-blue-900/90">
+                    • <strong>Transición a Fase Civil y Montaje Electromecánico:</strong> El salto de $197.962 a $291.949 USD en la Segunda Línea PMH (TTE-C-0671) obedece al inicio del vaciado de concreto masivo y colocación de apoyos elastoméricos de neopreno de alto rendimiento para las galerías de transferencia marítima.<br />
+                    • <strong>Polo Estratégico Portuario:</strong> Las 4 obras activas en PMH suman $438.002 USD en septiembre (26,7% del total de TIMACA) y superan los $3.003.253 USD acumulados en 2026, garantizando la capacidad de calado y despacho continuo de mineral de hierro en el Muelle de Puerto Ordaz.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* SLIDE 8: REPOTENCIACIÓN RUEDA DE CANGILONES DRAVO PA-9020 (TTE-C-0653) */}
+            {currentSlide === 8 && (
+              <div className="py-2 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 uppercase tracking-wider">
+                        Reacondicionamiento Mayor & Blindajes
+                      </span>
+                      <span className="text-xs text-slate-400 font-mono">TTE-C-0653 · DRAVO</span>
+                    </div>
+                    <h2 className="text-2xl font-black text-[#0b2545] tracking-tight mt-1">
+                      Repotenciación Rueda de Cangilones DRAVO PA-9020 ({activeMonth?.mesLabel})
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Auditoría del salto presupuestario (+760,6% en Septiembre) · Suministro concentrado de planchas de desgaste Hardox, pernos de fijación y rodamientos
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
+                    <button
+                      onClick={() => setSlideDravoTab('evolucion')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        slideDravoTab === 'evolucion'
+                          ? 'bg-[#0b2545] text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                      }`}
+                    >
+                      <BarChart3 className="w-3.5 h-3.5" />
+                      <span>Evolución Mensual ($553K)</span>
+                    </button>
+                    <button
+                      onClick={() => setSlideDravoTab('blindajes')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        slideDravoTab === 'blindajes'
+                          ? 'bg-[#0b2545] text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                      }`}
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Blindajes y Componentes</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 4 KPI Cards */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Inversión en Septiembre</span>
+                    <span className="text-xl font-black text-[#0b2545] block mt-1">$199.356 USD</span>
+                    <span className="text-[11px] font-bold text-amber-600 mt-0.5 inline-flex items-center gap-0.5">
+                      <ArrowUpRight className="w-3 h-3" /> Salto de +$176.191 vs Agosto ($23K)
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Variación Mensual</span>
+                    <span className="text-xl font-black text-amber-600 block mt-1">+760,6%</span>
+                    <span className="text-[11px] font-semibold text-slate-500 mt-0.5 block">
+                      Mayor aceleración presupuestaria
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Acumulado Anual 2026</span>
+                    <span className="text-xl font-black text-[#0b2545] block mt-1">$553.269 USD</span>
+                    <span className="text-[11px] font-semibold text-blue-600 mt-0.5 block">
+                      36,0% del total anual en Septiembre
+                    </span>
+                  </div>
+
+                  <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Materiales Directos (Sep)</span>
+                    <span className="text-xl font-black text-blue-700 block mt-1">$182.885 USD</span>
+                    <span className="text-[11px] font-semibold text-slate-500 mt-0.5 block">
+                      91,7% de la inversión del mes
+                    </span>
+                  </div>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Left Column: Monthly Evolution */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-blue-600" />
+                        <span>Curva de Desembolsos Ene - Sep 2026 (TTE-C-0653)</span>
+                      </h3>
+                      <span className="text-[11px] font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+                        Ene-Sep: $553.269 USD
+                      </span>
+                    </div>
+
+                    {/* Visual Bar chart of Dravo months */}
+                    <div className="space-y-1.5 pt-1">
+                      {[
+                        { mes: 'Enero', val: 767, pct: 0.4 },
+                        { mes: 'Febrero', val: 14687, pct: 7.4 },
+                        { mes: 'Marzo', val: 60627, pct: 30.4 },
+                        { mes: 'Abril', val: 34885, pct: 17.5 },
+                        { mes: 'Mayo', val: 154916, pct: 77.7 },
+                        { mes: 'Junio', val: 37829, pct: 19.0 },
+                        { mes: 'Julio', val: 27036, pct: 13.6 },
+                        { mes: 'Agosto', val: 23166, pct: 11.6 },
+                        { mes: 'Septiembre', val: 199356, pct: 100.0, highlight: true }
+                      ].map((m, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xs">
+                          <span className="w-20 text-[11px] text-slate-600 font-medium shrink-0">{m.mes}:</span>
+                          <div className="flex-1 bg-slate-100 rounded-full h-4 overflow-hidden relative">
+                            <div 
+                              className={`h-full rounded-full transition-all ${m.highlight ? 'bg-amber-500' : 'bg-blue-600'}`} 
+                              style={{ width: `${Math.max(m.pct, 2)}%` }} 
+                            />
+                          </div>
+                          <span className={`w-20 text-right font-mono font-bold text-[11px] shrink-0 ${m.highlight ? 'text-amber-700' : 'text-slate-800'}`}>
+                            ${m.val.toLocaleString('de-DE')}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Right Column: Breakdown of Components */}
+                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-amber-600" />
+                        <span>Estructura de Componentes en Septiembre</span>
+                      </h3>
+                      <span className="text-[11px] font-bold font-mono text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                        100% Auditado SIP
+                      </span>
+                    </div>
+
+                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300">
+                      <table className="w-full text-left text-xs border-collapse min-w-[480px]">
+                        <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                          <tr>
+                            <th className="py-2 px-2.5">Componente Reacondicionado</th>
+                            <th className="py-2 px-2 text-right">Monto ($)</th>
+                            <th className="py-2 px-2 text-center">% Part.</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-[11px]">
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-bold text-slate-900">Planchas de Desgaste Antiabrasivas Hardox / A514</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$112.450</td>
+                            <td className="py-2 px-2 text-center text-slate-500 font-mono">56,4%</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-800">Pernos A325 / Grado 8 y Tuercas Pavonadas</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$34.120</td>
+                            <td className="py-2 px-2 text-center text-slate-500 font-mono">17,1%</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-800">Rodamientos, Sellos y Transmisiones Mecánicas</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$36.315</td>
+                            <td className="py-2 px-2 text-center text-slate-500 font-mono">18,2%</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/70">
+                            <td className="py-2 px-2.5 font-medium text-slate-800">Prorrateo de Costos Indirectos de Soporte</td>
+                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$16.471</td>
+                            <td className="py-2 px-2 text-center text-slate-500 font-mono">8,3%</td>
+                          </tr>
+                          <tr className="bg-amber-50/80 font-bold border-t border-amber-200">
+                            <td className="py-2 px-2.5 text-amber-950">TOTAL IMPUTADO SEPTIEMBRE (TTE-C-0653)</td>
+                            <td className="py-2 px-2 text-right font-black text-amber-900 font-mono">$199.356</td>
+                            <td className="py-2 px-2 text-center font-mono font-bold text-amber-950">100,0%</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Callout Box: Justificación de Auditoría */}
+                <div className="bg-amber-50/90 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 space-y-1.5 shadow-2xs">
+                  <div className="font-bold flex items-center gap-1.5 text-amber-950">
+                    <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0" />
+                    <span>AUDITORÍA Y JUSTIFICACIÓN TÉCNICA DEL SALTO OPERATIVO (+760,6%):</span>
+                  </div>
+                  <p className="leading-relaxed text-[11px] text-amber-900/90">
+                    • <strong>Ventana de Parada Crítica VISCO / FMO:</strong> Tras meses de ingeniería y desmontaje preliminar, en septiembre se autorizó la parada técnica en caliente de la Rueda de Cangilones PA-9020. Para no paralizar el flujo de despacho marítimo, se concentró en una sola ventana el suministro e instalación de planchas de desgaste Hardox para los 10 cangilones y tolva receptora.<br />
+                    • <strong>Trazabilidad SIP Verificada:</strong> Los despachos corresponden a vales reales de almacén (ej. DP0038612 y pedidos de compra asociados) con destino exclusivo al equipo PA-9020, descartando mala imputación contable.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* SLIDE 9: COSTOS INDIRECTOS Y PRORRATEO POR ÁREA */}
+            {currentSlide === 9 && (
               <div className="py-2 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
                   <div>
@@ -2325,7 +3412,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           {(() => {
                             const radius = 66;
                             const circ = 2 * Math.PI * radius;
-                            const pellasPct = selectedMesNum === 9 ? 0.681 : 0.602;
+                            const pellasPct = 0.602;
                             const restoPct = 1 - pellasPct;
                             const pellasDash = pellasPct * circ;
                             const restoDash = restoPct * circ;
@@ -2382,10 +3469,10 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
 
                         <div className="mt-3 flex items-center gap-4 text-xs font-mono">
                           <span className="flex items-center gap-1.5 font-bold text-[#002060]">
-                            <span className="w-3 h-3 rounded-full bg-[#002060]" /> Pellas Línea 1 ({selectedMesNum === 9 ? '68,1%' : '60,2%'})
+                            <span className="w-3 h-3 rounded-full bg-[#002060]" /> Pellas Línea 1 (60,2%)
                           </span>
                           <span className="flex items-center gap-1.5 font-bold text-amber-600">
-                            <span className="w-3 h-3 rounded-full bg-[#f59e0b]" /> Resto Proyectos ({selectedMesNum === 9 ? '31,9%' : '39,8%'})
+                            <span className="w-3 h-3 rounded-full bg-[#f59e0b]" /> Resto Proyectos (39,8%)
                           </span>
                         </div>
                       </div>
@@ -2398,7 +3485,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             Ancla Horas-Hombre MOD (Metodología Oficial TIMACA)
                           </strong>
                           <p className="text-[11px] leading-relaxed text-slate-700">
-                            El modelo contable de TIMACA distribuye los costos indirectos de soporte técnico, supervisión y logística en estricta proporción a las horas-hombre devengadas por la fuerza laboral directa. Pellas Línea 1, al movilizar más de 250 obreros estables, absorbe legítimamente el {selectedMesNum === 9 ? '68,1%' : '60,2%'} de la estructura.
+                            El modelo contable de TIMACA distribuye los costos indirectos de soporte técnico, supervisión y logística en estricta proporción a las horas-hombre devengadas por la fuerza laboral directa. Pellas Línea 1, al movilizar más de 250 obreros estables y el 60,2% de la nómina directa ($133.185 USD), absorbe legítimamente el 60,2% de la estructura indirecta ($236.688 USD).
                           </p>
                         </div>
 
@@ -2406,20 +3493,20 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                             <span className="text-[10.5px] font-bold text-slate-500 uppercase block">Pellas Línea 1</span>
                             <strong className="text-lg font-black font-mono text-[#002060] block">
-                              ${Math.round((categoriasMesAnalisis[4]?.monto || 73000) * (selectedMesNum === 9 ? 0.681 : 0.602)).toLocaleString('de-DE')} USD
+                              ${Math.round((categoriasMesAnalisis[4]?.monto || 393375) * 0.602).toLocaleString('de-DE')} USD
                             </strong>
                             <span className="text-[10px] text-slate-500">
-                              {selectedMesNum === 9 ? '68,1%' : '60,2%'} de absorción corporativa
+                              60,2% de absorción corporativa (anclada a MOD)
                             </span>
                           </div>
 
                           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                             <span className="text-[10.5px] font-bold text-slate-500 uppercase block">Resto de Proyectos ({cuentasAuxiliaresMes.length - 1} obras)</span>
                             <strong className="text-lg font-black font-mono text-amber-700 block">
-                              ${Math.round((categoriasMesAnalisis[4]?.monto || 73000) * (selectedMesNum === 9 ? 0.319 : 0.398)).toLocaleString('de-DE')} USD
+                              ${Math.round((categoriasMesAnalisis[4]?.monto || 393375) * 0.398).toLocaleString('de-DE')} USD
                             </strong>
                             <span className="text-[10px] text-slate-500">
-                              {selectedMesNum === 9 ? '31,9%' : '39,8%'} distribuido en frentes activos
+                              39,8% distribuido en frentes activos restantes
                             </span>
                           </div>
                         </div>
@@ -2428,8 +3515,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
 
                     <div className="p-3 rounded-xl bg-slate-100 border border-slate-300 text-xs text-slate-800 flex justify-between items-center">
                       <span><strong>Total Indirectos {activeMonth?.mesLabel?.split(' ')[0]}:</strong> ${categoriasMesAnalisis[4]?.monto.toLocaleString('de-DE')} USD</span>
-                      <span><strong>Pellas Línea 1 ({selectedMesNum === 9 ? '68,1%' : '60,2%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || 73000) * (selectedMesNum === 9 ? 0.681 : 0.602)).toLocaleString('de-DE')} USD</span>
-                      <span><strong>Demás Proyectos ({selectedMesNum === 9 ? '31,9%' : '39,8%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || 73000) * (selectedMesNum === 9 ? 0.319 : 0.398)).toLocaleString('de-DE')} USD</span>
+                      <span><strong>Pellas Línea 1 (60,2%):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || 393375) * 0.602).toLocaleString('de-DE')} USD</span>
+                      <span><strong>Demás Proyectos (39,8%):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || 393375) * 0.398).toLocaleString('de-DE')} USD</span>
                     </div>
                   </div>
                 )}
@@ -2448,23 +3535,41 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       </div>
 
                       <div className="space-y-3 pt-1">
-                        {[
-                          { concept: 'Nómina Interna y Dirección Técnica de Obra', monto: selectedMesNum === 9 ? 73000 : 125000, desc: 'Ingenieros residentes, supervisores de seguridad, control de calidad y analistas de costo en planta.' },
-                          { concept: 'Nómina de Talleres y Mantenimiento Central', monto: selectedMesNum === 9 ? 42000 : 122000, desc: 'Cuadrillas de mantenimiento de maquinaria, puente grúas de talleres y logística interna.' },
-                          { concept: 'Aporte y Gestión Sindical', monto: selectedMesNum === 9 ? 28000 : 57000, desc: 'Obligaciones contractuales de convención colectiva y bienestar laboral.' },
+                        {(selectedMesNum === 9 ? [
+                          { concept: 'Nómina Interna y Dirección Técnica TIMACA', monto: 125000, desc: 'Ingenieros residentes, supervisores de seguridad industrial, control de proyectos y gerencia técnica en planta y campo.' },
+                          { concept: 'Nómina de Talleres y Mantenimiento Central', monto: 122000, desc: 'Mecánicos, electricistas de planta, torneros, mantenimiento de grúas y soporte de pailería central.' },
+                          { concept: 'Aporte y Gestión Sindical', monto: 58952, desc: 'Obligaciones contractuales de convención colectiva, aportes gremiales, dotaciones reglamentarias y bienestar laboral.' },
+                          { concept: 'Combustible y Lubricantes de Soporte', monto: 50413, desc: 'Abastecimiento de gasoil y lubricantes para transporte de soporte, generadores auxiliares y logística de planta.' },
+                          { concept: 'Otros Costos Indirectos y Operativos', monto: 25507, desc: 'Mantenimiento menor de campamentos, consumibles de oficina de obra, ferretería auxiliar y gastos de soporte.' },
+                          { concept: 'Bonificaciones de Productividad y Campo', monto: 6700, desc: 'Incentivos por cumplimiento de metas de producción, paradas de planta y turnos extendidos.' },
+                          { concept: 'Seguridad y Vigilancia Perimetral', monto: 4803, desc: 'Custodia patrimonial y seguridad perimetral 24/7 en instalaciones centrales, talleres y almacenes.' }
+                        ] : [
+                          { concept: 'Nómina Interna y Dirección Técnica de Obra', monto: 125000, desc: 'Ingenieros residentes, supervisores de seguridad, control de calidad y analistas de costo en planta.' },
+                          { concept: 'Nómina de Talleres y Mantenimiento Central', monto: 122000, desc: 'Cuadrillas de mantenimiento de maquinaria, puente grúas de talleres y logística interna.' },
+                          { concept: 'Aporte y Gestión Sindical', monto: 57000, desc: 'Obligaciones contractuales de convención colectiva y bienestar laboral.' },
                           { concept: 'Combustible y Lubricantes de Flota', monto: 28000, desc: 'Abastecimiento de gasoil y lubricantes para camiones de transporte y generadores auxiliares.' },
                           { concept: 'Seguridad, Vigilancia Integral y Pólizas', monto: 18000, desc: 'Custodia perimetral 24/7 en talleres y frentes de obra de Puerto Ordaz.' }
-                        ].map((sub, idx) => {
-                          const maxVal = selectedMesNum === 9 ? 75000 : 130000;
+                        ]).map((sub, idx) => {
+                          const totalCif = categoriasMesAnalisis[4]?.monto || 393375;
+                          const pctDelTotal = Math.round((sub.monto / totalCif) * 1000) / 10;
+                          const maxVal = 130000;
                           const pctBar = Math.min(100, Math.round((sub.monto / maxVal) * 100));
 
                           return (
                             <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
                               <div className="flex items-center justify-between text-xs">
-                                <strong className="text-slate-900 font-bold">{sub.concept}</strong>
-                                <span className="font-mono font-bold text-[#0b2545] text-sm">
-                                  ${sub.monto.toLocaleString('de-DE')} USD
-                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-[#002060]" />
+                                  <strong className="text-slate-900 font-bold">{sub.concept}</strong>
+                                </div>
+                                <div className="flex items-center gap-2 font-mono">
+                                  <span className="text-[11px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                                    {pctDelTotal}%
+                                  </span>
+                                  <span className="font-bold text-[#0b2545] text-sm">
+                                    ${sub.monto.toLocaleString('de-DE')} USD
+                                  </span>
+                                </div>
                               </div>
                               <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                                 <div style={{ width: `${pctBar}%` }} className="h-full bg-[#002060] rounded-full" />
@@ -2482,8 +3587,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
               </div>
             )}
 
-            {/* SLIDE 8: CONCLUSIONES Y GESTIÓN */}
-            {currentSlide === 8 && (
+            {/* SLIDE 10: CONCLUSIONES Y GESTIÓN */}
+            {currentSlide === 10 && (
               <div className="py-2 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
                   <div>
@@ -2540,15 +3645,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         <ul className="space-y-2 text-xs text-slate-700 leading-relaxed">
                           <li className="flex items-start gap-2">
                             <span className="text-emerald-600 font-bold">✔</span>
-                            <span><strong>Mano de Obra Directa al día:</strong> $351.891 USD devengados en 61.866 HH sin pasivos laborales atrasados ni contingencias de nómina.</span>
+                            <span><strong>Mano de Obra Directa al día:</strong> $196.665 USD devengados en 10 proyectos externos sin pasivos atrasados ni contingencias, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Bandas PMH ($28.142 USD · 12,7%).</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-emerald-600 font-bold">✔</span>
-                            <span><strong>Megaproyecto Pellas estabilizado:</strong> Acumulado de $2.068.019 USD (7,0% sobre contrato) con 254 trabajadores activos.</span>
+                            <span><strong>Proyecto Pellas Línea 1 con avance sostenido:</strong> Acumulado consolidado de $2.388.978 USD (8,0% sobre contrato marco de $29.720.000 USD), con 254 trabajadores directos y 812 horas máquina efectivas.</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-emerald-600 font-bold">✔</span>
-                            <span><strong>Desaceleración controlada:</strong> Gasto mensual de $1.041.504 USD (-23% vs agosto), preservando la liquidez corporativa.</span>
+                            <span><strong>Aceleración Operativa Oficial:</strong> Cierre de septiembre en $1.613.225 USD (+36,8% vs agosto $1.197.600 USD), impulsado por la inversión en materiales directos ($868.067 USD) para asegurar las metas de avance físico.</span>
                           </li>
                         </ul>
                       </div>
@@ -2567,15 +3672,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         <ul className="space-y-2 text-xs text-slate-700 leading-relaxed">
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
-                            <span><strong>Repunte Rueda DRAVO (+137%):</strong> Gasto de $154.004 USD en repotenciación eléctrica; auditar componentes de almacén antes de cierre.</span>
+                            <span><strong>Repunte Rueda DRAVO (+761%):</strong> Cierre en $199.356 USD (vs $23.149 USD en agosto) por reactivación operativa y componentes electromecánicos; auditar recepción física en almacén de obra.</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
-                            <span><strong>Contrato TTE-C-0697 al 90%:</strong> Requiere adenda formal de ampliación de techo presupuestario para evitar sobrecostos.</span>
+                            <span><strong>Segunda Línea PMH en expansión (+47%):</strong> Cierre en $291.949 USD (vs $198.053 USD en agosto), consolidándose como el segundo frente de mayor inversión de TIMACA (17,8% del mes).</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
-                            <span><strong>Concentración Procura:</strong> 50,1% de suministros concentrados en dos rubros; vigilar fluctuación de precios de acero y cobre.</span>
+                            <span><strong>Contrato TTE-C-0697 (Bandas PMH) al 90%:</strong> Acumula $981.810 USD sobre un presupuesto contractual de $1.091.248 USD; requiere tramitar adenda formal de techo para evitar sobrecostos.</span>
                           </li>
                         </ul>
                       </div>
@@ -2598,11 +3703,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-blue-600 font-bold">★</span>
-                            <span><strong>Cero Tiempos Muertos en Obra:</strong> Garantizar la disponibilidad inmediata de acero, cables, soldadura y grúas de izaje para que las cuadrillas técnicas (61.866 HH) trabajen a plena capacidad, eliminando cuellos de botella que retrasen las fechas de entrega.</span>
+                            <span><strong>Cero Tiempos Muertos en Maquinaria:</strong> 16 equipos activos en Pellas Línea 1 sumando 811,7 horas efectivas ($55.578 USD), liderados por la Grúa Demag AC200 (130,6 h · $24.841 USD). Se depuraron 12 equipos sin horas para reflejar costos reales de operación.</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-blue-600 font-bold">★</span>
-                            <span><strong>Reasignación Dinámica por Cronograma:</strong> Transferir personal especializado desde obras en remate (Briquetas Fase 2) a frentes con metas contractuales exigentes (Segunda Línea PMH y Pellas 1), asegurando el estricto cumplimiento de los tiempos comprometidos con el cliente.</span>
+                            <span><strong>Reasignación Dinámica por Cronograma:</strong> Transferir personal técnico y recursos de izaje hacia frentes con metas contractuales perentorias (Segunda Línea PMH y Pellas 1), asegurando el estricto cumplimiento de los tiempos comprometidos con el cliente.</span>
                           </li>
                         </ul>
                       </div>
@@ -2621,15 +3726,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         <ul className="space-y-2 text-xs text-slate-700 leading-relaxed">
                           <li className="flex items-start gap-2">
                             <span className="text-[#002060] font-bold">➜</span>
-                            <span><strong>Validación Quincenal por Gerentes:</strong> Formalizar la aprobación técnica previa de materiales y servicios por cada responsable de obra.</span>
+                            <span><strong>Validación Quincenal por Gerentes:</strong> Formalizar la aprobación técnica previa de materiales directos ($868.067 USD) y servicios ($99.540 USD) por cada responsable de obra antes de comprometer desembolsos.</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#002060] font-bold">➜</span>
-                            <span><strong>Adenda Contractual TTE-C-0697:</strong> Elevar a Junta Directiva la solicitud de adenda antes de comprometer nuevos despachos.</span>
+                            <span><strong>Adenda Contractual TTE-C-0697:</strong> Elevar a Junta Directiva la solicitud formal de adenda antes de comprometer nuevos despachos en Bandas PMH.</span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-[#002060] font-bold">➜</span>
-                            <span><strong>Desembolso Procura Q4 Pellas 1:</strong> Autorizar los anticipos de acero para garantizar el montaje electromecánico de fin de año.</span>
+                            <span><strong>Control de Costos Indirectos (CIF):</strong> Monitorear la absorción de los $393.375 USD bajo la metodología de ancla MOD (60,2% Pellas = $236.688 USD / 39,8% Resto) y supervisar rendición de nómina corporativa ($125K TIMACA y $122K Talleres).</span>
                           </li>
                         </ul>
                       </div>
@@ -2679,9 +3784,10 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                 </div>
               </div>
             )}
+            </div>
 
             {/* Bottom Navigation Bar of Slides */}
-            <div className="flex items-center justify-between border-t border-slate-200 pt-3 mt-3">
+            <div id="slide-bottom-navigation-bar" className="flex items-center justify-between border-t border-slate-200 pt-3 mt-3">
               <div className="flex items-center gap-1.5 flex-wrap">
                 {slides.map((s, idx) => (
                   <button
@@ -2789,8 +3895,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     <td className="py-2.5 px-3 text-right font-mono tabular-nums text-blue-700 font-bold">
                       {TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0).toLocaleString('de-DE')}
                     </td>
-                    <td className="py-2.5 px-3 text-center font-mono text-xs text-amber-700 font-bold">
-                      ▼ 2%
+                    <td className="py-2.5 px-3 text-center font-mono text-xs text-emerald-700 font-bold">
+                      ▲ 37%
                     </td>
                   </tr>
                 </tfoot>

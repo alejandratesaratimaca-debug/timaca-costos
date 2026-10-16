@@ -9,6 +9,7 @@ export interface SubcategoriaServicioPellas {
   junio: number;
   julio: number;
   agosto: number;
+  septiembre?: number;
   total: number;
   responsable: string;
   solicitante: string;
@@ -26,11 +27,12 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
     junio: 34720,
     julio: 39995,
     agosto: 44270,
-    total: 155325,
+    septiembre: 45878,
+    total: 201203,
     responsable: 'Logística & Transporte TIMACA',
     solicitante: 'Coordinación de Logística y Cuadrillas Pellas',
-    motivoTipico: 'Traslado diario de cuadrillas operativas en campo (238 trabajadores activos)',
-    descripcionTipica: 'Servicio de traslado de personal diario cuadrillas Línea 1 Pellas (238 trabajadores)',
+    motivoTipico: 'Traslado diario de cuadrillas operativas en campo (254 trabajadores activos)',
+    descripcionTipica: 'Servicio de traslado de personal diario cuadrillas Línea 1 Pellas (254 trabajadores)',
     um: 'mes'
   },
   {
@@ -41,7 +43,8 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
     junio: 18360,
     julio: 4900,
     agosto: 4900,
-    total: 32960,
+    septiembre: 8400,
+    total: 41360,
     responsable: 'Gerencia de Operaciones',
     solicitante: 'Ing. Residencia de Obra Pellas',
     motivoTipico: 'Tarifa plana operativa alquiler de 12 módulos sanitarios y facilidades de campamento',
@@ -56,7 +59,8 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
     junio: 0,
     julio: 10582,
     agosto: 10582,
-    total: 21164,
+    septiembre: 13182,
+    total: 34346,
     responsable: 'Seguridad Patrimonial TIMACA',
     solicitante: 'Gerencia de Protección Integral y SIAHO',
     motivoTipico: 'Esquema de resguardo físico y control de accesos Línea 1 Pellas',
@@ -311,20 +315,21 @@ export const TOTALES_SERVICIOS_DIRECTOS_PELLAS = {
   junio: 60101,
   julio: 61934,
   agosto: 63106,
-  total: 226635
+  septiembre: 69056,
+  total: 295690
 };
 
 export const ANALISIS_SERVICIOS_DIRECTOS_PELLAS = [
   {
     titulo: 'Traslado de Personal (Principal Impulsor)',
-    descripcion: 'Representa el 68,5% del gasto total acumulado ($155.325 USD). Su crecimiento sostenido en agosto ($44.270 USD) responde directamente al gran volumen de fuerza laboral desplegada en campo (238 trabajadores).'
+    descripcion: 'Representa el 68,0% del gasto total acumulado ($201.203 USD). Su nivel en septiembre ($45.878 USD) garantiza el despliegue ininterrumpido de la fuerza laboral activa en campo (254 trabajadores).'
   },
   {
-    titulo: 'Incorporación de Vigilancia Externa',
-    descripcion: 'A partir de julio se evidencia un nuevo costo fijo operativo de $10.582 USD mensuales, destinados exclusivamente al esquema de resguardo físico y seguridad de la Línea 1.'
+    titulo: 'Vigilancia y Seguridad Patrimonial Externa',
+    descripcion: 'Consolidado en $13.182 USD mensuales en septiembre, resguardando integralmente los campamentos, talleres y frentes de montaje de la Línea 1.'
   },
   {
-    titulo: 'Estabilización de Alquiler de Equipos (Baños)',
-    descripcion: 'Este rubro se encuentra en alquiler de maquinarias y equipos, y entró en una tarifa plana operativa de $4.900 USD mensuales para julio y agosto, lo cual cubre de forma exacta el alquiler de los 12 módulos sanitarios de la obra más la cuota de instalaciones para damas.'
+    titulo: 'Alquiler de Módulos Sanitarios y Maquinaria',
+    descripcion: 'El alquiler de facilidades de campamento y módulos sanitarios portátiles se complementó en septiembre con equipos menores de apoyo alcanzando $8.400 USD.'
   }
 ];

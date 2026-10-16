@@ -59,14 +59,15 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
         };
       }
     }
-    // Consolidado Anual 2026 (TTE-C-0706: $2.024.563 / 17.1%)
+    // Consolidado Anual 2026 (TTE-C-0706: $2.388.978 / 19.8%)
     const sorted = [...proyectosList].sort((a, b) => b.totalAnual - a.totalAnual);
     const top = sorted[0];
+    const topMontoAnual = top?.totalAnual || 2388978.27;
     return {
       codigo: top?.cuentaAuxiliar || 'TTE-C-0706',
       nombre: top?.descripcion || 'Recuperación de Línea 1 de Planta de Pellas',
-      monto: top?.totalAnual || 2024563.09,
-      porcentaje: displayMonto > 0 ? Math.round(((top?.totalAnual || 2024563.09) / displayMonto) * 1000) / 10 : 17.1
+      monto: topMontoAnual,
+      porcentaje: displayMonto > 0 ? Math.round((topMontoAnual / displayMonto) * 1000) / 10 : 19.8
     };
   }, [selectedMes, displayMonto]);
 
@@ -143,7 +144,7 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
           </div>
           <div className="pt-2 border-t border-neutral-100 text-xs text-neutral-500 flex items-center justify-between">
             <span className="text-[11px] text-neutral-400">
-              {isFiltered ? 'Ritmo operativo' : 'Base: 35 sem. operativas'}
+              {isFiltered ? 'Ritmo operativo' : 'Base: 39 sem. operativas (Ene-Sep)'}
             </span>
             <span className="text-[11px] font-mono tabular-nums text-neutral-600">USD / sem</span>
           </div>
@@ -214,15 +215,15 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
           </span>
           <span className="text-neutral-300">|</span>
           <span className="text-neutral-600">
-            Corte Ene-Sep (9 meses): <strong className="text-neutral-900 font-mono">$ 2.024.563,00</strong> <span className="text-blue-700 font-semibold">(16.3%)</span>
+            Corte Ene-Sep (9 meses): <strong className="text-neutral-900 font-mono">$ 2.388.978,00</strong> <span className="text-blue-700 font-semibold">(19.8%)</span>
           </span>
           <span className="text-neutral-300">|</span>
           <span className="text-neutral-600">
-            En Septiembre (Proyecto Pellas): <strong className="text-emerald-700 font-mono font-bold">$ 360.867,00</strong> <span className="text-emerald-800 font-semibold">(32.9%)</span>
+            En Septiembre (Proyecto Pellas): <strong className="text-emerald-700 font-mono font-bold">$ 668.340,00</strong> <span className="text-emerald-800 font-semibold">(41.4%)</span>
           </span>
           <span className="text-neutral-300">|</span>
           <span className="text-neutral-500">
-            Total Global Mes TIMACA (25 Proyectos): <strong className="text-neutral-900 font-mono">{formatCurrency(ultimoMes?.totalMonto || 1097082)}</strong>
+            Total Global Mes TIMACA (10 Proyectos): <strong className="text-neutral-900 font-mono">{formatCurrency(ultimoMes?.totalMonto || 1613225)}</strong>
           </span>
         </div>
         {onOpenProyectosMatriz && (

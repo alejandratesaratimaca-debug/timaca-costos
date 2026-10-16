@@ -212,7 +212,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
 
       const ws = XLSX.utils.json_to_sheet(dataExcel);
       XLSX.utils.book_append_sheet(wb, ws, 'Proyectos x Categorias');
-      XLSX.writeFile(wb, `TIMACA_Proyectos_x_Categorias_${periodo === 'septiembre' ? 'Septiembre_2026' : periodo === 'agosto' ? 'Agosto_2026' : 'Anual_2026'}.xlsx`);
+      XLSX.writeFile(wb, `TIMACA_Proyectos_x_Categorias_${periodo === 'septiembre' ? 'Septiembre_2026' : periodo === 'agosto' ? 'Agosto_2026' : 'Acumulado_Ene_Sep_2026'}.xlsx`);
     }
 
     setDownloadSuccess(true);
@@ -293,7 +293,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                     : 'text-blue-900 hover:text-blue-950'
                 }`}
               >
-                Septiembre ($1.22M)
+                Septiembre ($1.64M)
               </button>
               <button
                 onClick={() => setPeriodo('agosto')}
@@ -303,7 +303,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                     : 'text-blue-900 hover:text-blue-950'
                 }`}
               >
-                Agosto ($1.29M)
+                Agosto ($1.20M)
               </button>
               <button
                 onClick={() => setPeriodo('anual')}
@@ -313,10 +313,20 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                     : 'text-blue-900 hover:text-blue-950'
                 }`}
               >
-                Anual ($11.81M)
+                Acumulado 9M ($12.08M)
               </button>
             </div>
           )}
+
+          <a
+            href="/Consolidado_Oficial_2026_Limpio.xlsx"
+            download="Consolidado_Oficial_2026_Con_Motivos.xlsx"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition-colors shadow-2xs"
+            title="Descargar el archivo Excel Consolidado Oficial 2026 enriquecido con la columna Motivo y Solicitante para filtrar por Cuenta Auxiliar"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Excel con Motivos (.xlsx)</span>
+          </a>
 
           <button
             onClick={handleExportExcel}
@@ -324,7 +334,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
             title="Descargar datos de la vista activa en Excel (.xlsx)"
           >
             <Download className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Descargar (.xlsx)</span>
+            <span>Exportar Vista</span>
           </button>
 
           <button
@@ -437,31 +447,31 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
 
           {/* TABLA OFICIAL: CABECERA GRIS SUAVE, ALINEACIÓN TABULAR DERECHA Y PIE CLARO */}
           <div className="bg-white rounded-xl border border-neutral-200 shadow-2xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300">
+              <table className="w-full text-left text-xs border-collapse min-w-[1320px]">
                 <thead>
                   {/* Cabecera con fondo gris neutro suave bg-slate-50 */}
                   <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold text-xs uppercase tracking-wider">
-                    <th className="py-3 px-3 min-w-[170px] text-slate-700 font-bold text-left">
+                    <th className="py-3 px-3.5 min-w-[200px] text-slate-700 font-bold text-left">
                       Distribución / Categoría
                     </th>
                     {MESES_NOMBRES.map((m, idx) => (
                       <th 
                         key={m} 
                         onClick={() => setSelectedMesModal({ mesIndex: idx, mesNombre: m })}
-                        className="py-3 px-1.5 sm:px-2 text-right font-mono capitalize text-slate-600 font-semibold cursor-pointer hover:text-blue-700 hover:bg-blue-50/50 transition-colors"
+                        className="py-3 px-3 text-right font-mono capitalize text-slate-600 font-semibold cursor-pointer hover:text-blue-700 hover:bg-blue-50/50 transition-colors min-w-[95px] whitespace-nowrap"
                         title={`Haz clic para ver el desglose completo de ${m}`}
                       >
                         {m.toLowerCase()}
                       </th>
                     ))}
-                    <th className="py-3 px-2 sm:px-2.5 text-right text-slate-800 font-bold font-mono">
+                    <th className="py-3 px-3.5 text-right text-slate-900 font-bold font-mono min-w-[130px] bg-slate-100 whitespace-nowrap">
                       Total 2026
                     </th>
-                    <th className="py-3 px-1.5 sm:px-2 text-right text-slate-600 font-semibold font-mono">
+                    <th className="py-3 px-2.5 text-right text-slate-600 font-semibold font-mono min-w-[80px] whitespace-nowrap">
                       % Part.
                     </th>
-                    <th className="py-3 px-2.5 sm:px-3 text-right min-w-[90px] text-slate-600 font-semibold pr-3 sm:pr-4">
+                    <th className="py-3 px-3 text-right min-w-[105px] text-slate-600 font-semibold whitespace-nowrap">
                       Variación
                     </th>
                   </tr>
@@ -476,7 +486,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                         className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
                         title={`Haz clic para ver el desglose detallado de ${row.categoria}`}
                       >
-                        <td className="py-3 px-3 font-bold text-neutral-900 group-hover:text-blue-700">
+                        <td className="py-3.5 px-3.5 font-bold text-neutral-900 group-hover:text-blue-700">
                           <div className="flex items-center justify-between gap-1.5">
                             <span className="flex items-center gap-2">
                               <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${
@@ -501,19 +511,19 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                               e.stopPropagation();
                               setSelectedMesModal({ mesIndex: idx, mesNombre: MESES_NOMBRES[idx] });
                             }}
-                            className="py-3 px-1.5 sm:px-2 text-right font-mono tabular-nums text-neutral-700 cursor-pointer hover:bg-blue-100/70 hover:text-blue-900 transition-colors font-medium"
+                            className="py-3.5 px-3 text-right font-mono tabular-nums text-neutral-700 cursor-pointer hover:bg-blue-100/70 hover:text-blue-900 transition-colors font-medium min-w-[95px] whitespace-nowrap"
                             title={`Ver desglose de ${MESES_NOMBRES[idx]} (${row.categoria}: $${val.toLocaleString('de-DE')})`}
                           >
-                            {val.toLocaleString('de-DE')}
+                            ${val.toLocaleString('de-DE')}
                           </td>
                         ))}
-                        <td className="py-3 px-2 sm:px-2.5 text-right font-mono font-bold tabular-nums text-neutral-900 bg-slate-50/60 text-xs sm:text-sm">
+                        <td className="py-3.5 px-3.5 text-right font-mono font-bold tabular-nums text-neutral-900 bg-slate-50/70 text-xs sm:text-sm min-w-[130px] whitespace-nowrap">
                           ${row.total2026.toLocaleString('de-DE')}
                         </td>
-                        <td className="py-3 px-1.5 sm:px-2 text-right font-mono font-semibold tabular-nums text-neutral-600 text-[11px]">
+                        <td className="py-3.5 px-2.5 text-right font-mono font-semibold tabular-nums text-neutral-600 text-[11px] min-w-[80px] whitespace-nowrap">
                           {pct}%
                         </td>
-                        <td className="py-3 px-2.5 sm:px-3 text-right whitespace-nowrap min-w-[90px] pr-3 sm:pr-4">
+                        <td className="py-3.5 px-3 text-right whitespace-nowrap min-w-[105px]">
                           <span className={`inline-flex items-center justify-end gap-1 px-2 py-0.5 rounded-md font-mono font-bold text-[11px] ${
                             row.esPositiva 
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
@@ -532,21 +542,21 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                 {/* Pie de tabla con fondo claro destacado bg-slate-100 y borde superior de 2px */}
                 <tfoot className="sticky bottom-0 z-10 bg-slate-100 border-t-2 border-slate-300 text-slate-900 font-bold text-xs shadow-xs">
                   <tr>
-                    <td className="py-3.5 px-3 uppercase tracking-wider font-extrabold text-slate-900">
+                    <td className="py-3.5 px-3.5 uppercase tracking-wider font-extrabold text-slate-900">
                       TOTAL GENERAL MENSUAL
                     </td>
                     {totalesMensualesOficiales.map((val, idx) => (
-                      <td key={idx} className="py-3.5 px-1.5 sm:px-2 text-right font-mono tabular-nums font-bold text-slate-900">
+                      <td key={idx} className="py-3.5 px-3 text-right font-mono tabular-nums font-bold text-slate-900 min-w-[95px] whitespace-nowrap">
                         ${val.toLocaleString('de-DE')}
                       </td>
                     ))}
-                    <td className="py-3.5 px-2 sm:px-2.5 text-right font-mono text-xs sm:text-sm font-black text-slate-900 bg-slate-200/60 tabular-nums">
+                    <td className="py-3.5 px-3.5 text-right font-mono text-xs sm:text-sm font-black text-slate-900 bg-slate-200/70 tabular-nums min-w-[130px] whitespace-nowrap">
                       ${totalAnualGlobal.toLocaleString('de-DE')}
                     </td>
-                    <td className="py-3.5 px-1.5 sm:px-2 text-right font-mono text-slate-700 font-bold text-[11px] tabular-nums">
+                    <td className="py-3.5 px-2.5 text-right font-mono text-slate-700 font-bold text-[11px] tabular-nums min-w-[80px] whitespace-nowrap">
                       100.00%
                     </td>
-                    <td className="py-3.5 px-2.5 sm:px-3 text-right font-mono text-[11px] font-bold text-emerald-700 pr-3 sm:pr-4">
+                    <td className="py-3.5 px-3 text-right font-mono text-[11px] font-bold text-emerald-700 min-w-[105px] whitespace-nowrap">
                       <span className="inline-flex items-center justify-end gap-1 px-2 py-0.5 rounded-md font-mono font-bold text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200">
                         <ArrowUpRight className="w-3 h-3" />
                         <span>+3.7%</span>
@@ -651,28 +661,28 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               />
             </div>
             <div className="text-xs text-neutral-500 font-medium">
-              Mostrando <strong>{filasFiltradasProyectos.length}</strong> proyectos auditados en {periodo === 'septiembre' ? 'Septiembre 2026' : periodo === 'agosto' ? 'Agosto 2026' : 'Año Completo 2026'}
+              Mostrando <strong>{filasFiltradasProyectos.length}</strong> proyectos auditados en {periodo === 'septiembre' ? 'Septiembre 2026' : periodo === 'agosto' ? 'Agosto 2026' : 'Acumulado 2026 (Ene - Sep · 9 Meses)'}
             </div>
           </div>
 
           {/* Tabla de 20 Proyectos por Categoría: Cabecera gris suave y fila de totales clara */}
           <div className="bg-white rounded-xl border border-neutral-200 shadow-2xs overflow-hidden">
-            <div className="overflow-x-auto max-h-[620px] overflow-y-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="sticky top-0 z-10 bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-xs tracking-wider">
+            <div className="overflow-x-auto max-h-[640px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300">
+              <table className="w-full text-left text-xs border-collapse min-w-[1380px]">
+                <thead className="sticky top-0 z-10 bg-slate-100 border-b border-slate-200 text-slate-600 font-bold uppercase text-[11px] tracking-wider">
                   <tr>
-                    <th className="py-3 px-3 text-center w-12 text-slate-600">N°</th>
-                    <th className="py-3 px-3 min-w-[130px] text-slate-700 font-bold">Cuenta Auxiliar</th>
-                    <th className="py-3 px-3.5 min-w-[200px] text-slate-700 font-bold">Proyecto Externo</th>
-                    <th className="py-3 px-2.5 text-right font-mono text-slate-600">Materiales ($)</th>
-                    <th className="py-3 px-2.5 text-right font-mono text-slate-600">Servicios ($)</th>
-                    <th className="py-3 px-2.5 text-right font-mono text-slate-600">MOD ($)</th>
-                    <th className="py-3 px-2.5 text-right font-mono text-slate-600">H. Máquina ($)</th>
-                    <th className="py-3 px-2.5 text-right font-mono text-slate-600">Indirectos ($)</th>
-                    <th className="py-3 px-3 text-right font-bold text-slate-800 font-mono">Total Proyecto ($)</th>
-                    <th className="py-3 px-2.5 text-right font-semibold text-slate-600">% Part.</th>
-                    <th className="py-3 px-2.5 text-right font-mono text-slate-700 font-bold min-w-[105px]">Presupuesto ($)</th>
-                    <th className="py-3 px-2.5 text-center font-semibold text-slate-700 min-w-[90px]">% Uso</th>
+                    <th className="py-3 px-3 text-center w-12 text-slate-500">N°</th>
+                    <th className="py-3 px-3.5 w-32 text-slate-700 font-bold whitespace-nowrap">Cuenta</th>
+                    <th className="py-3 px-4 min-w-[320px] max-w-[420px] text-slate-700 font-bold">Proyecto / Obra</th>
+                    <th className="py-3 px-3 text-right font-mono text-slate-600 min-w-[110px] whitespace-nowrap" title="Materiales Directos">Materiales ($)</th>
+                    <th className="py-3 px-3 text-right font-mono text-slate-600 min-w-[110px] whitespace-nowrap" title="Servicios Especializados">Servicios ($)</th>
+                    <th className="py-3 px-3 text-right font-mono text-slate-600 min-w-[110px] whitespace-nowrap" title="Mano de Obra Directa">MOD ($)</th>
+                    <th className="py-3 px-3 text-right font-mono text-slate-600 min-w-[100px] whitespace-nowrap" title="Horas Máquina">H. Máq. ($)</th>
+                    <th className="py-3 px-3 text-right font-mono text-slate-600 min-w-[110px] whitespace-nowrap" title="Costos Indirectos">Indirectos ($)</th>
+                    <th className="py-3 px-3.5 text-right font-bold text-slate-900 font-mono min-w-[130px] bg-slate-200/50 whitespace-nowrap">Total ($)</th>
+                    <th className="py-3 px-2.5 text-right font-semibold text-slate-600 min-w-[80px] whitespace-nowrap">% Part.</th>
+                    <th className="py-3 px-3 text-right font-mono text-slate-700 font-bold min-w-[125px] whitespace-nowrap">Presupuesto ($)</th>
+                    <th className="py-3 px-3 text-center font-semibold text-slate-700 min-w-[90px] whitespace-nowrap">% Uso</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 bg-white">
@@ -687,45 +697,51 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                         className="hover:bg-blue-50/70 transition-colors cursor-pointer group"
                         title={`Haz clic para ver el desglose completo de ${p.cuentaAuxiliar} - ${p.proyectoCorto}`}
                       >
-                        <td className="py-2.5 px-3 text-center font-bold text-neutral-400 group-hover:text-blue-700">
+                        <td className="py-3 px-3 text-center font-bold text-neutral-400 group-hover:text-blue-700 text-xs">
                           {p.ranking}
                         </td>
-                        <td className="py-2.5 px-3 whitespace-nowrap">
-                          <span className="font-mono font-bold text-blue-700 block text-xs">{p.cuentaAuxiliar}</span>
-                          <span className="text-[11px] font-bold text-neutral-800 block">{p.proyectoCorto}</span>
+                        <td className="py-3 px-3.5 whitespace-nowrap">
+                          <span className="font-mono font-bold text-blue-700 text-xs px-2 py-0.5 rounded bg-blue-50 border border-blue-200 inline-block">
+                            {p.cuentaAuxiliar}
+                          </span>
                         </td>
-                        <td className="py-2.5 px-3.5 text-neutral-800 font-medium">
-                          {p.proyecto}
+                        <td className="py-3 px-4 min-w-[320px] max-w-[420px]">
+                          <div className="font-bold text-slate-900 text-xs leading-snug group-hover:text-blue-700" title={p.proyectoCorto}>
+                            {p.proyectoCorto}
+                          </div>
+                          <div className="text-[11px] text-slate-500 line-clamp-1 mt-0.5" title={p.proyecto}>
+                            {p.proyecto}
+                          </div>
                         </td>
-                        <td className="py-2.5 px-2.5 text-right font-mono tabular-nums text-neutral-700">
-                          {p.materiales > 0 ? p.materiales.toLocaleString('de-DE') : '-'}
+                        <td className="py-3 px-3 text-right font-mono text-xs tabular-nums text-slate-700 min-w-[110px]">
+                          {p.materiales > 0 ? `$${p.materiales.toLocaleString('de-DE')}` : '-'}
                         </td>
-                        <td className="py-2.5 px-2.5 text-right font-mono tabular-nums text-neutral-700">
-                          {p.servicios > 0 ? p.servicios.toLocaleString('de-DE') : '-'}
+                        <td className="py-3 px-3 text-right font-mono text-xs tabular-nums text-slate-700 min-w-[110px]">
+                          {p.servicios > 0 ? `$${p.servicios.toLocaleString('de-DE')}` : '-'}
                         </td>
-                        <td className="py-2.5 px-2.5 text-right font-mono tabular-nums text-neutral-700">
-                          {p.manoDeObra > 0 ? p.manoDeObra.toLocaleString('de-DE') : '-'}
+                        <td className="py-3 px-3 text-right font-mono text-xs tabular-nums text-slate-700 min-w-[110px]">
+                          {p.manoDeObra > 0 ? `$${p.manoDeObra.toLocaleString('de-DE')}` : '-'}
                         </td>
-                        <td className="py-2.5 px-2.5 text-right font-mono tabular-nums text-neutral-700">
-                          {p.horasMaquina > 0 ? p.horasMaquina.toLocaleString('de-DE') : '-'}
+                        <td className="py-3 px-3 text-right font-mono text-xs tabular-nums text-slate-700 min-w-[100px]">
+                          {p.horasMaquina > 0 ? `$${p.horasMaquina.toLocaleString('de-DE')}` : '-'}
                         </td>
-                        <td className="py-2.5 px-2.5 text-right font-mono tabular-nums text-neutral-700">
-                          {p.indirectos > 0 ? p.indirectos.toLocaleString('de-DE') : '-'}
+                        <td className="py-3 px-3 text-right font-mono text-xs tabular-nums text-slate-700 min-w-[110px]">
+                          {p.indirectos > 0 ? `$${p.indirectos.toLocaleString('de-DE')}` : '-'}
                         </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-bold tabular-nums text-neutral-900 bg-slate-50/60 text-xs sm:text-sm">
+                        <td className="py-3 px-3.5 text-right font-mono font-bold tabular-nums text-slate-950 bg-slate-100/70 text-xs min-w-[130px]">
                           ${p.totalProyecto.toLocaleString('de-DE')}
                         </td>
-                        <td className="py-2.5 px-2.5 text-right font-mono font-semibold text-neutral-600 text-[11px]">
+                        <td className="py-3 px-2.5 text-right font-mono font-semibold text-neutral-600 text-[11px] min-w-[80px]">
                           {p.porcentaje.toFixed(2)}%
                         </td>
-                        <td className="py-2.5 px-2.5 text-right font-mono text-slate-700">
+                        <td className="py-3 px-3 text-right font-mono text-xs text-slate-700 min-w-[125px]">
                           {pObj && pObj.totalPresupuesto > 0 
                             ? `$${pObj.totalPresupuesto.toLocaleString('de-DE', { maximumFractionDigits: 0 })}` 
                             : '-'}
                         </td>
-                        <td className="py-2.5 px-2.5 text-center">
+                        <td className="py-3 px-3 text-center min-w-[90px]">
                           {met ? (
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border inline-block ${
                               met.estadoAlerta === 'critico' || met.estadoAlerta === 'excedido'
                                 ? 'bg-red-50 text-red-700 border-red-200'
                                 : met.estadoAlerta === 'alerta'
@@ -744,34 +760,34 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                 </tbody>
                 <tfoot className="sticky bottom-0 z-10 bg-slate-100 border-t-2 border-slate-300 text-slate-900 font-bold text-xs shadow-xs">
                   <tr>
-                    <td colSpan={3} className="py-3 px-3 uppercase tracking-wider font-extrabold text-slate-900">
+                    <td colSpan={3} className="py-3.5 px-4 uppercase tracking-wider font-extrabold text-slate-900 text-xs">
                       TOTAL GENERAL ({filasFiltradasProyectos.length} CUENTAS AUXILIARES)
                     </td>
-                    <td className="py-3 px-2.5 text-right font-mono tabular-nums font-bold text-slate-900">
+                    <td className="py-3.5 px-3 text-right font-mono tabular-nums font-bold text-slate-900 min-w-[110px]">
                       ${totalesProyectos.materiales.toLocaleString('de-DE')}
                     </td>
-                    <td className="py-3 px-2.5 text-right font-mono tabular-nums font-bold text-slate-900">
+                    <td className="py-3.5 px-3 text-right font-mono tabular-nums font-bold text-slate-900 min-w-[110px]">
                       ${totalesProyectos.servicios.toLocaleString('de-DE')}
                     </td>
-                    <td className="py-3 px-2.5 text-right font-mono tabular-nums font-bold text-slate-900">
+                    <td className="py-3.5 px-3 text-right font-mono tabular-nums font-bold text-slate-900 min-w-[110px]">
                       ${totalesProyectos.manoDeObra.toLocaleString('de-DE')}
                     </td>
-                    <td className="py-3 px-2.5 text-right font-mono tabular-nums font-bold text-slate-900">
+                    <td className="py-3.5 px-3 text-right font-mono tabular-nums font-bold text-slate-900 min-w-[100px]">
                       ${totalesProyectos.horasMaquina.toLocaleString('de-DE')}
                     </td>
-                    <td className="py-3 px-2.5 text-right font-mono tabular-nums font-bold text-slate-900">
+                    <td className="py-3.5 px-3 text-right font-mono tabular-nums font-bold text-slate-900 min-w-[110px]">
                       ${totalesProyectos.indirectos.toLocaleString('de-DE')}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-xs sm:text-sm font-black text-slate-900 bg-slate-200/60">
+                    <td className="py-3.5 px-3.5 text-right font-mono tabular-nums font-black text-blue-950 bg-blue-100 text-xs min-w-[130px]">
                       ${totalesProyectos.totalProyecto.toLocaleString('de-DE')}
                     </td>
-                    <td className="py-3 px-2.5 text-right font-mono text-slate-700 font-bold text-[11px]">
+                    <td className="py-3.5 px-2.5 text-right font-mono text-slate-700 font-bold text-[11px] min-w-[80px]">
                       100.00%
                     </td>
-                    <td className="py-3 px-2.5 text-right font-mono text-slate-900 font-bold text-xs">
+                    <td className="py-3.5 px-3 text-right font-mono text-slate-900 font-bold text-xs min-w-[125px]">
                       ${filasFiltradasProyectos.reduce((acc, p) => acc + (getPresupuestoPorCuenta(p.cuentaAuxiliar)?.totalPresupuesto || 0), 0).toLocaleString('de-DE', { maximumFractionDigits: 0 })}
                     </td>
-                    <td className="py-3 px-2.5 text-center font-mono text-blue-900 font-bold text-[11px]">
+                    <td className="py-3.5 px-3 text-center font-mono text-blue-900 font-bold text-[11px] min-w-[90px]">
                       {(() => {
                         const totP = filasFiltradasProyectos.reduce((acc, p) => acc + (getPresupuestoPorCuenta(p.cuentaAuxiliar)?.totalPresupuesto || 0), 0);
                         const totE = filasFiltradasProyectos.reduce((acc, p) => {

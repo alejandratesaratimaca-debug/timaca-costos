@@ -181,9 +181,16 @@ export const SalidasTableView: React.FC<SalidasTableViewProps> = ({
 
   // Filtrado adicional para proyectos externos y orden cronológico descendente (más reciente primero)
   const salidasParaTabla = useMemo(() => {
-    const list = soloExternos
+    const list = (soloExternos
       ? filteredSalidas.filter(s => s.esProyectoExterno ?? s.cuentaAuxiliarCodigo.startsWith('TTE-C-'))
-      : filteredSalidas;
+      : filteredSalidas
+    ).filter(s => {
+      // Omitir horas máquina con 0 horas o $0.00
+      if ((s.tipo === 'Horas Maquina' || s.categoria?.toLowerCase().includes('maquina')) && ((s.cantidad || 0) <= 0 || (s.montoTotal || 0) <= 0)) {
+        return false;
+      }
+      return true;
+    });
     return [...list].sort((a, b) => b.fecha.localeCompare(a.fecha));
   }, [filteredSalidas, soloExternos]);
 

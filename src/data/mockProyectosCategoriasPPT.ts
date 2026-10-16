@@ -2,9 +2,9 @@
 // Sincronizada directamente con MATRIZ_REAL_PROYECTOS_MENSUAL_2026 y Consolidado Oficial Limpio 2026
 // Filtros estrictos: Proyectos Externos (TTE-C-), Sin Ajuste (excluye Normalización contable de almacén)
 // Totales Oficiales Auditados:
-// - Agosto 2026: $1.065.130 USD
-// - Septiembre 2026: $1.402.251 USD
-// - Total Acumulado Anual (Ene - Sep 2026): $11.708.732 USD
+// - Agosto 2026: $1.197.600 USD
+// - Septiembre 2026: $1.613.225 USD
+// - Total Acumulado Anual (Ene - Sep 2026): $12.052.176 USD
 
 import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from './realProyectosMensual2026';
 import { CUENTAS_CORTAS_MAP } from './mockManoObraDiaria';
@@ -25,8 +25,8 @@ export interface FilaProyectoCategoriasPPT {
 
 const proyectosList = Object.values(MATRIZ_REAL_PROYECTOS_MENSUAL_2026);
 
-// 1. Matriz Oficial de Agosto 2026 ($1.065.130 USD)
-const totalAgostoGeneral = 1065130;
+// 1. Matriz Oficial de Agosto 2026 ($1.197.600 USD)
+const totalAgostoGeneral = Math.round(proyectosList.reduce((acc, p) => acc + (p.meses[7] || 0), 0)) || 1197600;
 
 export const PROYECTOS_CATEGORIAS_AGOSTO_2026: FilaProyectoCategoriasPPT[] = proyectosList
   .filter(p => (p.meses[7] || 0) > 0)
@@ -49,8 +49,8 @@ export const PROYECTOS_CATEGORIAS_AGOSTO_2026: FilaProyectoCategoriasPPT[] = pro
     };
   });
 
-// 2. Matriz Oficial de Septiembre 2026 ($1.402.251 USD)
-const totalSeptiembreGeneral = 1402251;
+// 2. Matriz Oficial de Septiembre 2026 ($1.613.225 USD)
+const totalSeptiembreGeneral = Math.round(proyectosList.reduce((acc, p) => acc + (p.meses[8] || 0), 0)) || 1613225;
 
 export const PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026: FilaProyectoCategoriasPPT[] = proyectosList
   .filter(p => (p.meses[8] || 0) > 0)
@@ -73,8 +73,8 @@ export const PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026: FilaProyectoCategoriasPPT[] =
     };
   });
 
-// 3. Matriz Oficial de Total Acumulado Anual 2026 ($11.708.732 USD)
-const totalAnualGeneral = 11708732;
+// 3. Matriz Oficial de Total Acumulado Anual (Ene - Sep 2026 · 9 Meses) ($12.052.176 USD)
+const totalAnualGeneral = Math.round(proyectosList.reduce((acc, p) => acc + (p.totalAnual || 0), 0)) || 12052176;
 
 export const PROYECTOS_CATEGORIAS_ANUAL_2026: FilaProyectoCategoriasPPT[] = proyectosList
   .sort((a, b) => b.totalAnual - a.totalAnual)

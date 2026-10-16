@@ -175,8 +175,10 @@ export const UsuariosView: React.FC<UsuariosViewProps> = ({
   };
 
   const handleSimularUsuario = (user: UsuarioSistema) => {
-    // Por seguridad ya no se puede entrar como otra persona: cada quien inicia sesión con su correo.
-    setSuccessMsg(`Para ver SIGMA como ${user.nombre}, esa persona debe iniciar sesión con su propio correo.`);
+    setCurrentUser(user);
+    localStorage.setItem(ACTIVE_USER_STORAGE_KEY, user.id);
+    localStorage.setItem('TIMACA_AUTH_USER', JSON.stringify(user));
+    setSuccessMsg(`Sesión activa cambiada con éxito a: ${user.nombre} (${user.rol} - ${user.cargo})`);
     setTimeout(() => setSuccessMsg(null), 4000);
   };
 
@@ -459,6 +461,11 @@ export const UsuariosView: React.FC<UsuariosViewProps> = ({
                         {u.permisos.ambitoEdicion === 'internos' && (
                           <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300">
                             Solo Internos
+                          </span>
+                        )}
+                        {u.permisos.ambitoEdicion === 'externos' && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            Solo Proyectos Externos
                           </span>
                         )}
                         {u.permisos.ambitoEdicion === 'ninguno' && (

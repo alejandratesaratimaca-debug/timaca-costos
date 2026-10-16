@@ -206,7 +206,14 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
     return DEPARTAMENTOS_SIGMA.find(d => d.id === selectedDeptId) || DEPARTAMENTOS_SIGMA[0];
   }, [selectedDeptId]);
 
-  const [identificador, setIdentificador] = useState('alejandratesara.timaca@gmail.com');
+  const [identificador, setIdentificador] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('user') || params.get('usuario') || '';
+    } catch {
+      return '';
+    }
+  });
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -239,14 +246,13 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setErrorMsg(null);
-    const correo = identificador.trim().toLowerCase();
+    let correo = identificador.trim().toLowerCase();
     if (!correo || !password) {
-      setErrorMsg('Por favor ingresa tu correo y contraseña.');
+      setErrorMsg('Por favor ingresa tu correo o usuario y tu contraseña.');
       return;
     }
     if (!correo.includes('@')) {
-      setErrorMsg('Ingresa un correo electrónico corporativo válido.');
-      return;
+      correo = `${correo}@timaca.com.ve`;
     }
     setIsLoading(true);
     try {
@@ -449,10 +455,10 @@ export const LoginPortadaView: React.FC<LoginPortadaViewProps> = ({
                       <User className="w-4 h-4" />
                     </div>
                     <input
-                      type="email"
+                      type="text"
                       value={identificador}
                       onChange={(e) => setIdentificador(e.target.value)}
-                      placeholder="ejemplo@timaca.com.ve"
+                      placeholder="usuario o correo (ej: jgalavis)"
                       required
                       className="w-full pl-10 pr-3.5 py-3 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-sky-600 transition-all shadow-2xs"
                     />

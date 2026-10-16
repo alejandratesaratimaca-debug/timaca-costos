@@ -36,25 +36,26 @@ export interface DesgloseProyectoCategoria {
 
 // 1. DESGLOSE EXACTO DE SERVICIOS DIRECTOS - PROYECTO PELLAS 1 (LÁMINA OFICIAL ALEJANDRA)
 export const SERVICIOS_PELLAS_1_EXACTO: FilaDesgloseMensual[] = [
-  { concepto: 'Alquiler de baños portátiles y sanitarios', abr: 0, may: 4800, jun: 18360, jul: 4900, ago: 4900, total: 32960 },
-  { concepto: 'Examenes medicos', abr: 0, may: 75, jun: 975, jul: 1709, ago: 1162, total: 3921 },
-  { concepto: 'Fabricacion de calcomanias', abr: 0, may: 0, jun: 0, jul: 229, ago: 0, total: 229 },
-  { concepto: 'Fabricacion de puertas', abr: 0, may: 0, jun: 5870, jul: 0, ago: 0, total: 5870 },
-  { concepto: 'Gastos viajes / viáticos nacionales', abr: 0, may: 0, jun: 0, jul: 127, ago: 0, total: 127 },
-  { concepto: 'Honorarios profesionales', abr: 0, may: 0, jun: 50, jul: 0, ago: 0, total: 50 },
-  { concepto: 'Mantenimiento de equipos externos', abr: 0, may: 0, jun: 0, jul: 0, ago: 60, total: 60 },
-  { concepto: 'Serv. asociados a evento corporativo', abr: 0, may: 35, jun: 0, jul: 0, ago: 0, total: 35 },
-  { concepto: 'Servicio ambiental de arborizacion', abr: 0, may: 0, jun: 0, jul: 0, ago: 120, total: 120 },
-  { concepto: 'Servicio de camion cisterna', abr: 0, may: 0, jun: 100, jul: 400, ago: 300, total: 800 },
-  { concepto: 'Servicio de comida', abr: 48, may: 195, jun: 26, jul: 104, ago: 825, total: 1198 },
-  { concepto: 'Servicio de cristaleria', abr: 0, may: 0, jun: 0, jul: 1755, ago: 0, total: 1755 },
-  { concepto: 'Servicio de fumigacion', abr: 0, may: 0, jun: 0, jul: 600, ago: 0, total: 600 },
-  { concepto: 'Servicio de inspecciones tecnicas', abr: 0, may: 0, jun: 0, jul: 1500, ago: 0, total: 1500 },
-  { concepto: 'Servicio de taxi', abr: 0, may: 0, jun: 0, jul: 34, ago: 0, total: 34 },
-  { concepto: 'Servicio mantenimiento de extintor', abr: 0, may: 0, jun: 0, jul: 0, ago: 448, total: 448 },
-  { concepto: 'Servicio traslado de personal', abr: 0, may: 36340, jun: 34720, jul: 39995, ago: 44270, total: 155325 },
-  { concepto: 'Servicios de importacion', abr: 0, may: 0, jun: 0, jul: 0, ago: 439, total: 439 },
-  { concepto: 'Vigilancia externa', abr: 0, may: 0, jun: 0, jul: 10582, ago: 10582, total: 21164 }
+  { concepto: 'Alquiler de baños portátiles y sanitarios', abr: 0, may: 4800, jun: 18360, jul: 4900, ago: 4900, sep: 8400, total: 41360 },
+  { concepto: 'Examenes medicos', abr: 0, may: 75, jun: 975, jul: 1709, ago: 1162, sep: 383, total: 4304 },
+  { concepto: 'Fabricacion de calcomanias', abr: 0, may: 0, jun: 0, jul: 229, ago: 0, sep: 0, total: 229 },
+  { concepto: 'Fabricacion de puertas', abr: 0, may: 0, jun: 5870, jul: 0, ago: 0, sep: 0, total: 5870 },
+  { concepto: 'Gastos viajes / viáticos nacionales', abr: 0, may: 0, jun: 0, jul: 127, ago: 0, sep: 0, total: 127 },
+  { concepto: 'Honorarios profesionales', abr: 0, may: 0, jun: 50, jul: 0, ago: 0, sep: 0, total: 50 },
+  { concepto: 'Mantenimiento de equipos externos', abr: 0, may: 0, jun: 0, jul: 0, ago: 60, sep: 6, total: 66 },
+  { concepto: 'Serv. asociados a evento corporativo', abr: 0, may: 35, jun: 0, jul: 0, ago: 0, sep: 0, total: 35 },
+  { concepto: 'Servicio ambiental de arborizacion', abr: 0, may: 0, jun: 0, jul: 0, ago: 120, sep: 0, total: 120 },
+  { concepto: 'Servicio de camion cisterna', abr: 0, may: 0, jun: 100, jul: 400, ago: 300, sep: 350, total: 1150 },
+  { concepto: 'Servicio de comida', abr: 48, may: 195, jun: 26, jul: 104, ago: 825, sep: 847, total: 2045 },
+  { concepto: 'Servicio de cristaleria', abr: 0, may: 0, jun: 0, jul: 1755, ago: 0, sep: 0, total: 1755 },
+  { concepto: 'Servicio de fumigacion', abr: 0, may: 0, jun: 0, jul: 600, ago: 0, sep: 0, total: 600 },
+  { concepto: 'Servicio de inspecciones tecnicas', abr: 0, may: 0, jun: 0, jul: 1500, ago: 0, sep: 0, total: 1500 },
+  { concepto: 'Servicio de taxi', abr: 0, may: 0, jun: 0, jul: 34, ago: 0, sep: 0, total: 34 },
+  { concepto: 'Servicio mantenimiento de extintor', abr: 0, may: 0, jun: 0, jul: 0, ago: 448, sep: 0, total: 448 },
+  { concepto: 'Servicio traslado de personal', abr: 0, may: 36340, jun: 34720, jul: 39995, ago: 44270, sep: 45878, total: 201203 },
+  { concepto: 'Servicios de importacion', abr: 0, may: 0, jun: 0, jul: 0, ago: 439, sep: 0, total: 439 },
+  { concepto: 'Vigilancia externa', abr: 0, may: 0, jun: 0, jul: 10582, ago: 10582, sep: 13182, total: 34346 },
+  { concepto: 'Otros mantenimientos menores', abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 10, total: 10 }
 ];
 
 // Generador de desgloses estructurados para cualquier proyecto y categoría
@@ -432,46 +433,46 @@ export const DESGLOSE_CATEGORIAS_PROYECTOS: Record<string, Record<string, FilaDe
 // 1. Matriz Oficial de Costos Indirectos a Prorratear (15 Rubros Oficiales de Costos TIMACA)
 // Coincidencia 100% exacta con la tabla oficial "Costos Indirectos a Prorratear"
 export const COSTOS_INDIRECTOS_POR_CATEGORIAS: FilaDesgloseMensual[] = [
-  { concepto: 'Combustible', ene: 22074, feb: 27425, mar: 32224, abr: 7353, may: 6392, jun: 8628, jul: 9875, ago: 19239, sep: 50413, total: 183623 },
-  { concepto: 'Gastos de asociación/Subscripción', ene: 56, feb: 102, mar: 123, abr: 116, may: 56, jun: 55, jul: 0, ago: 0, sep: 56, total: 564 },
-  { concepto: 'Gastos de Seguro', ene: 0, feb: 92, mar: 0, abr: 165, may: 30, jun: 318, jul: 0, ago: 0, sep: 277, total: 882 },
+  { concepto: 'Servicios Publicos', ene: 3389, feb: 3257, mar: 2450, abr: 2611, may: 2491, jun: 2485, jul: 2182, ago: 2393, sep: 2556, total: 23814 },
+  { concepto: 'Nomina TIMACA', ene: 88000, feb: 87000, mar: 104000, abr: 95000, may: 153000, jun: 132000, jul: 128000, ago: 128000, sep: 125000, total: 1040000 },
+  { concepto: 'Nomina -TALLERES', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 120000, sep: 122000, total: 242000 },
+  { concepto: 'Incentivos Laborales (Bonos)', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 4000, sep: 6700, total: 10700 },
+  { concepto: 'Servicios Telecomunicaciones', ene: 554, feb: 586, mar: 596, abr: 717, may: 589, jun: 614, jul: 570, ago: 598, sep: 570, total: 5394 },
+  { concepto: 'Combustible', ene: 22074, feb: 28475, mar: 32224, abr: 7424, may: 6392, jun: 12136, jul: 13959, ago: 24651, sep: 50413, total: 197748 },
+  { concepto: 'Sindicato', ene: 57000, feb: 58840, mar: 58314, abr: 77076, may: 64858, jun: 57916, jul: 72018, ago: 49630, sep: 58952, total: 554604 },
+  { concepto: 'Vigilancia', ene: 3521, feb: 3521, mar: 3880, abr: 4214, may: 4235, jun: 4803, jul: 4803, ago: 4803, sep: 4803, total: 38583 },
+  { concepto: 'Gastos de asociación/Subscripción', ene: 56, feb: 106, mar: 123, abr: 116, may: 56, jun: 86, jul: 55, ago: 116, sep: 56, total: 770 },
+  { concepto: 'Gastos de Servicios Bancarios', ene: 35, feb: 42, mar: 120, abr: 36, may: 46, jun: 48, jul: 49, ago: 50, sep: 49, total: 475 },
+  { concepto: 'Gastos de Seguro', ene: 0, feb: 95, mar: 0, abr: 165, may: 30, jun: 318, jul: 386, ago: 436, sep: 277, total: 1707 },
+  { concepto: 'Honorarios Profesionales', ene: 870, feb: 650, mar: 240, abr: 120, may: 435, jun: 420, jul: 1322, ago: 120, sep: 250, total: 4427 },
   { concepto: 'Gastos Funebres', ene: 0, feb: 0, mar: 0, abr: 2176, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 2176 },
-  { concepto: 'Honorarios Profesionales Soporte SIP', ene: 120, feb: 116, mar: 120, abr: 120, may: 120, jun: 120, jul: 120, ago: 120, sep: 250, total: 1206 },
-  { concepto: 'Incentivos Laborales (Bonos)', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 6700, total: 6700 },
-  { concepto: 'Nomina Interna TIMACA', ene: 88000, feb: 87000, mar: 104000, abr: 95000, may: 153000, jun: 132000, jul: 128000, ago: 125000, sep: 73000, total: 985000 },
-  { concepto: 'Nomina -TALLERES', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 122000, total: 122000 },
-  { concepto: 'Otros Servicios Contratados de Admón.', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 14, jul: 0, ago: 0, sep: 9991, total: 10005 },
-  { concepto: 'Servicios Publicos', ene: 2467, feb: 268, mar: 1344, abr: 1549, may: 1542, jun: 1562, jul: 1562, ago: 1562, sep: 2556, total: 14413 },
-  { concepto: 'Servicios Telecomunicaciones', ene: 159, feb: 184, mar: 596, abr: 717, may: 589, jun: 614, jul: 0, ago: 0, sep: 570, total: 3429 },
-  { concepto: 'Sindicato', ene: 57000, feb: 54898, mar: 57000, abr: 57000, may: 57000, jun: 57000, jul: 57000, ago: 57000, sep: 58952, total: 512850 },
-  { concepto: 'Timbres Fiscales / Notarias / Registros', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 726, jul: 0, ago: 0, sep: 7634, total: 8360 },
-  { concepto: 'Vigilancia', ene: 3521, feb: 3391, mar: 3880, abr: 4214, may: 4907, jun: 5718, jul: 4588, ago: 4587, sep: 4803, total: 39609 },
+  { concepto: 'Timbres Fiscales / Notarias / Registros', ene: 1219, feb: 500, mar: 70, abr: 1070, may: 890, jun: 726, jul: 1843, ago: 3445, sep: 7634, total: 17397 },
   { concepto: 'Gastos de viajes/viáticos nacionales', ene: 351, feb: 393, mar: 2353, abr: 3964, may: 1940, jun: 1523, jul: 2267, ago: 1259, sep: 4124, total: 18174 },
-  { concepto: 'Gastos de Servicios Bancarios', ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 49, total: 49 }
+  { concepto: 'Otros Servicios Contratados de Admón.', ene: 4930, feb: 571, mar: 1523, abr: 2503, may: 2504, jun: 217, jul: 0, ago: 478, sep: 9991, total: 22717 },
 ];
 
 export const COSTOS_INDIRECTOS_A_PRORRATEAR = COSTOS_INDIRECTOS_POR_CATEGORIAS;
 
 // 2. Matriz Oficial de Costos Indirectos DESGLOSADA POR CUENTAS AUXILIARES (% DE PRORRATEO - 9 Meses Oficiales)
 export const COSTOS_INDIRECTOS_CONSOLIDADO_OFICIAL: FilaDesgloseMensual[] = [
-  { ctaAuxiliar: 'TTE-C-0706', concepto: 'TTE-C-0706 · Línea 1 Pellas (Recuperación Línea 1 Planta de Pellas)', porcentaje: 33.37, ene: 0, feb: 0, mar: 0, abr: 0, may: 116389, jun: 135147, jul: 107485, ago: 202292, sep: 205400, total: 766713 },
-  { ctaAuxiliar: 'TTE-C-0676', concepto: 'TTE-C-0676 · 2da Línea Pellas (Segunda Línea Planta de Pellas)', porcentaje: 22.27, ene: 109790, feb: 88858, mar: 85824, abr: 90209, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 374680 },
-  { ctaAuxiliar: 'TTE-C-0656', concepto: 'TTE-C-0656 · Bandas Transp. PMH (Rehabilitación de Bandas Transportadoras PMH)', porcentaje: 12.50, ene: 21121, feb: 25237, mar: 34806, abr: 27397, may: 18767, jun: 14129, jul: 26055, ago: 42744, sep: 43401, total: 253656 },
-  { ctaAuxiliar: 'TTE-C-0668', concepto: 'TTE-C-0668 · Briquetas Fase 2 (Fase 2 Planta de Briquetas - FMO)', porcentaje: 8.24, ene: 13655, feb: 12675, mar: 17862, abr: 26676, may: 14875, jun: 11458, jul: 18280, ago: 23119, sep: 23474, total: 162075 },
-  { ctaAuxiliar: 'TTE-C-0680', concepto: 'TTE-C-0680 · Mantenimiento BG II (Servicio de Mantenimiento de BG II)', porcentaje: 4.89, ene: 8561, feb: 6641, mar: 11610, abr: 7982, may: 15560, jun: 8250, jul: 9550, ago: 14136, sep: 14353, total: 96644 },
-  { ctaAuxiliar: 'TTE-C-0678', concepto: 'TTE-C-0678 · Pila HA y HB PMH (Proyecto Pila HA y HB Suministro e Instalación)', porcentaje: 3.98, ene: 583, feb: 2987, mar: 9791, abr: 9479, may: 4722, jun: 14879, jul: 10244, ago: 14355, sep: 14576, total: 81615 },
-  { ctaAuxiliar: 'TTE-C-0671', concepto: 'TTE-C-0671 · 2da Línea PMH (Segunda Línea PMH - Ingeniería y Suministro)', porcentaje: 3.09, ene: 0, feb: 0, mar: 0, abr: 198, may: 2407, jun: 10040, jul: 16865, ago: 22507, sep: 22853, total: 74869 },
-  { ctaAuxiliar: 'TTE-C-0653', concepto: 'TTE-C-0653 · Rueda Cangilones PMH (Repotenciación Rueda Cangilones DRAVO)', porcentaje: 2.75, ene: 0, feb: 0, mar: 0, abr: 0, may: 41590, jun: 4734, jul: 0, ago: 0, sep: 0, total: 46324 },
-  { ctaAuxiliar: 'TTE-C-0693', concepto: 'TTE-C-0693 · Parada Planta Briquetas (Trabajos para Parada de Planta)', porcentaje: 2.41, ene: 1742, feb: 12953, mar: 24937, abr: 969, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 40601 },
-  { ctaAuxiliar: 'TTE-C-0670', concepto: 'TTE-C-0670 · Mtto Briqueteras (Servicio Mtto. Máquinas Briqueteras)', porcentaje: 2.11, ene: 3654, feb: 3690, mar: 4005, abr: 2473, may: 3319, jun: 1646, jul: 6256, ago: 10410, sep: 10570, total: 46022 },
-  { ctaAuxiliar: 'TTE-C-0682', concepto: 'TTE-C-0682 · Personal Zona 60 (Suministro de Personal para Zona 60)', porcentaje: 1.68, ene: 4412, feb: 4910, mar: 5041, abr: 3027, may: 6006, jun: 4883, jul: 0, ago: 0, sep: 0, total: 28280 },
-  { ctaAuxiliar: 'TTE-C-0669', concepto: 'TTE-C-0669 · Mtto Dravo (Servicio de Mantenimiento de Dravo)', porcentaje: 0.86, ene: 4274, feb: 4816, mar: 5411, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 14500 },
-  { ctaAuxiliar: 'TTE-C-0694', concepto: 'TTE-C-0694 · Caldera Briquetas (Suministro e Instalación Caldera Briquetas)', porcentaje: 0.54, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 5296, ago: 3818, sep: 3877, total: 12991 },
-  { ctaAuxiliar: 'TTE-C-0688', concepto: 'TTE-C-0688 · Carga Barcos Wellman (Desmantelamiento Carga Barcos Wellman)', porcentaje: 0.45, ene: 821, feb: 6706, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 7527 },
-  { ctaAuxiliar: 'TTE-C-0655', concepto: 'TTE-C-0655 · Tolva PMH (Interconexión Sistema Transporte Tolva PMH)', porcentaje: 0.39, ene: 4784, feb: 956, mar: 0, abr: 0, may: 0, jun: 0, jul: 150, ago: 683, sep: 694, total: 7268 },
-  { ctaAuxiliar: 'TTE-C-0684', concepto: 'TTE-C-0684 · Gamelas FMO-PMH (Fabricación de Gamelas FMO-PMH)', porcentaje: 0.18, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 965, ago: 2143, sep: 2176, total: 5284 },
-  { ctaAuxiliar: 'TTE-C-0654', concepto: 'TTE-C-0654 · Cinta JD-9021 (Proyecto 5B: Cinta JD-9021)', porcentaje: 0.18, ene: 0, feb: 3049, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 3049 },
-  { ctaAuxiliar: 'TTE-C-0711', concepto: 'TTE-C-0711 · Módulos Eléctricos TH4 (Retirada Módulos Eléctricos TH4 PMH)', porcentaje: 0.09, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 1589, jul: 0, ago: 0, sep: 0, total: 1589 },
+  { ctaAuxiliar: 'TTE-C-0706', concepto: 'TTE-C-0706 · Línea 1 Pellas (Recuperación Línea 1 Planta de Pellas)', porcentaje: 38.30, ene: 0, feb: 0, mar: 0, abr: 0, may: 116389, jun: 135147, jul: 107485, ago: 204561, sep: 236688, total: 800270 },
+  { ctaAuxiliar: 'TTE-C-0676', concepto: 'TTE-C-0676 · 2da Línea Pellas (Segunda Línea Planta de Pellas)', porcentaje: 18.72, ene: 109790, feb: 88858, mar: 85824, abr: 90209, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 374680 },
+  { ctaAuxiliar: 'TTE-C-0656', concepto: 'TTE-C-0656 · Bandas Transp. PMH (Rehabilitación de Bandas Transportadoras PMH)', porcentaje: 12.67, ene: 21121, feb: 25237, mar: 34806, abr: 27397, may: 18767, jun: 14129, jul: 26055, ago: 43223, sep: 50012, total: 260747 },
+  { ctaAuxiliar: 'TTE-C-0668', concepto: 'TTE-C-0668 · Briquetas Fase 2 (Fase 2 Planta de Briquetas - FMO)', porcentaje: 8.10, ene: 13655, feb: 12675, mar: 17862, abr: 26676, may: 14875, jun: 11458, jul: 18280, ago: 23378, sep: 27050, total: 165909 },
+  { ctaAuxiliar: 'TTE-C-0680', concepto: 'TTE-C-0680 · Mantenimiento BG II (Servicio de Mantenimiento de BG II)', porcentaje: 4.83, ene: 8561, feb: 6641, mar: 11610, abr: 7982, may: 15560, jun: 8250, jul: 9550, ago: 14295, sep: 16539, total: 98988 },
+  { ctaAuxiliar: 'TTE-C-0678', concepto: 'TTE-C-0678 · Pila HA y HB PMH (Proyecto Pila HA y HB Suministro e Instalación)', porcentaje: 4.08, ene: 583, feb: 2987, mar: 9791, abr: 9479, may: 4722, jun: 14879, jul: 10244, ago: 14516, sep: 16796, total: 84997 },
+  { ctaAuxiliar: 'TTE-C-0671', concepto: 'TTE-C-0671 · 2da Línea PMH (Segunda Línea PMH - Ingeniería y Suministro)', porcentaje: 3.74, ene: 0, feb: 0, mar: 0, abr: 198, may: 2407, jun: 10040, jul: 16865, ago: 22759, sep: 26334, total: 78603 },
+  { ctaAuxiliar: 'TTE-C-0653', concepto: 'TTE-C-0653 · Rueda Cangilones PMH (Repotenciación Rueda Cangilones DRAVO)', porcentaje: 2.31, ene: 0, feb: 0, mar: 0, abr: 0, may: 41590, jun: 4734, jul: 0, ago: 0, sep: 0, total: 46324 },
+  { ctaAuxiliar: 'TTE-C-0670', concepto: 'TTE-C-0670 · Mtto Briqueteras (Servicio Mtto. Máquinas Briqueteras)', porcentaje: 2.30, ene: 3654, feb: 3690, mar: 4005, abr: 2473, may: 3319, jun: 1646, jul: 6256, ago: 10527, sep: 12181, total: 47941 },
+  { ctaAuxiliar: 'TTE-C-0693', concepto: 'TTE-C-0693 · Parada Planta Briquetas (Trabajos para Parada de Planta)', porcentaje: 2.03, ene: 1742, feb: 12953, mar: 24937, abr: 969, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 40601 },
+  { ctaAuxiliar: 'TTE-C-0682', concepto: 'TTE-C-0682 · Personal Zona 60 (Suministro de Personal para Zona 60)', porcentaje: 1.41, ene: 4412, feb: 4910, mar: 5041, abr: 3027, may: 6006, jun: 4883, jul: 0, ago: 0, sep: 0, total: 28280 },
+  { ctaAuxiliar: 'TTE-C-0669', concepto: 'TTE-C-0669 · Mtto Dravo (Servicio de Mantenimiento de Dravo)', porcentaje: 0.72, ene: 4274, feb: 4816, mar: 5411, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 14500 },
+  { ctaAuxiliar: 'TTE-C-0694', concepto: 'TTE-C-0694 · Caldera Briquetas (Suministro e Instalación Caldera Briquetas)', porcentaje: 0.65, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 5296, ago: 3861, sep: 4468, total: 13625 },
+  { ctaAuxiliar: 'TTE-C-0688', concepto: 'TTE-C-0688 · Carga Barcos Wellman (Desmantelamiento Carga Barcos Wellman)', porcentaje: 0.38, ene: 821, feb: 6706, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 7527 },
+  { ctaAuxiliar: 'TTE-C-0655', concepto: 'TTE-C-0655 · Tolva PMH (Interconexión Sistema Transporte Tolva PMH)', porcentaje: 0.36, ene: 4784, feb: 956, mar: 0, abr: 0, may: 0, jun: 0, jul: 150, ago: 691, sep: 799, total: 7380 },
+  { ctaAuxiliar: 'TTE-C-0684', concepto: 'TTE-C-0684 · Gamelas FMO-PMH (Fabricación de Gamelas FMO-PMH)', porcentaje: 0.26, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 965, ago: 2167, sep: 2508, total: 5640 },
+  { ctaAuxiliar: 'TTE-C-0654', concepto: 'TTE-C-0654 · Cinta JD-9021 (Proyecto 5B: Cinta JD-9021)', porcentaje: 0.15, ene: 0, feb: 3049, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 3049 },
+  { ctaAuxiliar: 'TTE-C-0711', concepto: 'TTE-C-0711 · Módulos Eléctricos TH4 (Retirada Módulos Eléctricos TH4 PMH)', porcentaje: 0.08, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 1589, jul: 0, ago: 0, sep: 0, total: 1589 },
 ];
 
 // 3. Matriz Oficial de Mano de Obra Directa CONSOLIDADA (100% Empresa TIMACA - 8 Meses Oficiales Ene-Ago)
@@ -489,18 +490,18 @@ export const MANO_DE_OBRA_DIRECTA_CONSOLIDADO_OFICIAL: FilaDesgloseMensual[] = [
 
 // 4. Matriz Oficial de Servicios CONSOLIDADA (100% Empresa TIMACA - 8 Meses Oficiales Ene-Ago)
 export const SERVICIOS_CONSOLIDADO_OFICIAL_8_MESES: FilaDesgloseMensual[] = [
-  { concepto: 'Subcontrato de Maquinado de Gran Escala y Torno Pesado', ene: 28000, feb: 36000, mar: 74000, abr: 18500, may: 24800, jun: 980000, jul: 185000, ago: 22000, total: 1368300 },
-  { concepto: 'Alquiler de Grúas Telescópicas de Alto Tonelaje e Izamiento', ene: 24000, feb: 32000, mar: 68000, abr: 16200, may: 21000, jun: 420000, jul: 72000, ago: 18500, total: 671700 },
-  { concepto: 'Servicio Integral de Traslado de Personal y Cuadrillas', ene: 42000, feb: 45000, mar: 51000, abr: 38500, may: 42000, jun: 65000, jul: 58000, ago: 48000, total: 389500 },
-  { concepto: 'Vigilancia y Seguridad Externa de Campamento y Frentes', ene: 16000, feb: 17500, mar: 22000, abr: 12800, may: 13500, jun: 24000, jul: 18500, ago: 16000, total: 140300 },
-  { concepto: 'Servicio de Arenado a Presión (Sandblasting SSPC-SP10) y Pintura', ene: 11000, feb: 15000, mar: 26000, abr: 8200, may: 5400, jun: 52000, jul: 8400, ago: 4200, total: 130200 },
-  { concepto: 'Ensayos No Destructivos (END, Radiografía, Gammagrafía y Ultrasonido)', ene: 8500, feb: 12000, mar: 21000, abr: 5100, may: 3200, jun: 38000, jul: 6200, ago: 3100, total: 97100 },
-  { concepto: 'Empalmes y Vulcanizado de Bandas Transportadoras', ene: 6200, feb: 8400, mar: 14000, abr: 4100, may: 2100, jun: 28000, jul: 4100, ago: 2100, total: 69000 },
-  { concepto: 'Alquiler de Maquinaria Menor, Plataformas Tijera y Compresores', ene: 4200, feb: 6100, mar: 9800, abr: 2800, may: 1800, jun: 19000, jul: 3200, ago: 1600, total: 48500 },
-  { concepto: 'Inspecciones Técnicas, Calificación QA/QC y Laboratorio', ene: 2400, feb: 3200, mar: 5400, abr: 1400, may: 800, jun: 11000, jul: 1800, ago: 900, total: 26900 },
-  { concepto: 'Exámenes Médicos de Ingreso, Altura y Salud Ocupacional', ene: 1200, feb: 1800, mar: 2900, abr: 700, may: 400, jun: 4200, jul: 1100, ago: 870, total: 13170 },
-  { concepto: 'Servicio de Alimentación y Comida en Frentes de Trabajo', ene: 600, feb: 500, mar: 1400, abr: 433, may: 182, jun: 2800, jul: 644, ago: 500, total: 7059 },
-  { concepto: 'Tratamiento Térmico de Alivio de Tensiones Post-Soldadura', ene: 466, feb: 397, mar: 1331, abr: 200, may: 50, jun: 1192, jul: 250, ago: 200, total: 5086 }
+  { concepto: 'Subcontrato de Maquinado de Gran Escala y Torno Pesado', ene: 28000, feb: 36000, mar: 74000, abr: 18500, may: 24800, jun: 980000, jul: 185000, ago: 22000, sep: 12000, total: 1380300 },
+  { concepto: 'Alquiler de Grúas Telescópicas de Alto Tonelaje e Izamiento', ene: 24000, feb: 32000, mar: 68000, abr: 16200, may: 21000, jun: 420000, jul: 72000, ago: 18500, sep: 0, total: 671700 },
+  { concepto: 'Servicio Integral de Traslado de Personal y Cuadrillas', ene: 42000, feb: 45000, mar: 51000, abr: 38500, may: 42000, jun: 65000, jul: 58000, ago: 48000, sep: 45878, total: 435378 },
+  { concepto: 'Vigilancia y Seguridad Externa de Campamento y Frentes', ene: 16000, feb: 17500, mar: 22000, abr: 12800, may: 13500, jun: 24000, jul: 18500, ago: 16000, sep: 17126, total: 157426 },
+  { concepto: 'Servicio de Arenado a Presión (Sandblasting SSPC-SP10) y Pintura', ene: 11000, feb: 15000, mar: 26000, abr: 8200, may: 5400, jun: 52000, jul: 8400, ago: 4200, sep: 2000, total: 132200 },
+  { concepto: 'Ensayos No Destructivos (END, Radiografía, Gammagrafía y Ultrasonido)', ene: 8500, feb: 12000, mar: 21000, abr: 5100, may: 3200, jun: 38000, jul: 6200, ago: 3100, sep: 500, total: 97600 },
+  { concepto: 'Empalmes y Vulcanizado de Bandas Transportadoras', ene: 6200, feb: 8400, mar: 14000, abr: 4100, may: 2100, jun: 28000, jul: 4100, ago: 2100, sep: 250, total: 69250 },
+  { concepto: 'Alquiler de Maquinaria Menor, Plataformas Tijera y Compresores', ene: 4200, feb: 6100, mar: 9800, abr: 2800, may: 1800, jun: 19000, jul: 3200, ago: 1600, sep: 2680, total: 51180 },
+  { concepto: 'Inspecciones Técnicas, Calificación QA/QC y Laboratorio', ene: 2400, feb: 3200, mar: 5400, abr: 1400, may: 800, jun: 11000, jul: 1800, ago: 900, sep: 563, total: 27463 },
+  { concepto: 'Exámenes Médicos de Ingreso, Altura y Salud Ocupacional', ene: 1200, feb: 1800, mar: 2900, abr: 700, may: 400, jun: 4200, jul: 1100, ago: 870, sep: 588, total: 13758 },
+  { concepto: 'Servicio de Alimentación y Comida en Frentes de Trabajo', ene: 600, feb: 500, mar: 1400, abr: 433, may: 182, jun: 2800, jul: 644, ago: 500, sep: 1982, total: 9041 },
+  { concepto: 'Otros Servicios Operativos (Baños Portátiles, Cisternas, Automatización)', ene: 466, feb: 397, mar: 1331, abr: 200, may: 50, jun: 1192, jul: 250, ago: 200, sep: 15973, total: 21059 }
 ];
 
 // 5. Matriz Oficial de Materiales Directos CONSOLIDADA (100% Empresa TIMACA - 8 Meses Oficiales Ene-Ago)

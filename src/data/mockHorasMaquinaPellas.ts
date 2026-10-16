@@ -244,7 +244,7 @@ export const TOTALES_HORAS_MAQUINA_PELLAS = {
 export const NOTAS_HORAS_MAQUINA_PELLAS = [
   {
     titulo: 'Volumen de Operación',
-    descripcion: 'Se totalizaron 1.396 horas de uso de maquinaria asociadas a la cuenta auxiliar TTE-C-0706.'
+    descripcion: 'Se totalizaron 1.396 horas de uso de maquinaria asociadas a la cuenta auxiliar TTE-C-0706 en agosto.'
   },
   {
     titulo: 'Grúa Demag AC200 (Equipo Principal)',
@@ -255,3 +255,189 @@ export const NOTAS_HORAS_MAQUINA_PELLAS = [
     descripcion: 'La operación requirió una combinación de equipos pesados de izaje (grúas móviles y telescópicas), movimiento de tierra (retroexcavadoras, payloader, motoniveladora) y logística/transporte (chutos y camiones plataforma).'
   }
 ];
+
+// TABLA OFICIAL EXACTA DE HORAS MÁQUINA PELLAS LÍNEA 1 - SEPTIEMBRE 2026 ($55.578 USD · 812 H/M)
+// Depurada: Excluidos todos los equipos con horas en cero por solicitud de Gerencia de Costos
+export const TABLA_HORAS_MAQUINA_PELLAS_SEPTIEMBRE_OFICIAL: FilaHorasMaquinaPellas[] = [
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR20',
+    equipo: 'Grúa Demag AC200 - 200TN',
+    tarifa: 190.21,
+    totalHM: 130.6,
+    costoTotalHM: 24841,
+    subcategoria: 'Grúas Industriales y Alto Tonelaje',
+    motivoTipico: 'Izaje pesado de vigas y montaje estructural de hornos (equipo principal de la flota)'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CH09',
+    equipo: 'Chuto Mack Granite',
+    tarifa: 100.00,
+    totalHM: 68.6,
+    costoTotalHM: 6860,
+    subcategoria: 'Transporte Pesado y Chutos',
+    motivoTipico: 'Flete y traslado de piezas estructurales pesadas a planta'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'RE02',
+    equipo: 'Retroexcavadora Case 580M Serie 2 Turbo',
+    tarifa: 62.00,
+    totalHM: 61.7,
+    costoTotalHM: 3825,
+    subcategoria: 'Movimiento de Tierra y Excavación',
+    motivoTipico: 'Excavación de zanjas y adecuación de fundaciones'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CA03',
+    equipo: 'Camión Plataforma Ford Cargo 815',
+    tarifa: 27.90,
+    totalHM: 130.0,
+    costoTotalHM: 3627,
+    subcategoria: 'Transporte Liviano y Logística',
+    motivoTipico: 'Distribución interna de repuestos y materiales de taller'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CA09',
+    equipo: 'Camión Pickman Ford Cargo 1721',
+    tarifa: 36.20,
+    totalHM: 94.8,
+    costoTotalHM: 3432,
+    subcategoria: 'Transporte Mediano y Maniobras',
+    motivoTipico: 'Traslado de suministros y cuadrillas a frentes de trabajo'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'MC09',
+    equipo: 'Montacarga Hyster H16.00XM-6 - 16TN',
+    tarifa: 44.10,
+    totalHM: 66.8,
+    costoTotalHM: 2946,
+    subcategoria: 'Equipos de Izaje y Carga en Patio',
+    motivoTipico: 'Movilización de paquetes de perfiles y aceros pesados en patio'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'TH01',
+    equipo: 'Telehandler Genie GTH-4013',
+    tarifa: 39.56,
+    totalHM: 65.8,
+    costoTotalHM: 2603,
+    subcategoria: 'Manipuladores Telescópicos',
+    motivoTipico: 'Posicionamiento en altura de componentes mecánicos y tuberías'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CA08',
+    equipo: 'Camión Plataforma Ford Cargo 1721',
+    tarifa: 34.10,
+    totalHM: 65.3,
+    costoTotalHM: 2227,
+    subcategoria: 'Transporte Mediano y Maniobras',
+    motivoTipico: 'Logística de despacho de materiales de almacén a frentes de montaje'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR14',
+    equipo: 'Grúa Liebherr LTM1140 - 140TN',
+    tarifa: 174.20,
+    totalHM: 8.0,
+    costoTotalHM: 1394,
+    subcategoria: 'Grúas Industriales y Alto Tonelaje',
+    motivoTipico: 'Maniobras complejas de izaje en altura'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR02',
+    equipo: 'Grúa Móvil P&H R200 - 20TN',
+    tarifa: 46.75,
+    totalHM: 25.7,
+    costoTotalHM: 1201,
+    subcategoria: 'Grúas Móviles y Telescópicas',
+    motivoTipico: 'Izaje ligero y posicionamiento de estructuras auxiliares'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'MC07',
+    equipo: 'Montacarga Heli 7.0T Serie H - 7TN',
+    tarifa: 23.57,
+    totalHM: 32.8,
+    costoTotalHM: 773,
+    subcategoria: 'Equipos de Izaje y Carga en Patio',
+    motivoTipico: 'Descarga y estibado de materiales en almacenes temporales de obra'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'PA01',
+    equipo: 'Payloader Hyundai HL760-7',
+    tarifa: 80.00,
+    totalHM: 8.8,
+    costoTotalHM: 704,
+    subcategoria: 'Movimiento de Tierra y Carga Pesada',
+    motivoTipico: 'Carga y desalojo de escombros y material a granel'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CH06',
+    equipo: 'Chuto Mack CH613',
+    tarifa: 11.02,
+    totalHM: 47.1,
+    costoTotalHM: 519,
+    subcategoria: 'Transporte Pesado y Chutos',
+    motivoTipico: 'Apoyo en traslado de bateas y equipos menores'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR07',
+    equipo: 'Grúa Móvil Grove RT 75S - 50TN',
+    tarifa: 78.50,
+    totalHM: 4.0,
+    costoTotalHM: 314,
+    subcategoria: 'Grúas Móviles de Terreno Difícil',
+    motivoTipico: 'Izaje en terreno no pavimentado de área de pellas'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR10',
+    equipo: 'Grúa Liebherr LTM1100/1 - 100TN',
+    tarifa: 181.00,
+    totalHM: 1.3,
+    costoTotalHM: 235,
+    subcategoria: 'Grúas Industriales y Alto Tonelaje',
+    motivoTipico: 'Montaje de precisión en estructuras críticas'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CA20',
+    equipo: 'Camión Demag LTM1400 - 200TN',
+    tarifa: 190.21,
+    totalHM: 0.4,
+    costoTotalHM: 76,
+    subcategoria: 'Transporte y Soporte de Grúas Mayores',
+    motivoTipico: 'Soporte y traslado de contrapesos de grúa Demag'
+  }
+];
+
+export const TOTALES_HORAS_MAQUINA_PELLAS_SEPTIEMBRE = {
+  totalHoras: 812,
+  totalCosto: 55578
+};
+
+export const NOTAS_HORAS_MAQUINA_PELLAS_SEPTIEMBRE = [
+  {
+    titulo: 'Optimización de Maquinaria Propia',
+    descripcion: 'Se totalizaron 811,7 horas de uso de maquinaria pesada en septiembre ($55.578 USD), asignadas 100% a Pellas Línea 1 con una flota activa y eficiente de 16 equipos (depuradas todas las máquinas en cero).'
+  },
+  {
+    titulo: 'Grúa Demag AC200 (Pilar de Izaje)',
+    descripcion: 'Representa el 44,7% del costo total ($24.841 USD) con 130,6 horas acumuladas en maniobras críticas de izaje mecánico y posicionamiento de módulos.'
+  },
+  {
+    titulo: 'Flota Pesada y Transporte Terrestre',
+    descripcion: 'Los camiones plataforma (Ford Cargo 815 y 1721), chutos Mack Granite y retroexcavadoras Case garantizaron el suministro continuo de componentes de calderería y movimiento de tierra.'
+  }
+];
+

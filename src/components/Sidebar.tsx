@@ -334,6 +334,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </button>
 
                   <button
+                    onClick={() => handleSelectCostosTab('hoja-motivos', 'externos')}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && !esInternos && activeTab === 'hoja-motivos'
+                        ? 'bg-orange-600 text-white font-bold shadow-xs'
+                        : 'text-orange-200 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Hoja de Motivos, Solicitantes, Precios y Cuentas Auxiliares"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <FileText className="w-3.5 h-3.5 shrink-0 text-orange-400" />
+                      {!isCollapsed && <span>Hoja de Motivos</span>}
+                    </div>
+                    {!isCollapsed && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-orange-950/80 text-orange-200 border border-orange-700/60 uppercase">
+                        Auditoría
+                      </span>
+                    )}
+                  </button>
+
+                  <button
                     onClick={() => handleSelectCostosTab('tabla', 'externos')}
                     className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
                       moduloActivo === 'costos' && !esInternos && activeTab === 'tabla'
@@ -409,7 +429,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             {/* SECCIÓN B: PROYECTOS INTERNOS ($183K - DANIELA RIVEROS) */}
-            <div className="bg-slate-800/40 rounded-xl p-2 border border-slate-700/60 space-y-1">
+            {currentUser.permisos?.ambitoEdicion !== 'externos' && (
+              <div className="bg-slate-800/40 rounded-xl p-2 border border-slate-700/60 space-y-1">
               {!isCollapsed ? (
                 <div 
                   onClick={() => setInternosExpanded(!internosExpanded)}
@@ -483,7 +504,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </button>
                 </div>
               )}
-            </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -634,21 +656,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             )}
 
-            <button
-              onClick={() => {
-                onCambiarModulo('costos');
-                setActiveTab('usuarios');
-                setMobileOpen(false);
-              }}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                activeTab === 'usuarios'
-                  ? 'bg-slate-700 text-white font-bold shadow-xs'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5 text-slate-300 shrink-0" />
-              {!isCollapsed && <span>Usuarios & Permisos</span>}
-            </button>
+            {currentUser.permisos.canManageUsers && (
+              <button
+                onClick={() => {
+                  onCambiarModulo('costos');
+                  setActiveTab('usuarios');
+                  setMobileOpen(false);
+                }}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                  activeTab === 'usuarios'
+                    ? 'bg-slate-700 text-white font-bold shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+                {!isCollapsed && <span>Usuarios & Permisos</span>}
+              </button>
+            )}
 
             {currentUser.permisos.canImportFiles && (
               <button

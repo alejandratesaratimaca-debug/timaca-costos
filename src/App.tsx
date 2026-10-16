@@ -14,6 +14,7 @@ import { SemanaSemanaView } from './components/SemanaSemanaView';
 import { MesMesView } from './components/MesMesView';
 import { InformeMensualView } from './components/InformeMensualView';
 import { CategoriaDetalleView } from './components/CategoriaDetalleView';
+import { HojaAuditoriaMotivosView } from './components/HojaAuditoriaMotivosView';
 import { MatrizProyectosCategoriasView } from './components/MatrizProyectosCategoriasView';
 import { DesglosePartidaView } from './components/DesglosePartidaView';
 import { SalidasTableView } from './components/SalidasTableView';
@@ -74,6 +75,12 @@ function AppContent() {
   });
 
   const handleCambiarEntorno = (nuevoEntorno: 'externos' | 'internos') => {
+    if (currentUser?.permisos?.ambitoEdicion === 'externos' && nuevoEntorno === 'internos') {
+      return; // Bloqueado: acceso restringido a proyectos externos
+    }
+    if (currentUser?.permisos?.ambitoEdicion === 'internos' && nuevoEntorno === 'externos') {
+      return; // Bloqueado: acceso restringido a proyectos internos
+    }
     localStorage.setItem(ENTORNO_STORAGE_KEY, nuevoEntorno);
     setEntornoActivoState(nuevoEntorno);
     if (nuevoEntorno === 'internos') {
@@ -178,8 +185,10 @@ function AppContent() {
     localStorage.setItem(MODULO_STORAGE_KEY, chosenModulo);
 
     let chosen = entorno || entornoActivo;
-    if (user.rol === 'Analista de Costos Internos') {
+    if (user.rol === 'Analista de Costos Internos' || user.permisos?.ambitoEdicion === 'internos') {
       chosen = 'internos';
+    } else if (user.permisos?.ambitoEdicion === 'externos') {
+      chosen = 'externos';
     }
     setEntornoActivoState(chosen);
     localStorage.setItem(ENTORNO_STORAGE_KEY, chosen);
@@ -191,13 +200,26 @@ function AppContent() {
     if (targetTab) {
       setActiveTab(targetTab);
     } else if (chosenModulo === 'costos') {
-      if (user.rol === 'Analista de Costos Internos' || chosen === 'internos') {
+      if (chosen === 'internos') {
         setActiveTab('internos-dashboard');
       } else {
         setActiveTab('dashboard');
       }
     }
   };
+
+  // Salvaguarda: Bloquear acceso a internos si el usuario tiene ámbito restringido a externos
+  useEffect(() => {
+    if (currentUser?.permisos?.ambitoEdicion === 'externos') {
+      if (entornoActivo !== 'externos') {
+        setEntornoActivoState('externos');
+        localStorage.setItem(ENTORNO_STORAGE_KEY, 'externos');
+      }
+      if (activeTab.startsWith('internos-') || activeTab === 'usuarios') {
+        setActiveTab('dashboard');
+      }
+    }
+  }, [currentUser, entornoActivo, activeTab]);
 
   const handleLogout = () => {
     void cerrarSesion();
@@ -439,10 +461,19 @@ function AppContent() {
               <CategoriaDetalleView 
                 initialCategoria={selectedCategoriaParaDetalle}
                 onVolver={() => setActiveTab('dashboard')}
+                onGoToHojaMotivos={() => setActiveTab('hoja-motivos')}
                 onOpenDesglosePartida={(concepto, categoria, proyectoCodigo, mesNum) => {
                   setSelectedPartidaDetalle({ concepto, categoria, proyectoCodigo, mesNum });
                   setActiveTab('desglose-partida');
                 }}
+              />
+            )}
+
+            {activeTab === 'hoja-motivos' && (
+              <HojaAuditoriaMotivosView
+                initialCategoria={selectedCategoriaParaDetalle}
+                onVolver={() => setActiveTab('dashboard')}
+                currentUser={currentUser}
               />
             )}
 

@@ -15,7 +15,8 @@ import {
   Award,
   Users,
   Clock,
-  Calendar
+  Calendar,
+  ArrowLeft
 } from 'lucide-react';
 import { SuiteModulo } from '../types/suite';
 
@@ -39,6 +40,7 @@ const TITULOS_VISTAS: Record<string, string> = {
   'proyectos': 'Cuentas Auxiliares',
   'mano-obra': 'Mano de Obra Directa (MOD)',
   'categorias': 'Categorías de Gasto',
+  'hoja-motivos': 'Hoja de Motivos & Solicitantes',
   'tabla': 'Salidas de Almacén SIP',
   'informe': 'Informe Mensual',
   'semanas': 'Control Semanal',
@@ -121,7 +123,20 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* MÓDULO COSTOS: Indicador de Vista Activa */}
             {moduloActivo === 'costos' ? (
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                {/* Botón Volver Universal en todas las secciones */}
+                {activeTab !== 'dashboard' && activeTab !== 'internos-dashboard' && (
+                  <button
+                    onClick={() => setActiveTab(esInternos ? 'internos-dashboard' : 'dashboard')}
+                    className="flex items-center gap-1.5 font-bold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-300 hover:border-slate-400 px-3 py-1.5 rounded-xl transition-all text-xs shadow-xs shrink-0 cursor-pointer"
+                    title="Volver al Dashboard General"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5 text-blue-700 shrink-0" />
+                    <span className="hidden sm:inline">Volver</span>
+                    <span className="sm:hidden">Atrás</span>
+                  </button>
+                )}
+
                 {/* Título de la Sección Activa */}
                 <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shrink-0 text-xs ${
                   esInternos 

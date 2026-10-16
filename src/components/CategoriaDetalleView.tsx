@@ -48,6 +48,7 @@ import {
   Sparkles,
   Building,
   ChevronRight,
+  FileText,
   X
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -61,6 +62,66 @@ function toTitleCase(str: string): string {
     .replace(/(^|\s|-|\/)[a-zñáéíóú]/g, l => l.toUpperCase())
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function normalizeServicioConcepto(raw: string): string {
+  if (!raw) return '';
+  const s = raw.toLowerCase().trim();
+  if (s.includes('traslado') || s.includes('transporte de personal') || s.includes('cuadrilla')) {
+    return 'Servicio Integral de Traslado de Personal y Cuadrillas';
+  }
+  if (s.includes('maritimo') || s.includes('fluvial') || s.includes('maetriales') || s.includes('materiales')) {
+    return 'Transporte Marítimo / Fluvial de Insumos y Materiales';
+  }
+  if (s.includes('maquinado') || s.includes('torno')) {
+    return 'Subcontrato de Maquinado de Gran Escala y Torno Pesado';
+  }
+  if (s.includes('grúa') || s.includes('grua') || s.includes('telescopica') || s.includes('izamiento')) {
+    return 'Alquiler de Grúas Telescópicas de Alto Tonelaje e Izamiento';
+  }
+  if (s.includes('vigilancia') || s.includes('seguridad externa') || s.includes('resguardo')) {
+    return 'Vigilancia y Seguridad Externa de Campamento y Frentes';
+  }
+  if (s.includes('alquiler de maquinaria') || s.includes('maquinaria y equipos') || s.includes('plataformas') || s.includes('compresor')) {
+    return 'Alquiler de Maquinaria Menor, Plataformas Tijera y Compresores';
+  }
+  if (s.includes('arenado') || s.includes('sandblasting') || s.includes('pintura')) {
+    return 'Servicio de Arenado a Presión (Sandblasting SSPC-SP10) y Pintura';
+  }
+  if (s.includes('ensayos') || s.includes('end') || s.includes('radiograf') || s.includes('ultrasonido')) {
+    return 'Ensayos No Destructivos (END, Radiografía, Gammagrafía y Ultrasonido)';
+  }
+  if (s.includes('empalme') || s.includes('vulcaniz')) {
+    return 'Empalmes y Vulcanizado de Bandas Transportadoras';
+  }
+  if (s.includes('inspeccion') || s.includes('qa/qc') || s.includes('laboratorio')) {
+    return 'Inspecciones Técnicas, Calificación QA/QC y Laboratorio';
+  }
+  if (s.includes('examen') || s.includes('médico') || s.includes('medico') || s.includes('salud')) {
+    return 'Exámenes Médicos de Ingreso, Altura y Salud Ocupacional';
+  }
+  if (s.includes('alimentacion') || s.includes('comida') || s.includes('refrigerio')) {
+    return 'Servicio de Alimentación y Comida en Frentes de Trabajo';
+  }
+  if (s.includes('puerta')) {
+    return 'Fabricación y Montaje de Puertas y Cerramientos';
+  }
+  if (s.includes('cristaleria') || s.includes('vidrio')) {
+    return 'Servicio de Cristalería y Ventanería';
+  }
+  if (s.includes('cisterna') || s.includes('agua')) {
+    return 'Suministro de Agua Industrial en Camión Cisterna';
+  }
+  if (s.includes('fumigacion')) {
+    return 'Servicio de Saneamiento y Fumigación';
+  }
+  if (s.includes('extintor')) {
+    return 'Recarga y Certificación de Extintores';
+  }
+  if (s.includes('importacion') || s.includes('aduan')) {
+    return 'Servicios y Trámites de Importación / Aduanas';
+  }
+  return toTitleCase(raw);
 }
 
 const EQUIPOS_HM_MAP: Record<string, string> = {
@@ -96,12 +157,14 @@ interface CategoriaDetalleViewProps {
   initialCategoria?: string;
   onOpenDesglosePartida?: (concepto: string, categoria: string, proyectoCodigo?: string, mesNum?: number) => void;
   onVolver?: () => void;
+  onGoToHojaMotivos?: () => void;
 }
 
 export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({ 
   initialCategoria,
   onOpenDesglosePartida,
-  onVolver
+  onVolver,
+  onGoToHojaMotivos
 }) => {
   const { resumenMeses, salidas } = useCostos();
 
@@ -196,6 +259,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
     return salidas.filter(s => 
       s.mes === selectedMesNum && 
       !isNormalizacion(s) &&
+      !((s.tipo === 'Horas Maquina' || s.categoria === 'Horas Maquina') && ((s.cantidad || 0) <= 0 || (s.montoTotal || 0) <= 0)) &&
       (alcanceProyectos === 'global' || s.cuentaAuxiliarCodigo?.startsWith('TTE-C-') || s.esProyectoExterno || (s as any).tipoCosto === 'Externo') &&
       (s.tipo === selectedCat ||
        s.categoria === selectedCat ||
@@ -215,6 +279,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
     return salidas.filter(s => 
       s.mes === mesAnteriorNum && 
       !isNormalizacion(s) &&
+      !((s.tipo === 'Horas Maquina' || s.categoria === 'Horas Maquina') && ((s.cantidad || 0) <= 0 || (s.montoTotal || 0) <= 0)) &&
       (alcanceProyectos === 'global' || s.cuentaAuxiliarCodigo?.startsWith('TTE-C-') || s.esProyectoExterno || (s as any).tipoCosto === 'Externo') &&
       (s.tipo === selectedCat ||
        s.categoria === selectedCat ||
@@ -716,7 +781,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
         fila.total = (fila.ene || 0) + (fila.feb || 0) + (fila.mar || 0) + (fila.abr || 0) + (fila.may || 0) + (fila.jun || 0) + (fila.jul || 0) + (fila.ago || 0) + (fila.sep || 0);
       });
 
-      let list = Array.from(mapEquipos.values()).sort((a, b) => b.total - a.total);
+      let list = Array.from(mapEquipos.values())
+        .filter(f => (f.total || 0) > 0)
+        .sort((a, b) => b.total - a.total);
 
       // Conciliación mensual oficial con la lámina PPT para Proyectos Externos (Ene - Sep 2026)
       if (selectedProyectoCodigo === 'TODOS' && alcanceProyectos === 'externos') {
@@ -757,10 +824,20 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
     // 5. Si es Servicios: Desglose detallado por Partidas / Servicios Especializados
     if (selectedCat === 'Servicios') {
+      if (selectedProyectoCodigo !== 'TODOS' && DESGLOSE_CATEGORIAS_PROYECTOS['Servicios']?.[selectedProyectoCodigo]) {
+        let list = [...DESGLOSE_CATEGORIAS_PROYECTOS['Servicios'][selectedProyectoCodigo]];
+        if (subconceptoSearchTerm) {
+          const q = subconceptoSearchTerm.toLowerCase();
+          list = list.filter(f => f.concepto.toLowerCase().includes(q));
+        }
+        return list;
+      }
+
       const mapServicios = new Map<string, FilaDesgloseMensual>();
       SERVICIOS_CONSOLIDADO_OFICIAL_8_MESES.forEach(srv => {
-        mapServicios.set(srv.concepto, {
-          concepto: srv.concepto,
+        const canonical = normalizeServicioConcepto(srv.concepto);
+        mapServicios.set(canonical, {
+          concepto: canonical,
           ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: srv.ago, sep: 0, total: 0
         });
       });
@@ -768,20 +845,21 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
       salidasFiltradas.forEach(s => {
         let servNombre = '';
         if (s.subcategoria && s.subcategoria !== 'SERVICIOS' && s.subcategoria !== 'Servicios' && s.subcategoria !== 'General' && s.subcategoria !== 'Consumo Mensual Registrado') {
-          servNombre = toTitleCase(s.subcategoria);
+          servNombre = s.subcategoria;
         } else if (s.itemDescripcion && s.itemDescripcion !== 'Sin descripción' && !s.itemDescripcion.startsWith('Servicios - Desembolso')) {
-          servNombre = toTitleCase(s.itemDescripcion);
+          servNombre = s.itemDescripcion;
         } else if (s.concepto && s.concepto !== 'Servicios') {
-          servNombre = toTitleCase(s.concepto);
+          servNombre = s.concepto;
         }
         if (servNombre) {
-          if (!mapServicios.has(servNombre)) {
-            mapServicios.set(servNombre, {
-              concepto: servNombre,
+          const canonical = normalizeServicioConcepto(servNombre);
+          if (!mapServicios.has(canonical)) {
+            mapServicios.set(canonical, {
+              concepto: canonical,
               ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 0, total: 0
             });
           }
-          const fila = mapServicios.get(servNombre)!;
+          const fila = mapServicios.get(canonical)!;
           if (s.mes === 8) {
             fila.ago = (fila.ago || 0) + (s.montoTotal || 0);
           } else if (s.mes === 9) {
@@ -793,7 +871,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
       const realProj = selectedProyectoCodigo !== 'TODOS' ? MATRIZ_REAL_PROYECTOS_MENSUAL_2026[selectedProyectoCodigo] : null;
       const mesesSrv = realProj 
         ? realProj.byCategoriaMes.map(m => m['Servicios'] || 0)
-        : (TABLA_PPT_DISTRIBUCION_2026[1]?.meses || [144566, 178897, 296831, 108933, 115232, 1645192, 359194, 117970, 0]);
+        : (TABLA_PPT_DISTRIBUCION_2026[1]?.meses || [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 117970, 99540]);
 
       const sumAgo = Array.from(mapServicios.values()).reduce((acc, f) => acc + (f.ago || 0), 0) || 1;
 
@@ -811,7 +889,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
         fila.total = (fila.ene || 0) + (fila.feb || 0) + (fila.mar || 0) + (fila.abr || 0) + (fila.may || 0) + (fila.jun || 0) + (fila.jul || 0) + (fila.ago || 0) + (fila.sep || 0);
       });
 
-      let list = Array.from(mapServicios.values()).sort((a, b) => b.total - a.total);
+      let list = Array.from(mapServicios.values())
+        .filter(f => (f.total || 0) > 0)
+        .sort((a, b) => b.total - a.total);
 
       // Conciliación con la lámina PPT para Proyectos Externos (Ene - Sep 2026)
       if (selectedProyectoCodigo === 'TODOS' && alcanceProyectos === 'externos') {
@@ -1292,183 +1372,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
 
 
-        {/* Banner de Conciliación Contable (Servicios) */}
-        {selectedCat === 'Servicios' && selectedProyectoCodigo === 'TODOS' && (
-          <div className="bg-gradient-to-r from-amber-50/90 via-orange-50/90 to-yellow-50/80 border-2 border-amber-400/40 rounded-2xl p-4 shadow-sm space-y-3">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="p-2 rounded-xl bg-amber-600 text-white shrink-0 mt-0.5 shadow-xs">
-                  <ShieldCheck className="w-5 h-5" />
-                </span>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-black text-neutral-900 text-sm tracking-tight uppercase">
-                      Conciliación Contable: Servicios de Obra y Terceros Agosto 2026
-                    </h3>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
-                      ★ Proyectos Externos de Clientes ($117.970 USD)
-                    </span>
-                  </div>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    <strong>Desglose por partidas reales:</strong> La tabla presenta las 17 partidas especializadas de servicios (traslados, fletes marítimos, alquiler de maquinaria, exámenes médicos, alimentación, mantenimiento y obras mecánicas). El total mensual concilia exactamente con los <strong>$117.970,00 USD</strong> de la presentación ejecutiva oficial.
-                  </p>
-                </div>
-              </div>
-            </div>
 
-            {/* Tarjetas comparativas del balance */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 border-t border-amber-200/60">
-              <div className="p-2.5 rounded-xl bg-amber-100/80 border border-amber-400 font-medium shadow-xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 block">
-                  1. Imputaciones Físicas de Servicios
-                </span>
-                <span className="text-base font-black font-mono text-amber-950 block mt-0.5">
-                  $63.584,79 USD
-                </span>
-                <span className="text-[10px] text-amber-800 block mt-0.5">
-                  17 partidas operativas directas a proyectos externos
-                </span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-white/80 border border-neutral-200 text-neutral-900">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700 block">
-                  2. Ajuste Cierre (Servicios Mayores)
-                </span>
-                <span className="text-base font-black font-mono text-neutral-900 block mt-0.5">
-                  +$54.385,21 USD
-                </span>
-                <span className="text-[10px] text-neutral-600 block mt-0.5">
-                  Provisiones de cierre contable y contratos marco de obra
-                </span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-slate-800 text-white border border-slate-700 shadow-xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 block">
-                  3. Total Auditado (Agosto)
-                </span>
-                <span className="text-base font-black font-mono text-white block mt-0.5">
-                  $117.970,00 USD
-                </span>
-                <span className="text-[10px] text-slate-300 block mt-0.5">
-                  100% conciliado con la presentación ejecutiva TIMACA
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Banner de Conciliación Contable (Horas Máquina) */}
-        {(selectedCat === 'Horas Maquina' || selectedCat === 'Horas Máquina') && selectedProyectoCodigo === 'TODOS' && (
-          <div className="bg-gradient-to-r from-purple-50/90 via-violet-50/90 to-indigo-50/80 border-2 border-purple-400/40 rounded-2xl p-4 shadow-sm space-y-3">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="p-2 rounded-xl bg-purple-700 text-white shrink-0 mt-0.5 shadow-xs">
-                  <ShieldCheck className="w-5 h-5" />
-                </span>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-black text-neutral-900 text-sm tracking-tight uppercase">
-                      {selectedMesNum === 9 
-                        ? 'Conciliación Contable: Horas Máquina y Flota Pesada Septiembre 2026'
-                        : 'Conciliación Contable: Horas Máquina y Flota Pesada Agosto 2026'}
-                    </h3>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-900 border border-purple-300">
-                      ★ Proyectos Externos de Clientes ({selectedMesNum === 9 ? '$55.578 USD' : '$89.789 USD'})
-                    </span>
-                  </div>
-                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
-                    <strong>Desglose por equipo y grúa:</strong> {selectedMesNum === 9 
-                      ? 'Flota operativa imputada directamente a Recuperación Línea 1 Pellas (TTE-C-0706) a partir de 334 registros de partes diarios (Grúa Demag AC200, Chutos Mack Granite, Retroexcavadora Case, Camiones Ford Cargo, Montacargas Hyster/Heli, Telehandler, etc.). El total conciliado cuadra al 100% con los $55.578,00 USD de la presentación ejecutiva.'
-                      : 'Cada fila corresponde a una línea de maquinaria pesada (Demag AC200, Payloader Hyundai, Retroexcavadora Case, Chuto Mack Granite, Compresor Sullair, etc.). El total conciliado cuadra al 100% con los $89.789,00 USD de la presentación ejecutiva.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Tarjetas comparativas del balance */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 border-t border-purple-200/60">
-              <div className="p-2.5 rounded-xl bg-purple-100/80 border border-purple-400 font-medium shadow-xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-900 block">
-                  1. Partes Diarios de Maquinaria
-                </span>
-                <span className="text-base font-black font-mono text-purple-950 block mt-0.5">
-                  {selectedMesNum === 9 ? '$55.577,78 USD' : '$85.167,83 USD'}
-                </span>
-                <span className="text-[10px] text-purple-800 block mt-0.5">
-                  {selectedMesNum === 9 ? '16 líneas de equipos operativos (334 registros reales)' : '18 líneas de equipos operativos (602 registros reales)'}
-                </span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-white/80 border border-neutral-200 text-neutral-900">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700 block">
-                  2. Ajuste Disponibilidad
-                </span>
-                <span className="text-base font-black font-mono text-neutral-900 block mt-0.5">
-                  {selectedMesNum === 9 ? '$0,00 USD' : '+$4.621,17 USD'}
-                </span>
-                <span className="text-[10px] text-neutral-600 block mt-0.5">
-                  {selectedMesNum === 9 ? 'Conciliación directa 100% sin desfase contable' : 'Reserva operativa de izamiento y disponibilidad garantizada'}
-                </span>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-slate-800 text-white border border-slate-700 shadow-xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 block">
-                  3. Total Auditado ({selectedMesNum === 9 ? 'Septiembre' : 'Agosto'})
-                </span>
-                <span className="text-base font-black font-mono text-white block mt-0.5">
-                  {selectedMesNum === 9 ? '$55.578,00 USD' : '$89.789,00 USD'}
-                </span>
-                <span className="text-[10px] text-slate-300 block mt-0.5">
-                  100% conciliado con la presentación ejecutiva TIMACA
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Desglose por cargo operativo (Mano de Obra Directa) */}
-        {selectedCat === 'Mano de Obra Directa' && selectedProyectoCodigo === 'TODOS' && (
-          <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-            <div className="flex items-start gap-2.5">
-              <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 shrink-0 mt-0.5 border border-emerald-200">
-                <Users className="w-4 h-4" />
-              </span>
-              <p className="text-neutral-700 leading-relaxed">
-                <strong className="text-neutral-900">Desglose por cargo operativo:</strong> Se presentan las especialidades operativas de cuadrilla (Montadores, Soldadores, Operarios, Ayudantes, Electricistas, etc.) extraídas de los registros reales de nómina diaria. El total concilia con los <strong className="text-neutral-900">${formatNumber(TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || (selectedMesNum === 9 ? 351891 : 294353))},00 USD</strong> de la presentación ejecutiva oficial (incluye Honorarios Profesionales Pellas).
-              </p>
-            </div>
-            <div className="shrink-0 flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
-              <span className="text-[11px] font-semibold text-emerald-800">Total del Mes Auditado:</span>
-              <span className="text-sm font-black font-mono text-emerald-950">
-                ${formatNumber(TABLA_PPT_DISTRIBUCION_2026[2]?.meses[selectedMesNum - 1] || (selectedMesNum === 9 ? 351891 : 294353))},00 USD
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Banner informativo de Costos Indirectos */}
-        {selectedCat === 'Costos Indirectos' && (
-          <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-200/80 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-neutral-800 shadow-2xs">
-            <div className="flex items-center gap-3">
-              <span className="p-2 rounded-lg bg-blue-700 text-white shrink-0 shadow-xs">
-                <Briefcase className="w-4 h-4" />
-              </span>
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="font-bold text-neutral-900 text-sm">
-                    Costos Indirectos Corporativos TIMACA (2026)
-                  </h4>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                    Cierre {mesActualObj?.mesLabel || 'Septiembre 2026'}: ${((TABLA_PPT_DISTRIBUCION_2026[4]?.meses[selectedMesNum - 1] || 73000)).toLocaleString('de-DE')} USD · Acumulado Ene-Sep: $1.755.313 USD
-                  </span>
-                </div>
-                <p className="text-[11px] text-neutral-600 mt-0.5">
-                  Visualización: {modoIndirectos === 'categorias' ? '16 Rubros Contables Oficiales de Gastos Indirectos' : 'Distribución por Cuentas Auxiliares de Proyectos (% Prorrateo)'} {selectedProyectoCodigo !== 'TODOS' ? `(Filtrado para el proyecto ${selectedProyectoCodigo})` : '(Consolidado General 100% TIMACA)'}.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Filter bar inside matrix */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -1513,6 +1417,16 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2 text-xs text-neutral-500">
+            {onGoToHojaMotivos && (
+              <button
+                onClick={onGoToHojaMotivos}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-orange-800 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-xl transition-all shadow-2xs"
+                title="Abrir hoja detallada de motivos, solicitantes, cantidades y precios unitarios"
+              >
+                <FileText className="w-3.5 h-3.5 text-orange-600" />
+                <span>📋 Hoja de Motivos & Solicitantes</span>
+              </button>
+            )}
             {selectedCat === 'Materiales Directos' && (
               <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
                 <Info className="w-3 h-3" />
@@ -1560,44 +1474,13 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
           </div>
         )}
 
-        {/* Informative banner indicating drill-down feature or indirect costs notice */}
-        {selectedCat === 'Costos Indirectos' ? (
-          <div className="bg-amber-50/80 border border-amber-200/90 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-amber-900 shadow-2xs">
-            <div className="flex items-center gap-2.5">
-              <span className="p-1.5 rounded-lg bg-amber-600 text-white shrink-0 shadow-2xs">
-                <Info className="w-3.5 h-3.5" />
-              </span>
-              <span className="leading-relaxed">
-                <strong>Costos Indirectos Corporativos:</strong> Rubros consolidados oficiales de la presentación ejecutiva TIMACA (nómina general, talleres, combustible administrativo, servicios públicos, sindicato). <em>Cifras contables corporativas (no provienen de vales de almacén del SIP).</em>
-              </span>
-            </div>
-            <span className="text-[11px] font-bold text-amber-800 bg-white px-2.5 py-1 rounded-lg border border-amber-200 shrink-0 self-start sm:self-auto shadow-2xs">
-              {filasMatrizMensual.length} rubros contables
-            </span>
-          </div>
-        ) : (
-          <div className="bg-blue-50/80 border border-blue-200/90 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-blue-900 shadow-2xs">
-            <div className="flex items-center gap-2.5">
-              <span className="p-1.5 rounded-lg bg-blue-600 text-white shrink-0 shadow-2xs">
-                <Search className="w-3.5 h-3.5" />
-              </span>
-              <span className="leading-relaxed">
-                <strong>Auditoría Partida por Partida:</strong> Haz clic en cualquier partida (ej. <em>{selectedCat === 'Servicios' ? 'Servicio Traslado de Personal' : selectedCat === 'Horas Maquina' ? 'Grúa Demag AC200' : selectedCat === 'Mano de Obra Directa' ? 'Soldadores Calificados 6G' : 'Materiales Eléctricos'}</em>) para abrir la pestaña con el desglose detallado por <strong>Proyecto, Cantidad, Precio Unitario, Monto y Motivo técnico</strong>.
-              </span>
-            </div>
-            <span className="text-[11px] font-bold text-blue-800 bg-white px-2.5 py-1 rounded-lg border border-blue-200 shrink-0 self-start sm:self-auto shadow-2xs">
-              {filasMatrizMensual.length} partidas interactivas
-            </span>
-          </div>
-        )}
-
         {/* EXACT TABLE FROM THE SLIDE */}
-        <div className="border border-neutral-300 rounded-xl overflow-hidden shadow-xs">
+        <div className="border border-neutral-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto max-h-[580px] overflow-y-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 z-10 bg-slate-800 text-white font-bold">
-                <tr className="text-white">
-                  <th className="py-2.5 px-4 min-w-[280px] text-white font-bold">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="sticky top-0 z-10 bg-slate-50 border-b border-slate-200 text-slate-700 font-bold uppercase text-[11px] tracking-wider shadow-2xs">
+                <tr>
+                  <th className="py-3 px-4 min-w-[280px] text-slate-800 font-bold">
                     {selectedCat === 'Costos Indirectos'
                       ? (modoIndirectos === 'categorias' ? 'Categoría / Rubro de Costo Indirecto' : 'Cuenta Auxiliar Activa / Proyecto')
                       : selectedCat === 'Servicios'
@@ -1611,36 +1494,36 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                       : 'Concepto'}
                   </th>
                   {selectedCat === 'Costos Indirectos' && modoIndirectos === 'cuentas' && (
-                    <th className="py-2.5 px-3 text-right min-w-[90px] text-white font-bold">% Prorrateo</th>
+                    <th className="py-3 px-3 text-right min-w-[90px] text-slate-700 font-bold">% Prorrateo</th>
                   )}
                   {is8Months && (filtroMesMatriz === 'todos' || filtroMesMatriz === '1') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '1' ? 'bg-blue-600' : ''}`}>Enero</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '1' ? 'bg-blue-100 text-blue-900' : ''}`}>Enero</th>
                   )}
                   {is8Months && (filtroMesMatriz === 'todos' || filtroMesMatriz === '2') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '2' ? 'bg-blue-600' : ''}`}>Febrero</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '2' ? 'bg-blue-100 text-blue-900' : ''}`}>Febrero</th>
                   )}
                   {is8Months && (filtroMesMatriz === 'todos' || filtroMesMatriz === '3') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '3' ? 'bg-blue-600' : ''}`}>Marzo</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '3' ? 'bg-blue-100 text-blue-900' : ''}`}>Marzo</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '4') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '4' ? 'bg-blue-600' : ''}`}>Abril</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '4' ? 'bg-blue-100 text-blue-900' : ''}`}>Abril</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '5') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '5' ? 'bg-blue-600' : ''}`}>Mayo</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '5' ? 'bg-blue-100 text-blue-900' : ''}`}>Mayo</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '6') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '6' ? 'bg-blue-600' : ''}`}>Junio</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '6' ? 'bg-blue-100 text-blue-900' : ''}`}>Junio</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '7') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '7' ? 'bg-blue-600' : ''}`}>Julio</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '7' ? 'bg-blue-100 text-blue-900' : ''}`}>Julio</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '8') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '8' ? 'bg-blue-600' : ''}`}>Agosto</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '8' ? 'bg-blue-100 text-blue-900' : ''}`}>Agosto</th>
                   )}
                   {(filtroMesMatriz === 'todos' || filtroMesMatriz === '9') && (
-                    <th className={`py-2.5 px-3 text-right text-white font-bold ${filtroMesMatriz === '9' ? 'bg-blue-600' : ''}`}>Septiembre</th>
+                    <th className={`py-3 px-3 text-right text-slate-700 font-bold font-mono ${filtroMesMatriz === '9' ? 'bg-blue-100 text-blue-900' : ''}`}>Septiembre</th>
                   )}
-                  <th className="py-2.5 px-4 text-right bg-slate-900 text-white font-bold min-w-[110px]">
+                  <th className="py-3 px-4 text-right bg-slate-100/90 text-slate-900 font-black font-mono min-w-[110px]">
                     {filtroMesMatriz === 'todos' ? 'Total general' : 'Total acumulado'}
                   </th>
                 </tr>
@@ -1824,7 +1707,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                   : selectedCat === 'Mano de Obra Directa'
                   ? 'Septiembre auditado en $378.249 USD: Cuadrillas operativas ($253.249) + Staff Fijo Pellas ($125.000).'
                   : selectedCat === 'Costos Indirectos'
-                  ? 'Septiembre auditado en $341.375 USD ($341.374,77) en la Bolsa General (16 rubros), prorrateado a Proyectos Externos en $205.120 USD (Línea 1 Pellas: 60.17%).'
+                  ? 'Septiembre auditado en $341.375 USD ($341.374,77) en la Bolsa General (16 rubros), prorrateado al 100% a Proyectos Externos (Línea 1 Pellas: 60,2% · $205.400).'
                   : 'Septiembre con cierre preliminar en curso.')
               : (alcanceProyectos === 'externos' && selectedCat === 'Materiales Directos'
                   ? 'Agosto cuadrado en $506.689 USD: Proyectos externos TTE ($495.913) + Cierre contable compras en tránsito ($10.776).'

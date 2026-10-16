@@ -136,16 +136,16 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Servicios',
-    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 117970, 76820],
-    total2026: 2881425,
-    variacion: '-35%',
-    variacionNum: -35,
+    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 117970, 99540],
+    total2026: 2904145,
+    variacion: '-16%',
+    variacionNum: -16,
     esPositiva: false
   },
   {
     categoria: 'Mano de Obra Directa',
-    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 277936, 196666],
-    total2026: 2218230,
+    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 277936, 196665],
+    total2026: 2218226,
     variacion: '-29%',
     variacionNum: -29,
     esPositiva: false
@@ -160,11 +160,11 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 207508, 205120],
-    total2026: 1758733,
-    variacion: '-1%',
-    variacionNum: -1,
-    esPositiva: false
+    meses: [182000, 184037, 205893, 197190, 237466, 213292, 227455, 339978, 393375],
+    total2026: 2190686,
+    variacion: '+16%',
+    variacionNum: 16,
+    esPositiva: true
   }
 ];
 
@@ -176,11 +176,11 @@ export const TOTALES_MESES_PPT = [
   { mesNum: 5, mesNombre: 'Mayo 2026', total: 874248 },
   { mesNum: 6, mesNombre: 'Junio 2026', total: 2590801 },
   { mesNum: 7, mesNombre: 'Julio 2026', total: 1088254 },
-  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1065130 },
-  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1402251 }
+  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1197600 },
+  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1613225 }
 ];
 
-// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.065.130 USD)
+// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.197.600 USD)
 export interface CuentaAuxiliarProyecto {
   cuentaAuxiliar: string;
   proyecto: string;
@@ -190,7 +190,7 @@ export interface CuentaAuxiliarProyecto {
 }
 
 const projsListAll = Object.values(MATRIZ_REAL_PROYECTOS_MENSUAL_2026);
-const totAgostoExacto = 1065130;
+const totAgostoExacto = 1197600;
 
 export const CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026: CuentaAuxiliarProyecto[] = projsListAll
   .filter(p => (p.meses[7] || 0) > 0)
@@ -206,8 +206,8 @@ export const CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026: CuentaAuxiliarProyecto[] = 
     };
   });
 
-// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE SEPTIEMBRE 2026 ($1.402.251 USD)
-const totSepExacto = 1402251;
+// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE SEPTIEMBRE 2026 ($1.613.225 USD)
+const totSepExacto = 1613225;
 
 export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 = projsListAll
   .filter(p => (p.meses[8] || 0) > 0)
@@ -378,8 +378,34 @@ export const TOTALES_NOMINA_SEMANAL_AGOSTO = {
   sem32: 56425,
   sem33: 56399,
   sem34: 53323,
-  totalGeneral: 221353
+  sem35: 56584,
+  totalGeneral: 277936
 };
+
+// AUDITORÍA REAL DE INPUTS DE NÓMINA SEPTIEMBRE 2026 (SEMANAS 36 A 39: $196.665 USD · 55.277 HH)
+export const TOTALES_NOMINA_SEMANAL_SEPTIEMBRE = {
+  sem35_agosto: 56584,
+  sem36: 54804,
+  sem37: 54173,
+  sem38: 53833,
+  sem39: 33856,
+  totalSeptiembre: 196665,
+  totalHorasHombre: 55277,
+  explicacion: 'Semana 35 ($56.584 USD / 15.619 HH) fue imputada contablemente al cierre de Agosto por calendario de fecha de inicio, completando los $277.936 USD de Agosto. Septiembre comprende estrictamente las Semanas 36 a 39 ($196.665 USD / 55.277 HH).'
+};
+
+export const DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS = [
+  { cta: 'TTE-C-0706', proyecto: 'Recuperación Línea 1 Pellas (VISCO)', monto: 128161, hh: 35059, pct: 65.2 },
+  { cta: 'TTE-C-0671', proyecto: 'Segunda línea PMH (VISCO ORINOCO)', monto: 30305, hh: 8671, pct: 15.4 },
+  { cta: 'TTE-C-0680', proyecto: 'Boca Grande II', monto: 11870, hh: 3885, pct: 6.0 },
+  { cta: 'TTE-C-0668', proyecto: 'Planta de Briquetas', monto: 8392, hh: 2326, pct: 4.3 },
+  { cta: 'TTE-C-0669', proyecto: 'Mantenimiento PMH', monto: 5218, hh: 1512, pct: 2.7 },
+  { cta: 'TTE-C-0656', proyecto: 'Fabricación Tolvas y Ductos', monto: 3762, hh: 1213, pct: 1.9 },
+  { cta: 'TTE-C-0670', proyecto: 'Trabajos Especiales Taller', monto: 3420, hh: 912, pct: 1.7 },
+  { cta: 'TTE-C-0694', proyecto: 'Servicios de Montaje', monto: 3420, hh: 1072, pct: 1.7 },
+  { cta: 'TTE-C-0655', proyecto: 'Reparación Estructural', monto: 1768, hh: 531, pct: 0.9 },
+  { cta: 'TTE-C-0678', proyecto: 'Pila HA y HB FMO-PMH', monto: 350, hh: 96, pct: 0.2 }
+];
 
 // Aliases para compatibilidad
 export const CATEGORIAS_DEFAULT = CATEGORIAS_PPT_2026;

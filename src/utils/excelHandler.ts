@@ -690,6 +690,26 @@ export function exportCategoriaToExcel(
     XLSX.utils.book_append_sheet(wb, wsDet, 'Detalle de Movimientos');
   }
 
+  // Sheet 4: Auditoría de Motivos, Solicitantes y Cuentas Auxiliares (Revisión detallada de motivos requerida por usuario)
+  if (salidasDetalle && salidasDetalle.length > 0) {
+    const motivosData = salidasDetalle.map(s => ({
+      'Cuenta Auxiliar': s.cuentaAuxiliarCodigo || '',
+      'Nombre de Cuenta': s.cuentaAuxiliarNombre || s.proyecto || '',
+      'Categoría': s.categoria || categoriaNombre,
+      'Descripción / Partida': s.itemDescripcion || '',
+      'Cantidad': s.cantidad || 0,
+      'Unidad': s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida || 'und',
+      'Precio Unitario (USD)': s.montoUnitario || (s.cantidad && s.cantidad > 0 ? Number((s.montoTotal / s.cantidad).toFixed(2)) : s.montoTotal),
+      'Monto Total (USD)': s.montoTotal || 0,
+      'Solicitante': (s as any).solicitante || s.responsable || 'No especificado',
+      'Motivo / Justificación': s.motivo || 'Operativo',
+      'Fecha': s.fecha || '',
+      'Código Salida': s.codigoSalida || ''
+    }));
+    const wsMotivos = XLSX.utils.json_to_sheet(motivosData);
+    XLSX.utils.book_append_sheet(wb, wsMotivos, 'Auditoría de Motivos');
+  }
+
   const cleanCatName = categoriaNombre.replace(/\s+/g, '_');
   XLSX.writeFile(wb, `TIMACA_Categoria_${cleanCatName}_${mesActualLabel.replace(/\s+/g, '_')}.xlsx`);
 }
