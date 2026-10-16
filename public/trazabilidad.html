@@ -535,7 +535,7 @@ function asegurarUsuariosClave() {
   // Asegurar Daniela Riveros (Supervisora en todos los almacenes, clave 1234)
   let uDan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
   if (!uDan) {
-    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
     DB.usuarios.unshift(uDan);
   } else {
     uDan.usuario = 'drivero';
@@ -545,10 +545,16 @@ function asegurarUsuariosClave() {
     uDan.nombre = 'Daniela Riveros';
     uDan.cargo = 'Supervisora de Herramientas & Almacenes';
     uDan.activo = true;
+    uDan.admin = true;
     uDan.almacenes = ALMS_TODOS_OFICIALES;
     uDan.maestro = true;
     uDan.editaCostos = true;
     uDan.perm = { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+  }
+  if (S.u && (S.u.usuario === 'drivero' || S.u.alias === 'daniela')) {
+    S.u.admin = true;
+    S.u.maestro = true;
+    S.u.almacenes = ALMS_TODOS_OFICIALES;
   }
 
   // Asegurar Jessica Navarro (Acceso a todos los almacenes, clave 1234)
@@ -4408,7 +4414,10 @@ VISTAS.sol = p => {
   if (filtro !== 'TODAS') rows = rows.filter(s => s.estatus === filtro);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const cols = [
-    { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
+    { t: 'Número', k: 'num', f: r => {
+      const editable = r.estatus !== 'APROBADO' && r.estatus !== 'ANULADO';
+      return `<a href="javascript:void(0)" onclick="event.stopPropagation();${editable ? `ir('solNueva',{num:'${r.num}'})` : `ir('doc',{num:'${r.num}',back:'sol'})`}" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="${editable ? 'Haga clic para editar la solicitud ' + r.num : 'Haga clic para visualizar'}">${esc(r.num)}</a>`;
+    }},
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
     { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
     { t: 'Cuenta auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800">${esc(r.cuenta)}</span>` : '—' },
@@ -4438,14 +4447,13 @@ function tiraSol(s) {
   if ($('tsCuenta')) $('tsCuenta').textContent = s.cuenta || '—';
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
-  const propia = S.u.admin || s.generadoPor.usuario === S.u.usuario;
-  const editable = (s.estatus === 'NO FINALIZADO' || s.estatus === 'FINALIZADO') && propia;
-  $('bEdit').disabled = !editable;
-  $('bDel').disabled = !editable;
+  const noAprobada = s.estatus !== 'APROBADO' && s.estatus !== 'ANULADO';
+  $('bEdit').disabled = !noAprobada;
+  $('bDel').disabled = !noAprobada;
   $('bVer').disabled = false; $('bImp').disabled = !s.vale;
   const info = s.estatus === 'FINALIZADO' ? 'Pendiente de aprobación. ' + motivoNoAprueba(s) + ' Si seleccionó un ítem por error, use "Editar solicitud" para corregirlo antes de que sea aprobada.'
     : s.estatus === 'APROBADO' ? `Aprobada por ${s.procesadoPor ? s.procesadoPor.nombre : 'Supervisor'}. Vale ${s.vale} emitido. REGLA ESTRICTA: Las asignaciones y préstamos aprobados NO pueden ser editados.` + (puedeImprimir() ? ` Use "Imprimir vale" para imprimir el vale ${s.vale}.` : ` El personal del almacén imprimirá el vale ${s.vale}.`)
-    : s.estatus === 'NO FINALIZADO' ? 'Borrador: use "Editar solicitud" y luego "Finalizar solicitud" para enviarla a aprobación.'
+    : s.estatus === 'NO FINALIZADO' ? 'Borrador: use "Editar solicitud" para modificar o corregir ítems y luego "Finalizar solicitud" para enviarla a aprobación.'
     : s.estatus === 'ANULADO' ? 'Anulada: ' + (s.motivo || '') : '';
   $('tsInfo').innerHTML = info ? `<div class="franja-est ${s.estatus === 'APROBADO' ? 'verde' : s.estatus === 'ANULADO' ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>ℹ️ ${esc(info)}</span></div>` : '';
 }
