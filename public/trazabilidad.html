@@ -504,6 +504,18 @@ const TIPOS = {
   INI: { n: 'Inventario inicial', titulo: 'INVENTARIO INICIAL' },
 };
 const MODULOS = { HERRAMIENTA: 'Herramientas', CILINDRO: 'Cilindros y gases', EPP: 'EPP' };
+const CATEGORIAS_OFICIALES = [
+  'Herramientas mayores',
+  'Herramientas manuales',
+  'Herramientas eléctricas',
+  'Cilindros y gases',
+  'Equipos y accesorios para elevación y cargas',
+  'Equipos y accesorios para soldadura y oxicorte',
+  'EPP',
+  'Equipos e instrumentos de medición',
+  'Herramientas neumáticas e hidráulicas',
+  'Herramientas de fabricación'
+];
 const EST_COLOR = {
   'NO FINALIZADO': 'gris', 'FINALIZADO': 'azul', 'APROBADO': 'verde', 'ANULADO': 'rojo',
   'PENDIENTE DE RECEPCIÓN': 'gris', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
@@ -854,12 +866,12 @@ function asegurarPlanificacionCajas() {
 
   // Asegurar herramientas de especialidad en el catálogo (Tornero, Mecánico, Electricista, Soldador)
   const extrasCat = [
-    { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', mod: 'HERRAMIENTA', cat: 'Medición', marca: 'MITUTOYO', modelo: '530-104', serial: '', umb: 'UND', costo: 45, stockIni: 6 },
-    { cod: 'HE000195', desc: 'Micrómetro exterior 0-1"', mod: 'HERRAMIENTA', cat: 'Medición', marca: 'MITUTOYO', modelo: '103-137', serial: '', umb: 'UND', costo: 68, stockIni: 4 },
-    { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', mod: 'HERRAMIENTA', cat: 'Llaves', marca: 'STANLEY', modelo: '69-253', serial: '', umb: 'JGO', costo: 14.5, stockIni: 12 },
-    { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', mod: 'HERRAMIENTA', cat: 'Alicates', marca: 'VISE-GRIP', modelo: '10R', serial: '', umb: 'UND', costo: 15.8, stockIni: 10 },
-    { cod: 'HE000220', desc: 'Multímetro digital industrial', mod: 'HERRAMIENTA', cat: 'Eléctricas', marca: 'FLUKE', modelo: '117', serial: '', umb: 'UND', costo: 185, stockIni: 5 },
-    { cod: 'HE000230', desc: 'Piqueta / Martillo quita escoria', mod: 'HERRAMIENTA', cat: 'Soldadura', marca: 'TRUPER', modelo: 'MP-500', serial: '', umb: 'UND', costo: 7.5, stockIni: 14 }
+    { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'MITUTOYO', modelo: '530-104', serial: '', umb: 'UND', costo: 45, stockIni: 6 },
+    { cod: 'HE000195', desc: 'Micrómetro exterior 0-1"', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'MITUTOYO', modelo: '103-137', serial: '', umb: 'UND', costo: 68, stockIni: 4 },
+    { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: 'STANLEY', modelo: '69-253', serial: '', umb: 'JGO', costo: 14.5, stockIni: 12 },
+    { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: 'VISE-GRIP', modelo: '10R', serial: '', umb: 'UND', costo: 15.8, stockIni: 10 },
+    { cod: 'HE000220', desc: 'Multímetro digital industrial', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'FLUKE', modelo: '117', serial: '', umb: 'UND', costo: 185, stockIni: 5 },
+    { cod: 'HE000230', desc: 'Piqueta / Martillo quita escoria', mod: 'HERRAMIENTA', cat: 'Equipos y accesorios para soldadura y oxicorte', marca: 'TRUPER', modelo: 'MP-500', serial: '', umb: 'UND', costo: 7.5, stockIni: 14 }
   ];
   let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
   extrasCat.forEach(ex => {
@@ -892,6 +904,54 @@ function asegurarPlanificacionCajas() {
   }
 }
 
+function asegurarCategoriasOficiales() {
+  if (!DB || !Array.isArray(DB.catalogo)) return;
+  DB.catalogo.forEach(it => {
+    const c = String(it.cat || '').toLowerCase().trim();
+    if (it.mod === 'EPP' || c.includes('epp') || c.includes('protecci') || c.includes('calzado') || c.includes('cabeza') || c.includes('auditiva') || c.includes('respiratoria')) {
+      it.cat = 'EPP';
+    } else if (it.mod === 'CILINDRO' || c.includes('oxígeno') || c.includes('oxigeno') || c.includes('acetileno') || c.includes('argón') || c.includes('argon') || c.includes('co2') || c.includes('gas') || c.includes('cilindro')) {
+      it.cat = 'Cilindros y gases';
+    } else if (c.includes('izaj') || c.includes('elevaci') || c.includes('carga') || c.includes('señorita') || c.includes('eslinga') || c.includes('tecle')) {
+      it.cat = 'Equipos y accesorios para elevación y cargas';
+    } else if (c.includes('solda') || c.includes('oxicorte') || c.includes('escoria') || c.includes('inverter') || c.includes('antorcha')) {
+      it.cat = 'Equipos y accesorios para soldadura y oxicorte';
+    } else if (c.includes('medici') || c.includes('medición') || c.includes('vernier') || c.includes('micrómetro') || c.includes('calibrador') || c.includes('multímetro') || c.includes('nivel') || c.includes('cinta')) {
+      it.cat = 'Equipos e instrumentos de medición';
+    } else if (c.includes('neumátic') || c.includes('hidráulic') || c.includes('neumatic') || c.includes('hidraulic')) {
+      it.cat = 'Herramientas neumáticas e hidráulicas';
+    } else if (c.includes('fabricaci') || c.includes('biseladora') || c.includes('pantógrafo')) {
+      it.cat = 'Herramientas de fabricación';
+    } else if (c.includes('mayor') || c.includes('torno') || c.includes('fresadora') || c.includes('prensa') || c.includes('roscadora')) {
+      it.cat = 'Herramientas mayores';
+    } else if (c.includes('eléctric') || c.includes('electric') || c.includes('esmeril') || c.includes('taladro')) {
+      it.cat = 'Herramientas eléctricas';
+    } else if (c.includes('llave') || c.includes('alicate') || c.includes('destornillador') || c.includes('golpe') || c.includes('corte') || c.includes('martillo') || c.includes('manual') || c.includes('general')) {
+      it.cat = 'Herramientas manuales';
+    } else if (!CATEGORIAS_OFICIALES.includes(it.cat)) {
+      it.cat = 'Herramientas manuales';
+    }
+  });
+
+  // Asegurar que existan ítems oficiales de Herramientas mayores, Herramientas neumáticas e hidráulicas, y Herramientas de fabricación
+  const extras = [
+    { cod: 'HE000800', desc: 'Roscadora eléctrica de banco 1/2" a 2"', mod: 'HERRAMIENTA', cat: 'Herramientas mayores', marca: 'RIDGID', modelo: '300 Compact', serial: 'SN-RD-3001', umb: 'UND', costo: 2450, tipoA: true, stockIni: 1 },
+    { cod: 'HE000810', desc: 'Pistola de impacto neumática 1/2"', mod: 'HERRAMIENTA', cat: 'Herramientas neumáticas e hidráulicas', marca: 'INGERSOLL RAND', modelo: '231C', serial: 'SN-IR-2311', umb: 'UND', costo: 215, tipoA: false, stockIni: 2 },
+    { cod: 'HE000820', desc: 'Biseladora portátil de tubos 2"-6"', mod: 'HERRAMIENTA', cat: 'Herramientas de fabricación', marca: 'PROTEM', modelo: 'US25', serial: 'SN-PR-2501', umb: 'UND', costo: 1850, tipoA: true, stockIni: 1 }
+  ];
+  let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
+  extras.forEach(ex => {
+    let it = DB.catalogo.find(c => c.cod === ex.cod);
+    if (!it) {
+      it = { id: ++maxId, cod: ex.cod, desc: ex.desc, mod: ex.mod, cat: ex.cat, marca: ex.marca, modelo: ex.modelo, serial: ex.serial, umb: ex.umb, costo: ex.costo, tipoA: ex.tipoA, talla: '', vida: 0, activo: true };
+      DB.catalogo.push(it);
+      DB.exi = DB.exi || {};
+      DB.exi['CENTRAL'] = DB.exi['CENTRAL'] || {};
+      DB.exi['CENTRAL'][it.id] = { disp: ex.stockIni, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
+    }
+  });
+}
+
 function tipoCajaDe(id) { return (DB.cajasTipos || []).find(c => c.id === id); }
 
 function cargarDatos() {
@@ -906,6 +966,7 @@ function cargarDatos() {
         if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
         limpiarModuloCajasViejo();
         asegurarPlanificacionCajas();
+        asegurarCategoriasOficiales();
         guardar();
         return;
       }
@@ -917,6 +978,7 @@ function cargarDatos() {
   if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
   limpiarModuloCajasViejo();
   asegurarPlanificacionCajas();
+  asegurarCategoriasOficiales();
   guardar();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
@@ -1080,7 +1142,11 @@ function validarSolicitud(d, finalizar) {
 function guardarSolicitud(d, finalizar) {
   validarSolicitud(d, finalizar);
   let s = d.num ? solDe(d.num) : null;
-  if (s && s.estatus !== 'NO FINALIZADO') throw new Error('Solo se pueden modificar solicitudes NO FINALIZADAS.');
+  if (s) {
+    if (s.estatus === 'APROBADO') throw new Error(`Esta solicitud ya fue aprobada y tiene vale emitido (${s.vale || 'VALE'}). Por regla estricta de trazabilidad y control, las asignaciones y préstamos aprobados NO pueden ser editados.`);
+    if (s.estatus === 'ANULADO') throw new Error('No se pueden modificar solicitudes anuladas.');
+  }
+  const editando = !!s;
   if (!s) {
     s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'NO FINALIZADO' };
     DB.solicitudes.push(s);
@@ -1094,15 +1160,20 @@ function guardarSolicitud(d, finalizar) {
   if (finalizar) {
     s.estatus = 'FINALIZADO';
     s.finalizadaEn = nowISO();
-    bit('SOLICITUD FINALIZADA', s.num);
-    notificarSistema('Nueva solicitud generada', `Se generó la solicitud ${s.num} (${s.tipo}) para ${s.resp ? s.resp.nombre : 'custodio'} en ${almNombre(s.origen)}. Pendiente de aprobación por supervisión.`, 'info', { doc: s.num });
+    bit(editando ? 'SOLICITUD EDITADA Y FINALIZADA' : 'SOLICITUD FINALIZADA', s.num);
+    notificarSistema(editando ? 'Solicitud actualizada' : 'Nueva solicitud generada', `Se actualizó la solicitud ${s.num} (${s.tipo}) para ${s.resp ? s.resp.nombre : 'custodio'} en ${almNombre(s.origen)}. Pendiente de aprobación por supervisión.`, 'info', { doc: s.num });
+  } else {
+    s.estatus = 'NO FINALIZADO';
+    if (editando) bit('SOLICITUD MODIFICADA', s.num);
   }
   guardar();
   return s;
 }
 function eliminarSolicitud(numSol) {
   const s = solDe(numSol);
-  if (!s || s.estatus !== 'NO FINALIZADO') throw new Error('Solo se pueden eliminar solicitudes NO FINALIZADAS.');
+  if (!s) return;
+  if (s.estatus === 'APROBADO') throw new Error(`No se puede eliminar una solicitud APROBADA con vale emitido (${s.vale}).`);
+  if (s.estatus !== 'NO FINALIZADO' && s.estatus !== 'FINALIZADO') throw new Error('Solo se pueden eliminar solicitudes no aprobadas.');
   if (!S.u.admin && s.generadoPor.usuario !== S.u.usuario) throw new Error('Solo quien generó la solicitud puede eliminarla.');
   DB.solicitudes = DB.solicitudes.filter(x => x.num !== numSol);
   bit('SOLICITUD ELIMINADA', numSol); guardar();
@@ -1802,38 +1873,41 @@ function semilla() {
 
   let idc = 0;
   const C = (cod, desc, mod, cat, marca, modelo, serial, umb, costo, o) => DB.catalogo.push(Object.assign({ id: ++idc, cod, desc, mod, cat, marca, modelo, serial, umb, costo, tipoA: false, talla: '', vida: 0, activo: true }, o || {}));
-  C('HE000101', 'Llave combinada 3/4"', 'HERRAMIENTA', 'Llaves', 'STANLEY', '87-076', '', 'UND', 9.5);
-  C('HE000102', 'Llave combinada 1/2"', 'HERRAMIENTA', 'Llaves', 'STANLEY', '87-072', '', 'UND', 7.8);
-  C('HE000110', 'Señorita de cadena 1 ton', 'HERRAMIENTA', 'Izaje', 'TRUPER', 'POLI-1', '', 'UND', 48);
-  C('HE000120', 'Alicate universal 8"', 'HERRAMIENTA', 'Alicates', 'TRUPER', 'T201-8', '', 'UND', 11.2);
-  C('HE000130', 'Llave ajustable 12"', 'HERRAMIENTA', 'Llaves', 'TOTAL', 'THT101126', '', 'UND', 13.5);
-  C('HE000140', 'Martillo de bola 2 lb', 'HERRAMIENTA', 'Golpe', 'TRUPER', 'MB-32F', '', 'UND', 12);
-  C('HE000150', 'Juego de destornilladores 6 piezas', 'HERRAMIENTA', 'Destornilladores', 'STANLEY', 'STHT65199', '', 'JGO', 16.4);
-  C('HE000160', 'Arco de segueta 12"', 'HERRAMIENTA', 'Corte', 'TRUPER', 'AS-12', '', 'UND', 8.9);
-  C('HE000170', 'Nivel de aluminio 24"', 'HERRAMIENTA', 'Medición', 'STANLEY', '42-468', '', 'UND', 21);
-  C('HE000180', 'Cinta métrica 8 m', 'HERRAMIENTA', 'Medición', 'STANLEY', '33-428', '', 'UND', 10.5);
-  C('HE000190', 'Vernier / Calibrador pie de rey 6"', 'HERRAMIENTA', 'Medición', 'MITUTOYO', '530-104', '', 'UND', 45);
-  C('HE000195', 'Micrómetro exterior 0-1"', 'HERRAMIENTA', 'Medición', 'MITUTOYO', '103-137', '', 'UND', 68);
-  C('HE000200', 'Juego de llaves Allen milimétricas 10 pzas', 'HERRAMIENTA', 'Llaves', 'STANLEY', '69-253', '', 'JGO', 14.5);
-  C('HE000210', 'Alicate de presión (Perro) 10"', 'HERRAMIENTA', 'Alicates', 'VISE-GRIP', '10R', '', 'UND', 15.8);
-  C('HE000220', 'Multímetro digital industrial', 'HERRAMIENTA', 'Eléctricas', 'FLUKE', '117', '', 'UND', 185);
-  C('HE000230', 'Piqueta / Martillo quita escoria', 'HERRAMIENTA', 'Soldadura', 'TRUPER', 'MP-500', '', 'UND', 7.5);
-  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482190', 'UND', 165);
-  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482191', 'UND', 165);
-  C('HE000600', 'Taladro percutor 1/2"', 'HERRAMIENTA', 'Eléctricas', 'DEWALT', 'DWD024', 'SN-7781001', 'UND', 138);
-  C('HE000700', 'Máquina de soldar inverter 250 A', 'HERRAMIENTA', 'Soldadura', 'LINCOLN', 'Invertec V275', 'LN-250-0091', 'UND', 920, { tipoA: true });
-  C('HE000710', 'Equipo de oxicorte completo', 'HERRAMIENTA', 'Soldadura', 'HARRIS', 'Ironworker', 'HR-3301', 'EQP', 410, { tipoA: true });
-  ['OX-0001', 'OX-0002', 'OX-0003', 'OX-0004'].forEach(s => C('CI000101', 'Cilindro de oxígeno industrial 6 m³', 'CILINDRO', 'Oxígeno', 'AGA', '6 m³', s, 'CIL', 210));
-  ['AC-0001', 'AC-0002'].forEach(s => C('CI000201', 'Cilindro de acetileno 4 m³', 'CILINDRO', 'Acetileno', 'AGA', '4 m³', s, 'CIL', 245));
-  C('CI000301', 'Cilindro de argón 10 m³', 'CILINDRO', 'Argón', 'PRAXAIR', '10 m³', 'AR-0001', 'CIL', 260);
-  C('CI000401', 'Cilindro de CO2 25 kg', 'CILINDRO', 'CO2', 'PRAXAIR', '25 kg', 'CO-0001', 'CIL', 180);
-  C('EP000101', 'Casco de seguridad', 'EPP', 'Protección de cabeza', 'MSA', 'V-Gard', '', 'UND', 18.5, { talla: 'Única', vida: 730 });
-  C('EP000201', 'Botas de seguridad punta de acero T-42', 'EPP', 'Calzado', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '42', vida: 365 });
-  C('EP000202', 'Botas de seguridad punta de acero T-40', 'EPP', 'Calzado', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '40', vida: 365 });
-  C('EP000301', 'Lentes de seguridad claros', 'EPP', 'Protección visual', '3M', 'Virtua', '', 'UND', 6.5, { talla: 'Única', vida: 90 });
-  C('EP000401', 'Guantes de carnaza 16"', 'EPP', 'Protección de manos', 'STEELPRO', 'Carnaza', '', 'PAR', 5.2, { talla: 'L', vida: 30 });
-  C('EP000501', 'Protector auditivo tipo copa', 'EPP', 'Protección auditiva', '3M', 'H9A', '', 'UND', 24, { talla: 'Única', vida: 365 });
-  C('EP000601', 'Respirador media cara', 'EPP', 'Protección respiratoria', '3M', '6200', '', 'UND', 31, { talla: 'M', vida: 180 });
+  C('HE000101', 'Llave combinada 3/4"', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '87-076', '', 'UND', 9.5);
+  C('HE000102', 'Llave combinada 1/2"', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '87-072', '', 'UND', 7.8);
+  C('HE000110', 'Señorita de cadena 1 ton', 'HERRAMIENTA', 'Equipos y accesorios para elevación y cargas', 'TRUPER', 'POLI-1', '', 'UND', 48);
+  C('HE000120', 'Alicate universal 8"', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'T201-8', '', 'UND', 11.2);
+  C('HE000130', 'Llave ajustable 12"', 'HERRAMIENTA', 'Herramientas manuales', 'TOTAL', 'THT101126', '', 'UND', 13.5);
+  C('HE000140', 'Martillo de bola 2 lb', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'MB-32F', '', 'UND', 12);
+  C('HE000150', 'Juego de destornilladores 6 piezas', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', 'STHT65199', '', 'JGO', 16.4);
+  C('HE000160', 'Arco de segueta 12"', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'AS-12', '', 'UND', 8.9);
+  C('HE000170', 'Nivel de aluminio 24"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'STANLEY', '42-468', '', 'UND', 21);
+  C('HE000180', 'Cinta métrica 8 m', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'STANLEY', '33-428', '', 'UND', 10.5);
+  C('HE000190', 'Vernier / Calibrador pie de rey 6"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'MITUTOYO', '530-104', '', 'UND', 45);
+  C('HE000195', 'Micrómetro exterior 0-1"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'MITUTOYO', '103-137', '', 'UND', 68);
+  C('HE000200', 'Juego de llaves Allen milimétricas 10 pzas', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '69-253', '', 'JGO', 14.5);
+  C('HE000210', 'Alicate de presión (Perro) 10"', 'HERRAMIENTA', 'Herramientas manuales', 'VISE-GRIP', '10R', '', 'UND', 15.8);
+  C('HE000220', 'Multímetro digital industrial', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'FLUKE', '117', '', 'UND', 185);
+  C('HE000230', 'Piqueta / Martillo quita escoria', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'TRUPER', 'MP-500', '', 'UND', 7.5);
+  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Herramientas eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482190', 'UND', 165);
+  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Herramientas eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482191', 'UND', 165);
+  C('HE000600', 'Taladro percutor 1/2"', 'HERRAMIENTA', 'Herramientas eléctricas', 'DEWALT', 'DWD024', 'SN-7781001', 'UND', 138);
+  C('HE000700', 'Máquina de soldar inverter 250 A', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'LINCOLN', 'Invertec V275', 'LN-250-0091', 'UND', 920, { tipoA: true });
+  C('HE000710', 'Equipo de oxicorte completo', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'HARRIS', 'Ironworker', 'HR-3301', 'EQP', 410, { tipoA: true });
+  C('HE000800', 'Roscadora eléctrica de banco 1/2" a 2"', 'HERRAMIENTA', 'Herramientas mayores', 'RIDGID', '300 Compact', 'SN-RD-3001', 'UND', 2450, { tipoA: true });
+  C('HE000810', 'Pistola de impacto neumática 1/2"', 'HERRAMIENTA', 'Herramientas neumáticas e hidráulicas', 'INGERSOLL RAND', '231C', 'SN-IR-2311', 'UND', 215);
+  C('HE000820', 'Biseladora portátil de tubos 2"-6"', 'HERRAMIENTA', 'Herramientas de fabricación', 'PROTEM', 'US25', 'SN-PR-2501', 'UND', 1850, { tipoA: true });
+  ['OX-0001', 'OX-0002', 'OX-0003', 'OX-0004'].forEach(s => C('CI000101', 'Cilindro de oxígeno industrial 6 m³', 'CILINDRO', 'Cilindros y gases', 'AGA', '6 m³', s, 'CIL', 210));
+  ['AC-0001', 'AC-0002'].forEach(s => C('CI000201', 'Cilindro de acetileno 4 m³', 'CILINDRO', 'Cilindros y gases', 'AGA', '4 m³', s, 'CIL', 245));
+  C('CI000301', 'Cilindro de argón 10 m³', 'CILINDRO', 'Cilindros y gases', 'PRAXAIR', '10 m³', 'AR-0001', 'CIL', 260);
+  C('CI000401', 'Cilindro de CO2 25 kg', 'CILINDRO', 'Cilindros y gases', 'PRAXAIR', '25 kg', 'CO-0001', 'CIL', 180);
+  C('EP000101', 'Casco de seguridad', 'EPP', 'EPP', 'MSA', 'V-Gard', '', 'UND', 18.5, { talla: 'Única', vida: 730 });
+  C('EP000201', 'Botas de seguridad punta de acero T-42', 'EPP', 'EPP', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '42', vida: 365 });
+  C('EP000202', 'Botas de seguridad punta de acero T-40', 'EPP', 'EPP', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '40', vida: 365 });
+  C('EP000301', 'Lentes de seguridad claros', 'EPP', 'EPP', '3M', 'Virtua', '', 'UND', 6.5, { talla: 'Única', vida: 90 });
+  C('EP000401', 'Guantes de carnaza 16"', 'EPP', 'EPP', 'STEELPRO', 'Carnaza', '', 'PAR', 5.2, { talla: 'L', vida: 30 });
+  C('EP000501', 'Protector auditivo tipo copa', 'EPP', 'EPP', '3M', 'H9A', '', 'UND', 24, { talla: 'Única', vida: 365 });
+  C('EP000601', 'Respirador media cara', 'EPP', 'EPP', '3M', '6200', '', 'UND', 31, { talla: 'M', vida: 180 });
 
   const IT = (cod, serial) => DB.catalogo.find(i => i.cod === cod && (!serial || i.serial === serial));
   const L = (cod, cant, cond = 'ÓPTIMO', serial) => { const it = IT(cod, serial); return lineaDe(it, cant, it.mod === 'CILINDRO' && cond === 'ÓPTIMO' ? 'LLENO' : cond); };
@@ -1852,6 +1926,7 @@ function semilla() {
     ['HE000190', 6], ['HE000195', 4], ['HE000200', 12], ['HE000210', 10], ['HE000220', 5], ['HE000230', 14],
     ['EP000101', 60], ['EP000201', 40], ['EP000202', 30], ['EP000301', 100], ['EP000401', 150], ['EP000501', 40], ['EP000601', 25]].forEach(([c, n]) => ini('CENTRAL', c, n));
     [['HE000521', 'SN-4482190'], ['HE000521', 'SN-4482191'], ['HE000600', 'SN-7781001'], ['HE000700', 'LN-250-0091'], ['HE000710', 'HR-3301'],
+    ['HE000800', 'SN-RD-3001'], ['HE000810', 'SN-IR-2311'], ['HE000820', 'SN-PR-2501'],
     ['CI000101', 'OX-0001'], ['CI000101', 'OX-0002'], ['CI000101', 'OX-0003'], ['CI000101', 'OX-0004'], ['CI000201', 'AC-0001'], ['CI000201', 'AC-0002'], ['CI000301', 'AR-0001'], ['CI000401', 'CO-0001']].forEach(([c, s]) => ini('CENTRAL', c, 1, s));
     [['HE000130', 4], ['HE000140', 3], ['HE000120', 4], ['EP000301', 20], ['EP000401', 30]].forEach(([c, n]) => ini('ECO', c, n));
     ini('PMH', 'HE000140', 2); ini('FABRICACION', 'HE000160', 3); ini('SMB', 'HE000180', 2);
@@ -3656,6 +3731,15 @@ function nuevoF(tipo, extra) {
 VISTAS.solNueva = p => {
   if (p && p.num) {
     const s = solDe(p.num);
+    if (!s) return ir('sol');
+    if (s.estatus === 'APROBADO') {
+      toast(`La solicitud ${s.num} ya fue APROBADA (Vale ${s.vale || ''}). Por norma de control interno, las asignaciones y préstamos aprobados no se pueden editar.`, 'err');
+      return ir('sol', { sel: s.num });
+    }
+    if (s.estatus === 'ANULADO') {
+      toast(`La solicitud ${s.num} está ANULADA y no se puede editar.`, 'err');
+      return ir('sol', { sel: s.num });
+    }
     F = nuevoF(s.tipo, { num: s.num, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, fechaReq: s.fechaReq || hoy(), fechaDev: s.fechaDev || sumarDias(hoy(), 7), fechaAsig: s.fechaAsig || hoy(), obs: s.obs, lineas: s.lineas.map(l => Object.assign({}, l)) });
   } else F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
   pintarSolicitud();
@@ -3880,6 +3964,24 @@ function salvarLinea(confirmado) {
   F.lineas.push(lineaDe(it, cant, cond));
   limpiarCaptura(); pintarLineas(); $('cCod').focus();
 }
+function cambiarCantLinea(i, val) {
+  const l = F.lineas[i];
+  if (!l) return;
+  const c = parseInt(val, 10);
+  const dispTotal = dispItem(F.origen, l.id, l.est) + l.cant;
+  if (isNaN(c) || c <= 0) {
+    toast('La cantidad debe ser mayor a 0.', 'err');
+    pintarLineas();
+    return;
+  }
+  if (c > dispTotal) {
+    toast(`Stock insuficiente en ${almNombre(F.origen)}. Máximo disponible: ${dispTotal} ${l.umb}.`, 'err');
+    pintarLineas();
+    return;
+  }
+  l.cant = c;
+  pintarTotales();
+}
 function pintarLineas() {
   const conRef = !!F.valeRef, bloqueado = !!F.hecho;
   let filas;
@@ -3887,10 +3989,11 @@ function pintarLineas() {
   else filas = F.lineas.map((l, i) => conRef ? `<tr>
       <td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.umb)}</td>
       <td class="cen">${l.saldo}</td><td class="cen"><input type="number" min="0" max="${l.saldo}" value="${l.cant}" ${bloqueado ? 'disabled' : ''} style="width:70px;padding:4px;text-align:center" onchange="F.lineas[${i}].cant=Math.max(0,Math.min(${l.saldo},Number(this.value)||0));this.value=F.lineas[${i}].cant;pintarTotales()"></td><td colspan="2"></td></tr>`
-    : `<tr class="${F.sel === i ? 'sel' : ''}" onclick="${bloqueado ? '' : `F.sel=${i};pintarLineas()`}">
+    : `<tr class="${F.sel === i ? 'sel' : ''}">
       <td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td>
-      <td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>
-      <td class="cen">${bloqueado ? '' : `<button class="btn btn-rojo btn-mini" ${F.sel === i ? '' : 'disabled'} onclick="event.stopPropagation();eliminarLinea(${i})">Eliminar</button>`}</td></tr>`).join('');
+      <td>${esc(l.cond)}</td>
+      <td class="cen">${bloqueado || l.serial ? `<b>${l.cant}</b>` : `<input type="number" min="1" max="${dispItem(F.origen, l.id, l.est) + l.cant}" value="${l.cant}" style="width:60px;padding:3px;text-align:center;font-weight:700" onchange="cambiarCantLinea(${i}, this.value)">`}</td>
+      <td class="cen">${bloqueado ? '' : `<button class="btn btn-rojo btn-mini" title="Eliminar ítem de la solicitud" onclick="event.stopPropagation();eliminarLinea(${i})">🗑 Eliminar</button>`}</td></tr>`).join('');
   const th = conRef ? '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Unidad</th><th class="cen">Saldo</th><th class="cen">Cantidad</th><th colspan="2"></th>'
     : '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th><th class="cen">Acción</th>';
   $('fLineas').innerHTML = `<div style="overflow:auto"><table class="grid"><thead><tr>${th}</tr></thead><tbody>${filas}</tbody></table></div>`;
@@ -3898,11 +4001,18 @@ function pintarLineas() {
 }
 function pintarTotales() {
   const lin = F.lineas.filter(l => l.cant > 0);
-  $('fTotales').innerHTML = `Total de líneas: <b>${lin.length}</b> · Total de unidades: <b>${lin.reduce((a, l) => a + l.cant, 0)}</b>${!F.valeRef && !F.hecho && F.lineas.length ? ' · Seleccione una línea para eliminarla' : ''}`;
+  $('fTotales').innerHTML = `Total de líneas: <b>${lin.length}</b> · Total de unidades: <b>${lin.reduce((a, l) => a + l.cant, 0)}</b>${!F.valeRef && !F.hecho && F.lineas.length ? ' · Puede eliminar o ajustar la cantidad de cualquier ítem' : ''}`;
 }
 function eliminarLinea(i) {
   const l = F.lineas[i];
-  confirmar(`¿Eliminar la línea <b>${esc(l.cod)} · ${esc(l.desc)}</b> (${l.cant} ${esc(l.umb)})?`, () => { F.lineas.splice(i, 1); F.sel = -1; pintarLineas(); if ($('cCod')) $('cCod').focus(); }, 'Eliminar');
+  if (!l) return;
+  confirmar(`¿Eliminar la línea <b>${esc(l.cod)} · ${esc(l.desc)}</b> (${l.cant} ${esc(l.umb)})?`, () => {
+    F.lineas.splice(i, 1);
+    F.sel = -1;
+    pintarLineas();
+    if ($('cCod')) $('cCod').focus();
+    toast('Ítem eliminado de la solicitud.', 'ok');
+  }, 'Eliminar ítem');
 }
 function finalizarFormulario(finalizar) {
   leerCabecera();
@@ -4084,7 +4194,6 @@ VISTAS.ent = () => {
 };
 function pintarEntrada() {
   const bloq = !!E.hecho, ro = bloq ? 'disabled' : '';
-  const cats = [...new Set(DB.catalogo.map(i => i.cat))].sort();
   const umbs = [...new Set(DB.catalogo.map(i => i.umb))].sort();
   $('area').innerHTML = cab('➕ Entrada de ítems al catálogo', 'Registre herramientas, cilindros o EPP que ingresan al almacén. Si el código ya existe se suma la cantidad; si es nuevo, se crea en el catálogo. Lo recibido por transferencia entra solo al aceptarla.')
     + (E.hecho ? `<div class="franja-est verde"><span>Entrada <b>${E.hecho}</b> registrada. Los ítems ya aparecen en el catálogo de ${esc(almNombre(S.ctx))}.</span><span><button class="btn btn-claro btn-mini" onclick="ir('cCatAlm')">Ver catálogo</button></span></div>` : '')
@@ -4097,7 +4206,7 @@ function pintarEntrada() {
         <div class="campo" style="position:relative"><label>Código</label><input id="eCod" autocomplete="off" placeholder="Nuevo o existente"></div>
         <div class="campo" style="grid-column:span 2"><label>Descripción</label><input id="eDesc"></div>
         ${campo('Módulo', `<select id="eMod" onchange="condEntrada()">${opciones(Object.entries(MODULOS))}</select>`)}
-        ${campo('Categoría', `<input id="eCat" list="dlCat">`)}${campo('Unidad', `<input id="eUmb" list="dlUmb" value="UND">`)}
+        ${campo('Categoría', `<select id="eCat">${opciones(CATEGORIAS_OFICIALES, 'Herramientas manuales')}</select>`)}${campo('Unidad', `<input id="eUmb" list="dlUmb" value="UND">`)}
         ${campo('Marca', `<input id="eMarca" placeholder="Ej. STANLEY">`)}${campo('Modelo', `<input id="eModelo">`)}${campo('Serial (ítem único)', `<input id="eSerial" placeholder="Opcional">`)}
         ${campo('Condición', `<select id="eCond"></select>`)}${campo('Cantidad', `<input id="eCant" type="number" min="1" value="1" style="text-align:center;font-weight:800">`)}
         <div class="campo" style="justify-content:flex-end"><label>&nbsp;</label><button class="btn-salvar" onclick="agregarEntrada()">Agregar ítem</button></div>
@@ -4107,7 +4216,7 @@ function pintarEntrada() {
       ${bloq ? `<button class="btn btn-claro" onclick="ir('ent')">Nueva entrada</button>` : `<button class="btn btn-claro" onclick="ir('cCatAlm')">Cancelar</button><button class="btn btn-verde" onclick="registrarEntradaUI()">✔ Registrar entrada</button>`}
       <button class="btn btn-azul" ${bloq ? '' : 'disabled'} onclick="imprimirVale('${E.hecho || ''}')">🖨 Imprimir vale</button>
     </div></div></div>
-    <datalist id="dlCat">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist><datalist id="dlUmb">${umbs.map(c => `<option value="${esc(c)}">`).join('')}</datalist>`;
+    <datalist id="dlUmb">${umbs.map(c => `<option value="${esc(c)}">`).join('')}</datalist>`;
   if (!bloq) {
     condEntrada();
     bindAC('eCod', q => { q = q.trim().toLowerCase(); if (q.length < 2) return []; const g = {}; DB.catalogo.filter(i => (i.cod + ' ' + i.desc).toLowerCase().includes(q)).forEach(i => g[i.cod] = g[i.cod] || i); return Object.values(g).slice(0, 15).map(i => ({ val: i, html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(MODULOS[i.mod])} · ${esc(i.cat)} · código existente</small>` })); },
@@ -4330,16 +4439,21 @@ function tiraSol(s) {
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
   const propia = S.u.admin || s.generadoPor.usuario === S.u.usuario;
-  $('bEdit').disabled = !(s.estatus === 'NO FINALIZADO' && propia);
-  $('bDel').disabled = !(s.estatus === 'NO FINALIZADO' && propia);
+  const editable = (s.estatus === 'NO FINALIZADO' || s.estatus === 'FINALIZADO') && propia;
+  $('bEdit').disabled = !editable;
+  $('bDel').disabled = !editable;
   $('bVer').disabled = false; $('bImp').disabled = !s.vale;
-  const info = s.estatus === 'FINALIZADO' ? 'Pendiente de aprobación. ' + motivoNoAprueba(s) + ' El vale se podrá imprimir cuando sea aprobada.'
-    : s.estatus === 'APROBADO' ? `Aprobada por ${s.procesadoPor.nombre}. ` + (puedeImprimir() ? `Use "Imprimir vale" para imprimir el vale ${s.vale}.` : `El personal del almacén imprimirá el vale ${s.vale}.`)
+  const info = s.estatus === 'FINALIZADO' ? 'Pendiente de aprobación. ' + motivoNoAprueba(s) + ' Si seleccionó un ítem por error, use "Editar solicitud" para corregirlo antes de que sea aprobada.'
+    : s.estatus === 'APROBADO' ? `Aprobada por ${s.procesadoPor ? s.procesadoPor.nombre : 'Supervisor'}. Vale ${s.vale} emitido. REGLA ESTRICTA: Las asignaciones y préstamos aprobados NO pueden ser editados.` + (puedeImprimir() ? ` Use "Imprimir vale" para imprimir el vale ${s.vale}.` : ` El personal del almacén imprimirá el vale ${s.vale}.`)
     : s.estatus === 'NO FINALIZADO' ? 'Borrador: use "Editar solicitud" y luego "Finalizar solicitud" para enviarla a aprobación.'
     : s.estatus === 'ANULADO' ? 'Anulada: ' + (s.motivo || '') : '';
   $('tsInfo').innerHTML = info ? `<div class="franja-est ${s.estatus === 'APROBADO' ? 'verde' : s.estatus === 'ANULADO' ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>ℹ️ ${esc(info)}</span></div>` : '';
 }
-function accionEliminarSol() { const s = selDe('gSol'); confirmar(`¿Eliminar la solicitud <b>${s.num}</b>? Esta acción solo aplica a solicitudes no finalizadas.`, () => { eliminarSolicitud(s.num); toast('Solicitud eliminada.', 'ok'); refrescar(); }, 'Eliminar'); }
+function accionEliminarSol() {
+  const s = selDe('gSol');
+  if (s.estatus === 'APROBADO') return toast('No se puede eliminar una solicitud aprobada.', 'err');
+  confirmar(`¿Eliminar la solicitud <b>${s.num}</b>?`, () => { eliminarSolicitud(s.num); toast('Solicitud eliminada.', 'ok'); refrescar(); }, 'Eliminar');
+}
 
 /* =====================================================================
    APROBACIÓN (supervisores autorizados del almacén origen)
@@ -4755,8 +4869,8 @@ VISTAS.dash = p => {
    CATÁLOGO DEL ALMACÉN (totales horizontales y verticales, sin montos)
    ===================================================================== */
 VISTAS.cCatAlm = p => {
-  p = p || {}; const mod = p.mod || '', est = p.est || '', todos = !!p.todos;
-  let rows = Object.entries(DB.exi[S.ctx] || {}).map(([id, e]) => Object.assign({ it: item(+id) }, e)).filter(r => r.it && (!mod || r.it.mod === mod));
+  p = p || {}; const mod = p.mod || '', cat = p.cat || '', est = p.est || '', todos = !!p.todos;
+  let rows = Object.entries(DB.exi[S.ctx] || {}).map(([id, e]) => Object.assign({ it: item(+id) }, e)).filter(r => r.it && (!mod || r.it.mod === mod) && (!cat || r.it.cat === cat));
   rows.forEach(r => { r.total = r.disp + r.vacio + r.prest + r.asig + r.dan + r.rep + r.ext; r.estado = estadoCatalogo(r, r.it); });
   if (!todos) rows = rows.filter(r => r.total > 0);
   if (est) rows = rows.filter(r => r.estado === est);
@@ -4768,12 +4882,13 @@ VISTAS.cCatAlm = p => {
     ].concat(hayCil ? [{ t: 'Vacíos', k: 'vacio', cls: 'cen', td: 'col-vac', sum: true }] : []).concat([
     { t: 'Prestados', k: 'prest', cls: 'cen', td: 'col-prest', sum: true }, { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig', sum: true }, { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan', sum: true },
     { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall', sum: true }, { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext', sum: true }, { t: 'Total', k: 'total', cls: 'cen', td: 'col-total', sum: true }]);
-  const rec = `ir('cCatAlm',{mod:$('caMod').value,est:$('caEst').value,todos:$('caTod').checked})`;
+  const rec = `ir('cCatAlm',{mod:$('caMod').value,cat:$('caCat').value,est:$('caEst').value,todos:$('caTod').checked})`;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
   $('area').innerHTML = cab('📦 Catálogo del almacén', 'Existencia de cada ítem por estado. El total suma cada fila y cada columna. Lo recibido por transferencia se agrega automáticamente al aceptarla.',
     `${botonesExport('gCatA', 'Catálogo ' + almNombre(S.ctx))} <button class="btn btn-navy btn-mini" onclick="ir('ent')">➕ Entrada de ítems</button>`)
     + (pendRec ? `<div class="franja-est naranja"><span>Tiene <b>${pendRec}</b> transferencia(s) por aceptar. Su material se sumará al catálogo al aceptarlas.</span><button class="btn btn-navy btn-mini" onclick="ir('trfRec')">Ver transferencias recibidas</button></div>` : '')
     + `<div class="fila-filtros">${campo('Módulo', `<select id="caMod" onchange="${rec}"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}
+      ${campo('Categoría', `<select id="caCat" onchange="${rec}"><option value="">Todas</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
       ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO', 'SIN DISPONIBILIDAD', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
       <label style="font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center;padding-bottom:9px"><input type="checkbox" id="caTod" ${todos ? 'checked' : ''} onchange="${rec}"> Incluir ítems sin existencia</label>
       ${buscador('gCatA', 'Buscar código, descripción, marca, serial…')}</div>`
@@ -4872,6 +4987,7 @@ VISTAS.cVales = p => {
   p = p || {};
   const tipo = p.tipo || '';
   const mod = p.mod || '';
+  const cat = p.cat || '';
   const alm = p.alm || '';
   const proy = p.proy || '';
   const vale = p.vale || '';
@@ -4896,6 +5012,26 @@ VISTAS.cVales = p => {
       }
     }
     return mods.size ? [...mods] : ['HERRAMIENTA'];
+  };
+
+  const getValeCats = v => {
+    const cats = new Set();
+    (v.lineas || []).forEach(l => {
+      const it = item(l.id);
+      if (it && it.cat) cats.add(it.cat);
+      else if (l.cat) cats.add(l.cat);
+    });
+    if (cats.size) return [...cats];
+    if (v.ref) {
+      const orig = valeDe(v.ref);
+      if (orig) {
+        (orig.lineas || []).forEach(l => {
+          const it = item(l.id);
+          if (it && it.cat) cats.add(it.cat);
+        });
+      }
+    }
+    return [...cats];
   };
 
   const getStatusVale = v => {
@@ -4932,6 +5068,7 @@ VISTAS.cVales = p => {
     }
     if (tipo && v.tipo !== tipo) return false;
     if (mod && !getValeMods(v).includes(mod)) return false;
+    if (cat && !getValeCats(v).includes(cat)) return false;
     if (proy) {
       const matchCta = (v.cuenta || '').toUpperCase().includes(proy.toUpperCase());
       const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
@@ -4969,18 +5106,19 @@ VISTAS.cVales = p => {
     { t: 'Observaciones', v: r => r.obs || r.observaciones || '—', td: 'wrap' }
   ];
 
-  const recargar = `ir('cVales',{tipo:$('vTipo').value,mod:$('vMod').value,alm:$('vAlm').value,proy:$('vProy').value,vale:$('vVale').value,desde:$('vDesde').value,hasta:$('vHasta').value})`;
+  const recargar = `ir('cVales',{tipo:$('vTipo').value,mod:$('vMod').value,cat:$('vCat').value,alm:$('vAlm').value,proy:$('vProy').value,vale:$('vVale').value,desde:$('vDesde').value,hasta:$('vHasta').value})`;
 
-  $('area').innerHTML = cab('Vales emitidos (Trazabilidad integral)', 'Todos los vales y movimientos (Herramientas, Cilindros y EPP). Filtrado por destino, N° de vale, movimiento, módulo, proyecto y fechas.', botonesExport('gVal', 'Vales emitidos ' + (alm && alm !== 'TODOS' ? ('Destino ' + almNombre(alm)) : 'Todos los destinos')))
+  $('area').innerHTML = cab('Vales emitidos (Trazabilidad integral)', 'Todos los vales y movimientos (Herramientas, Cilindros y EPP). Filtrado por destino, N° de vale, movimiento, módulo, categoría, proyecto y fechas.', botonesExport('gVal', 'Vales emitidos ' + (alm && alm !== 'TODOS' ? ('Destino ' + almNombre(alm)) : 'Todos los destinos')))
     + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
         ${campo('N° de Vale', `<input id="vVale" value="${esc(vale)}" placeholder="Ej. PRH-000001" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Almacén destino', `<select id="vAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' || !alm ? 'selected' : ''}>Todos los destinos</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
         ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
         ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
+        ${campo('Categoría', `<select id="vCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
         ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
         ${campo('Desde', `<input type="date" id="vDesde" value="${esc(desde)}" onchange="${recargar}">`)}
         ${campo('Hasta', `<input type="date" id="vHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
-        ${(tipo || mod || (alm && alm !== 'TODOS') || proy || vale || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${(tipo || mod || cat || (alm && alm !== 'TODOS') || proy || vale || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
         ${buscador('gVal', 'Buscar código, serial, cédula, responsable, vale…')}
       </div>`
     + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
@@ -5776,18 +5914,29 @@ function plantilla(enc, nombre) {
   else { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + enc.join(';') + '\r\n'], { type: 'text/csv' })); a.download = nombre + '.csv'; a.click(); }
 }
 
-VISTAS.aCat = () => {
+VISTAS.aCat = p => {
+  p = p || {};
+  const mod = p.mod || '', cat = p.cat || '';
+  let rows = DB.catalogo;
+  if (mod) rows = rows.filter(r => r.mod === mod);
+  if (cat) rows = rows.filter(r => r.cat === cat);
   const cols = [{ t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Módulo', v: r => r.mod, f: r => chipMod(r.mod) }, { t: 'Categoría', k: 'cat' }, { t: 'Marca', k: 'marca' }, { t: 'Modelo', k: 'modelo' }, { t: 'Serial', k: 'serial' },
     { t: 'UMB', k: 'umb' }, { t: 'Tipo A', v: r => r.tipoA ? 'SI' : 'NO' }, { t: 'Talla', k: 'talla' }, { t: 'Vida útil (días)', k: 'vida', cls: 'num' }, { t: 'Estado', v: r => r.activo ? 'ACTIVO' : 'INACTIVO' }];
-  $('area').innerHTML = cab('Catálogo', 'Definición de ítems. El costo unitario se gestiona únicamente desde el Maestro.', botonesExport('gCat', 'Catálogo'))
-    + `<div class="fila-filtros">${buscador('gCat')}</div>` + grid('gCat', cols, DB.catalogo, { pag: 20, onSel: () => { $('caEd').disabled = false; } })
+  const rec = `ir('aCat',{mod:$('acMod').value,cat:$('acCat').value})`;
+  $('area').innerHTML = cab('Catálogo maestro', 'Definición de ítems y categorías oficiales TIMACA.', botonesExport('gCat', 'Catálogo'))
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('Módulo', `<select id="acMod" onchange="${rec}"><option value="">Todos los módulos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}
+        ${campo('Categoría', `<select id="acCat" onchange="${rec}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
+        ${(mod || cat) ? `<button class="btn btn-claro" onclick="ir('aCat')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gCat')}
+      </div>` + grid('gCat', cols, rows, { pag: 20, onSel: () => { $('caEd').disabled = false; } })
     + `<div class="barra-btn"><button class="btn-sip" onclick="editarItem()">Nuevo ítem</button><button class="btn-sip" id="caEd" disabled onclick="editarItem(selDe('gCat'))">Editar ítem</button></div>`;
 };
 function editarItem(it) {
-  const n = !it; it = it || { cod: '', desc: '', mod: 'HERRAMIENTA', cat: '', marca: '', modelo: '', serial: '', umb: 'UND', tipoA: false, talla: '', vida: 0, activo: true, costo: 0 };
+  const n = !it; it = it || { cod: '', desc: '', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: '', modelo: '', serial: '', umb: 'UND', tipoA: false, talla: '', vida: 0, activo: true, costo: 0 };
   const I = (id, l, v) => campo(l, `<input id="${id}" value="${esc(v)}">`);
   abrirModal(n ? 'Nuevo ítem' : 'Editar ítem ' + it.cod, `<div class="f3">${I('ciCod', 'Código', it.cod)}${I('ciDesc', 'Descripción', it.desc)}${campo('Módulo', `<select id="ciMod">${opciones(Object.entries(MODULOS), it.mod)}</select>`)}
-    ${I('ciCat', 'Categoría', it.cat)}${I('ciMar', 'Marca', it.marca)}${I('ciMod2', 'Modelo', it.modelo)}${I('ciSer', 'Serial (solo ítems únicos)', it.serial)}${I('ciUmb', 'Unidad (UMB)', it.umb)}
+    ${campo('Categoría', `<select id="ciCat">${opciones(CATEGORIAS_OFICIALES, it.cat || 'Herramientas manuales')}</select>`)}${I('ciMar', 'Marca', it.marca)}${I('ciMod2', 'Modelo', it.modelo)}${I('ciSer', 'Serial (solo ítems únicos)', it.serial)}${I('ciUmb', 'Unidad (UMB)', it.umb)}
     ${campo('Tipo A (requiere aprobación de Gerencia)', `<select id="ciTA">${opciones([['0', 'NO'], ['1', 'SI']], it.tipoA ? '1' : '0')}</select>`)}${I('ciTal', 'Talla (EPP)', it.talla)}${I('ciVid', 'Vida útil en días (EPP)', it.vida)}
     ${campo('Estado', `<select id="ciAct">${opciones([['1', 'ACTIVO'], ['0', 'INACTIVO']], it.activo ? '1' : '0')}</select>`)}</div>`,
     [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Guardar', cls: 'btn-verde', fn: () => run(() => {
