@@ -4874,6 +4874,7 @@ VISTAS.cVales = p => {
   const mod = p.mod || '';
   const alm = p.alm || '';
   const proy = p.proy || '';
+  const vale = p.vale || '';
   const desde = p.desde || '';
   const hasta = p.hasta || '';
 
@@ -4921,12 +4922,13 @@ VISTAS.cVales = p => {
   };
 
   let rows = DB.vales.filter(v => {
-    if (alm === 'TODOS') {
-      // mostrar de todos los almacenes
-    } else if (alm) {
-      if (v.origen !== alm && v.destino !== alm) return false;
-    } else {
-      if (v.origen !== S.ctx && !(v.tipo === 'TRF' && v.destino === S.ctx)) return false;
+    // Almacén origen (filtrar exclusivamente por el almacén que originó el vale)
+    if (alm && alm !== 'TODOS') {
+      if (v.origen !== alm) return false;
+    }
+    // N° de vale concreto
+    if (vale) {
+      if (!(v.num || '').toUpperCase().includes(vale.toUpperCase().trim())) return false;
     }
     if (tipo && v.tipo !== tipo) return false;
     if (mod && !getValeMods(v).includes(mod)) return false;
@@ -4967,17 +4969,18 @@ VISTAS.cVales = p => {
     { t: 'Observaciones', v: r => r.obs || r.observaciones || '—', td: 'wrap' }
   ];
 
-  const recargar = `ir('cVales',{tipo:$('vTipo').value,mod:$('vMod').value,alm:$('vAlm').value,proy:$('vProy').value,desde:$('vDesde').value,hasta:$('vHasta').value})`;
+  const recargar = `ir('cVales',{tipo:$('vTipo').value,mod:$('vMod').value,alm:$('vAlm').value,proy:$('vProy').value,vale:$('vVale').value,desde:$('vDesde').value,hasta:$('vHasta').value})`;
 
-  $('area').innerHTML = cab('Vales emitidos (Trazabilidad integral)', 'Todos los vales y movimientos (Herramientas, Cilindros y EPP). Filtrado por movimiento, módulo, almacén, proyecto y fechas.', botonesExport('gVal', 'Vales emitidos ' + (alm === 'TODOS' ? 'Todos los almacenes' : almNombre(alm || S.ctx))))
+  $('area').innerHTML = cab('Vales emitidos (Trazabilidad integral)', 'Todos los vales y movimientos (Herramientas, Cilindros y EPP). Filtrado por origen, N° de vale, movimiento, módulo, proyecto y fechas.', botonesExport('gVal', 'Vales emitidos ' + (alm && alm !== 'TODOS' ? almNombre(alm) : 'Todos los orígenes')))
     + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('N° de Vale', `<input id="vVale" value="${esc(vale)}" placeholder="Ej. PRH-000001" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Almacén origen', `<select id="vAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' || !alm ? 'selected' : ''}>Todos los orígenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
         ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
         ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
-        ${campo('Almacén', `<select id="vAlm" onchange="${recargar}"><option value="">${esc(almNombre(S.ctx).replace('Almacén ', ''))} (Actual)</option><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
         ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
         ${campo('Desde', `<input type="date" id="vDesde" value="${esc(desde)}" onchange="${recargar}">`)}
         ${campo('Hasta', `<input type="date" id="vHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
-        ${(tipo || mod || alm || proy || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${(tipo || mod || (alm && alm !== 'TODOS') || proy || vale || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
         ${buscador('gVal', 'Buscar código, serial, cédula, responsable, vale…')}
       </div>`
     + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
