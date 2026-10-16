@@ -2245,7 +2245,7 @@ function menuDef() {
     ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
     ['Consultas y kárdex', [ ['cPrest', 'Préstamos vigentes'], ['cVenc', 'Préstamos vencidos'], ['cAsig', 'Asignaciones por persona'],
-      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cKardex', 'Kardex por código'], ['cEpp', 'Historial de EPP'], ['cCil', 'Cilindros por serial']]]
+      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cKardex', 'Kardex por código']]]
   );
   if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aPers', 'Responsables y supervisores'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
@@ -4869,11 +4869,82 @@ function accInc(a) {
 }
 
 VISTAS.cVales = p => {
-  const tipo = (p && p.tipo) || '';
-  let rows = DB.vales.filter(v => (v.origen === S.ctx || (v.tipo === 'TRF' && v.destino === S.ctx)) && (!tipo || v.tipo === tipo)).sort((a, b) => b.fecha.localeCompare(a.fecha));
+  p = p || {};
+  const tipo = p.tipo || '';
+  const mod = p.mod || '';
+  const alm = p.alm || '';
+  const proy = p.proy || '';
+  const desde = p.desde || '';
+  const hasta = p.hasta || '';
+
+  const getValeMods = v => {
+    const mods = new Set();
+    (v.lineas || []).forEach(l => {
+      const it = item(l.id);
+      if (it && it.mod) mods.add(it.mod);
+      else if (l.mod) mods.add(l.mod);
+    });
+    if (mods.size) return [...mods];
+    if (v.ref) {
+      const orig = valeDe(v.ref);
+      if (orig) {
+        (orig.lineas || []).forEach(l => {
+          const it = item(l.id);
+          if (it && it.mod) mods.add(it.mod);
+        });
+      }
+    }
+    return mods.size ? [...mods] : ['HERRAMIENTA'];
+  };
+
+  const getStatusVale = v => {
+    const mods = getValeMods(v);
+    if (mods.includes('CILINDRO')) {
+      if (v.tipo === 'DEV') return 'DISPONIBLE';
+      if (['PRH', 'ASI'].includes(v.tipo)) {
+        return saldoVale(v) > 0 ? 'NO DISPONIBLE' : 'DISPONIBLE';
+      }
+      if (v.tipo === 'TRF') {
+        return v.estatus === 'RECIBIDA' ? 'DISPONIBLE' : 'NO DISPONIBLE';
+      }
+      if (['DAN', 'EXT'].includes(v.tipo)) return 'NO DISPONIBLE';
+      if (v.tipo === 'ENT') return 'DISPONIBLE';
+    }
+    return estadoVale(v);
+  };
+
+  const badgeStatus = v => {
+    const st = getStatusVale(v);
+    if (st === 'DISPONIBLE') return '<span class="est est-verde" style="font-weight:700">DISPONIBLE</span>';
+    if (st === 'NO DISPONIBLE') return '<span class="est est-rojo" style="font-weight:700">NO DISPONIBLE</span>';
+    return estB(st);
+  };
+
+  let rows = DB.vales.filter(v => {
+    if (alm === 'TODOS') {
+      // mostrar de todos los almacenes
+    } else if (alm) {
+      if (v.origen !== alm && v.destino !== alm) return false;
+    } else {
+      if (v.origen !== S.ctx && !(v.tipo === 'TRF' && v.destino === S.ctx)) return false;
+    }
+    if (tipo && v.tipo !== tipo) return false;
+    if (mod && !getValeMods(v).includes(mod)) return false;
+    if (proy) {
+      const matchCta = (v.cuenta || '').toUpperCase().includes(proy.toUpperCase());
+      const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
+      if (!matchCta && !matchP) return false;
+    }
+    const fStr = (v.fecha || '').slice(0, 10);
+    if (desde && fStr < desde) return false;
+    if (hasta && fStr > hasta) return false;
+    return true;
+  }).sort((a, b) => b.fecha.localeCompare(a.fecha));
+
   const cols = [
     { t: 'N° de Vale', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
     { t: 'Tipo', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo },
+    { t: 'Módulo', v: r => getValeMods(r).map(m => MODULOS[m] || m).join(', '), f: r => getValeMods(r).map(m => `<span class="chip-mod m-${m}" style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">${esc(MODULOS[m] || m)}</span>`).join(' ') },
     { t: 'Fecha', v: r => fFH(r.fecha), s: r => r.fecha },
     { t: 'Origen', v: r => almNombre(r.origen).replace('Almacén ', '') },
     { t: 'Destino', v: r => almNombre(r.destino).replace('Almacén ', '') },
@@ -4882,6 +4953,7 @@ VISTAS.cVales = p => {
     { t: 'Despachado por', v: r => r.despacha || (r.realizadoPor ? (r.realizadoPor.nombre || r.realizadoPor) : '—') },
     { t: 'N° de Referencia', v: r => r.ref || r.solicitud || '—' },
     { t: 'Cantidad', v: r => (r.lineas || []).reduce((a, l) => a + (Number(l.cant) || 1), 0), cls: 'num' },
+    { t: 'Códigos / Ítems', v: r => (r.lineas || []).map(l => l.serial ? `${l.cod} (${l.serial})` : l.cod).join(', ') || '—', td: 'wrap' },
     { t: 'Responsable', v: r => r.resp ? (r.resp.nombre || r.resp) : '—' },
     { t: 'Cédula', v: r => (r.resp && r.resp.cedula) ? r.resp.cedula : '—' },
     { t: 'Cargo', v: r => (r.resp && r.resp.cargo) ? r.resp.cargo : '—' },
@@ -4891,12 +4963,24 @@ VISTAS.cVales = p => {
     { t: 'Saldo por Devolver', v: r => ['PRH', 'ASI'].includes(r.tipo) ? saldoVale(r) : '—', cls: 'num' },
     { t: 'Condición de Retorno', v: r => { const conds = (r.lineas || []).map(l => l.condicion || l.cond || l.condRet).filter(Boolean); return conds.length ? [...new Set(conds)].join(', ') : (r.tipo === 'DEV' ? 'ÓPTIMO' : '—'); } },
     { t: 'Días de Atraso', v: r => (r.tipo === 'PRH' && r.fechaDev && r.fechaDev < hoy() && saldoVale(r) > 0) ? diasEntre(r.fechaDev, hoy()) : 0, cls: 'num', f: r => { const d = (r.tipo === 'PRH' && r.fechaDev && r.fechaDev < hoy() && saldoVale(r) > 0) ? diasEntre(r.fechaDev, hoy()) : 0; return d > 0 ? `<span style="color:#dc2626;font-weight:700">${d} días</span>` : '<span style="color:#6b7280">0</span>'; } },
-    { t: 'Status', v: r => estadoVale(r), f: r => estB(estadoVale(r)) },
+    { t: 'Status', v: r => getStatusVale(r), f: r => badgeStatus(r) },
     { t: 'Observaciones', v: r => r.obs || r.observaciones || '—', td: 'wrap' }
   ];
-  $('area').innerHTML = cab('Vales emitidos', 'Todos los vales del almacén, disponibles para visualizar e imprimir.', botonesExport('gVal', 'Vales emitidos ' + almNombre(S.ctx)))
-    + `<div class="fila-filtros">${campo('Tipo de vale', `<select onchange="ir('cVales',{tipo:this.value})"><option value="">Todos</option>${opciones(['PRH', 'ASI', 'TRF', 'ENT', 'DEV', 'DAN', 'EXT', 'PLZ', ].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}${buscador('gVal')}</div>`
-    + grid('gVal', cols, rows, { pag: 15, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
+
+  const recargar = `ir('cVales',{tipo:$('vTipo').value,mod:$('vMod').value,alm:$('vAlm').value,proy:$('vProy').value,desde:$('vDesde').value,hasta:$('vHasta').value})`;
+
+  $('area').innerHTML = cab('Vales emitidos (Trazabilidad integral)', 'Todos los vales y movimientos (Herramientas, Cilindros y EPP). Filtrado por movimiento, módulo, almacén, proyecto y fechas.', botonesExport('gVal', 'Vales emitidos ' + (alm === 'TODOS' ? 'Todos los almacenes' : almNombre(alm || S.ctx))))
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
+        ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
+        ${campo('Almacén', `<select id="vAlm" onchange="${recargar}"><option value="">${esc(almNombre(S.ctx).replace('Almacén ', ''))} (Actual)</option><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
+        ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
+        ${campo('Desde', `<input type="date" id="vDesde" value="${esc(desde)}" onchange="${recargar}">`)}
+        ${campo('Hasta', `<input type="date" id="vHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
+        ${(tipo || mod || alm || proy || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gVal', 'Buscar código, serial, cédula, responsable, vale…')}
+      </div>`
+    + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
     + `<div class="barra-btn"><button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,back:'cVales'})">Visualizar</button><button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num)">Imprimir vale</button></div>`;
 };
 const colsKardex = maestro => [{ t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha }, { t: 'Documento', k: 'doc' }, { t: 'Movimiento', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo }, { t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Serial', k: 'serial' },
@@ -4911,28 +4995,9 @@ VISTAS.cKardex = p => {
     + `<div class="fila-filtros">${campo('Código, serial o documento', `<input id="kq" value="${esc(q)}" placeholder="Ej. HE000120 u OX-0002" onkeydown="if(event.key==='Enter')ir('cKardex',{q:this.value})">`)}<button class="btn btn-navy" onclick="ir('cKardex',{q:$('kq').value})">Buscar</button>${q ? `<button class="btn btn-claro" onclick="ir('cKardex')">Ver todos</button>` : ''}${buscador('gKdx', 'Filtrar resultados…')}</div>`
     + grid('gKdx', colsKardex(false), rows, { pag: 20, vacio: q ? 'Sin movimientos para ' + q + ' en este almacén.' : 'Sin movimientos.' });
 };
-VISTAS.cEpp = p => {
-  const f = (p && p.f) || 'ULTIMAS';
-  let rows = entregasEPP([S.ctx]);
-  if (f === 'ULTIMAS') rows = rows.filter(x => x.ultima);
-  if (f === 'ALERTA') rows = rows.filter(x => x.ultima && (x.estado === 'VENCIDA' || x.estado === 'PRÓXIMA'));
-  rows.sort((a, b) => a.repo.localeCompare(b.repo));
-  const cols = [{ t: 'Cédula', k: 'cedula' }, { t: 'Trabajador', k: 'nombre' }, { t: 'Cargo', k: 'cargo' }, { t: 'Código', k: 'cod' }, { t: 'EPP', k: 'desc' }, { t: 'Talla', k: 'talla' }, { t: 'Cant.', k: 'cant', cls: 'num' },
-    { t: 'Fecha de entrega', v: r => fF(r.fecha), s: r => r.fecha }, { t: 'Vida útil (días)', k: 'vida', cls: 'num' }, { t: 'Reposición', v: r => fF(r.repo), s: r => r.repo }, { t: 'Vale', k: 'vale' },
-    { t: 'Estado', k: 'estado', f: r => `<span class="est est-${{ VENCIDA: 'rojo', 'PRÓXIMA': 'naranja', VIGENTE: 'verde', REEMPLAZADA: 'gris' }[r.estado]}">${r.estado}</span>` }];
-  $('area').innerHTML = cab('Historial de EPP', 'Entregas de dotación por trabajador, con alerta de reposición según la vida útil.', botonesExport('gEpp', 'Historial EPP ' + almNombre(S.ctx)))
-    + `<div class="fila-filtros">${campo('Mostrar', `<select onchange="ir('cEpp',{f:this.value})">${opciones([['ULTIMAS', 'Última entrega por trabajador'], ['ALERTA', 'Reposición vencida o próxima'], ['TODAS', 'Todo el historial']], f)}</select>`)}${buscador('gEpp', 'Buscar cédula o nombre…')}</div>`
-    + grid('gEpp', cols, rows, { pag: 20, vacio: 'No hay entregas de EPP registradas en este almacén.' });
-};
-VISTAS.cCil = () => {
-  const rows = DB.catalogo.filter(i => i.mod === 'CILINDRO').map(it => ({ it, e: exi(S.ctx, it.id) })).filter(r => totalExi(r.e) > 0 || r.e.pend > 0);
-  const estado = e => e.disp ? 'LLENO · DISPONIBLE' : e.vacio ? 'VACÍO' : e.prest ? 'EN PRÉSTAMO' : e.pend ? 'ENVIADO (PENDIENTE DE RECEPCIÓN)' : e.dan || e.rep ? 'DAÑADO' : e.ext ? 'EXTRAVIADO' : e.asig ? 'ASIGNADO' : '';
-  const cols = [{ t: 'Serial', v: r => r.it.serial }, { t: 'Código', v: r => r.it.cod }, { t: 'Gas / Descripción', v: r => r.it.desc }, { t: 'Capacidad', v: r => r.it.modelo }, { t: 'Proveedor', v: r => r.it.marca }, { t: 'Estado', v: r => estado(r.e) }];
-  $('area').innerHTML = cab('Cilindros por serial', 'Ubicación y estado de cada cilindro bajo responsabilidad de ' + esc(almNombre(S.ctx)) + '.', botonesExport('gCil', 'Cilindros ' + almNombre(S.ctx)))
-    + (S.ctx !== 'CENTRAL' && rows.some(r => r.e.vacio) && puede('transferir', S.ctx) ? `<div class="franja-est naranja"><span>Hay cilindros vacíos en este almacén. Envíelos a Central con una transferencia.</span><button class="btn btn-navy btn-mini" onclick="ir('trfNueva')">Nueva transferencia</button></div>` : '')
-    + grid('gCil', cols, rows, { onSel: r => ir('cKardex', { q: r.it.serial }), vacio: 'No hay cilindros en este almacén.' })
-    + `<div class="barra-btn"><button class="btn-sip" onclick="ir('trfNueva')">🚚 Transferir cilindros</button><button class="btn-sip" onclick="ir('dev')">↩ Devolver cilindros</button></div>`;
-};
+
+VISTAS.cEpp = p => ir('cVales', Object.assign({ mod: 'EPP' }, p || {}));
+VISTAS.cCil = p => ir('cVales', Object.assign({ mod: 'CILINDRO' }, p || {}));
 
 /* =====================================================================
    MÓDULO MAESTRO · Vista consolidada (único lugar con información monetaria)
