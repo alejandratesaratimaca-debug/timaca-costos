@@ -146,8 +146,9 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   const capexEfectivoMes = esSeptiembre ? 63323.92 : mesActivoRaw.capex;
   const opexFlotaEfectivoMes = esSeptiembre ? 65757.04 : mesActivoRaw.opexActivos;
   const opexInfraEfectivoMes = esSeptiembre ? 42818.77 : mesActivoRaw.opexInfraestructura;
+  const admonEfectivoMes = esSeptiembre ? 0 : (mesActivoRaw.admon || 0);
   const totalOpexEfectivoMes = opexFlotaEfectivoMes + opexInfraEfectivoMes;
-  const totalGeneralConAdmonMes = esSeptiembre ? 171899.73 : (capexEfectivoMes + totalOpexEfectivoMes);
+  const totalGeneralConAdmonMes = esSeptiembre ? 171899.73 : (capexEfectivoMes + totalOpexEfectivoMes + admonEfectivoMes);
 
   const formatExact = (val: number) => {
     return '$' + val.toLocaleString('de-DE', { minimumFractionDigits: val % 1 !== 0 ? 2 : 0, maximumFractionDigits: 2 });
@@ -226,6 +227,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
       setSelectedActivoParaDesglose({
         codigo,
         titulo: tituloFallback || `Detalle ${codigo}`,
+        tipo: 'CAPEX',
         descripcionGeneral: `Información de auditoría contable para ${codigo}.`,
         responsableArea: 'Gestión de Costos TIMACA',
         montoAgosto: montoFallback || 0,
