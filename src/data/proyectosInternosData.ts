@@ -576,7 +576,7 @@ export const MANTTO_INFRAESTRUCTURA_2026 = {
     { cuenta: 'TT-G-C-034', descripcion: 'Mantto Galpones - Sandblasting', ene: 63, feb: 240, mar: 2013, abr: 139, may: 229, jun: 10, jul: 14, ago: 94, sep: 37.80, total: 2839.80, variacionJulAgo: '+596%', variacionAgoSep: '-60%' },
   ],
   notasExplicativas: [
-    'Septiembre 2026 ($41.739,91 USD): El 66,4% se concentra en TT-I-C-033 Adecuaciones y/o mejoras ($27.701,47 USD), seguido por TT-A-C-207 Mantto herramientas Almacén ($4.014,48 USD) y TT-G-C-032 Galpones Fabricación ($3.569,48 USD).',
+    '• Incrementos: TT-A-C-207: materiales eléctricos para armado de extensiones 220V y cable soldador para almacén (1,6K USD) y reparación de esmeriles (410 USD), TT-G-C-032: tubos estructurales para oficinas y vestidores de fabricación (2,3K USD) y guaya para grúa GP02 (552 USD) • Disminuciones: EE-H-C-015: disminuyó tras el servicio de fabricación de sellos hidráulicos para martillo (900 USD) y electrodos de níquel para reparación de punta de eje (800 USD) en agosto, quedando en septiembre 555 USD en electrodos de níquel y acoples neumáticos, TT-A-C-208: disminuyó tras compra de reflectores LED de patio en agosto (462 USD), quedando en el mes actual 586 USD en cable UTP para alarma de almacén.',
     'Agosto 2026 ($40.545 USD): TT-I-C-033 adecuación de contenedores en Pellas 1 (22K USD en acero al carbono, 1,2K USD en materiales de construcción y 1,2K en materiales eléctricos).'
   ]
 };
@@ -620,17 +620,15 @@ export const FLOTA_GRUAS_TIMACA_2026 = {
     { codigo: 'OTRAS', descripcion: 'Otras 13 Grúas con Movimiento en Sep', monto: 7991.74, variacion: 'GR17, GR15, GR12...', esCapex: false },
   ],
   detalleGruasMayorVariacion: [
-    { codigo: 'EEI-C-GR23', proyecto: 'Grua Link Belt LS918 400TN Serial 43H7-4300', ene: 15216, feb: 2583, mar: 14, abr: 702, may: 4321, jun: 1169, jul: 0, ago: 129, sep: 10031.68, variacion: '▲ 7652%' },
-    { codigo: 'EEI-C-GR13', proyecto: 'Grua Grove RT 75S - 50TN Serial 39750', ene: 288, feb: 958, mar: 0, abr: 3624, may: 7905, jun: 35, jul: 709, ago: 1490, sep: 4561.00, variacion: '▲ 206%' },
-    { codigo: 'EEI-C-GR24', proyecto: 'Grua Liebherr ITM1100/1 - 100TN Serial W09555000', ene: 40453, feb: 1, mar: 16717, abr: 113, may: 990, jun: 560, jul: 2429, ago: 23, sep: 3983.63, variacion: '▲ 17220%' },
-    { codigo: 'EEI-C-GR25', proyecto: 'Grua Grove RT750 50TN Serial: 87167', ene: 0, feb: 0, mar: 0, abr: 3050, may: 355, jun: 238, jul: 2945, ago: 1546, sep: 3899.00, variacion: '▲ 152%' },
-    { codigo: 'EEI-C-GR22', proyecto: 'Grua Liebherr LTM1400 - 400TN Serial W09858000', ene: 14623, feb: 12512, mar: 3895, abr: 2625, may: 3957, jun: 503, jul: 219, ago: 0, sep: 2517.58, variacion: '▲ Activa' },
-    { codigo: 'EEI-C-GR17', proyecto: 'Grua Grove TM 890 - 90TN Serial 68473', ene: 0, feb: 1065, mar: 1083, abr: 1630, may: 29, jun: 1081, jul: 1236, ago: 23206, sep: 2282.76, variacion: '▼ 90%' },
-    { codigo: 'EEI-C-GR15', proyecto: 'Grua Grove AT 865(N) - 65TN Serial 46105', ene: 18370, feb: 3576, mar: 1176, abr: 2969, may: 525, jun: 1796, jul: 2804, ago: 0, sep: 1865.31, variacion: '▲ Activa' },
-    { codigo: 'EEI-C-GR12', proyecto: 'Grua Grove RT 740B - 40TN Serial 84688', ene: 1077, feb: 1478, mar: 569, abr: 1290, may: 123, jun: 27, jul: 0, ago: 16, sep: 1809.52, variacion: '▲ 11209%' },
+    { codigo: 'EEI-C-GR13', proyecto: 'GRUA GROVE RT 75S - 50TN SERIAL 39750', ene: 288, feb: 958, mar: 0, abr: 3624, may: 7905, jun: 35, jul: 709, ago: 1490, sep: 4585.14, variacion: '▲ 208%' },
+    { codigo: 'EEI-C-GR25', proyecto: 'Grua Grove RT750 50TN Serial: 87167', ene: 0, feb: 0, mar: 0, abr: 3050, may: 355, jun: 238, jul: 2945, ago: 1546, sep: 4302.27, variacion: '▲ 178%' },
+    { codigo: 'EEI-C-GR24', proyecto: 'Grua Liebherr ITM1100/1 - 100TN Serial W09555000', ene: 40453, feb: 1, mar: 16717, abr: 113, may: 990, jun: 560, jul: 2429, ago: 23, sep: 4007.77, variacion: '▲ 17325%' },
+    { codigo: 'EEI-C-GR17', proyecto: 'Grua Grove TM 890 - 90TN Serial 68473', ene: 0, feb: 1065, mar: 1083, abr: 1630, may: 29, jun: 1081, jul: 1236, ago: 23206, sep: 2809.72, variacion: '▼ 88%' },
+    { codigo: 'EEI-C-GR15', proyecto: 'Grua Grove AT 865(N) - 65TN Serial 46105', ene: 18370, feb: 3576, mar: 1176, abr: 2969, may: 525, jun: 1796, jul: 2804, ago: 0, sep: 2203.58, variacion: '▲ Activa' },
+    { codigo: 'EEI-C-GR12', proyecto: 'Grua Grove RT 740B - 40TN Serial 84688', ene: 1077, feb: 1478, mar: 569, abr: 1290, may: 123, jun: 27, jul: 0, ago: 16, sep: 1925.59, variacion: '▲ 11935%' },
   ],
   analisisCausas: [
-    'Septiembre 2026 ($32.984,63 USD): GR23 lidera con $10.031,68 USD por el mecanizado mayor del vástago telescópico ($9.000 USD, reclasificable a CAPEX por extensión de vida útil). GR13 ($4.561 USD) por reemplazo de cauchos 29.5R25 ($3.600) y reparación de radiador ($700). GR25 ($3.899 USD) por cromado de 4 vástagos y sellos de cilindros estabilizadores ($3.850).',
+    'Subieron: GR13 y GR24: reemplazo de cauchos (4,5K y 3,6K USD); GR25: servicio de cromado de vástago (2,0K USD) y fabricación de sellos hidráulicos (1,9K USD); GR15 y GR12: sellos de cilindro telescópico (1,8K USD) y kit de sellos para motor winche (1,8K USD). Bajaron: GR17: en agosto se ejecutó reemplazo de cauchos (12,6K USD) y sellos hidráulicos (7,3K USD) que no se repitieron en septiembre, quedando 2,8K USD principalmente en aceite hidráulico (1,0K USD) y mantenimiento menor.',
     'Agosto 2026 ($32.364 USD): GR17 lideró por reemplazo de cauchos 14.00R20 ($12,6K USD) y fabricación de sello hidráulico ($7,3K USD).'
   ]
 };
@@ -658,3 +656,91 @@ export const CUENTAS_ADMON_SEPTIEMBRE_2026: CuentaAdmonInterno[] = [
   { cuenta: 'TT-A-C-508', departamento: 'Dpto. Ingeniería y Desarrollo', materialesUsd: 583.93, serviciosUsd: 174.00, totalSepUsd: 757.93, principalesConsumos: 'Tóner alta capacidad B7035 ($485), papelería técnica y servicios.' },
   { cuenta: 'OTRAS-ADMON', departamento: 'Otras 14 Cuentas Administrativas (Seguridad, Costos, Admin, Elec, etc.)', materialesUsd: 1709.49, serviciosUsd: 443.46, totalSepUsd: 2152.95, principalesConsumos: 'Coord. Seguridad ($450,56), Estimación de Costos ($438,30), Administración ($377,44), Electricidad ($358,14), Serv. Generales ($331,43), etc.' }
 ];
+
+// ACTIVOS PRODUCTIVOS CAPEX (NIC 16) - SEPTIEMBRE 2026 ($28.318,36 USD)
+export interface ActivoCapitalizadoNIC16 {
+  codigo: string;
+  nombre: string;
+  tipo: string;
+  montoUsd: number;
+  intervencionMayor: string;
+  criterioNIC16: string;
+}
+
+export const ACTIVOS_PRODUCTIVOS_CAPEX_NIC16_SEPTIEMBRE = {
+  totalCapitalizado: 28318.36,
+  criterioNormativo: 'NIC 16 (Propiedad, Planta y Equipo): Capitalización de erogaciones posteriores que generan beneficios económicos futuros al extender sustancialmente la vida útil operativa o capacidad técnica del activo.',
+  impactoOpex: 'Absorbe el 60% de la reducción observada en el gasto operativo de flota ($113,4K en Agosto a $65,7K en Septiembre).',
+  equipos: [
+    {
+      codigo: 'GP02',
+      nombre: 'Grúa Puente 10 Toneladas - Taller Central Fabricación',
+      tipo: 'Costos de Elevación / Planta',
+      montoUsd: 12450.00,
+      intervencionMayor: 'Overhaul estructural integral, sustitución de guaya de acero antigiro 1/2" Diepa B50, motorreductor y actualización de cajas de distribución y tableros.',
+      criterioNIC16: 'Extensión de vida útil de elevación pesada en bahía principal de fabricación.'
+    },
+    {
+      codigo: 'CA06',
+      nombre: 'Camión Lubricador Ford Cargo 815 - Placa: A11AL1F',
+      tipo: 'Camiones / Flota de Servicios',
+      montoUsd: 4850.00,
+      intervencionMayor: 'Reconstrucción de sistema de trasiego y despacho de combustible, carretes de lubricación, toma de fuerza y acondicionamiento mecánico.',
+      criterioNIC16: 'Capacidad operativa crítica continua para suministro de gasoil a equipos de TIMACA, FMO y Pellas.'
+    },
+    {
+      codigo: 'CH05',
+      nombre: 'Chuto Mack Granite - Placa: 82OAAK',
+      tipo: 'Chutos / Carga Pesada',
+      montoUsd: 3950.00,
+      intervencionMayor: 'Overhaul mayor de motor Mack MP8, kit de cilindros, camisas, pistones, casquetes de bancada y bielas.',
+      criterioNIC16: 'Recuperación de tren de potencia principal para transporte de carga pesada.'
+    },
+    {
+      codigo: 'CH10',
+      nombre: 'Chuto Mack - Placa: 14DGAE',
+      tipo: 'Chutos / Carga Pesada',
+      montoUsd: 3620.00,
+      intervencionMayor: 'Reparación mayor de transmisión Eaton Fuller, sustitución de kit de embrague cerámico de uso severo y sistema neumático.',
+      criterioNIC16: 'Garantía de torque y seguridad operativa en rutas industriales.'
+    },
+    {
+      codigo: 'GR12',
+      nombre: 'Grúa Grove RT 740B - 40TN Serial: 84688',
+      tipo: 'Grúas / Equipos de Izamiento',
+      montoUsd: 3448.36,
+      intervencionMayor: 'Kit completo de sellos para motor winche 9632101289, bomba hidráulica de agua nueva y tuberías de escape.',
+      criterioNIC16: 'Puesta a punto y recuperación de capacidad nominal de izamiento de 40 toneladas.'
+    }
+  ]
+};
+
+// MANO DE OBRA DIRECTA (MOD) ECO - SEPTIEMBRE 2026 (5.963 HH AUDITADAS)
+export const MOD_MANTENIMIENTO_FLOTA_SEPTIEMBRE = {
+  totalTrabajadores: 32,
+  totalHorasHombres: 5963,
+  tarifaPromedioHora: 2.05,
+  costoTotalMOD: 12224.15,
+  evolutivoSemanas: [
+    { periodo: '01 al 05 Sep', horas: 1164, detalle: 'Arranque regular de mes: Grúas (248H, GR17 con 68H en cauchos y cilindros), mantenimiento de áreas y galpones (209H) y lubricador CA06 (84H en surtido).' },
+    { periodo: '07 al 12 Sep', horas: 1441, detalle: 'Pico máximo del mes: Grúas (280H, GR17 con 128H en mangueras de extensiones y estabilizadores) y Camiones (201H, lubricador CA06 con 108H en surtido gasoil TIMACA/FMO/Pellas).' },
+    { periodo: '14 al 19 Sep', horas: 1401, detalle: 'Segundo pico de carga: Grúas (249H, GR15 con 87H en winche y fugas), Equipos Especiales (224H, PA03 con 96H y tractor TR01 con 77H en radiador y tejas) y Camiones (209H).' },
+    { periodo: '21 al 26 Sep', horas: 1232, detalle: 'Alta intensidad técnica en Autobuses (253H, armado e instalación de motor y transmisión en BS03 con 107H y BS13 con 91H) y Grúas (253H en GR15 y GR20).' },
+    { periodo: '28 al 30 Sep', horas: 725, detalle: 'Menor volumen por cierre de mes de solo 3 días laborables (lunes a miércoles); destacaron GR25 (90H en cilindros y vástago) y culminación de motor/transmisión en autobuses (197H).' }
+  ],
+  analisisTexto: 'Del total de 5.963 HH del mes, dos semanas marcaron los picos de mayor carga: 07 al 12 (1.441H), concentrada en Grúas (280H, GR17 con 128H — mangueras de extensiones y estabilizadores) y Camiones (201H, lubricador CA06 con 108H — surtido continuo de gasoil a equipos de TIMACA, FMO y Pellas); y 14 al 19 (1.401H), por trabajos mayores en Grúas (249H, GR15 con 87H — winche y fugas hidráulicas) y Equipos Especiales (224H, payloader PA03 con 96H — filtros y sistema hidráulico, y tractor TR01 con 77H — radiador y tejas). La semana del 21 al 26 (1.232H) focalizó su esfuerzo en Autobuses (253H, armado e instalación de motor y transmisión en BS03 con 107H y BS13 con 91H). El cierre del 28 al 30 (725H) fue menor por abarcar solo 3 días laborables (lunes a miércoles); aun así destacaron GR25 (90H — cilindros hidráulicos y vástago) y culminación de motor/transmisión en autobuses (197H).',
+  desglosePorTipoEquipo: [
+    { tipo: 'Grúas', trabajadores: 18, totalHH: 1193, tarifaPromedio: 2.05, costoTotalMOD: 2446 },
+    { tipo: 'Autobuses', trabajadores: 16, totalHH: 865, tarifaPromedio: 2.05, costoTotalMOD: 1773 },
+    { tipo: 'Camiones', trabajadores: 14, totalHH: 784, tarifaPromedio: 2.05, costoTotalMOD: 1607 },
+    { tipo: 'Equipos Especiales', trabajadores: 12, totalHH: 670, tarifaPromedio: 2.05, costoTotalMOD: 1374 },
+    { tipo: 'Vehículos livianos', trabajadores: 10, totalHH: 638, tarifaPromedio: 2.05, costoTotalMOD: 1308 },
+    { tipo: 'Mantenimiento y Adecuaciones', trabajadores: 8, totalHH: 574, tarifaPromedio: 2.05, costoTotalMOD: 1177 },
+    { tipo: 'Chutos', trabajadores: 7, totalHH: 298, tarifaPromedio: 2.05, costoTotalMOD: 611 },
+    { tipo: 'Montacargas', trabajadores: 6, totalHH: 245, tarifaPromedio: 2.05, costoTotalMOD: 502 },
+    { tipo: 'Semirremolques', trabajadores: 5, totalHH: 185, tarifaPromedio: 2.05, costoTotalMOD: 379 },
+    { tipo: 'Máquinas de soldar / Compresores', trabajadores: 6, totalHH: 154, tarifaPromedio: 2.05, costoTotalMOD: 316 },
+    { tipo: 'Otros Equipos de Planta', trabajadores: 8, totalHH: 357, tarifaPromedio: 2.05, costoTotalMOD: 732 }
+  ]
+};
+

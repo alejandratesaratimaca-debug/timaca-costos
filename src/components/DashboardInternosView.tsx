@@ -58,6 +58,7 @@ import {
   HORAS_HOMBRE_SIN_CUENTA_SEPTIEMBRE,
   HORAS_HOMBRE_POR_FAMILIA_SEPTIEMBRE,
   HORAS_HOMBRE_POR_TRABAJADOR_SEPTIEMBRE,
+  EVOLUTIVO_SEMANAL_MOD_SEPTIEMBRE_2026,
   HorasHombreCuentaSep,
   HorasHombrePendienteConciliacion
 } from '../data/horasHombreSeptiembreData';
@@ -236,24 +237,22 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   };
 
   const handleDescargarExcelConciliacion = () => {
-    const dataExcel = HORAS_HOMBRE_SIN_CUENTA_SEPTIEMBRE.map((item, idx) => ({
+    const dataExcel = HORAS_HOMBRE_POR_CUENTA_SEPTIEMBRE.map((item, idx) => ({
       '#': idx + 1,
-      'ID Registro': item.id,
-      'Fecha': item.fecha,
-      'Técnico / Trabajador': item.trabajador,
-      'Clasificación / Familia': item.tipoEquipo,
-      'Equipo Referencia': item.equipoReferencia,
-      'Labor Realizada / Motivo': item.motivoLabor,
-      'Horas Trabajadas': item.horasTrabajadas,
-      'Paquete Semanal ($)': item.paqueteSemanal,
-      'Estado Conciliación': item.estadoConciliacion,
-      'Cuenta Auxiliar a Imputar (Para Completar)': ''
+      'Cuenta Auxiliar': item.cuenta,
+      'Equipo / Activo': item.equipo,
+      'Familia / Tipo': item.tipo,
+      'Total Horas Hombre (HH)': item.totalHoras,
+      'Órdenes / Registros': item.registros,
+      'N° Técnicos': item.cantTrabajadores,
+      'Técnicos Intervinientes': item.trabajadores.join(', '),
+      'Principales Labores / Motivos': item.principalesLabores
     }));
 
     const ws = XLSX.utils.json_to_sheet(dataExcel);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'MOD_Por_Conciliar_Sep2026');
-    XLSX.writeFile(wb, 'TIMACA_MOD_Pendientes_Conciliacion_Septiembre_2026.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'MOD_Septiembre_5963_HH');
+    XLSX.writeFile(wb, 'TIMACA_MOD_Mantenimiento_ECO_Septiembre_2026_5963HH.xlsx');
   };
 
   const pctCapex = totalGeneralConAdmonMes > 0 ? Math.round((capexEfectivoMes / totalGeneralConAdmonMes) * 1000) / 10 : 0;
@@ -293,7 +292,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               title="Ver Horas Hombre de Mantenimiento Equipos Septiembre"
             >
               <Clock className="w-3.5 h-3.5" />
-              <span>MOD Septiembre (2.212 HH)</span>
+              <span>MOD Septiembre (5.963 HH)</span>
             </button>
 
             <button
@@ -510,7 +509,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
         <div className="flex items-center bg-neutral-100 p-1 rounded-xl text-xs font-bold overflow-x-auto">
           {[
             { id: 'resumen', label: 'Tablero General' },
-            { id: 'mod', label: 'Mano de Obra (2.212 HH)' },
+            { id: 'mod', label: 'Mano de Obra (5.963 HH)' },
             { id: 'capex', label: 'Inversiones CAPEX' },
             { id: 'flota', label: 'Mantto. Flota (OPEX)' },
             { id: 'infra', label: 'Infraestructura' },
@@ -784,16 +783,16 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
         <div className="space-y-6">
           
           {/* Banner de Sincronización del Archivo */}
-          <div className="bg-purple-50/80 border border-purple-200 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-purple-950">
+          <div className="bg-purple-50/80 border border-purple-200 p-4.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-purple-950 shadow-2xs">
             <div className="flex items-start gap-3">
               <Clock className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold text-sm block text-purple-950">
-                  Mano de Obra Directa (MOD) - Taller Mecánico & Mantenimiento ECO (Septiembre 2026)
+                  Mano de Obra Directa (MOD) — Mantenimiento de Flota & Equipos ECO (Septiembre 2026)
                 </span>
                 <p className="text-purple-900/90 mt-0.5 leading-relaxed">
-                  Datos integrados desde: <code className="font-mono bg-white px-1.5 py-0.5 rounded border border-purple-200 font-bold">Horas Hombres Mantto Equipos Septiembre.xlsx</code>.
-                  Se totalizan <strong>2.212 Horas Hombre</strong> (2.121 HH enlazadas a sus respectivas cuentas auxiliares y 91 HH separadas para conciliación).
+                  Consolidado directamente desde <code className="font-mono bg-white px-1.5 py-0.5 rounded border border-purple-200 font-bold">horas hombres eco septiembre.xlsx</code>.
+                  Total verificado: <strong>5.963 Horas Hombre</strong> distribuidas en <strong>1.336 registros de intervención</strong>, <strong>32 mecánicos y técnicos</strong> de planta y <strong>162 cuentas auxiliares</strong> de activos y talleres.
                 </p>
               </div>
             </div>
@@ -802,50 +801,193 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               className="shrink-0 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
             >
               <Download className="w-4 h-4" />
-              <span>Exportar Horas por Conciliar (Excel)</span>
+              <span>Exportar 162 Cuentas MOD (Excel)</span>
             </button>
           </div>
 
-          {/* 3 Métricas Clave de MOD */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-4.5 rounded-xl border border-neutral-200 shadow-2xs">
-              <div className="text-xs font-bold text-neutral-500 uppercase">Total Horas Hombre Septiembre</div>
-              <div className="text-2xl font-black text-neutral-900 font-mono mt-1">
+          {/* 4 Métricas Clave de MOD */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-4.5 rounded-xl border border-purple-200 shadow-2xs">
+              <div className="text-xs font-bold text-purple-700 uppercase tracking-wider">Total Horas Hombre Septiembre</div>
+              <div className="text-2xl font-black text-purple-950 font-mono mt-1">
                 {TOTALES_MOD_SEPTIEMBRE_2026.totalHorasHombre.toLocaleString('de-DE')} HH
               </div>
               <div className="text-xs text-neutral-500 mt-1">
-                30 técnicos y mecánicos de taller operativo
+                1.336 registros de órdenes de trabajo
+              </div>
+            </div>
+
+            <div className="bg-white p-4.5 rounded-xl border border-neutral-200 shadow-2xs">
+              <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Técnicos & Mecánicos Planta</div>
+              <div className="text-2xl font-black text-neutral-900 font-mono mt-1">
+                {TOTALES_MOD_SEPTIEMBRE_2026.totalTecnicosPlanta} Técnicos
+              </div>
+              <div className="text-xs text-neutral-500 mt-1">
+                Personal operativo de mantenimiento ECO
+              </div>
+            </div>
+
+            <div className="bg-white p-4.5 rounded-xl border border-neutral-200 shadow-2xs">
+              <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Cuentas Auxiliares Atendidas</div>
+              <div className="text-2xl font-black text-neutral-900 font-mono mt-1">
+                {TOTALES_MOD_SEPTIEMBRE_2026.cuentasAuxiliaresImpactadas} Activos
+              </div>
+              <div className="text-xs text-neutral-500 mt-1">
+                Grúas, camiones, autobuses, galpones y equipos
               </div>
             </div>
 
             <div className="bg-white p-4.5 rounded-xl border border-emerald-200 bg-emerald-50/30 shadow-2xs">
-              <div className="text-xs font-bold text-emerald-800 uppercase">Horas con Cuenta Auxiliar Asignada</div>
+              <div className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Costo Estimado MOD Septiembre</div>
               <div className="text-2xl font-black text-emerald-700 font-mono mt-1">
-                {TOTALES_MOD_SEPTIEMBRE_2026.horasConCuentaAuxiliar.toLocaleString('de-DE')} HH
+                ${TOTALES_MOD_SEPTIEMBRE_2026.costoEstimadoTotalUSD.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
               <div className="text-xs text-emerald-800 mt-1">
-                453 registros asignados en 89 cuentas auxiliares de flota y planta
-              </div>
-            </div>
-
-            <div className="bg-white p-4.5 rounded-xl border border-amber-300 bg-amber-50/40 shadow-2xs">
-              <div className="text-xs font-bold text-amber-800 uppercase">Horas Pendientes por Conciliar</div>
-              <div className="text-2xl font-black text-amber-700 font-mono mt-1">
-                {TOTALES_MOD_SEPTIEMBRE_2026.horasSinCuentaAuxiliar} HH
-              </div>
-              <div className="text-xs text-amber-800 mt-1">
-                20 registros sin cuenta auxiliar (detallados aparte para revisión)
+                Tarifa promedio estimada: ~${TOTALES_MOD_SEPTIEMBRE_2026.tarifaPromedioEstimadaHora} / HH
               </div>
             </div>
           </div>
 
-          {/* SECCIÓN A: TABLA DE HORAS HOMBRE UNIDAS CON SUS CUENTAS AUXILIARES */}
+          {/* EVOLUCIÓN SEMANAL MOD (5 SEMANAS - ANÁLISIS DE PICOS Y CIERRE) */}
+          <div className="bg-white rounded-2xl p-5 border border-neutral-200 shadow-xs space-y-4">
+            <div className="border-b border-neutral-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-base font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-purple-600" />
+                  <span>Evolución Semanal de Horas Hombre — Septiembre 2026 (5 Semanas)</span>
+                </h3>
+                <p className="text-xs text-neutral-500 mt-0.5">
+                  Comportamiento técnico por semana laborable según análisis de la hoja de costos ECO.
+                </p>
+              </div>
+              <div className="text-xs font-bold px-3 py-1 bg-purple-100 text-purple-900 rounded-lg shrink-0">
+                Total Acumulado: 5.963 HH
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
+              {EVOLUTIVO_SEMANAL_MOD_SEPTIEMBRE_2026.map((s, idx) => {
+                const esPicoMax = idx === 1;
+                const esSegundoPico = idx === 2;
+                const esCierre = idx === 4;
+
+                return (
+                  <div 
+                    key={s.semana}
+                    className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
+                      esPicoMax 
+                        ? 'bg-purple-50/70 border-purple-300 shadow-2xs' 
+                        : esSegundoPico
+                        ? 'bg-blue-50/60 border-blue-200'
+                        : esCierre
+                        ? 'bg-amber-50/50 border-amber-200'
+                        : 'bg-neutral-50/80 border-neutral-200'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-xs text-neutral-900">{s.semana}</span>
+                        {esPicoMax && (
+                          <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded bg-purple-600 text-white">
+                            Pico Máx
+                          </span>
+                        )}
+                        {esSegundoPico && (
+                          <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-600 text-white">
+                            Pico 2
+                          </span>
+                        )}
+                        {esCierre && (
+                          <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-600 text-white">
+                            3 Días
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] font-mono text-neutral-500">{s.periodo}</div>
+                      <div className="text-2xl font-black font-mono text-neutral-900 mt-2">
+                        {s.horas.toLocaleString('de-DE')} <span className="text-xs font-normal text-neutral-500">HH</span>
+                      </div>
+                      <div className="text-[11px] font-semibold text-neutral-600 mt-0.5">
+                        {s.intervenciones} intervenciones
+                      </div>
+                    </div>
+
+                    <div className="mt-3 pt-2.5 border-t border-neutral-200/80 text-[11px] text-neutral-700 leading-relaxed italic">
+                      "{s.detalle}"
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* DISTRIBUCIÓN POR FAMILIA & TOP TÉCNICOS */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            
+            {/* Familias de Equipos */}
+            <div className="bg-white rounded-2xl p-5 border border-neutral-200 shadow-xs space-y-3">
+              <h3 className="text-sm font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+                <Layers className="w-4 h-4 text-blue-600" />
+                <span>Horas Hombre por Familia de Activo</span>
+              </h3>
+              <div className="space-y-2">
+                {HORAS_HOMBRE_POR_FAMILIA_SEPTIEMBRE.slice(0, 7).map((f) => {
+                  const pct = Math.round((f.totalHoras / TOTALES_MOD_SEPTIEMBRE_2026.totalHorasHombre) * 100);
+                  return (
+                    <div key={f.tipo} className="p-2.5 rounded-xl bg-neutral-50 border border-neutral-200">
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <span className="font-bold text-neutral-800">{f.tipo}</span>
+                        <span className="font-mono font-black text-purple-950">{f.totalHoras.toLocaleString('de-DE')} HH ({pct}%)</span>
+                      </div>
+                      <div className="w-full bg-neutral-200 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                          className="bg-purple-600 h-1.5 rounded-full" 
+                          style={{ width: `${Math.min(100, Math.max(5, pct * 2.5))}%` }}
+                        ></div>
+                      </div>
+                      <div className="text-[10px] text-neutral-500 mt-1 font-mono">
+                        {f.registros} órdenes registradas
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Top Técnicos / Mecánicos */}
+            <div className="bg-white rounded-2xl p-5 border border-neutral-200 shadow-xs space-y-3">
+              <h3 className="text-sm font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-emerald-600" />
+                <span>Top Técnicos & Mecánicos con Mayor Carga Horaria</span>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {HORAS_HOMBRE_POR_TRABAJADOR_SEPTIEMBRE.slice(0, 8).map((t, idx) => (
+                  <div key={t.trabajador} className="p-3 rounded-xl bg-neutral-50 border border-neutral-200 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-neutral-900 flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono text-neutral-400">#{idx + 1}</span>
+                        <span>{t.trabajador}</span>
+                      </div>
+                      <div className="text-[11px] text-neutral-500 font-mono mt-0.5">{t.registros} intervenciones</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-black font-mono text-emerald-800">{t.totalHoras} HH</div>
+                      <div className="text-[10px] font-bold text-neutral-400">Paquete ${t.paquete}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          {/* TABLA PRINCIPAL DE 162 CUENTAS AUXILIARES */}
           <div className="bg-white rounded-2xl p-5 border border-neutral-200 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 pb-3">
               <div>
                 <h3 className="text-base font-bold text-neutral-900 tracking-tight flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Horas Hombre Asignadas a Cuentas Auxiliares (2.121 HH)</span>
+                  <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                  <span>Distribución de Horas Hombre por Cuenta Auxiliar (162 Cuentas — 5.963 HH)</span>
                 </h3>
                 <p className="text-xs text-neutral-500 mt-0.5">
                   Horas de trabajo vinculadas a cada activo, grúa, vehículo y galpón en Septiembre 2026.
@@ -861,7 +1003,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                     placeholder="Buscar cuenta o equipo..."
                     value={busquedaMOD}
                     onChange={(e) => setBusquedaMOD(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 rounded-lg border border-neutral-200 text-xs focus:ring-1 focus:ring-blue-500 w-44 sm:w-56"
+                    className="pl-8 pr-3 py-1.5 rounded-lg border border-neutral-200 text-xs focus:ring-1 focus:ring-purple-500 w-44 sm:w-56"
                   />
                 </div>
 
@@ -870,7 +1012,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                   onChange={(e) => setFiltroFamiliaMOD(e.target.value)}
                   className="px-2.5 py-1.5 rounded-lg border border-neutral-200 text-xs bg-white text-neutral-700 font-medium"
                 >
-                  <option value="todos">Todas las Familias</option>
+                  <option value="todos">Todas las Familias ({cuentasMODFiltradas.length})</option>
                   <option value="Grúas">Grúas</option>
                   <option value="Camiones">Camiones</option>
                   <option value="Autobuses">Autobuses</option>
@@ -882,22 +1024,22 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               </div>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
               <table className="w-full text-xs text-left">
-                <thead>
-                  <tr className="bg-neutral-50 text-neutral-700 font-bold border-b border-neutral-200">
+                <thead className="sticky top-0 bg-neutral-100 z-10 shadow-2xs">
+                  <tr className="text-neutral-700 font-bold border-b border-neutral-200">
                     <th className="py-2.5 px-3">Cuenta Auxiliar</th>
                     <th className="py-2.5 px-3">Equipo / Obra</th>
                     <th className="py-2.5 px-2">Familia</th>
                     <th className="py-2.5 px-2 text-center">Registros</th>
                     <th className="py-2.5 px-2 text-center">Técnicos</th>
-                    <th className="py-2.5 px-3 text-right bg-purple-50 text-purple-950 font-bold font-mono">Total Horas (HH)</th>
+                    <th className="py-2.5 px-3 text-right bg-purple-100 text-purple-950 font-bold font-mono">Total Horas (HH)</th>
                     <th className="py-2.5 px-3">Principales Labores / Motivos</th>
                     <th className="py-2.5 px-2 text-center">Auditar</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 font-medium">
-                  {cuentasMODFiltradas.slice(0, 50).map((c) => (
+                  {cuentasMODFiltradas.map((c) => (
                     <tr key={c.cuenta} className="hover:bg-neutral-50/80">
                       <td className="py-2.5 px-3 font-mono font-bold text-blue-700">{c.cuenta}</td>
                       <td className="py-2.5 px-3 font-semibold text-neutral-900">{c.equipo}</td>
@@ -909,7 +1051,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                       <td className="py-2.5 px-2 text-center font-mono text-neutral-600">{c.registros}</td>
                       <td className="py-2.5 px-2 text-center font-mono text-neutral-600">{c.cantTrabajadores}</td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-purple-950 bg-purple-50/60">
-                        {c.totalHoras} HH
+                        {c.totalHoras.toLocaleString('de-DE')} HH
                       </td>
                       <td className="py-2.5 px-3 text-[11px] text-neutral-500 max-w-md truncate" title={c.principalesLabores}>
                         {c.principalesLabores || 'Mantenimiento preventivo / correctivo'}
@@ -928,114 +1070,8 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               </table>
             </div>
 
-            {cuentasMODFiltradas.length > 50 && (
-              <div className="text-center text-xs text-neutral-500 pt-2 border-t border-neutral-100">
-                Mostrando las primeras 50 cuentas auxiliares de {cuentasMODFiltradas.length} encontradas.
-              </div>
-            )}
-          </div>
-
-          {/* SECCIÓN B: HORAS HOMBRES PENDIENTES POR CONCILIAR (SIN CUENTA AUXILIAR) */}
-          <div className="bg-white rounded-2xl p-5 border border-amber-300 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200 pb-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-amber-600" />
-                  <h3 className="text-base font-bold text-amber-950 tracking-tight">
-                    Horas Hombre Pendientes por Conciliar / Sin Cuenta Auxiliar (91 HH)
-                  </h3>
-                </div>
-                <p className="text-xs text-amber-900/90 mt-0.5">
-                  Conforme a tu instrucción, estos 20 registros quedaron apartados en esta sección para realizar la conciliación contable y definir sus cuentas de imputación.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="Buscar en pendientes..."
-                    value={busquedaConciliacion}
-                    onChange={(e) => setBusquedaConciliacion(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 rounded-lg border border-neutral-200 text-xs focus:ring-1 focus:ring-amber-500 w-40 sm:w-52"
-                  />
-                </div>
-                <button
-                  onClick={handleDescargarExcelConciliacion}
-                  className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
-                  title="Descargar listado para conciliar cuentas"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Excel Conciliación</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead>
-                  <tr className="bg-amber-50 text-amber-950 font-bold border-b border-amber-200">
-                    <th className="py-2.5 px-3">Fecha</th>
-                    <th className="py-2.5 px-3">Técnico / Mecánico</th>
-                    <th className="py-2.5 px-2">Clasificación</th>
-                    <th className="py-2.5 px-3">Motivo / Labor Realizada</th>
-                    <th className="py-2.5 px-2 text-center font-mono font-bold bg-amber-100 text-amber-950">Horas</th>
-                    <th className="py-2.5 px-2 text-right">Paquete Semanal</th>
-                    <th className="py-2.5 px-3 text-center">Estado para Conciliar</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-amber-100 font-medium">
-                  {sinCuentaMODFiltrados.map((item) => (
-                    <tr key={item.id} className="hover:bg-amber-50/50">
-                      <td className="py-2.5 px-3 font-mono text-neutral-600">{item.fecha}</td>
-                      <td className="py-2.5 px-3 font-bold text-neutral-900">{item.trabajador}</td>
-                      <td className="py-2.5 px-2">
-                        <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-semibold">
-                          {item.tipoEquipo}
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-3 text-[11px] text-neutral-800 leading-snug">
-                        {item.motivoLabor}
-                      </td>
-                      <td className="py-2.5 px-2 text-center font-mono font-bold text-amber-900 bg-amber-50">
-                        {item.horasTrabajadas} HH
-                      </td>
-                      <td className="py-2.5 px-2 text-right font-mono text-neutral-600">
-                        ${item.paqueteSemanal}
-                      </td>
-                      <td className="py-2.5 px-3 text-center">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-950 text-[10px] font-bold">
-                          Pendiente Imputar
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* SECCIÓN C: DESGLOSE POR FAMILIA DE EQUIPOS */}
-          <div className="bg-white rounded-2xl p-5 border border-neutral-200 shadow-xs">
-            <h3 className="text-base font-bold text-neutral-900 tracking-tight mb-3">
-              Distribución de Horas Hombre por Familia de Equipo (Septiembre 2026)
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {HORAS_HOMBRE_POR_FAMILIA_SEPTIEMBRE.slice(0, 8).map((f) => (
-                <div key={f.tipo} className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200 flex items-center justify-between">
-                  <div>
-                    <div className="text-xs font-bold text-neutral-800">{f.tipo}</div>
-                    <div className="text-[11px] text-neutral-500 font-mono mt-0.5">{f.registros} órdenes de trabajo</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-base font-black text-purple-950 font-mono">{f.totalHoras} HH</div>
-                    <div className="text-[10px] font-bold text-purple-700">
-                      {Math.round((f.totalHoras / TOTALES_MOD_SEPTIEMBRE_2026.totalHorasHombre) * 100)}%
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="text-center text-xs text-neutral-500 pt-2 border-t border-neutral-100 font-mono">
+              Mostrando {cuentasMODFiltradas.length} cuentas auxiliares auditadas (Total: {cuentasMODFiltradas.reduce((a, b) => a + b.totalHoras, 0).toLocaleString('de-DE')} HH).
             </div>
           </div>
 
