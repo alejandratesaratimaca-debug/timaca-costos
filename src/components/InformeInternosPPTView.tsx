@@ -244,37 +244,37 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                   </span>
                 </div>
 
-                {/* Tarjetas Principales Septiembre */}
+                {/* Tarjetas Principales Septiembre (Exactas de la Hoja General) */}
                 <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 text-center">
                   <div className="p-3 rounded-xl border border-slate-200 bg-slate-50">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase">CAPEX Obras Civiles</div>
-                    <div className="text-xl font-black text-slate-900 font-mono mt-1">$34.930</div>
-                    <div className="text-[10px] text-rose-600 font-bold mt-1">▲ 20% vs Ago</div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase">Proyectos Internos (CAPEX)</div>
+                    <div className="text-xl font-black text-slate-900 font-mono mt-1">$34.995</div>
+                    <div className="text-[10px] text-emerald-600 font-bold mt-1">20,4% del total</div>
                   </div>
                   <div className="p-3 rounded-xl border border-sky-300 bg-sky-50/70">
-                    <div className="text-[10px] font-bold text-sky-800 uppercase">Activos Prod. CAPEX (NIC 16)</div>
-                    <div className="text-xl font-black text-sky-900 font-mono mt-1">$28.318</div>
-                    <div className="text-[10px] text-sky-700 font-bold mt-1">Capitalización Flota</div>
+                    <div className="text-[10px] font-bold text-sky-800 uppercase">Activos Prod. (CAPEX)</div>
+                    <div className="text-xl font-black text-sky-900 font-mono mt-1">$28.329</div>
+                    <div className="text-[10px] text-sky-700 font-bold mt-1">16,5% del total</div>
                   </div>
-                  <div className="p-3 rounded-xl border border-indigo-700 bg-indigo-900 text-white">
-                    <div className="text-[10px] font-bold text-indigo-200 uppercase">TOTAL CAPEX CONSOLIDADO</div>
-                    <div className="text-xl font-black text-amber-300 font-mono mt-1">$63.248</div>
-                    <div className="text-[10px] text-emerald-400 font-bold mt-1">▲ 118% vs Ago</div>
+                  <div className="p-3 rounded-xl border border-indigo-700 bg-indigo-900 text-white shadow-sm">
+                    <div className="text-[10px] font-bold text-indigo-200 uppercase">TOTAL INVERSIONES CAPEX</div>
+                    <div className="text-xl font-black text-amber-300 font-mono mt-1">$63.324</div>
+                    <div className="text-[10px] text-emerald-400 font-bold mt-1">▲ 118% vs Agosto ($29.017)</div>
                   </div>
                   <div className="p-3 rounded-xl border border-slate-200 bg-slate-50">
                     <div className="text-[10px] font-bold text-slate-500 uppercase">Mantto. Activos Prod (OPEX)</div>
-                    <div className="text-xl font-black text-slate-900 font-mono mt-1">$65.735</div>
-                    <div className="text-[10px] text-emerald-600 font-bold mt-1">▼ 42% vs Ago (NIC 16)</div>
+                    <div className="text-xl font-black text-slate-900 font-mono mt-1">$65.757</div>
+                    <div className="text-[10px] text-blue-600 font-bold mt-1">▼ 42% vs Agosto ($113.450)</div>
                   </div>
                   <div className="p-3 rounded-xl border border-slate-200 bg-slate-50">
                     <div className="text-[10px] font-bold text-slate-500 uppercase">Mantto. Infraestructura (OPEX)</div>
-                    <div className="text-xl font-black text-slate-900 font-mono mt-1">$40.545</div>
-                    <div className="text-[10px] text-slate-500 font-bold mt-1">Estable vs Ago</div>
+                    <div className="text-xl font-black text-slate-900 font-mono mt-1">$42.819</div>
+                    <div className="text-[10px] text-emerald-600 font-bold mt-1">▲ 6% vs Agosto ($40.545)</div>
                   </div>
-                  <div className="p-3 rounded-xl border border-slate-800 bg-slate-900 text-white">
-                    <div className="text-[10px] font-bold text-slate-300 uppercase">TOTAL MES CON ADMON</div>
-                    <div className="text-xl font-black text-white font-mono mt-1">$191.739</div>
-                    <div className="text-[10px] text-amber-400 font-bold mt-1">Acum: $2.613K</div>
+                  <div className="p-3 rounded-xl border border-amber-400 bg-amber-50 text-amber-950">
+                    <div className="text-[10px] font-bold text-amber-800 uppercase">TOTAL SEPTIEMBRE (CAPEX+OPEX)</div>
+                    <div className="text-xl font-black text-amber-950 font-mono mt-1">$171.900</div>
+                    <div className="text-[10px] text-amber-800 font-bold mt-1">Acum 2026: $2.187.455</div>
                   </div>
                 </div>
 
@@ -312,7 +312,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                         <td className="py-2 px-2 text-right font-mono">$32.585</td>
                         <td className="py-2 px-2 text-right font-mono">$45.087</td>
                         <td className="py-2 px-2 text-right font-mono">$29.017</td>
-                        <td className="py-2 px-2 text-right font-mono font-bold bg-sky-50 text-sky-900">$34.930</td>
+                        <td className="py-2 px-2 text-right font-mono font-bold bg-sky-50 text-sky-900">$34.995</td>
                         <td className="py-2 px-3 text-right font-mono font-black text-slate-900">$950.271</td>
                       </tr>
                       <tr>
@@ -325,7 +325,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                         <td className="py-2 px-2 text-right font-mono">$72.213</td>
                         <td className="py-2 px-2 text-right font-mono">$97.727</td>
                         <td className="py-2 px-2 text-right font-mono">$113.450</td>
-                        <td className="py-2 px-2 text-right font-mono font-bold bg-indigo-50 text-indigo-900">$65.735</td>
+                        <td className="py-2 px-2 text-right font-mono font-bold bg-indigo-50 text-indigo-900">$65.757</td>
                         <td className="py-2 px-3 text-right font-mono font-black text-slate-900">$806.126</td>
                       </tr>
                       <tr>
@@ -364,8 +364,8 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                         <td className="py-2.5 px-2 text-right font-mono">$158.288</td>
                         <td className="py-2.5 px-2 text-right font-mono">$224.798</td>
                         <td className="py-2.5 px-2 text-right font-mono">$236.338</td>
-                        <td className="py-2.5 px-2 text-right font-mono bg-slate-200 text-sky-950 font-extrabold">$191.739</td>
-                        <td className="py-2.5 px-3 text-right font-mono text-sky-950 font-extrabold">$2.613.120</td>
+                        <td className="py-2.5 px-2 text-right font-mono bg-slate-200 text-sky-950 font-extrabold">$171.900</td>
+                        <td className="py-2.5 px-3 text-right font-mono text-sky-950 font-extrabold">$2.187.455</td>
                       </tr>
                     </tbody>
                   </table>
@@ -430,7 +430,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                   <div className="p-3 rounded-xl border border-slate-200 bg-slate-50">
                     <div className="text-[10px] font-bold text-slate-500 uppercase">Total Septiembre</div>
-                    <div className="text-xl font-black text-slate-900 font-mono mt-0.5">$34.930</div>
+                    <div className="text-xl font-black text-slate-900 font-mono mt-0.5">$34.995</div>
                     <div className="text-[10px] text-rose-600 font-bold">▲ 20% vs Agosto ($29.017)</div>
                   </div>
                   <div className="p-3 rounded-xl border border-slate-200 bg-slate-50">
@@ -472,7 +472,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                         <td colSpan={2} className="py-2 px-2.5">Total CAPEX Obras Civiles</td>
                         <td className="py-2 px-2 text-right font-mono">$45.087</td>
                         <td className="py-2 px-2 text-right font-mono">$29.017</td>
-                        <td className="py-2 px-2 text-right font-mono bg-sky-100 text-sky-900 font-bold">$34.930</td>
+                        <td className="py-2 px-2 text-right font-mono bg-sky-100 text-sky-900 font-bold">$34.995</td>
                         <td className="py-2 px-2.5 text-right font-mono text-sky-950 font-extrabold">$950.271</td>
                       </tr>
                     </tbody>
@@ -567,7 +567,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                       })}
                       <div className="p-3 rounded-xl bg-slate-800 text-white flex items-center justify-between font-bold text-xs">
                         <span>TOTAL CAPEX OBRAS CIVILES</span>
-                        <span className="font-mono text-amber-300 text-sm">$34.930,08 (100%)</span>
+                        <span className="font-mono text-amber-300 text-sm">$34.995,08 (100%)</span>
                       </div>
                     </div>
                   </div>
@@ -595,7 +595,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                       Activos Productivos CAPEX – Reclasificación NIC 16 (Septiembre 2026)
                     </h2>
                     <p className="text-xs text-slate-500">
-                      Total Capitalizado: $28.318,36 USD · 5 Activos Estratégicos con Overhauls Mayores de Vida Útil.
+                      Total Capitalizado: $28.328,84 USD · 5 Activos Estratégicos con Overhauls Mayores de Vida Útil.
                     </p>
                   </div>
                   <span className="text-xs font-mono font-bold bg-sky-100 text-sky-800 px-3 py-1 rounded-lg">
@@ -639,7 +639,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                       Mantto. Activos Productivos – OPEX Septiembre 2026
                     </h2>
                     <p className="text-xs text-slate-500">
-                      Total Septiembre: $65.734,51 USD (▼ 42% vs Agosto $113.450 USD) | Absorción del 60% por reclasificación CAPEX NIC 16.
+                      Total Septiembre: $65.757,04 USD (▼ 42% vs Agosto $113.450 USD) | Absorción del 60% por reclasificación CAPEX NIC 16.
                     </p>
                   </div>
                   <span className="text-xs font-mono font-bold bg-slate-100 px-3 py-1 rounded-lg text-slate-700">

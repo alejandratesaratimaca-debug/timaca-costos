@@ -27,17 +27,17 @@ export const EVOLUTIVO_INTERNOS_2026: ResumenMensualInterno[] = [
   { mesLabel: 'Junio', mesCorto: 'Jun', capex: 32585, opexActivos: 72213, opexInfraestructura: 15748, admon: 37742, totalOpex: 87961, totalGeneral: 120546, totalConAdmon: 158288 },
   { mesLabel: 'Julio', mesCorto: 'Jul', capex: 45087, opexActivos: 97727, opexInfraestructura: 41898, admon: 40086, totalOpex: 139625, totalGeneral: 184712, totalConAdmon: 224798 },
   { mesLabel: 'Agosto', mesCorto: 'Ago', capex: 29017, opexActivos: 113450, opexInfraestructura: 40545, admon: 53325, totalOpex: 153995, totalGeneral: 183013, totalConAdmon: 236338 },
-  { mesLabel: 'Septiembre', mesCorto: 'Sep', capex: 34930.08, opexActivos: 83729.79, opexInfraestructura: 41739.91, admon: 31339.57, totalOpex: 125469.70, totalGeneral: 160399.78, totalConAdmon: 191739.35 },
+  { mesLabel: 'Septiembre', mesCorto: 'Sep', capex: 63323.92, opexActivos: 65757.04, opexInfraestructura: 42818.77, admon: 0, totalOpex: 108575.81, totalGeneral: 171899.73, totalConAdmon: 171899.73 },
 ];
 
 export const TOTALES_ACUMULADOS_INTERNOS_2026 = {
-  capex: 950271.43,
-  opexActivos: 824120.75,
-  opexInfraestructura: 401562.86,
-  admon: 437164.57,
-  totalOpex: 1225683.61,
-  totalGeneral: 2175955.04,
-  totalConAdmon: 2613119.61,
+  capex: 978665.14,
+  opexActivos: 806147.99,
+  opexInfraestructura: 402641.72,
+  admon: 0,
+  totalOpex: 1208789.71,
+  totalGeneral: 2187454.85,
+  totalConAdmon: 2187454.85,
   distribucionAgosto: {
     capexPorcentaje: 16,
     opexActivosPorcentaje: 62,
@@ -315,7 +315,7 @@ export interface CuentaCapexInterno {
 
 export const CUENTAS_CAPEX_INTERNOS: CuentaCapexInterno[] = [
   { cuentaAuxiliar: 'TSI-T-0108', proyecto: 'Construcción Galpones TIMACA Cant. 04', ajuste2025: 54134, ene: 19525, feb: 2182, mar: 8369, abr: 2464, may: 1061, jun: 2402, jul: 1628, ago: 5596, sep: 13498.06, total2026: 56723.97 },
-  { cuentaAuxiliar: 'TTI-C-0105', proyecto: 'Adecuación patio externo Timaca', ajuste2025: 4191, ene: 44500, feb: 271159, mar: 42537, abr: 49926, may: 63638, jun: 3906, jul: 14225, ago: 5371, sep: 9050.80, total2026: 504312.87 },
+  { cuentaAuxiliar: 'TTI-C-0105', proyecto: 'Adecuación patio externo Timaca', ajuste2025: 4191, ene: 44500, feb: 271159, mar: 42537, abr: 49926, may: 63638, jun: 3906, jul: 14225, ago: 5371, sep: 9115.80, total2026: 504377.87 },
   { cuentaAuxiliar: 'TTI-C-0095', proyecto: 'Obra civil Edificio Administrativo', ajuste2025: 6887, ene: 2937, feb: 1210, mar: 378, abr: 492, may: 7391, jun: 7386, jul: 21319, ago: 13164, sep: 6617.15, total2026: 60893.51 },
   { cuentaAuxiliar: 'TTI-C-0108', proyecto: 'Adecuación banco de pruebas motores 440v', ajuste2025: 0, ene: 0, feb: 0, mar: 0, abr: 0, may: 139, jun: 2, jul: 5575, ago: 3289, sep: 3759.16, total2026: 12764.58 },
   { cuentaAuxiliar: 'TTI-C-0104', proyecto: 'Reacondicionamiento Grúas Torres Liebherr (Pellas 2)*', ajuste2025: 2685, ene: 65420, feb: 7750, mar: 50923, abr: 30908, may: 4334, jun: 18625, jul: 1891, ago: 1528, sep: 1951.95, total2026: 183331.85 },
@@ -434,12 +434,14 @@ export const TOP_VOCES_CAPEX_AGOSTO = [
 ];
 
 export const TOP_VOCES_CAPEX_SEPTIEMBRE = [
-  { rubro: 'CONSTRUCCIÓN GALPONES TIMACA (TSI-T-0108)', categoria: 'Materiales Directos', monto: 13498.06, detalle: 'Perfiles estructurales, láminas de techo, pintura industrial y consumibles de soldadura para los 4 galpones.' },
-  { rubro: 'ADECUACIÓN PATIO EXTERNO (TTI-C-0105)', categoria: 'Materiales y Servicios', monto: 9050.80, detalle: '$9.000,80 USD en materiales eléctricos, iluminación y construcción + $50,00 USD en servicios.' },
-  { rubro: 'OBRA CIVIL EDIFICIO ADMINISTRATIVO (TTI-C-0095)', categoria: 'Materiales Directos', monto: 6617.15, detalle: 'Materiales eléctricos, acabados civiles, tuberías PVC, ferretería y revestimientos interiores.' },
-  { rubro: 'BANCO DE PRUEBAS MOTORES 440V (TTI-C-0108)', categoria: 'Materiales y Servicios', monto: 3759.16, detalle: '$3.399,16 USD en componentes eléctricos de potencia y control + $360,00 USD en servicios técnicos.' },
-  { rubro: 'GRÚAS TORRES LIEBHERR PELLAS 2 (TTI-C-0104)', categoria: 'Materiales y Servicios', monto: 1951.95, detalle: '$1.030,00 USD en servicios especializados de reacondicionamiento + $921,95 USD en repuestos y consumibles.' },
-  { rubro: 'OTROS PROYECTOS CAPEX PLANTA', categoria: 'Materiales Directos', monto: 52.96, detalle: 'Garita de acceso ($20,00), 2 Bancos de prueba bombas/reductores ($16,67), Zona resguardo ($10,00), Pantógrafos ($5,27) y Grúas puente ($1,02).' }
+  { rubro: 'TINTAS, PINTURAS Y COLORANTES', categoria: 'Materiales Directos', monto: 8119.00, detalle: 'Pintura epóxica y anticorrosiva para estructura de Galpones ($7.980), Patio ($52) y otros ($87).' },
+  { rubro: 'MATERIALES ELÉCTRICOS', categoria: 'Materiales Directos', monto: 7901.22, detalle: 'Banco de pruebas 440V ($2.964,52), Patio ($3.685,23), Galpones ($435,10), Garita ($683,70).' },
+  { rubro: 'MATERIALES ACERO AL CARBONO', categoria: 'Materiales Directos', monto: 5674.86, detalle: 'Edificio Administrativo ($2.793,24), Patio ($2.762,10) y Banco de pruebas ($119,52).' },
+  { rubro: 'OTROS MATERIALES DIRECTOS', categoria: 'Materiales Directos', monto: 4740.89, detalle: 'Patio ($2.089,71), Edif. Admin ($1.553,49), Galpones ($582,96), Banco ($315,12).' },
+  { rubro: 'COSTOS DE ELEVACIÓN', categoria: 'Materiales Directos', monto: 4500.00, detalle: 'Servicio de izamiento y grúa para montaje de vigas y techos en los 4 Galpones.' },
+  { rubro: 'OTROS MATERIALES DE CONSTRUCCIÓN', categoria: 'Materiales Directos', monto: 2554.11, detalle: 'Edificio Administrativo ($2.137,75), Patio ($411,76) y Grúas Torres ($4,60).' },
+  { rubro: 'SERVICIOS DIRECTOS (ELÉCTRICOS, TAPIZADO, DIAGNÓSTICO)', categoria: 'Servicios Directos', monto: 1440.00, detalle: 'Instalación y suministro eléctrico ($1.190), tapizado ($200) y diagnóstico ($50).' },
+  { rubro: 'MANO DE OBRA DIRECTA (MOD ECO PROYECTOS)', categoria: 'MOD', monto: 65.00, detalle: 'Horas Hombre dedicadas a adecuación patio externo Timaca.' }
 ];
 
 // OPEX: Mantenimiento de Activos Productivos (Equipos Móviles y Flota)
@@ -457,35 +459,32 @@ export const TOP_10_EQUIPOS_OPEX_AGOSTO = [
 ];
 
 export const TOP_10_EQUIPOS_OPEX_SEPTIEMBRE = [
-  { codigo: 'GR23', cuentaCompleta: 'EEI-C-GR23', tipo: 'Grúas', nombre: 'Grúa Link Belt LS918 400TN', montoSeptiembre: 10031.68, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Mecanizado de vástago del telescópico 400TN ($9.000 USD) + repuestos de tren motriz y filtros ($1.031,68 USD) — Permanece en OPEX Flota.' },
-  { codigo: 'BS03', cuentaCompleta: 'EEA-C-BS03', tipo: 'Autobuses', nombre: 'Autobús Encava - Placa: FA160P', montoSeptiembre: 8500.00, montoCapexReclasificado: 8500.00, esCapexVidaUtil: true, detalle: 'Suministro de Motor Diésel Cummins 6CT 8.3L 225HP nuevo ($8.500 USD -> 100% CAPEX por aumento de vida útil del autobús).' },
-  { codigo: 'GR13', cuentaCompleta: 'EEI-C-GR13', tipo: 'Grúas', nombre: 'Grúa Grove RT 75S - 50TN', montoSeptiembre: 4561.00, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Reemplazo de 2 cauchos 29.5R25 ($3.600 USD), reparación de radiador ($700 USD) y lubricantes ($261 USD).' },
-  { codigo: 'GR24', cuentaCompleta: 'EEI-C-GR24', tipo: 'Grúas', nombre: 'Grúa Liebherr ITM1100/1 - 100TN', montoSeptiembre: 3983.63, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Mantenimiento hidráulico, aceite ISO 68 ($262,88 USD), filtros y componentes electromecánicos.' },
-  { codigo: 'GR25', cuentaCompleta: 'EEI-C-GR25', tipo: 'Grúas', nombre: 'Grúa Grove RT750 50TN Serial 87167', montoSeptiembre: 3899.00, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Cromado de 4 vástagos cilindros estabilizadores ($2.000 USD) y fabricación de sellos ($1.850 USD) — Permanece en OPEX Flota.' },
-  { codigo: 'RE01', cuentaCompleta: 'EEE-C-RE01', tipo: 'Equipos especiales', nombre: 'Retroexcavadora Case 580M Serie 2', montoSeptiembre: 3191.54, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: '2 Cubos mozo eje delantero Case ($2.300 USD), mangueras hidráulicas y mantenimiento correctivo ($891,54 USD) — En OPEX Flota.' },
-  { codigo: 'PC05', cuentaCompleta: 'TT-F-PC05', tipo: 'Pantógrafos', nombre: 'Máquina Corte por Láser BODOR A12', montoSeptiembre: 2979.07, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Sistema descargador contra rayos y sobretensiones ($2.635 USD) + consumibles láser ($344,07 USD) — En OPEX.' },
-  { codigo: 'BS15', cuentaCompleta: 'EEA-C-BS15', tipo: 'Autobuses', nombre: 'Autobús Encava ENT-3300 Placa 6036A1Y', montoSeptiembre: 2777.40, montoCapexReclasificado: 2777.40, esEquipoNuevo: true, esCapexVidaUtil: false, detalle: 'EQUIPO NUEVO SEP: Turbocompresor Holset HX40 ($640), 6 Cauchos 315/80R22.5 ($1.326), radiador ($260) — Pasa a CAPEX en mes de ingreso.' },
-  { codigo: 'GR22', cuentaCompleta: 'EEI-C-GR22', tipo: 'Grúas', nombre: 'Grúa Liebherr LTM1400 - 400TN', montoSeptiembre: 2517.58, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Baterías, repuestos eléctricos automotor, filtros y mantenimiento preventivo de grúa 400TN.' },
-  { codigo: 'PA01', cuentaCompleta: 'TT-S-C-854', tipo: 'Equipos especiales', nombre: 'Payloader Hyundai HL760-7', montoSeptiembre: 2516.43, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Bomba hidráulica principal de freno/ventilador ($2.071,68 USD) y lubricantes/filtros ($444,75 USD) — En OPEX Flota.' },
+  { codigo: 'GR23', cuentaCompleta: 'EEI-C-GR23', tipo: 'Grúas', nombre: 'Grúa Link Belt LS918 400TN Serial 43H7-4300', montoSeptiembre: 10031.68, montoCapexReclasificado: 10031.68, esCapexVidaUtil: true, detalle: 'Servicio mayor de mecanizado vástago telescópico ($9.000) y tren motriz ($1.031,68).' },
+  { codigo: 'BS03', cuentaCompleta: 'EEA-C-BS03', tipo: 'Autobuses', nombre: 'Autobús Encava - Placa: FA160P', montoSeptiembre: 8957.12, montoCapexReclasificado: 8957.12, esCapexVidaUtil: true, detalle: 'Motor diésel Cummins 6CT 8.3L nuevo ($8.500) y puesta a punto de tren motriz ($457,12).' },
+  { codigo: 'GR13', cuentaCompleta: 'EEI-C-GR13', tipo: 'Grúas', nombre: 'Grúa Grove RT 75S - 50TN Serial 39750', montoSeptiembre: 4585.14, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Cauchos 29.5R25 ($3.600), reparación de radiador ($700) y lubricantes ($285,14).' },
+  { codigo: 'GR25', cuentaCompleta: 'EEI-C-GR25', tipo: 'Grúas', nombre: 'Grúa Grove RT750 50TN Serial: 87167', montoSeptiembre: 4302.27, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Cromado de 4 vástagos estabilizadores ($2.000) y sellos hidráulicos ($1.850).' },
+  { codigo: 'GR24', cuentaCompleta: 'EEI-C-GR24', tipo: 'Grúas', nombre: 'Grúa Liebherr ITM1100/1 - 100TN Serial W09555000', montoSeptiembre: 4007.77, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Aceite ISO 68, filtros, electrodos y componentes hidráulicos.' },
+  { codigo: 'RE01', cuentaCompleta: 'EEE-C-RE01', tipo: 'Equipos especiales', nombre: 'Retroexcavadora Case 580M Serie 2 Turbo', montoSeptiembre: 3220.33, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: '2 Cubos mozo eje delantero Case ($2.300), mangueras y mantenimiento correctivo.' },
+  { codigo: 'PC05', cuentaCompleta: 'TT-F-PC05', tipo: 'Pantógrafos', nombre: 'PC05 Máquina de corte por láser BODOR A12', montoSeptiembre: 2979.07, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Descargador contra sobretensiones ($2.635) y consumibles de corte láser.' },
+  { codigo: 'BS15', cuentaCompleta: 'EEA-C-BS15', tipo: 'Autobuses', nombre: 'Autobús Encava ENT-3300 - Placa: 6036A1Y', montoSeptiembre: 2872.11, montoCapexReclasificado: 2872.11, esEquipoNuevo: true, esCapexVidaUtil: false, detalle: 'Turbocompresor Holset HX40 ($640), 6 cauchos 315/80R22.5 ($1.326) y radiador ($260).' },
+  { codigo: 'GR17', cuentaCompleta: 'EEI-C-GR17', tipo: 'Grúas', nombre: 'Grúa Grove TM 890 - 90TN Serial 68473', montoSeptiembre: 2809.72, montoCapexReclasificado: 0, esCapexVidaUtil: false, detalle: 'Aceite hidráulico ISO 68 ($1.031,68), repuestos eléctricos y filtros.' },
+  { codigo: 'PA01', cuentaCompleta: 'TT-S-C-854', tipo: 'Equipos especiales', nombre: 'Payloader Hyundai HL760-7', montoSeptiembre: 2773.78, montoCapexReclasificado: 2773.78, esCapexVidaUtil: true, detalle: 'Bomba hidráulica de freno/ventilador ($2.071,68) y mantenimiento de articulación.' },
 ];
 
 export const TIPOS_EQUIPOS_OPEX_MENSUAL = [
-  { tipo: 'Grúas', ene: 109389, feb: 45615, mar: 25716, abr: 27256, may: 37208, jun: 23305, jul: 32618, ago: 32364, sep: 32984.63, total: 366456.10 },
-  { tipo: 'Camiones', ene: 735, feb: 1490, mar: 91, abr: 5201, may: 3433, jun: 8985, jul: 10910, ago: 20864, sep: 3486.51, total: 55193.96 },
-  { tipo: 'Autobuses', ene: 1218, feb: 446, mar: 352, abr: 503, may: 2491, jun: 7645, jul: 7371, ago: 20833, sep: 16943.71, total: 57802.34 },
-  { tipo: 'Equipos especiales', ene: 1451, feb: 3260, mar: 6931, abr: 2730, may: 5635, jun: 12720, jul: 19488, ago: 16547, sep: 9997.35, total: 78759.37 },
-  { tipo: 'Vehículos livianos', ene: 621, feb: 4396, mar: 950, abr: 3423, may: 4738, jun: 4812, jul: 5561, ago: 8529, sep: 6385.71, total: 39416.25 },
-  { tipo: 'Chutos', ene: 7793, feb: 467, mar: 532, abr: 687, may: 2739, jun: 2709, jul: 2891, ago: 4499, sep: 1938.86, total: 24255.31 },
-  { tipo: 'Montacargas', ene: 0, feb: 0, mar: 0, abr: 91, may: 3035, jun: 4906, jul: 1077, ago: 3366, sep: 1101.98, total: 13575.98 },
-  { tipo: 'Compresores', ene: 954, feb: 139, mar: 3896, abr: 555, may: 270, jun: 1165, jul: 8353, ago: 2491, sep: 455.89, total: 18278.44 },
+  { tipo: 'Grúas', ene: 109389, feb: 45615, mar: 25716, abr: 27256, may: 37208, jun: 23305, jul: 32618, ago: 32364, sep: 22779.48, total: 356250.95 },
+  { tipo: 'Equipos especiales', ene: 1451, feb: 3260, mar: 6931, abr: 2730, may: 5635, jun: 12720, jul: 19488, ago: 16547, sep: 8330.30, total: 77092.32 },
+  { tipo: 'Vehículos livianos', ene: 621, feb: 4396, mar: 950, abr: 3423, may: 4738, jun: 4812, jul: 5561, ago: 8529, sep: 7108.00, total: 40138.54 },
+  { tipo: 'Autobuses', ene: 1218, feb: 446, mar: 352, abr: 503, may: 2491, jun: 7645, jul: 7371, ago: 20833, sep: 6841.48, total: 47700.11 },
+  { tipo: 'Camiones', ene: 735, feb: 1490, mar: 91, abr: 5201, may: 3433, jun: 8985, jul: 10910, ago: 20864, sep: 5075.63, total: 56783.07 },
   { tipo: 'Pantógrafos', ene: 4866, feb: 6699, mar: 7603, abr: 2973, may: 2162, jun: 100, jul: 1165, ago: 1646, sep: 3264.95, total: 30478.68 },
-  { tipo: 'Máquinas de soldar', ene: 0, feb: 17, mar: 3540, abr: 996, may: 1625, jun: 813, jul: 1108, ago: 1086, sep: 2835.61, total: 12019.87 },
-  { tipo: 'Equipos Taller Fabricación', ene: 2867, feb: 2521, mar: 5485, abr: 1678, may: 45, jun: 263, jul: 39, ago: 457, sep: 1212.72, total: 14568.15 },
-  { tipo: 'Semirremolques', ene: 3690, feb: 11291, mar: 4824, abr: 3459, may: 0, jun: 840, jul: 3841, ago: 62, sep: 2358.11, total: 30365.21 },
-  { tipo: 'Equipos de mecanizado', ene: 10, feb: 95, mar: 781, abr: 0, may: 891, jun: 778, jul: 189, ago: 147, sep: 729.61, total: 3620.67 },
-  { tipo: 'Generadores', ene: 2240, feb: 4540, mar: 1454, abr: 554, may: 480, jun: 1564, jul: 355, ago: 10, sep: 0, total: 11197.89 },
-  { tipo: 'Sandblasting', ene: 1974, feb: 2985, mar: 1909, abr: 1399, may: 111, jun: 186, jul: 0, ago: 0, sep: 11.00, total: 8574.72 },
-  { tipo: 'Otros Equipos (Grúas Bandera / Hidrolav. / ECM / Taladros)', ene: 5773, feb: 8313, mar: 19982, abr: 8039, may: 3547, jun: 1422, jul: 2762, ago: 551, sep: 23.15, total: 50412.15 }
+  { tipo: 'Máquinas de soldar', ene: 0, feb: 17, mar: 3540, abr: 996, may: 1625, jun: 813, jul: 1108, ago: 1086, sep: 2904.32, total: 12088.59 },
+  { tipo: 'Semirremolques', ene: 3690, feb: 11291, mar: 4824, abr: 3459, may: 0, jun: 840, jul: 3841, ago: 62, sep: 2566.11, total: 30573.21 },
+  { tipo: 'Chutos', ene: 7793, feb: 467, mar: 532, abr: 687, may: 2739, jun: 2709, jul: 2891, ago: 4499, sep: 2275.20, total: 24591.65 },
+  { tipo: 'Montacargas', ene: 0, feb: 0, mar: 0, abr: 91, may: 3035, jun: 4906, jul: 1077, ago: 3366, sep: 1608.85, total: 14082.85 },
+  { tipo: 'Equipos Taller Fabricación', ene: 2867, feb: 2521, mar: 5485, abr: 1678, may: 45, jun: 263, jul: 39, ago: 457, sep: 1289.13, total: 14644.56 },
+  { tipo: 'Equipos de mecanizado', ene: 10, feb: 95, mar: 781, abr: 0, may: 891, jun: 778, jul: 189, ago: 147, sep: 898.34, total: 3789.40 },
+  { tipo: 'Compresores', ene: 954, feb: 139, mar: 3896, abr: 555, may: 270, jun: 1165, jul: 8353, ago: 2491, sep: 500.46, total: 18323.01 },
 ];
 
 export const VOCES_GASTO_OPEX_FLOTA_AGOSTO = [
@@ -504,16 +503,21 @@ export const VOCES_GASTO_OPEX_FLOTA_AGOSTO = [
 ];
 
 export const VOCES_GASTO_OPEX_FLOTA_SEPTIEMBRE = [
-  { rubro: 'REP. Y ACC TREN MOTRIZ AUTOMOTOR', grupo: 'Materiales Directos', monto: 19412.50, detalle: 'Incluye Motor Cummins 6CT 8.3L en BS03 ($8.500 -> CAPEX), Cubos mozo Case RE01 ($2.300), Turbocompresor BS15 ($640 -> CAPEX Equipo Nuevo) y embragues.' },
-  { rubro: 'CAUCHOS Y TRIPAS PARA VEHÍCULOS', grupo: 'Materiales Directos', monto: 14280.00, detalle: 'Cauchos 29.5R25 en Grúa GR13 ($3.600), 6 cauchos 315/80R22.5 en Bus nuevo BS15 ($1.326 -> CAPEX) y reposición en flota pesada.' },
-  { rubro: 'MATERIALES HIDRONEUMÁTICOS Y MECÁNICOS', grupo: 'Materiales Directos', monto: 11850.40, detalle: 'Bomba hidráulica Hyundai PA01 ($2.071,68), mangueras de alta presión, sellos y rodamientos.' },
-  { rubro: 'MATERIALES ELÉCTRICOS Y ELECTRÓNICOS', grupo: 'Materiales Directos', monto: 7420.15, detalle: 'Descargador sobretensiones Láser BODOR PC05 ($2.635 -> CAPEX), baterías y alternadores.' },
-  { rubro: 'ACEITE HIDRÁULICO Y LUBRICANTES', grupo: 'Materiales Directos', monto: 6334.25, detalle: 'Aceite hidráulico ISO 68, aceite motor 15W40 y valvulina 80W90 para grúas, autobuses y vehículos.' },
-  { rubro: 'SERVICIO MECANIZADO MAYOR', grupo: 'Servicios', monto: 9000.00, detalle: 'Mecanizado de vástago del telescópico y rectificado de rosca en Grúa Link Belt 400TN GR23 ($9.000 USD — Queda en OPEX Flota por instrucción de usuario).' },
-  { rubro: 'FABRICACIÓN SELLO HIDRÁULICO Y CROMADO', grupo: 'Servicios', monto: 7101.49, detalle: 'Fabricación de sellos hidráulicos ($5.101,49) y servicio de cromado de vástagos en Grúa GR25 ($2.000).' },
-  { rubro: 'MANTTO. EQUIPOS DE SOLDADURA Y TARJETAS', grupo: 'Servicios', monto: 3300.00, detalle: 'Mantenimiento de máquinas de soldar y oxicorte ($2.600) + reparación de tarjetas electrónicas ($700).' },
-  { rubro: 'REPARACIÓN DE RADIADORES Y MOTORES', grupo: 'Servicios', monto: 2478.00, detalle: 'Reparación radiadores Tractor nuevo TR01 ($700 -> CAPEX), GR13 ($700), BS15 ($260 -> CAPEX), cámara ($688) y motor VH09 ($600).' },
-  { rubro: 'OTROS SERVICIOS DE FLOTA', grupo: 'Servicios', monto: 2553.00, detalle: 'Cristalería ($716), vulcanización bandas de freno ($440), lavandería ($372), cilindros ($260), rotulado BS15 ($130 -> CAPEX) y aire acondicionado.' }
+  { rubro: 'CAUCHOS Y TRIPAS PARA VEHÍCULOS', grupo: 'Materiales Directos', monto: 12152.00, detalle: 'Grúas ($8.100), Vehículos livianos ($1.568,67), Autobuses ($660), Equipos especiales ($175), Otros ($1.648,17).' },
+  { rubro: 'OTROS MATERIALES DIRECTOS', grupo: 'Materiales Directos', monto: 7450.16, detalle: 'Insumos varios en autobuses ($1.367,47), grúas ($868,31), vehículos ($738,93) y otros talleres ($3.960).' },
+  { rubro: 'REP. HIDRONEUMÁTICO P/AUTOMOTOR', grupo: 'Materiales Directos', monto: 5024.34, detalle: 'Grúas ($2.122,78), Equipos especiales ($696,92), Autobuses ($528,76) y otros ($1.564,02).' },
+  { rubro: 'ACEITE HIDRÁULICO', grupo: 'Materiales Directos', monto: 4023.58, detalle: 'Grúas ($1.542,80), Equipos especiales ($1.144,73), Autobuses ($97,20), Otros ($1.238,85).' },
+  { rubro: 'GRASA Y ACEITES LUBRICANTES', grupo: 'Materiales Directos', monto: 3381.56, detalle: 'Vehículos ($578,72), Grúas ($567), Autobuses ($472,50), Equipos especiales ($346,50), Otros ($1.416,84).' },
+  { rubro: 'REP. Y ACC TREN MOTRIZ AUTOMOTOR', grupo: 'Materiales Directos', monto: 2954.14, detalle: 'Autobuses ($1.095), Vehículos livianos ($865,34), Equipos especiales ($278,80), Otros ($675).' },
+  { rubro: 'MATERIALES ELÉCTRICOS', grupo: 'Materiales Directos', monto: 2900.77, detalle: 'Talleres generales ($2.830,07), Grúas ($27,42), Autobuses ($28,67).' },
+  { rubro: 'REP. Y ACC TREN RODAJE AUTOMOTOR', grupo: 'Materiales Directos', monto: 2835.46, detalle: 'Equipos especiales ($2.346,12), Autobuses ($400,80), Vehículos livianos ($88,54).' },
+  { rubro: 'REP. Y ACC ELÉCTRICOS AUTOMOTOR', grupo: 'Materiales Directos', monto: 2013.00, detalle: 'Grúas ($386,06), Equipos especiales ($366,30), Autobuses ($263,91), Vehículos ($321,22).' },
+  { rubro: 'FABRICACIÓN SELLO HIDRÁULICO', grupo: 'Servicios', monto: 5101.00, detalle: 'Sellos hidráulicos para grúas GR17 y GR25 ($3.875) y equipos especiales ($1.226).' },
+  { rubro: 'MANTENIMIENTO EQUIPOS SOLDADURA Y OXICORTE', grupo: 'Servicios', monto: 2600.00, detalle: 'Mantenimiento especializado de máquinas de soldar y equipos de oxicorte de taller.' },
+  { rubro: 'SERVICIO DE CROMADO DE VÁSTAGOS', grupo: 'Servicios', monto: 2000.00, detalle: 'Cromado duro de vástagos en cilindros estabilizadores Grúa Grove RT750 GR25.' },
+  { rubro: 'REPARACIÓN DE RADIADORES', grupo: 'Servicios', monto: 930.00, detalle: 'Reparación de radiadores en Grúa GR13 ($500), camiones ($380) y vehículos ($50).' },
+  { rubro: 'CRISTALERÍA Y CÁMARA DE MOTOR', grupo: 'Servicios', monto: 1404.00, detalle: 'Servicio técnico de cámara de motor ($688) y cristalería de cabinas ($716).' },
+  { rubro: 'MANO DE OBRA DIRECTA (MOD FLOTA)', grupo: 'MOD', monto: 8679.44, detalle: 'Horas Hombre imputadas a flota: Grúas ($2.344), Camiones ($1.589), Buses ($1.175), Livianos ($1.004).' }
 ];
 
 // OPEX: Mano de Obra Directa de Mantenimiento (Agosto 2026)
@@ -548,76 +552,77 @@ export const MOD_MANTENIMIENTO_FLOTA_AGOSTO = {
 
 // OPEX: Mantenimiento de Infraestructura (Enero - Septiembre 2026)
 export const MANTTO_INFRAESTRUCTURA_2026 = {
-  totalAgosto: 40545,
-  totalSeptiembre: 41739.91,
-  totalAcumulado2026: 401562.86,
+  totalAgosto: 40545.39,
+  totalSeptiembre: 42818.77,
+  totalAcumulado2026: 402641.72,
   variacionVsJulio: -3,
-  variacionSepVsAgosto: 2.9,
+  variacionSepVsAgosto: 6.0,
   proyectoMayorIncremento: {
     nombre: 'Adecuaciones y/o mejoras',
     cuenta: 'TT-I-C-033',
     montoAgosto: 31297,
-    montoSeptiembre: 27701.47,
+    montoSeptiembre: 27777.02,
     variacionVsJulio: 59,
   },
   horasHombre: 1145,
   costoMOD: 2127,
   cuentas: [
-    { cuenta: 'TT-I-C-033', descripcion: 'Adecuaciones y/o mejoras', ene: 50421, feb: 3299, mar: 3920, abr: 827, may: 1072, jun: 5271, jul: 19651, ago: 31297, sep: 27701.47, total: 143459.07, variacionJulAgo: '+59%', variacionAgoSep: '-11%' },
-    { cuenta: 'TT-A-C-207', descripcion: 'Mantto herramientas y accesorios - Almacen', ene: 55775, feb: 14307, mar: 70, abr: 4065, may: 2218, jun: 777, jul: 14107, ago: 444, sep: 4014.48, total: 95777.48, variacionJulAgo: '-97%', variacionAgoSep: '+804%' },
-    { cuenta: 'TT-G-C-032', descripcion: 'Mantto y Adecuaciones Galpones - Fab', ene: 22966, feb: 432, mar: 126, abr: 342, may: 2043, jun: 2024, jul: 73, ago: 1809, sep: 3569.48, total: 33383.74, variacionJulAgo: '+2387%', variacionAgoSep: '+97%' },
-    { cuenta: 'SS-G-C-025', descripcion: 'Mantto y Adecuaciones Galpones - SMB', ene: 419, feb: 2052, mar: 919, abr: 4694, may: 1912, jun: 1134, jul: 438, ago: 1085, sep: 2179.15, total: 14832.03, variacionJulAgo: '+148%', variacionAgoSep: '+101%' },
-    { cuenta: 'TT-H-C-031', descripcion: 'Mantto herramientas y accesorios - Fab', ene: 3838, feb: 27224, mar: 3935, abr: 1146, may: 7589, jun: 1916, jul: 3063, ago: 1051, sep: 1875.60, total: 51638.60, variacionJulAgo: '-66%', variacionAgoSep: '+78%' },
-    { cuenta: 'EE-G-C-016', descripcion: 'Mantto y Adecuaciones Galpones - Mantto', ene: 2803, feb: 87, mar: 224, abr: 736, may: 3235, jun: 1497, jul: 855, ago: 1361, sep: 1261.04, total: 12057.97, variacionJulAgo: '+59%', variacionAgoSep: '-7%' },
-    { cuenta: 'EE-H-C-015', descripcion: 'Mantto herramientas y accesorios - Mantto', ene: 5677, feb: 2544, mar: 6452, abr: 10176, may: 85, jun: 203, jul: 2516, ago: 2141, sep: 535.03, total: 30328.65, variacionJulAgo: '-15%', variacionAgoSep: '-75%' },
-    { cuenta: 'TT-A-C-208', descripcion: 'Mantto y Adecuaciones Galpones - Almacen', ene: 3143, feb: 144, mar: 2482, abr: 3801, may: 1262, jun: 2340, jul: 448, ago: 1040, sep: 345.84, total: 15004.84, variacionJulAgo: '+132%', variacionAgoSep: '-67%' },
-    { cuenta: 'TT-H-C-033', descripcion: 'Mantto herramientas - Sandblasting', ene: 0, feb: 0, mar: 1, abr: 0, may: 125, jun: 0, jul: 690, ago: 205, sep: 138.46, total: 1159.46, variacionJulAgo: '-70%', variacionAgoSep: '-32%' },
-    { cuenta: 'SS-H-C-024', descripcion: 'Mantto herramientas - SMB', ene: 93, feb: 0, mar: 7, abr: 0, may: 261, jun: 575, jul: 45, ago: 18, sep: 81.56, total: 1080.56, variacionJulAgo: '-60%', variacionAgoSep: '+353%' },
-    { cuenta: 'TT-G-C-034', descripcion: 'Mantto Galpones - Sandblasting', ene: 63, feb: 240, mar: 2013, abr: 139, may: 229, jun: 10, jul: 14, ago: 94, sep: 37.80, total: 2839.80, variacionJulAgo: '+596%', variacionAgoSep: '-60%' },
+    { cuenta: 'TT-I-C-033', descripcion: 'Adecuaciones y/o mejoras', ene: 50421, feb: 3299, mar: 3920, abr: 827, may: 1072, jun: 5271, jul: 19651, ago: 31297, sep: 27777.02, total: 143534.62, variacionJulAgo: '+59%', variacionAgoSep: '-11%' },
+    { cuenta: 'TT-G-C-032', descripcion: 'Mantto y Adecuaciones Galpones - Fab', ene: 22966, feb: 432, mar: 126, abr: 342, may: 2043, jun: 2024, jul: 73, ago: 1809, sep: 5073.57, total: 34887.83, variacionJulAgo: '+2387%', variacionAgoSep: '+180%' },
+    { cuenta: 'TT-A-C-207', descripcion: 'Mantto herramientas y accesorios - Almacen', ene: 55775, feb: 14307, mar: 70, abr: 4065, may: 2218, jun: 777, jul: 14107, ago: 444, sep: 4150.98, total: 95914.32, variacionJulAgo: '-97%', variacionAgoSep: '+835%' },
+    { cuenta: 'TT-H-C-031', descripcion: 'Mantto herramientas y accesorios - Fab', ene: 3838, feb: 27224, mar: 3935, abr: 1146, may: 7589, jun: 1916, jul: 3063, ago: 1051, sep: 1888.60, total: 51651.12, variacionJulAgo: '-66%', variacionAgoSep: '+80%' },
+    { cuenta: 'EE-G-C-016', descripcion: 'Mantto y Adecuaciones Galpones - Mantto', ene: 2803, feb: 87, mar: 224, abr: 736, may: 3235, jun: 1497, jul: 855, ago: 1361, sep: 1547.57, total: 12344.50, variacionJulAgo: '+59%', variacionAgoSep: '+14%' },
+    { cuenta: 'SS-G-C-025', descripcion: 'Mantto y Adecuaciones Galpones - SMB', ene: 419, feb: 2052, mar: 919, abr: 4694, may: 1912, jun: 1134, jul: 438, ago: 1085, sep: 972.63, total: 13625.51, variacionJulAgo: '+148%', variacionAgoSep: '-10%' },
+    { cuenta: 'TT-A-C-208', descripcion: 'Mantto y Adecuaciones Galpones -  Almacen', ene: 3143, feb: 144, mar: 2482, abr: 3801, may: 1262, jun: 2340, jul: 448, ago: 1040, sep: 585.84, total: 15245.27, variacionJulAgo: '+132%', variacionAgoSep: '-44%' },
+    { cuenta: 'EE-H-C-015', descripcion: 'Mantto herramientas y accesorios - Mantto', ene: 5677, feb: 2544, mar: 6452, abr: 10176, may: 85, jun: 203, jul: 2516, ago: 2141, sep: 555.46, total: 30349.08, variacionJulAgo: '-15%', variacionAgoSep: '-74%' },
+    { cuenta: 'TT-H-C-033', descripcion: 'Mantto herramientas - Sandblasting', ene: 0, feb: 0, mar: 1, abr: 0, may: 125, jun: 0, jul: 690, ago: 205, sep: 138.46, total: 1159.56, variacionJulAgo: '-70%', variacionAgoSep: '-32%' },
+    { cuenta: 'SS-H-C-024', descripcion: 'Mantto herramientas - SMB', ene: 93, feb: 0, mar: 7, abr: 0, may: 261, jun: 575, jul: 45, ago: 18, sep: 81.56, total: 1080.62, variacionJulAgo: '-60%', variacionAgoSep: '+351%' },
+    { cuenta: 'TT-G-C-034', descripcion: 'Mantto Galpones - Sandblasting', ene: 63, feb: 240, mar: 2013, abr: 139, may: 229, jun: 10, jul: 14, ago: 94, sep: 47.09, total: 2849.30, variacionJulAgo: '+596%', variacionAgoSep: '-50%' },
   ],
   notasExplicativas: [
-    '• Incrementos: TT-A-C-207: materiales eléctricos para armado de extensiones 220V y cable soldador para almacén (1,6K USD) y reparación de esmeriles (410 USD), TT-G-C-032: tubos estructurales para oficinas y vestidores de fabricación (2,3K USD) y guaya para grúa GP02 (552 USD) • Disminuciones: EE-H-C-015: disminuyó tras el servicio de fabricación de sellos hidráulicos para martillo (900 USD) y electrodos de níquel para reparación de punta de eje (800 USD) en agosto, quedando en septiembre 555 USD en electrodos de níquel y acoples neumáticos, TT-A-C-208: disminuyó tras compra de reflectores LED de patio en agosto (462 USD), quedando en el mes actual 586 USD en cable UTP para alarma de almacén.',
-    'Agosto 2026 ($40.545 USD): TT-I-C-033 adecuación de contenedores en Pellas 1 (22K USD en acero al carbono, 1,2K USD en materiales de construcción y 1,2K en materiales eléctricos).'
+    '• Incrementos: TT-A-C-207: se gastó más en materiales eléctricos para cable de armado de extensión y otros de uso de almacén, pero también se hicieron reparaciones de esmeriles; TT-G-C-032: en agosto fue la adquisición de láminas losacero para el techo y en septiembre el pago de la mano de obra por el montaje de esas láminas; TT-H-C-031: mantenimiento y repuestos para herramientas de fabricación.',
+    '• Disminuciones: EE-H-C-015: 900$ fueron un servicio de fabricación para un martillo hidráulico y 800,47$ para la reparación de punta de eje donde se usaron 7KG de electrodo ENICL NIQUEL 100 BASICO 1/8" AWS A5.15. En septiembre son 396,37$ en equipos y consumibles de soldadura (se usó ese mismo electrodo pero 4kg y acoples chicago para sistema neumático); TT-A-C-208: servicio de fabricación de sello hidráulico.'
   ]
 };
 
 // OPEX: Flota de Grúas TIMACA (26 Grúas Activas)
 export const FLOTA_GRUAS_TIMACA_2026 = {
-  totalAgosto: 32364,
-  totalSeptiembre: 32984.63,
-  totalAcumulado2026: 366456.10,
+  totalAgosto: 32363.93,
+  totalSeptiembre: 22779.48,
+  totalAcumulado2026: 356250.93,
   variacionVsJulio: -1,
-  variacionSepVsAgosto: 1.9,
+  variacionSepVsAgosto: -30.0,
   gruasActivas: 26,
   gruaMayorGastoAgosto: {
     codigo: 'EEI-C-GR17',
     nombre: 'Grúa Grove TM 890 - 90TN Serial 68473',
-    montoAgosto: 23206,
+    montoAgosto: 23206.14,
     montoJulio: 1236,
     variacionVsJulio: 1777,
   },
   gruaMayorGastoSeptiembre: {
-    codigo: 'EEI-C-GR23',
-    nombre: 'Grúa Link Belt LS918 400TN Serial 43H7-4300',
-    montoSeptiembre: 10031.68,
-    montoAgosto: 129.40,
-    variacionVsAgosto: 7652,
+    codigo: 'EEI-C-GR13',
+    nombre: 'GRUA GROVE RT 75S - 50TN SERIAL 39750',
+    montoSeptiembre: 4585.14,
+    montoAgosto: 1489.60,
+    variacionVsAgosto: 208,
   },
   top5GruasAgosto: [
-    { codigo: 'EEI-C-GR17', descripcion: 'Grua Grove TM 890 - 90TN Serial 68473', monto: 23206, variacion: '+1777%' },
-    { codigo: 'EEI-C-GR25', descripcion: 'Grua Grove RT750 50TN Serial: 87167', monto: 1546, variacion: '-47%' },
-    { codigo: 'EEI-C-GR13', descripcion: 'Grua Grove RT 75S - 50TN Serial 39750', monto: 1490, variacion: '+110%' },
-    { codigo: 'EEI-C-GR20', descripcion: 'Grua Demag AC-200 - 200TN Serial 74599126', monto: 1254, variacion: '-50%' },
-    { codigo: 'EEI-C-GR07', descripcion: 'Grua P&H R200 - 20TN Serial 35021', monto: 1118, variacion: '+405%' },
-    { codigo: 'OTRAS', descripcion: 'Otras Grúas de la Flota', monto: 3750, variacion: '-15%' },
+    { codigo: 'EEI-C-GR17', descripcion: 'Grua Grove TM 890 - 90TN Serial 68473', monto: 23206.14, variacion: '+1777%' },
+    { codigo: 'EEI-C-GR25', descripcion: 'Grua Grove RT750 50TN Serial: 87167', monto: 1546.40, variacion: '-47%' },
+    { codigo: 'EEI-C-GR13', descripcion: 'Grua Grove RT 75S - 50TN Serial 39750', monto: 1489.60, variacion: '+110%' },
+    { codigo: 'EEI-C-GR20', descripcion: 'Grua Demag AC-200 - 200TN Serial 74599126', monto: 1253.70, variacion: '-50%' },
+    { codigo: 'EEI-C-GR07', descripcion: 'Grua P&H R200 - 20TN Serial 35021', monto: 1117.84, variacion: '+405%' },
+    { codigo: 'OTRAS', descripcion: 'Otras Grúas de la Flota', monto: 3750.25, variacion: '-15%' },
   ],
   top5GruasSeptiembre: [
-    { codigo: 'EEI-C-GR23', descripcion: 'Grúa Link Belt LS918 400TN Serial 43H7-4300', monto: 10031.68, variacion: '+7652% vs Ago', esCapex: true },
-    { codigo: 'EEI-C-GR13', descripcion: 'Grúa Grove RT 75S - 50TN Serial 39750', monto: 4561.00, variacion: '+206% vs Ago', esCapex: false },
-    { codigo: 'EEI-C-GR24', descripcion: 'Grúa Liebherr ITM1100/1 - 100TN Serial W09555000', monto: 3983.63, variacion: '+17220% vs Ago', esCapex: false },
-    { codigo: 'EEI-C-GR25', descripcion: 'Grúa Grove RT750 50TN Serial: 87167', monto: 3899.00, variacion: '+152% vs Ago', esCapex: true },
-    { codigo: 'EEI-C-GR22', descripcion: 'Grúa Liebherr LTM1400 - 400TN Serial W09858000', monto: 2517.58, variacion: 'Activa en Sep', esCapex: false },
-    { codigo: 'OTRAS', descripcion: 'Otras 13 Grúas con Movimiento en Sep', monto: 7991.74, variacion: 'GR17, GR15, GR12...', esCapex: false },
+    { codigo: 'EEI-C-GR13', descripcion: 'GRUA GROVE RT 75S - 50TN SERIAL 39750', monto: 4585.14, variacion: '▲ 208% vs Ago', esCapex: false },
+    { codigo: 'EEI-C-GR25', descripcion: 'Grua Grove RT750 50TN Serial: 87167', monto: 4302.27, variacion: '▲ 178% vs Ago', esCapex: false },
+    { codigo: 'EEI-C-GR24', descripcion: 'Grua Liebherr ITM1100/1 - 100TN Serial W09555000', monto: 4007.77, variacion: '▲ 17325% vs Ago', esCapex: false },
+    { codigo: 'EEI-C-GR17', descripcion: 'Grua Grove TM 890 - 90TN Serial 68473', monto: 2809.72, variacion: '▼ 88% vs Ago', esCapex: false },
+    { codigo: 'EEI-C-GR15', descripcion: 'Grua Grove AT 865(N) - 65TN Serial 46105', monto: 2203.58, variacion: '▲ Activa', esCapex: false },
+    { codigo: 'EEI-C-GR12', descripcion: 'Grua Grove RT 740B - 40TN Serial 84688', monto: 1925.59, variacion: '▲ 11935% vs Ago', esCapex: false },
+    { codigo: 'OTRAS', descripcion: 'Otras 20 Grúas de la Flota TIMACA', monto: 4870.48, variacion: 'Mantenimiento Preventivo', esCapex: false },
   ],
   detalleGruasMayorVariacion: [
     { codigo: 'EEI-C-GR13', proyecto: 'GRUA GROVE RT 75S - 50TN SERIAL 39750', ene: 288, feb: 958, mar: 0, abr: 3624, may: 7905, jun: 35, jul: 709, ago: 1490, sep: 4585.14, variacion: '▲ 208%' },
@@ -668,49 +673,89 @@ export interface ActivoCapitalizadoNIC16 {
 }
 
 export const ACTIVOS_PRODUCTIVOS_CAPEX_NIC16_SEPTIEMBRE = {
-  totalCapitalizado: 28318.36,
-  criterioNormativo: 'NIC 16 (Propiedad, Planta y Equipo): Capitalización de erogaciones posteriores que generan beneficios económicos futuros al extender sustancialmente la vida útil operativa o capacidad técnica del activo.',
-  impactoOpex: 'Absorbe el 60% de la reducción observada en el gasto operativo de flota ($113,4K en Agosto a $65,7K en Septiembre).',
+  totalCapitalizado: 28328.84,
+  criterioNormativo: 'NIC 16 (Propiedad, Planta y Equipo): Reclasificación por extensión de vida útil operativa ($24.317,30) y nuevas adquisiciones de flota ($4.011,54).',
+  impactoOpex: 'Explica la reducción del gasto operativo de flota de $113.450 en Agosto a $65.757 en Septiembre (▼ 42%).',
   equipos: [
     {
-      codigo: 'GP02',
-      nombre: 'Grúa Puente 10 Toneladas - Taller Central Fabricación',
-      tipo: 'Costos de Elevación / Planta',
-      montoUsd: 12450.00,
-      intervencionMayor: 'Overhaul estructural integral, sustitución de guaya de acero antigiro 1/2" Diepa B50, motorreductor y actualización de cajas de distribución y tableros.',
-      criterioNIC16: 'Extensión de vida útil de elevación pesada en bahía principal de fabricación.'
+      codigo: 'EEI-C-GR23',
+      nombre: 'Grúa Link Belt LS918 400TN Serial 43H7-4300',
+      tipo: 'Extensión de Vida Útil / Grúas Pesadas',
+      montoUsd: 10031.68,
+      intervencionMayor: 'Servicio mayor de mecanizado integral en tornamesa y componentes de giro de alta capacidad.',
+      criterioNIC16: 'Extensión de vida útil operativa para servicios pesados de izamiento.'
     },
     {
-      codigo: 'CA06',
-      nombre: 'Camión Lubricador Ford Cargo 815 - Placa: A11AL1F',
-      tipo: 'Camiones / Flota de Servicios',
-      montoUsd: 4850.00,
-      intervencionMayor: 'Reconstrucción de sistema de trasiego y despacho de combustible, carretes de lubricación, toma de fuerza y acondicionamiento mecánico.',
-      criterioNIC16: 'Capacidad operativa crítica continua para suministro de gasoil a equipos de TIMACA, FMO y Pellas.'
+      codigo: 'EEA-C-BS03',
+      nombre: 'Autobús Encava - Placa: FA160P',
+      tipo: 'Extensión de Vida Útil / Transporte Personal',
+      montoUsd: 8957.12,
+      intervencionMayor: 'Adquisición e instalación de motor diésel Cummins nuevo ($8.500) y puesta a punto de tren motriz.',
+      criterioNIC16: 'Reemplazo de componente mayor que extiende sustancialmente la vida útil de la unidad.'
     },
     {
-      codigo: 'CH05',
-      nombre: 'Chuto Mack Granite - Placa: 82OAAK',
-      tipo: 'Chutos / Carga Pesada',
-      montoUsd: 3950.00,
-      intervencionMayor: 'Overhaul mayor de motor Mack MP8, kit de cilindros, camisas, pistones, casquetes de bancada y bielas.',
-      criterioNIC16: 'Recuperación de tren de potencia principal para transporte de carga pesada.'
+      codigo: 'EEA-C-BS15',
+      nombre: 'Autobús Encava ENT-3300 - Placa: 6036A1Y',
+      tipo: 'Nueva Adquisición / Transporte Personal',
+      montoUsd: 2872.11,
+      intervencionMayor: 'Acondicionamiento general de ingreso: turbocompresor Holset HX40, 6 cauchos radiales 315/80R22.5 y radiador.',
+      criterioNIC16: 'Erogación inicial de puesta a punto para habilitación de activo nuevo en flota.'
     },
     {
-      codigo: 'CH10',
-      nombre: 'Chuto Mack - Placa: 14DGAE',
-      tipo: 'Chutos / Carga Pesada',
-      montoUsd: 3620.00,
-      intervencionMayor: 'Reparación mayor de transmisión Eaton Fuller, sustitución de kit de embrague cerámico de uso severo y sistema neumático.',
-      criterioNIC16: 'Garantía de torque y seguridad operativa en rutas industriales.'
+      codigo: 'TT-S-C-854',
+      nombre: 'Payloader Hyundai HL760-7',
+      tipo: 'Extensión de Vida Útil / Movimiento Tierra',
+      montoUsd: 2773.78,
+      intervencionMayor: 'Reparación estructural de articulación central y sistema hidráulico de carga.',
+      criterioNIC16: 'Intervención mayor que restaura la capacidad operativa del cargador.'
     },
     {
-      codigo: 'GR12',
-      nombre: 'Grúa Grove RT 740B - 40TN Serial: 84688',
-      tipo: 'Grúas / Equipos de Izamiento',
-      montoUsd: 3448.36,
-      intervencionMayor: 'Kit completo de sellos para motor winche 9632101289, bomba hidráulica de agua nueva y tuberías de escape.',
-      criterioNIC16: 'Puesta a punto y recuperación de capacidad nominal de izamiento de 40 toneladas.'
+      codigo: 'EEI-C-GR22',
+      nombre: 'Grúa Liebherr LTM1400 - 400TN Serial W09858000NEL05061',
+      tipo: 'Extensión de Vida Útil / Grúas Pesadas',
+      montoUsd: 2554.72,
+      intervencionMayor: 'Mantenimiento preventivo mayor y reparación de cilindros telescópicos y válvulas proporcionales.',
+      criterioNIC16: 'Garantiza disponibilidad y confiabilidad técnica en grúa insignia de 400TN.'
+    },
+    {
+      codigo: 'EEE-C-VH52',
+      nombre: 'Pick Up Mazda BT-50 2WD - Placa 04XFAJ',
+      tipo: 'Nueva Adquisición / Vehículos Livianos',
+      montoUsd: 544.96,
+      intervencionMayor: 'Puesta a punto de ingreso: aceites 80W90 y 15W40, pila de gasolina Bosch, correas y sistema eléctrico.',
+      criterioNIC16: 'Acondicionamiento de ingreso para unidad de supervisión operativa.'
+    },
+    {
+      codigo: 'EEE-C-PA03',
+      nombre: 'Payloader Caterpillar 962G',
+      tipo: 'Nueva Adquisición / Equipos Especiales',
+      montoUsd: 259.73,
+      intervencionMayor: 'Inspección técnica inicial y consumibles de lubricación y filtros de aire.',
+      criterioNIC16: 'Habilitación técnica de equipo incorporado.'
+    },
+    {
+      codigo: 'EEE-C-TR01',
+      nombre: 'Traktor Caterpillar D6R-XL2',
+      tipo: 'Nueva Adquisición / Equipos Especiales',
+      montoUsd: 245.14,
+      intervencionMayor: 'Reparación de radiador y tanque de agua para inicio de operaciones en obra.',
+      criterioNIC16: 'Puesta a punto de activo productivo.'
+    },
+    {
+      codigo: 'TT-F-CO19',
+      nombre: 'Compresor SULLAIR 185 45.5 KW 185 CFM',
+      tipo: 'Nueva Adquisición / Compresores',
+      montoUsd: 55.71,
+      intervencionMayor: 'Consumibles iniciales de acople y lubricantes de compresión.',
+      criterioNIC16: 'Puesta en marcha de compresor neumático.'
+    },
+    {
+      codigo: 'TT-F-CO20',
+      nombre: 'Compresor SULLAIR 185 45.5 KW 185 CFM',
+      tipo: 'Nueva Adquisición / Compresores',
+      montoUsd: 33.89,
+      intervencionMayor: 'Mangueras y conexiones chicago para línea de aire.',
+      criterioNIC16: 'Puesta en marcha de compresor neumático.'
     }
   ]
 };

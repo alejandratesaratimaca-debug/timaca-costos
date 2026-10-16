@@ -142,14 +142,12 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   const mesActivoRaw = EVOLUTIVO_INTERNOS_2026[selectedMesIdx] || EVOLUTIVO_INTERNOS_2026[8];
   const esSeptiembre = selectedMesIdx === 8;
 
-  // Montos efectivos del mes activo (aplicando reclasificación si estamos en Septiembre y el modo está activo)
-  const capexEfectivoMes = mesActivoRaw.capex + (esSeptiembre ? montoReclasificadoSep : 0);
-  const opexFlotaEfectivoMes = Math.max(0, mesActivoRaw.opexActivos - (esSeptiembre ? montoReclasificadoSep : 0));
-  const opexInfraEfectivoMes = mesActivoRaw.opexInfraestructura;
-  const admonEfectivoMes = mesActivoRaw.admon || 0;
+  // Montos oficiales de la presentación ejecutiva y tablas dinámicas de TIMACA
+  const capexEfectivoMes = esSeptiembre ? 63323.92 : mesActivoRaw.capex;
+  const opexFlotaEfectivoMes = esSeptiembre ? 65757.04 : mesActivoRaw.opexActivos;
+  const opexInfraEfectivoMes = esSeptiembre ? 42818.77 : mesActivoRaw.opexInfraestructura;
   const totalOpexEfectivoMes = opexFlotaEfectivoMes + opexInfraEfectivoMes;
-  const totalGeneralSinAdmon = capexEfectivoMes + totalOpexEfectivoMes;
-  const totalGeneralConAdmonMes = totalGeneralSinAdmon + admonEfectivoMes;
+  const totalGeneralConAdmonMes = esSeptiembre ? 171899.73 : (capexEfectivoMes + totalOpexEfectivoMes);
 
   const formatExact = (val: number) => {
     return '$' + val.toLocaleString('de-DE', { minimumFractionDigits: val % 1 !== 0 ? 2 : 0, maximumFractionDigits: 2 });
@@ -341,14 +339,14 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               {formatExact(capexEfectivoMes)}
             </div>
             <div className="text-[11px] text-neutral-500 mt-0.5 truncate">
-              {esSeptiembre && modoReclasificadoSep 
-                ? 'Base $34.930 + Reclasif. ' + formatExact(montoReclasificadoSep)
+              {esSeptiembre 
+                ? 'Proyectos $34.995 + Activos $28.329' 
                 : 'Obras civiles, galpones y patios'}
             </div>
           </div>
           <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-100">
             <span className="text-emerald-700 font-bold flex items-center gap-0.5 text-[11px]">
-              {esSeptiembre ? '▲ +20,4% vs Ago' : '▼ 36% vs Jul'}
+              {esSeptiembre ? '▲ +118% vs Ago ($29.017)' : '▼ 36% vs Jul'}
             </span>
             <span className="font-bold text-neutral-500 text-[11px]">{pctCapex}% del total</span>
           </div>
@@ -372,14 +370,14 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               {formatExact(opexFlotaEfectivoMes)}
             </div>
             <div className="text-[11px] text-neutral-500 mt-0.5 truncate">
-              {esSeptiembre && modoReclasificadoSep 
-                ? 'Master $83.730 − Motor Bus ($8.500)' 
+              {esSeptiembre 
+                ? 'Equipos móviles y activos productivos' 
                 : 'Flota pesada, grúas y livianos'}
             </div>
           </div>
           <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-100">
             <span className="text-blue-700 font-bold flex items-center gap-0.5 text-[11px]">
-              {esSeptiembre ? '▼ 26,2% vs Ago' : '▲ 16% vs Jul'}
+              {esSeptiembre ? '▼ 42% vs Ago ($113.450)' : '▲ 16% vs Jul'}
             </span>
             <span className="font-bold text-neutral-500 text-[11px]">{pctFlota}% del total</span>
           </div>
@@ -403,12 +401,12 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               {formatExact(opexInfraEfectivoMes)}
             </div>
             <div className="text-[11px] text-neutral-500 mt-0.5 truncate">
-              TT-I-C-033 Adecuaciones: $27.701
+              TT-I-C-033 Adecuaciones: $29.172
             </div>
           </div>
           <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-100">
             <span className="text-emerald-700 font-bold flex items-center gap-0.5 text-[11px]">
-              {esSeptiembre ? '▲ +2,9% vs Ago' : '▼ 3% vs Jul'}
+              {esSeptiembre ? '▲ +6% vs Ago ($40.545)' : '▼ 3% vs Jul'}
             </span>
             <span className="font-bold text-neutral-500 text-[11px]">{pctInfra}% del total</span>
           </div>
@@ -432,7 +430,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               {TOTALES_MOD_SEPTIEMBRE_2026.totalHorasHombre.toLocaleString('de-DE')} HH
             </div>
             <div className="text-[11px] text-neutral-500 mt-0.5 truncate">
-              {TOTALES_MOD_SEPTIEMBRE_2026.horasConCuentaAuxiliar.toLocaleString('de-DE')} HH en Cuentas · {TOTALES_MOD_SEPTIEMBRE_2026.horasSinCuentaAuxiliar} HH por Conciliar
+              1.336 registros de trabajo · 162 cuentas auxiliares
             </div>
           </div>
           <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-100">
@@ -460,7 +458,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               {formatExact(totalGeneralConAdmonMes)}
             </div>
             <div className="text-[11px] text-neutral-600 mt-0.5 truncate">
-              Mat + Serv + Admon ($31.340)
+              CAPEX ($63.324) + OPEX ($108.576)
             </div>
           </div>
           <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-200">
@@ -468,7 +466,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
               OPEX: {formatExact(totalOpexEfectivoMes)}
             </span>
             <span className="font-mono text-neutral-600 font-bold text-[11px]">
-              Conciliado Master
+              {esSeptiembre ? 'Acum. $2.187.455' : 'Conciliado'}
             </span>
           </div>
         </div>
