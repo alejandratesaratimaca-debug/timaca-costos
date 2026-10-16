@@ -1149,7 +1149,7 @@ function guardarSolicitud(d, finalizar) {
   validarSolicitud(d, finalizar);
   let s = d.num ? solDe(d.num) : null;
   if (s) {
-    if (s.estatus === 'APROBADO') throw new Error(`Esta solicitud ya fue aprobada y tiene vale emitido (${s.vale || 'VALE'}). Por regla estricta de trazabilidad y control, las asignaciones y préstamos aprobados NO pueden ser editados.`);
+    if (s.estatus === 'APROBADO') throw new Error(`Esta solicitud ya fue aprobada y tiene vale emitido (${s.vale || 'VALE'}). Las solicitudes aprobadas no se pueden editar.`);
     if (s.estatus === 'ANULADO') throw new Error('No se pueden modificar solicitudes anuladas.');
   }
   const editando = !!s;
@@ -1224,6 +1224,59 @@ function anularSolicitud(numSol, motivo) {
   notificarSistema('Solicitud anulada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue ANULADA por ${S.u.nombre}. Motivo: ${motivo}.`, 'err', { doc: s.num });
 }
 
+/* ---------- Configuración de destinos por almacén (Solicitudes y préstamos) ---------- */
+const DESTINOS_SOLICITUD = {
+  CENTRAL: [
+    { c: 'FABRICACION', n: 'Almacén Fabricación' },
+    { c: 'ECO', n: 'Almacén Eco' },
+    { c: 'SMB', n: 'Almacén SMB' }
+  ],
+  PELLAS: [
+    { c: 'Coordinación Electricidad', n: 'Coordinación Electricidad' },
+    { c: 'Andamios', n: 'Andamios' },
+    { c: 'Coordinación Mecánica', n: 'Coordinación Mecánica' },
+    { c: 'Coordinación Civil', n: 'Coordinación Civil' },
+    { c: 'Coordinación Tuberías', n: 'Coordinación Tuberías' },
+    { c: 'Coordinación Logística', n: 'Coordinación Logística' },
+    { c: 'Servicios Generales', n: 'Servicios Generales' },
+    { c: 'Taller / Mantto', n: 'Taller / Mantto' },
+    { c: 'Seguridad Industrial', n: 'Seguridad Industrial' }
+  ],
+  ECO: [
+    { c: 'ECO', n: 'Almacén Eco' }
+  ],
+  SMB: [
+    { c: 'SMB', n: 'Almacén SMB' }
+  ],
+  FABRICACION: [
+    { c: 'FABRICACION', n: 'Almacén Fabricación' }
+  ],
+  'BOCA GRANDE': [
+    { c: 'BOCA GRANDE', n: 'Almacén Boca Grande' }
+  ],
+  PMH: [
+    { c: 'PMH', n: 'Almacén PMH' }
+  ],
+  BRIQUETAS: [
+    { c: 'BRIQUETAS', n: 'Almacén Briquetas' }
+  ]
+};
+
+function destinosParaAlmacen(origen) {
+  if (DESTINOS_SOLICITUD[origen]) return DESTINOS_SOLICITUD[origen];
+  return [{ c: origen, n: almNombre(origen) }];
+}
+
+function selectorDestinoSol(origen, selDestino, disabled) {
+  const lista = destinosParaAlmacen(origen);
+  const dis = disabled ? 'disabled' : '';
+  if (lista.length <= 1) {
+    const d = lista[0] || { c: origen, n: almNombre(origen) };
+    return `<input value="${esc(d.n)}" readonly ${dis}><input type="hidden" id="fDestino" value="${esc(d.c)}">`;
+  }
+  return `<select id="fDestino" ${dis} onchange="F.destino=this.value">${lista.map(d => `<option value="${esc(d.c)}" ${d.c === selDestino ? 'selected' : ''}>${esc(d.n)}</option>`).join('')}</select>`;
+}
+
 /* ---------- Transferencias ---------- */
 function destinosPermitidos(origen) { return origen === 'CENTRAL' ? DB.almacenes.filter(a => a.c !== 'CENTRAL').map(a => a.c) : ['CENTRAL']; }
 function crearTransferencia(d) {
@@ -1255,6 +1308,57 @@ function crearTransferencia(d) {
   v.hist.push({ ev: 'Creada', fecha: v.fecha, usr: S.u.nombre, det: `Enviada a ${almNombre(d.destino)}`, color: '' });
   bit('TRANSFERENCIA CREADA', `${v.num} ${d.origen} → ${d.destino}`); guardar();
   notificarSistema('Nueva transferencia enviada', `Transferencia ${v.num} enviada desde ${almNombre(v.origen)} hacia ${almNombre(v.destino)} por ${v.realizadoPor.nombre}. Esperando recepción.`, 'info', { doc: v.num });
+  return v;
+}
+function actualizarTransferencia(num, d) {
+  const v = valeDe(num);
+  if (!v) throw new Error('Transferencia no encontrada: ' + num);
+  if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') throw new Error(`Esta transferencia ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`);
+  if (!d.lineas || !d.lineas.length) throw new Error('Agregue al menos un ítem en la carga de material.');
+  if (!destinosPermitidos(v.origen).includes(d.destino)) throw new Error('Destino no permitido.');
+
+  // 1. Revertir temporalmente la retención original de stock del origen
+  v.lineas.forEach(l => {
+    const eo = exi(v.origen, l.id);
+    eo.pend -= l.cant;
+    if (l.est === 'VACIO') eo.vacio += l.cant; else eo.disp += l.cant;
+  });
+
+  // 2. Validar que el stock alcance para las nuevas líneas
+  try {
+    validarStock(v.origen, d.lineas);
+  } catch (err) {
+    // Si falla la validación, restaurar la retención original antes de lanzar error
+    v.lineas.forEach(l => {
+      const eo = exi(v.origen, l.id);
+      if (l.est === 'VACIO') eo.vacio -= l.cant; else eo.disp -= l.cant;
+      eo.pend += l.cant;
+    });
+    throw err;
+  }
+
+  // 3. Aplicar retención para las nuevas líneas
+  d.lineas.forEach(l => {
+    const eo = exi(v.origen, l.id);
+    if (l.est === 'VACIO') eo.vacio -= l.cant; else eo.disp -= l.cant;
+    eo.pend += l.cant;
+  });
+
+  // 4. Actualizar datos de cabecera y líneas
+  v.destino = d.destino;
+  v.resp = d.resp || null;
+  v.sup = d.sup || '';
+  v.proyecto = d.proyecto || '';
+  v.cuenta = d.cuenta || '';
+  v.despacha = d.despacha || S.u.nombre;
+  v.salidaTimaca = d.salidaTimaca || '';
+  v.obs = d.obs || '';
+  v.lineas = d.lineas.map(l => Object.assign({}, l));
+  v.hist.push({ ev: 'Modificada', fecha: nowISO(), usr: S.u.nombre, det: `Destino: ${almNombre(v.destino)} · ${v.lineas.length} ítems`, color: 'azul' });
+
+  bit('TRANSFERENCIA MODIFICADA', `${v.num} ${v.origen} → ${v.destino}`);
+  guardar();
+  notificarSistema('Transferencia modificada', `La transferencia ${v.num} fue actualizada por ${S.u.nombre}. Destino: ${almNombre(v.destino)}.`, 'info', { doc: v.num });
   return v;
 }
 function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
@@ -1337,7 +1441,7 @@ function registrarDevolucion(valeNum, items, recibe, obs, salidaTimaca) {
     const l = v.lineas[x.i]; const c = Number(x.cant);
     if (c > saldoLinea(l)) throw new Error(`La cantidad a devolver de ${l.cod} supera el saldo pendiente (${saldoLinea(l)}).`);
   });
-  const dv = nuevoVale('DEV', { origen: v.origen, destino: v.origen, resp: v.resp, sup: v.sup, proyecto: v.proyecto, cuenta: v.cuenta, ref: v.num, obs: obs || '', extra: { recibe }, salidaTimaca: salidaTimaca || '' });
+  const dv = nuevoVale('DEV', { origen: v.destino || v.origen, destino: v.origen, resp: v.resp, sup: v.sup, proyecto: v.proyecto, cuenta: v.cuenta, ref: v.num, obs: obs || '', extra: { recibe }, salidaTimaca: salidaTimaca || '' });
   sel.forEach(x => {
     const l = v.lineas[x.i]; const c = Number(x.cant); const cond = x.cond;
     const e = exi(v.origen, l.id);
@@ -1351,7 +1455,7 @@ function registrarDevolucion(valeNum, items, recibe, obs, salidaTimaca) {
     const ld = Object.assign({}, l, { cant: c, dev: 0, cond, condRet: cond });
     delete ld.consumo;
     dv.lineas.push(ld);
-    mov({ doc: dv.num, tipo: 'DEV', id: l.id, cant: c, origen: v.origen, destino: v.origen, estAnt: v.tipo === 'PRH' ? 'EN PRÉSTAMO' : 'ASIGNADO', estNue, resp: v.resp.nombre, cedula: v.resp.cedula, obs: 'Ref. ' + v.num });
+    mov({ doc: dv.num, tipo: 'DEV', id: l.id, cant: c, origen: v.destino || v.origen, destino: v.origen, estAnt: v.tipo === 'PRH' ? 'EN PRÉSTAMO' : 'ASIGNADO', estNue, resp: v.resp.nombre, cedula: v.resp.cedula, obs: 'Ref. ' + v.num });
   });
   v.hist.push({ ev: 'Devolución ' + dv.num, fecha: nowISO(), usr: S.u.nombre, color: 'verde' });
   bit('DEVOLUCIÓN REGISTRADA', `${dv.num} ref. ${v.num}`); guardar();
@@ -3731,7 +3835,14 @@ function cambiarTipoMov(t) {
   ir(RUTA_TIPO[t], { tipo: t });
 }
 function nuevoF(tipo, extra) {
-  return Object.assign({ tipo, num: null, origen: S.ctx, destino: tipo === 'TRF' ? destinosPermitidos(S.ctx)[0] : S.ctx, resp: null, sup: '', proyecto: '', cuenta: '',
+  let defDest = S.ctx;
+  if (tipo === 'TRF') {
+    defDest = (destinosPermitidos(S.ctx) || [])[0] || 'CENTRAL';
+  } else if (tipo === 'PRH' || tipo === 'ASI') {
+    const list = destinosParaAlmacen(S.ctx);
+    defDest = list.length ? list[0].c : S.ctx;
+  }
+  return Object.assign({ tipo, num: null, origen: S.ctx, destino: defDest, resp: null, sup: '', proyecto: '', cuenta: '',
     fechaReq: hoy(), fechaDev: sumarDias(hoy(), 7), fechaAsig: hoy(), obs: '', lineas: [], sel: -1, cap: null, valeRef: '', detalle: '', malUso: 'NO', dictamen: 'POR EVALUAR', hecho: null }, extra || {});
 }
 VISTAS.solNueva = p => {
@@ -3750,9 +3861,33 @@ VISTAS.solNueva = p => {
   } else F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
   pintarSolicitud();
 };
-VISTAS.trfNueva = () => {
+VISTAS.trfNueva = p => {
   if (!puede('transferir', S.ctx)) { $('area').innerHTML = cab('Nueva transferencia') + avisoSinPermiso('Su usuario no tiene permiso para registrar transferencias desde este almacén.'); return; }
-  F = nuevoF('TRF'); pintarFormulario();
+  if (p && p.num) {
+    const v = valeDe(p.num);
+    if (!v) return ir('trfEnv');
+    if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') {
+      toast(`La transferencia ${v.num} ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`, 'err');
+      return ir('trfEnv');
+    }
+    F = nuevoF('TRF', {
+      num: v.num,
+      origen: v.origen,
+      destino: v.destino,
+      resp: v.resp,
+      sup: v.sup,
+      proyecto: v.proyecto,
+      cuenta: v.cuenta,
+      despacha: v.despacha,
+      salidaTimaca: v.salidaTimaca,
+      obs: v.obs,
+      lineas: v.lineas.map(l => Object.assign({}, l)),
+      lineasOriginales: v.lineas.map(l => Object.assign({}, l))
+    });
+  } else {
+    F = nuevoF('TRF');
+  }
+  pintarFormulario();
 };
 VISTAS.mov = p => { F = nuevoF(p && p.tipo === 'EXT' ? 'EXT' : 'DAN'); pintarFormulario(); };
 VISTAS.dan = () => VISTAS.mov({ tipo: 'DAN' });
@@ -3763,9 +3898,9 @@ function campo(lbl, html, extraCls) { return `<div class="campo ${extraCls || ''
 function pintarFormulario() {
   const t = F.tipo, bloqueado = !!F.hecho;
   const ro = bloqueado ? 'disabled' : '';
-  const titulos = { PRH: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', ASI: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', TRF: '🚚 Nueva transferencia', DAN: '➕ Registrar movimiento y carga de material', EXT: '➕ Registrar movimiento y carga de material' };
+  const titulos = { PRH: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', ASI: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', TRF: F.num ? '🚚 Editar transferencia ' + F.num : '🚚 Nueva transferencia', DAN: '➕ Registrar movimiento y carga de material', EXT: '➕ Registrar movimiento y carga de material' };
   const subt = { PRH: 'El préstamo es por tiempo definido. Al finalizar, la solicitud pasa a aprobación del supervisor del almacén.', ASI: 'La asignación es por tiempo indefinido. El EPP entregado se registra como dotación. Al finalizar, pasa a aprobación del supervisor.',
-    TRF: 'La transferencia no requiere aprobación. El almacén destino tendrá ' + DB.config.plazoHoras + ' horas para aceptarla; si no lo hace, el material regresa automáticamente.',
+    TRF: F.num ? 'Modifique los datos o ítems de la transferencia antes de que sea aceptada por el almacén receptor.' : 'La transferencia no requiere aprobación. El almacén destino tendrá ' + DB.config.plazoHoras + ' horas para aceptarla; si no lo hace, el material regresa automáticamente.',
     DAN: 'Registre el daño de un ítem del almacén o de uno entregado en préstamo o asignación.', EXT: 'Registre el robo o extravío de un ítem del almacén o de uno entregado en préstamo o asignación.' };
   let cabecera = campo('Tipo de movimiento', `<select id="fTipo" ${bloqueado || F.num || OPC_MOV().length === 1 ? 'disabled' : ''} onchange="cambiarTipoMov(this.value)">${opciones(OPC_MOV(), t)}</select>`)
     + campo('Almacén origen', `<input value="${esc(almNombre(F.origen).replace('Almacén ', '').toUpperCase())}" readonly>`);
@@ -3781,7 +3916,7 @@ function pintarFormulario() {
       + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`)
       + campo('N° de salida TIMACA (opcional)', `<input id="fSalidaTimaca" ${ro} placeholder="Opcional" value="${esc(F.salidaTimaca || '')}">`);
   } else if (t === 'PRH' || t === 'ASI') {
-    cabecera += campo('Almacén destino', `<select id="fDestino" ${ro}>${DB.almacenes.map(a => `<option value="${a.c}" ${a.c === F.destino ? 'selected' : ''}>${esc(a.n)}</option>`).join('')}</select>`);
+    cabecera += campo('Destino / Área solicitante', selectorDestinoSol(F.origen, F.destino, ro));
   } else {
     const vales = valesConSaldo(F.origen);
     cabecera += campo('Vale de referencia (opcional)', `<select id="fValeRef" ${ro} onchange="elegirValeRef(this.value)"><option value="">Ítem en existencia del almacén</option>${vales.map(v => `<option value="${v.num}" ${v.num === F.valeRef ? 'selected' : ''}>${v.num} · ${esc(v.resp.nombre)}</option>`).join('')}</select>`);
@@ -3817,7 +3952,7 @@ function pintarFormulario() {
         <div class="der">
           ${F.hecho ? `<button class="btn btn-claro" onclick="ir('${RUTA_TIPO[t]}',{tipo:'${t}'})">Nuevo registro</button>` : `<button class="btn btn-claro" onclick="ir('${t === 'TRF' ? 'trfEnv' : (t === 'PRH' || t === 'ASI') ? 'sol' : 'cIncid'}')">Cancelar</button>`}
           ${(t === 'PRH' || t === 'ASI') && !F.hecho ? `<button class="btn btn-claro" onclick="finalizarFormulario(false)">Guardar sin finalizar</button>` : ''}
-          ${F.hecho ? '' : `<button class="btn btn-verde" onclick="finalizarFormulario(true)">Finalizar registro / movimiento</button>`}
+          ${F.hecho ? '' : `<button class="btn btn-verde" onclick="finalizarFormulario(true)">${F.num ? '✔ Guardar cambios' : 'Finalizar registro / movimiento'}</button>`}
           <button class="btn btn-azul" ${F.hecho ? '' : 'disabled'} title="${(t === 'PRH' || t === 'ASI') ? 'El vale se genera cuando el supervisor aprueba la solicitud' : 'Disponible al finalizar el registro'}" onclick="imprimirVale('${F.hecho || ''}')">🖨 Imprimir vale</button>
         </div>
       </div>
@@ -3873,11 +4008,22 @@ function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO'
 const estDe = (it, cond) => it.mod === 'CILINDRO' && cond === 'VACÍO' ? 'VACIO' : 'DISP';
 function dispCaptura(it, cond) {
   const est = estDe(it, cond);
+  let extra = 0;
+  if (F.lineasOriginales) {
+    extra = F.lineasOriginales.filter(l => l.id === it.id && l.est === est).reduce((a, l) => a + l.cant, 0);
+  }
   const usado = F.lineas.filter(l => l.id === it.id && l.est === est).reduce((a, l) => a + l.cant, 0);
-  return dispItem(F.origen, it.id, est) - usado;
+  return (dispItem(F.origen, it.id, est) + extra) - usado;
 }
 const aceptaVacios = () => F.tipo === 'TRF' || F.tipo === 'DAN' || F.tipo === 'EXT';
-function dispTotalItem(it) { const e = exi(F.origen, it.id); return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0); }
+function dispTotalItem(it) {
+  const e = exi(F.origen, it.id);
+  let extra = 0;
+  if (F.lineasOriginales) {
+    extra = F.lineasOriginales.filter(l => l.id === it.id).reduce((a, l) => a + l.cant, 0);
+  }
+  return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0) + extra;
+}
 function itemsBuscables() {
   return DB.catalogo.filter(it => it.activo && !(F.tipo === 'PRH' && it.mod === 'EPP')).filter(it => dispTotalItem(it) > 0);
 }
@@ -3974,7 +4120,12 @@ function cambiarCantLinea(i, val) {
   const l = F.lineas[i];
   if (!l) return;
   const c = parseInt(val, 10);
-  const dispTotal = dispItem(F.origen, l.id, l.est) + l.cant;
+  let extra = 0;
+  if (F.lineasOriginales) {
+    const orig = F.lineasOriginales.find(x => x.id === l.id && x.est === l.est);
+    if (orig) extra = orig.cant;
+  }
+  const dispTotal = dispItem(F.origen, l.id, l.est) + (F.lineasOriginales ? extra : l.cant);
   if (isNaN(c) || c <= 0) {
     toast('La cantidad debe ser mayor a 0.', 'err');
     pintarLineas();
@@ -3998,7 +4149,7 @@ function pintarLineas() {
     : `<tr class="${F.sel === i ? 'sel' : ''}">
       <td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td>
       <td>${esc(l.cond)}</td>
-      <td class="cen">${bloqueado || l.serial ? `<b>${l.cant}</b>` : `<input type="number" min="1" max="${dispItem(F.origen, l.id, l.est) + l.cant}" value="${l.cant}" style="width:60px;padding:3px;text-align:center;font-weight:700" onchange="cambiarCantLinea(${i}, this.value)">`}</td>
+      <td class="cen">${bloqueado || l.serial ? `<b>${l.cant}</b>` : `<input type="number" min="1" max="${dispItem(F.origen, l.id, l.est) + (F.lineasOriginales ? ((F.lineasOriginales.find(x => x.id === l.id && x.est === l.est) || {}).cant || l.cant) : l.cant)}" value="${l.cant}" style="width:60px;padding:3px;text-align:center;font-weight:700" onchange="cambiarCantLinea(${i}, this.value)">`}</td>
       <td class="cen">${bloqueado ? '' : `<button class="btn btn-rojo btn-mini" title="Eliminar ítem de la solicitud" onclick="event.stopPropagation();eliminarLinea(${i})">🗑 Eliminar</button>`}</td></tr>`).join('');
   const th = conRef ? '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Unidad</th><th class="cen">Saldo</th><th class="cen">Cantidad</th><th colspan="2"></th>'
     : '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th><th class="cen">Acción</th>';
@@ -4029,19 +4180,35 @@ function finalizarFormulario(finalizar) {
       toast(finalizar ? `Solicitud ${s.num} finalizada y enviada a aprobación de: ${aprobadoresDe(s.origen).join(', ') || 'supervisor autorizado'}.` : `Solicitud ${s.num} guardada como NO FINALIZADO.`, 'ok');
       ir('sol', { sel: s.num });
     } else if (t === 'TRF') {
-      const v = crearTransferencia({
-        origen: F.origen,
-        destino: F.destino,
-        resp: F.resp,
-        sup: F.sup,
-        proyecto: F.proyecto,
-        cuenta: F.cuenta,
-        despacha: F.despacha || S.u.nombre,
-        salidaTimaca: F.salidaTimaca || '',
-        obs: F.obs,
-        lineas: F.lineas
-      });
-      F.hecho = v.num; toast(`Transferencia ${v.num} registrada. Pendiente de recepción en ${almNombre(v.destino)}.`, 'ok'); pintarMenu(); pintarFormulario();
+      if (F.num) {
+        const v = actualizarTransferencia(F.num, {
+          destino: F.destino,
+          resp: F.resp,
+          sup: F.sup,
+          proyecto: F.proyecto,
+          cuenta: F.cuenta,
+          despacha: F.despacha || S.u.nombre,
+          salidaTimaca: F.salidaTimaca || '',
+          obs: F.obs,
+          lineas: F.lineas
+        });
+        toast(`Transferencia ${v.num} actualizada exitosamente.`, 'ok');
+        ir('trfEnv', { sel: v.num });
+      } else {
+        const v = crearTransferencia({
+          origen: F.origen,
+          destino: F.destino,
+          resp: F.resp,
+          sup: F.sup,
+          proyecto: F.proyecto,
+          cuenta: F.cuenta,
+          despacha: F.despacha || S.u.nombre,
+          salidaTimaca: F.salidaTimaca || '',
+          obs: F.obs,
+          lineas: F.lineas
+        });
+        F.hecho = v.num; toast(`Transferencia ${v.num} registrada. Pendiente de recepción en ${almNombre(v.destino)}.`, 'ok'); pintarMenu(); pintarFormulario();
+      }
     } else {
       const lineas = F.valeRef ? F.lineas.filter(l => l.cant > 0) : F.lineas;
       if (!F.valeRef && t !== 'TRF' && !F.resp) throw new Error('Seleccione el responsable custodio desde la lista de personal.');
@@ -4077,7 +4244,8 @@ function pintarSolicitud() {
       ${L('Tipo de asignación')}<div class="vl"><select id="fTA" onchange="cambiarTipoSol(this.value === 'DEF' ? 'PRH' : 'ASI')">${opciones([['DEF', 'TIEMPO DEFINIDO'], ['IND', 'TIEMPO INDEFINIDO']], t === 'PRH' ? 'DEF' : 'IND')}</select></div>
       ${L('Supervisor autoriza')}<div class="vl"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}"></div>
       ${fechas}
-      ${L('Almacén')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
+      ${L('Almacén origen')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
+      ${L('Destino / Área solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
       ${L('Estatus')}<div class="vl">${estB(est)}<button class="btn btn-navy btn-mini" onclick="salvarSolicitud()">💾 Salvar</button></div>
     </div>
     <div class="carga" style="margin-top:14px"><div class="carga-h">CARGA DE MATERIAL</div>${filaCaptura()}<div id="fLineas"></div></div>
@@ -4283,7 +4451,7 @@ VISTAS.doc = p => {
   else if (esSol && est === 'FINALIZADO') franjaDer = 'Pendiente de aprobación del supervisor de ' + esc(almNombre(d.origen));
   const R = (lbl, v) => campo(lbl, `<input value="${esc(v ?? '')}" readonly>`);
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
-    + R('Almacén origen', almNombre(d.origen)) + R('Almacén destino', almNombre(d.destino));
+    + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', almNombre(d.destino));
   if (t === 'TRF') {
     c += R('Realizado por', d.realizadoPor.nombre) + R('Cédula', d.realizadoPor.cedula) + R('Cargo', d.realizadoPor.cargo);
     if (d.despacha) c += R('Quién despacha', d.despacha);
@@ -4352,7 +4520,7 @@ VISTAS.doc = p => {
     : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
   const und = d.lineas.reduce((a, l) => a + l.cant, 0);
   const acciones = accionesDoc(d, esSol, p);
-  const nota = esSol ? (d.estatus === 'FINALIZADO' ? motivoNoAprueba(d) : d.estatus === 'NO FINALIZADO' ? 'La solicitud aún no está finalizada. Ábrala desde "Solicitudes del almacén" con "Editar solicitud" y presione "Finalizar solicitud".' : d.estatus === 'APROBADO' ? (puedeImprimir() ? 'Solicitud aprobada: ya puede imprimir el vale ' + d.vale + '.' : 'Solicitud aprobada. El personal del almacén imprimirá el vale ' + d.vale + '.') : '') : '';
+  const nota = esSol ? (d.estatus === 'FINALIZADO' ? motivoNoAprueba(d) : d.estatus === 'APROBADO' ? (d.vale ? `Vale ${d.vale} emitido.` : '') : '') : '';
   $('area').innerHTML = cab(esSol ? 'Solicitud ' + d.num : TIPOS[t].titulo.charAt(0) + TIPOS[t].titulo.slice(1).toLowerCase() + ' ' + d.num, 'Vista de solo lectura: muestra exactamente lo registrado.', `<button class="btn btn-claro" onclick="${p.back ? `ir('${p.back}')` : 'history.back()'}">Volver</button>`)
     + `<div class="franja-est ${color}" style="${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'flex-wrap:wrap' : ''}"><span>Estatus: ${estB(est)}</span><span>${franjaDer}</span>${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? `<div class="crono-barra"><i data-ini="${d.fecha}" data-vence="${d.vence}"></i></div><span style="font-size:12px;color:var(--texto-2)">${d.destino === S.ctx ? `Si no la acepta o rechaza antes de que el reloj llegue a cero, la transferencia vencerá y el material regresará a ${esc(almNombre(d.origen))}.` : `${esc(almNombre(d.destino))} debe aceptarla antes de que el reloj llegue a cero; si no, el material regresará automáticamente a ${esc(almNombre(d.origen))}.`}</span>` : ''}</div>${nota ? `<div class="franja-est ${d.estatus === 'APROBADO' ? 'verde' : 'naranja'}"><span>ℹ️ ${esc(nota)}</span></div>` : ''}
     <div class="form-reg"><div class="f3">${c}</div>${extraTxt}${d.obs ? campo('Observación', `<input value="${esc(d.obs)}" readonly>`) : ''}
@@ -4383,8 +4551,13 @@ function accionesDoc(d, esSol, p) {
     if (d.vale && puedeImprimir()) h += `<button class="btn btn-azul" onclick="imprimirVale('${d.vale}')">🖨 Imprimir vale</button>`;
     return h;
   }
-  if (d.tipo === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' && d.destino === S.ctx && puede('recibir', d.destino)) {
-    h += `<button class="btn btn-rojo" onclick="accionRechazarTrf('${d.num}')">Rechazar transferencia</button><button class="btn btn-verde" onclick="accionAceptarTrf('${d.num}')">Aceptar transferencia</button>`;
+  if (d.tipo === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN') {
+    if (d.destino === S.ctx && puede('recibir', d.destino)) {
+      h += `<button class="btn btn-rojo" onclick="accionRechazarTrf('${d.num}')">Rechazar transferencia</button><button class="btn btn-verde" onclick="accionAceptarTrf('${d.num}')">Aceptar transferencia</button>`;
+    }
+    if (d.origen === S.ctx && puede('transferir', d.origen)) {
+      h += `<button class="btn btn-claro" onclick="editarTransferencia('${d.num}')">✏️ Editar transferencia</button>`;
+    }
   }
   if ((d.tipo === 'PRH' || d.tipo === 'ASI') && saldoVale(d) > 0 && d.origen === S.ctx) {
     h += `<button class="btn btn-claro" onclick="ir('dev',{vale:'${d.num}'})">Registrar devolución</button>`;
@@ -4420,6 +4593,7 @@ VISTAS.sol = p => {
     }},
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
     { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
+    { t: 'Destino / Área', v: r => r.destino ? almNombre(r.destino) : '—', f: r => `<span class="est est-gris" style="font-size:11px">${esc(almNombre(r.destino || r.origen))}</span>` },
     { t: 'Cuenta auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800">${esc(r.cuenta)}</span>` : '—' },
     { t: 'Proyecto / OT', k: 'proyecto', td: 'wrap' },
     { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '' },
@@ -4451,11 +4625,11 @@ function tiraSol(s) {
   $('bEdit').disabled = !noAprobada;
   $('bDel').disabled = !noAprobada;
   $('bVer').disabled = false; $('bImp').disabled = !s.vale;
-  const info = s.estatus === 'FINALIZADO' ? 'Pendiente de aprobación. ' + motivoNoAprueba(s) + ' Si seleccionó un ítem por error, use "Editar solicitud" para corregirlo antes de que sea aprobada.'
-    : s.estatus === 'APROBADO' ? `Aprobada por ${s.procesadoPor ? s.procesadoPor.nombre : 'Supervisor'}. Vale ${s.vale} emitido. REGLA ESTRICTA: Las asignaciones y préstamos aprobados NO pueden ser editados.` + (puedeImprimir() ? ` Use "Imprimir vale" para imprimir el vale ${s.vale}.` : ` El personal del almacén imprimirá el vale ${s.vale}.`)
-    : s.estatus === 'NO FINALIZADO' ? 'Borrador: use "Editar solicitud" para modificar o corregir ítems y luego "Finalizar solicitud" para enviarla a aprobación.'
+  const info = s.estatus === 'FINALIZADO' ? (motivoNoAprueba(s) || '')
+    : s.estatus === 'APROBADO' ? (s.procesadoPor ? `Aprobada por ${s.procesadoPor.nombre}. Vale ${s.vale || ''} emitido.` : (s.vale ? `Vale ${s.vale} emitido.` : ''))
+    : s.estatus === 'NO FINALIZADO' ? ''
     : s.estatus === 'ANULADO' ? 'Anulada: ' + (s.motivo || '') : '';
-  $('tsInfo').innerHTML = info ? `<div class="franja-est ${s.estatus === 'APROBADO' ? 'verde' : s.estatus === 'ANULADO' ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>ℹ️ ${esc(info)}</span></div>` : '';
+  $('tsInfo').innerHTML = info ? `<div class="franja-est ${s.estatus === 'APROBADO' ? 'verde' : s.estatus === 'ANULADO' ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>${esc(info)}</span></div>` : '';
 }
 function accionEliminarSol() {
   const s = selDe('gSol');
@@ -4524,7 +4698,9 @@ function accionAnular(n) { pedirTexto('Anular solicitud ' + n, 'Motivo de anulac
 /* =====================================================================
    TRANSFERENCIAS
    ===================================================================== */
-const colsTrf = (recibidas) => [{ t: 'N° vale', k: 'num' }, { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
+const colsTrf = (recibidas) => [
+  { t: 'N° vale', k: 'num', f: r => (!recibidas && r.estatus === 'PENDIENTE DE RECEPCIÓN') ? `<a href="javascript:void(0)" onclick="event.stopPropagation();editarTransferencia('${r.num}')" style="color:var(--azul);font-weight:800;text-decoration:underline" title="Haga clic para editar la transferencia ${r.num}">${esc(r.num)}</a>` : `<b>${esc(r.num)}</b>` },
+  { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
   { t: 'Realizado por', v: r => r.realizadoPor.nombre },
   { t: 'Quién despacha', v: r => r.despacha || r.realizadoPor.nombre },
@@ -4562,6 +4738,8 @@ function tiraTrf(v, k) {
     $('rVer').disabled = false; $('rImp').disabled = false; $('rOk').disabled = !ok; $('rNo').disabled = !ok;
   } else {
     $('teNum').textContent = v.num; $('teInfo').textContent = `Hacia ${almNombre(v.destino)} · ${v.estatus}`;
+    const editable = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('transferir', v.origen);
+    if ($('eEdit')) $('eEdit').disabled = !editable;
     ['eVer', 'eImp', 'eHist'].forEach(i => $(i).disabled = false);
   }
 }
@@ -4570,6 +4748,18 @@ function accionAceptarTrf(n) {
   confirmar(`¿Aceptar la transferencia <b>${n}</b> desde ${esc(almNombre(v.origen))}? Los ${v.lineas.reduce((a, l) => a + l.cant, 0)} ítems quedarán disponibles en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(n); toast(`Transferencia ${n} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
 }
 function accionRechazarTrf(n) { pedirTexto('Rechazar transferencia ' + n, 'Motivo del rechazo (obligatorio)', v => { rechazarTransferencia(n, v); toast(`Transferencia ${n} rechazada. El material regresó al almacén de origen.`, 'ok'); pintarMenu(); refrescar(); }, 'Rechazar transferencia', 'btn-rojo', true); }
+function editarTransferencia(n) {
+  if (!n) return;
+  const v = valeDe(n);
+  if (!v) return toast('Transferencia no encontrada.', 'err');
+  if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') {
+    return toast(`La transferencia ${v.num} ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`, 'err');
+  }
+  if (!puede('transferir', v.origen)) {
+    return toast(`Su usuario no tiene permiso para editar transferencias desde ${almNombre(v.origen)}.`, 'err');
+  }
+  ir('trfNueva', { num: v.num });
+}
 VISTAS.trfEnv = p => {
   p = p || {};
   const f = { dest: p.dest || '', est: p.est || 'TODAS', desde: p.desde || sumarDias(hoy(), -90), hasta: p.hasta || hoy() };
@@ -4589,6 +4779,7 @@ VISTAS.trfEnv = p => {
     <div class="sel-strip"><span class="lbl">Transferencia seleccionada</span><span class="box" id="teNum"></span><span class="box" id="teInfo" style="flex:1"></span></div>
     <div class="barra-btn">
       ${puede('transferir', S.ctx) ? `<button class="btn-sip" onclick="ir('trfNueva')">Nueva transferencia</button>` : ''}
+      <button class="btn-sip" id="eEdit" disabled onclick="editarTransferencia(selDe('gEnv').num)">Editar transferencia</button>
       <button class="btn-sip" id="eVer" disabled onclick="ir('doc',{num:selDe('gEnv').num,back:'trfEnv'})">Visualizar transferencia</button>
       <button class="btn-sip" id="eImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gEnv').num)">Imprimir vale</button>
       <button class="btn-sip" id="eHist" disabled onclick="verHistorial(selDe('gEnv').num)">Ver historial</button>
@@ -4608,9 +4799,17 @@ VISTAS.dev = p => {
   if (v) {
     const opc = l => l.mod === 'CILINDRO' ? ['LLENO', 'VACÍO', 'DAÑADO', 'EXTRAVIADO'] : ['BUENO', 'DAÑADO', 'EXTRAVIADO'];
     cuerpo = `<div class="form-reg"><div class="f3">
-        ${campo('Vale', `<input value="${v.num} · ${TIPOS[v.tipo].n}" readonly>`)}${campo('Responsable custodio', `<input value="${esc(v.resp.nombre)}" readonly>`)}${campo('Cédula', `<input value="${esc(v.resp.cedula)}" readonly>`)}
-        ${campo('Proyecto / OT', `<input value="${esc(v.proyecto)}" readonly>`)}${campo(v.tipo === 'PRH' ? 'Fecha de devolución' : 'Fecha de asignación', `<input value="${fF(v.fechaDev || v.fechaAsig)}" readonly>`)}${campo('Estado del vale', `<div style="padding-top:6px">${estB(estadoVale(v))}</div>`)}
-        ${campo('Recibido por', `<input id="dvRecibe" autocomplete="off" value="${esc(S.u.nombre)}">`)}${campo('N° de salida TIMACA (opcional)', `<input id="dvSalidaTimaca" placeholder="Opcional" value="${esc(v.salidaTimaca || '')}">`)}${campo('Observación', `<input id="dvObs" placeholder="Opcional">`)}
+        ${campo('Vale', `<input value="${v.num} · ${TIPOS[v.tipo].n}" readonly>`)}
+        ${campo('Origen devolución (Área/Custodio)', `<input value="${esc(almNombre(v.destino || v.origen))}" readonly>`)}
+        ${campo('Almacén receptor', `<input value="${esc(almNombre(v.origen))}" readonly>`)}
+        ${campo('Responsable custodio', `<input value="${esc(v.resp.nombre)}" readonly>`)}
+        ${campo('Cédula', `<input value="${esc(v.resp.cedula)}" readonly>`)}
+        ${campo('Proyecto / OT', `<input value="${esc(v.proyecto)}" readonly>`)}
+        ${campo(v.tipo === 'PRH' ? 'Fecha de devolución' : 'Fecha de asignación', `<input value="${fF(v.fechaDev || v.fechaAsig)}" readonly>`)}
+        ${campo('Estado del vale', `<div style="padding-top:6px">${estB(estadoVale(v))}</div>`)}
+        ${campo('Recibido por', `<input id="dvRecibe" autocomplete="off" value="${esc(S.u.nombre)}">`)}
+        ${campo('N° de salida TIMACA (opcional)', `<input id="dvSalidaTimaca" placeholder="Opcional" value="${esc(v.salidaTimaca || '')}">`)}
+        ${campo('Observación', `<input id="dvObs" placeholder="Opcional">`)}
       </div>
       <div class="carga"><div class="carga-h">ÍTEMS CON SALDO PENDIENTE</div>
       <div style="overflow:auto"><table class="grid"><thead><tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th class="cen">Entregado</th><th class="cen">Devuelto</th><th class="cen">Saldo</th><th class="cen">Cant. a devolver</th><th>Condición de retorno</th></tr></thead>
@@ -4620,7 +4819,7 @@ VISTAS.dev = p => {
       <div class="pie-form"><div class="totales">La cantidad propuesta es el saldo completo; ajústela para devoluciones parciales.</div><div class="der"><button class="btn btn-claro" onclick="ir('dev')">Cancelar</button><button class="btn btn-verde" onclick="accionDevolver('${v.num}')">Registrar devolución</button></div></div></div>`;
   }
   $('area').innerHTML = cab('Registrar devolución', 'La devolución se registra en el almacén que prestó o asignó, contra el vale original. Para regresar material a Central, use una transferencia.')
-    + `<div class="panel"><div class="panel-h">Vale a devolver</div><div class="panel-b"><div class="fila-filtros">${campo('Préstamo o asignación con saldo', `<select onchange="ir('dev',{vale:this.value})" style="min-width:420px"><option value="">Seleccione…</option>${vales.map(x => `<option value="${x.num}" ${x.num === sel ? 'selected' : ''}>${x.num} · ${esc(x.resp.nombre)} · ${esc(x.proyecto)} · saldo ${saldoVale(x)}</option>`).join('')}</select>`)}</div>
+    + `<div class="panel"><div class="panel-h">Vale a devolver</div><div class="panel-b"><div class="fila-filtros">${campo('Préstamo o asignación con saldo', `<select onchange="ir('dev',{vale:this.value})" style="min-width:420px"><option value="">Seleccione…</option>${vales.map(x => `<option value="${x.num}" ${x.num === sel ? 'selected' : ''}>${x.num} · ${esc(x.resp.nombre)} · ${esc(almNombre(x.destino || x.origen))} · saldo ${saldoVale(x)}</option>`).join('')}</select>`)}</div>
     ${vales.length ? '' : '<p class="ayuda-txt">No hay préstamos ni asignaciones con saldo pendiente en este almacén.</p>'}</div></div>` + cuerpo + datalistPersonal();
 };
 function accionDevolver(n) {
