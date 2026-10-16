@@ -504,16 +504,48 @@ const TIPOS = {
   INI: { n: 'Inventario inicial', titulo: 'INVENTARIO INICIAL' },
 };
 const MODULOS = { HERRAMIENTA: 'Herramientas', CILINDRO: 'Cilindros y gases', EPP: 'EPP' };
+const CATEGORIAS_OFICIALES = [
+  'Herramientas mayores',
+  'Herramientas manuales',
+  'Herramientas eléctricas',
+  'Cilindros y gases',
+  'Equipos y accesorios para elevación y cargas',
+  'Equipos y accesorios para soldadura y oxicorte',
+  'EPP',
+  'Equipos e instrumentos de medición',
+  'Herramientas neumáticas e hidráulicas',
+  'Herramientas de fabricación'
+];
+const UMBS_OFICIALES = [
+  'UND',
+  'KG',
+  'LT',
+  'MT',
+  'CJ',
+  'CL',
+  'PAR',
+  'JGO',
+  'PZA',
+  'ROL',
+  'M2',
+  'M3'
+];
 const EST_COLOR = {
-  'NO FINALIZADO': 'gris', 'FINALIZADO': 'azul', 'APROBADO': 'verde', 'ANULADO': 'rojo',
+  'PENDIENTE DE APROBACIÓN': 'naranja', 'APROBADA': 'verde', 'ANULADA': 'rojo',
+  'NO FINALIZADO': 'naranja', 'FINALIZADO': 'naranja', 'APROBADO': 'verde', 'ANULADO': 'rojo',
   'PENDIENTE DE RECEPCIÓN': 'gris', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
   'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris',
   'EN INVESTIGACIÓN': 'naranja', 'RECUPERADO': 'verde', 'ACTIVO': 'verde', 'INACTIVO': 'gris',
-  'DISPONIBLE': 'verde', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
+  'DISPONIBLE': 'verde', 'VACÍO': 'naranja', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
   'SUFICIENTE': 'verde', 'LIMITANTE': 'naranja', 'NO EXISTE': 'gris'
 };
 const estB = e => `<span class="est est-${EST_COLOR[e] || 'gris'}">${esc(e)}</span>`;
+const formatoEstSol = e => {
+  if (e === 'APROBADO' || e === 'APROBADA') return 'APROBADA';
+  if (e === 'ANULADO' || e === 'ANULADA') return 'ANULADA';
+  return 'PENDIENTE DE APROBACIÓN';
+};
 
 /* ----------------------------- Persistencia ----------------------------- */
 const ALMS_TODOS_OFICIALES = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
@@ -523,7 +555,7 @@ function asegurarUsuariosClave() {
   // Asegurar Daniela Riveros (Supervisora en todos los almacenes, clave 1234)
   let uDan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
   if (!uDan) {
-    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
     DB.usuarios.unshift(uDan);
   } else {
     uDan.usuario = 'drivero';
@@ -533,10 +565,16 @@ function asegurarUsuariosClave() {
     uDan.nombre = 'Daniela Riveros';
     uDan.cargo = 'Supervisora de Herramientas & Almacenes';
     uDan.activo = true;
+    uDan.admin = true;
     uDan.almacenes = ALMS_TODOS_OFICIALES;
     uDan.maestro = true;
     uDan.editaCostos = true;
     uDan.perm = { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+  }
+  if (S.u && (S.u.usuario === 'drivero' || S.u.alias === 'daniela')) {
+    S.u.admin = true;
+    S.u.maestro = true;
+    S.u.almacenes = ALMS_TODOS_OFICIALES;
   }
 
   // Asegurar Jessica Navarro (Acceso a todos los almacenes, clave 1234)
@@ -854,12 +892,12 @@ function asegurarPlanificacionCajas() {
 
   // Asegurar herramientas de especialidad en el catálogo (Tornero, Mecánico, Electricista, Soldador)
   const extrasCat = [
-    { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', mod: 'HERRAMIENTA', cat: 'Medición', marca: 'MITUTOYO', modelo: '530-104', serial: '', umb: 'UND', costo: 45, stockIni: 6 },
-    { cod: 'HE000195', desc: 'Micrómetro exterior 0-1"', mod: 'HERRAMIENTA', cat: 'Medición', marca: 'MITUTOYO', modelo: '103-137', serial: '', umb: 'UND', costo: 68, stockIni: 4 },
-    { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', mod: 'HERRAMIENTA', cat: 'Llaves', marca: 'STANLEY', modelo: '69-253', serial: '', umb: 'JGO', costo: 14.5, stockIni: 12 },
-    { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', mod: 'HERRAMIENTA', cat: 'Alicates', marca: 'VISE-GRIP', modelo: '10R', serial: '', umb: 'UND', costo: 15.8, stockIni: 10 },
-    { cod: 'HE000220', desc: 'Multímetro digital industrial', mod: 'HERRAMIENTA', cat: 'Eléctricas', marca: 'FLUKE', modelo: '117', serial: '', umb: 'UND', costo: 185, stockIni: 5 },
-    { cod: 'HE000230', desc: 'Piqueta / Martillo quita escoria', mod: 'HERRAMIENTA', cat: 'Soldadura', marca: 'TRUPER', modelo: 'MP-500', serial: '', umb: 'UND', costo: 7.5, stockIni: 14 }
+    { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'MITUTOYO', modelo: '530-104', serial: '', umb: 'UND', costo: 45, stockIni: 6 },
+    { cod: 'HE000195', desc: 'Micrómetro exterior 0-1"', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'MITUTOYO', modelo: '103-137', serial: '', umb: 'UND', costo: 68, stockIni: 4 },
+    { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: 'STANLEY', modelo: '69-253', serial: '', umb: 'JGO', costo: 14.5, stockIni: 12 },
+    { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: 'VISE-GRIP', modelo: '10R', serial: '', umb: 'UND', costo: 15.8, stockIni: 10 },
+    { cod: 'HE000220', desc: 'Multímetro digital industrial', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'FLUKE', modelo: '117', serial: '', umb: 'UND', costo: 185, stockIni: 5 },
+    { cod: 'HE000230', desc: 'Piqueta / Martillo quita escoria', mod: 'HERRAMIENTA', cat: 'Equipos y accesorios para soldadura y oxicorte', marca: 'TRUPER', modelo: 'MP-500', serial: '', umb: 'UND', costo: 7.5, stockIni: 14 }
   ];
   let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
   extrasCat.forEach(ex => {
@@ -892,7 +930,101 @@ function asegurarPlanificacionCajas() {
   }
 }
 
+function asegurarCategoriasOficiales() {
+  if (!DB || !Array.isArray(DB.catalogo)) return;
+  DB.catalogo.forEach(it => {
+    const c = String(it.cat || '').toLowerCase().trim();
+    if (it.mod === 'EPP' || c.includes('epp') || c.includes('protecci') || c.includes('calzado') || c.includes('cabeza') || c.includes('auditiva') || c.includes('respiratoria')) {
+      it.cat = 'EPP';
+    } else if (it.mod === 'CILINDRO' || c.includes('oxígeno') || c.includes('oxigeno') || c.includes('acetileno') || c.includes('argón') || c.includes('argon') || c.includes('co2') || c.includes('gas') || c.includes('cilindro')) {
+      it.cat = 'Cilindros y gases';
+    } else if (c.includes('izaj') || c.includes('elevaci') || c.includes('carga') || c.includes('señorita') || c.includes('eslinga') || c.includes('tecle')) {
+      it.cat = 'Equipos y accesorios para elevación y cargas';
+    } else if (c.includes('solda') || c.includes('oxicorte') || c.includes('escoria') || c.includes('inverter') || c.includes('antorcha')) {
+      it.cat = 'Equipos y accesorios para soldadura y oxicorte';
+    } else if (c.includes('medici') || c.includes('medición') || c.includes('vernier') || c.includes('micrómetro') || c.includes('calibrador') || c.includes('multímetro') || c.includes('nivel') || c.includes('cinta')) {
+      it.cat = 'Equipos e instrumentos de medición';
+    } else if (c.includes('neumátic') || c.includes('hidráulic') || c.includes('neumatic') || c.includes('hidraulic')) {
+      it.cat = 'Herramientas neumáticas e hidráulicas';
+    } else if (c.includes('fabricaci') || c.includes('biseladora') || c.includes('pantógrafo')) {
+      it.cat = 'Herramientas de fabricación';
+    } else if (c.includes('mayor') || c.includes('torno') || c.includes('fresadora') || c.includes('prensa') || c.includes('roscadora')) {
+      it.cat = 'Herramientas mayores';
+    } else if (c.includes('eléctric') || c.includes('electric') || c.includes('esmeril') || c.includes('taladro')) {
+      it.cat = 'Herramientas eléctricas';
+    } else if (c.includes('llave') || c.includes('alicate') || c.includes('destornillador') || c.includes('golpe') || c.includes('corte') || c.includes('martillo') || c.includes('manual') || c.includes('general')) {
+      it.cat = 'Herramientas manuales';
+    } else if (!CATEGORIAS_OFICIALES.includes(it.cat)) {
+      it.cat = 'Herramientas manuales';
+    }
+  });
+
+  // Asegurar que existan ítems oficiales de Herramientas mayores, Herramientas neumáticas e hidráulicas, y Herramientas de fabricación
+  const extras = [
+    { cod: 'HE000800', desc: 'Roscadora eléctrica de banco 1/2" a 2"', mod: 'HERRAMIENTA', cat: 'Herramientas mayores', marca: 'RIDGID', modelo: '300 Compact', serial: 'SN-RD-3001', umb: 'UND', costo: 2450, tipoA: true, stockIni: 1 },
+    { cod: 'HE000810', desc: 'Pistola de impacto neumática 1/2"', mod: 'HERRAMIENTA', cat: 'Herramientas neumáticas e hidráulicas', marca: 'INGERSOLL RAND', modelo: '231C', serial: 'SN-IR-2311', umb: 'UND', costo: 215, tipoA: false, stockIni: 2 },
+    { cod: 'HE000820', desc: 'Biseladora portátil de tubos 2"-6"', mod: 'HERRAMIENTA', cat: 'Herramientas de fabricación', marca: 'PROTEM', modelo: 'US25', serial: 'SN-PR-2501', umb: 'UND', costo: 1850, tipoA: true, stockIni: 1 }
+  ];
+  let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
+  extras.forEach(ex => {
+    let it = DB.catalogo.find(c => c.cod === ex.cod);
+    if (!it) {
+      it = { id: ++maxId, cod: ex.cod, desc: ex.desc, mod: ex.mod, cat: ex.cat, marca: ex.marca, modelo: ex.modelo, serial: ex.serial, umb: ex.umb, costo: ex.costo, tipoA: ex.tipoA, talla: '', vida: 0, activo: true };
+      DB.catalogo.push(it);
+      DB.exi = DB.exi || {};
+      DB.exi['CENTRAL'] = DB.exi['CENTRAL'] || {};
+      DB.exi['CENTRAL'][it.id] = { disp: ex.stockIni, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
+    }
+  });
+}
+
 function tipoCajaDe(id) { return (DB.cajasTipos || []).find(c => c.id === id); }
+
+function asegurarEstatusSolicitudes() {
+  if (!DB || !Array.isArray(DB.solicitudes)) return;
+  DB.solicitudes.forEach(s => {
+    if (s.estatus === 'APROBADO') s.estatus = 'APROBADA';
+    else if (s.estatus === 'ANULADO') s.estatus = 'ANULADA';
+    else if (s.estatus === 'FINALIZADO' || s.estatus === 'NO FINALIZADO') s.estatus = 'PENDIENTE DE APROBACIÓN';
+  });
+}
+
+function asegurarTransferenciaDemoCentral() {
+  if (!DB || !Array.isArray(DB.vales) || !Array.isArray(DB.catalogo) || !DB.catalogo.length) return;
+  const hayPendCentral = DB.vales.some(v => v.tipo === 'TRF' && v.destino === 'CENTRAL' && v.estatus === 'PENDIENTE DE RECEPCIÓN');
+  if (!hayPendCentral) {
+    const ahora = new Date();
+    const fecha = new Date(ahora.getTime() - 2 * 3600000).toISOString();
+    const vence = new Date(ahora.getTime() + 10 * 3600000).toISOString();
+    const it1 = DB.catalogo.find(i => i.cod === 'HE000102') || DB.catalogo[0];
+    const it2 = DB.catalogo.find(i => i.cod === 'HE000140') || DB.catalogo[1] || DB.catalogo[0];
+    DB.corr = DB.corr || {};
+    DB.corr.TRF = (DB.corr.TRF || 0) + 1;
+    const num = `TRF-${String(DB.corr.TRF).padStart(7, '0')}`;
+    DB.vales.unshift({
+      tipo: 'TRF',
+      num,
+      fecha,
+      vence,
+      origen: 'PELLAS',
+      destino: 'CENTRAL',
+      resp: { nombre: 'Freddy Cecilio Acosta Romero', cedula: 'V-14.905.458', cargo: 'Mecánico de primera' },
+      sup: 'Albin Cedeño',
+      proyecto: 'Mantenimiento Mayor Planta Pellas',
+      cuenta: 'TTE-C-0681',
+      despacha: 'Supervisor Pellas',
+      realizadoPor: { usuario: 'pellas', nombre: 'Almacén Pellas' },
+      estatus: 'PENDIENTE DE RECEPCIÓN',
+      obs: 'Retorno de herramientas a Almacén Central',
+      salidaTimaca: 'SAL-PELLAS-0042',
+      hist: [{ ev: 'Creada', fecha, usr: 'Almacén Pellas', det: 'Enviada a Almacén Central' }],
+      lineas: [
+        { id: it1.id, cod: it1.cod, desc: it1.desc, marca: it1.marca, modelo: it1.modelo, serial: it1.serial || '', cat: it1.cat, umb: it1.umb, cond: 'BUENO', cant: 2, mod: it1.mod },
+        { id: it2.id, cod: it2.cod, desc: it2.desc, marca: it2.marca, modelo: it2.modelo, serial: it2.serial || '', cat: it2.cat, umb: it2.umb, cond: 'BUENO', cant: 1, mod: it2.mod }
+      ]
+    });
+  }
+}
 
 function cargarDatos() {
   try {
@@ -906,6 +1038,9 @@ function cargarDatos() {
         if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
         limpiarModuloCajasViejo();
         asegurarPlanificacionCajas();
+        asegurarCategoriasOficiales();
+        asegurarEstatusSolicitudes();
+        asegurarTransferenciaDemoCentral();
         guardar();
         return;
       }
@@ -917,6 +1052,9 @@ function cargarDatos() {
   if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
   limpiarModuloCajasViejo();
   asegurarPlanificacionCajas();
+  asegurarCategoriasOficiales();
+  asegurarEstatusSolicitudes();
+  asegurarTransferenciaDemoCentral();
   guardar();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
@@ -1078,38 +1216,40 @@ function validarSolicitud(d, finalizar) {
   validarStock(d.origen, d.lineas);
 }
 function guardarSolicitud(d, finalizar) {
-  validarSolicitud(d, finalizar);
+  validarSolicitud(d, true);
   let s = d.num ? solDe(d.num) : null;
-  if (s && s.estatus !== 'NO FINALIZADO') throw new Error('Solo se pueden modificar solicitudes NO FINALIZADAS.');
+  if (s) {
+    if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') throw new Error(`Esta solicitud ya fue aprobada y tiene vale emitido (${s.vale || 'VALE'}). Por regla estricta, las asignaciones y préstamos aprobados no se pueden editar.`);
+    if (s.estatus === 'ANULADO' || s.estatus === 'ANULADA') throw new Error('No se pueden modificar solicitudes anuladas.');
+  }
+  const editando = !!s;
   if (!s) {
-    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'NO FINALIZADO' };
+    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'PENDIENTE DE APROBACIÓN' };
     DB.solicitudes.push(s);
-    bit('SOLICITUD CREADA', s.num);
   }
   Object.assign(s, {
     tipo: d.tipo, origen: d.origen, destino: d.destino, resp: d.resp, sup: d.sup, proyecto: d.proyecto, cuenta: d.cuenta,
     fechaReq: d.tipo === 'PRH' ? d.fechaReq : '', fechaDev: d.tipo === 'PRH' ? d.fechaDev : '', fechaAsig: d.tipo === 'ASI' ? d.fechaAsig : '',
-    obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l))
+    obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l)),
+    estatus: 'PENDIENTE DE APROBACIÓN',
+    finalizadaEn: nowISO()
   });
-  if (finalizar) {
-    s.estatus = 'FINALIZADO';
-    s.finalizadaEn = nowISO();
-    bit('SOLICITUD FINALIZADA', s.num);
-    notificarSistema('Nueva solicitud generada', `Se generó la solicitud ${s.num} (${s.tipo}) para ${s.resp ? s.resp.nombre : 'custodio'} en ${almNombre(s.origen)}. Pendiente de aprobación por supervisión.`, 'info', { doc: s.num });
-  }
+  bit(editando ? 'SOLICITUD MODIFICADA' : 'SOLICITUD CREADA', s.num);
+  notificarSistema(editando ? 'Solicitud actualizada' : 'Nueva solicitud generada', `Se ${editando ? 'actualizó' : 'generó'} la solicitud ${s.num} (${s.tipo}) en ${almNombre(s.origen)}. Pendiente de aprobación.`, 'info', { doc: s.num });
   guardar();
   return s;
 }
 function eliminarSolicitud(numSol) {
   const s = solDe(numSol);
-  if (!s || s.estatus !== 'NO FINALIZADO') throw new Error('Solo se pueden eliminar solicitudes NO FINALIZADAS.');
+  if (!s) return;
+  if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') throw new Error(`No se puede eliminar una solicitud APROBADA con vale emitido (${s.vale}).`);
   if (!S.u.admin && s.generadoPor.usuario !== S.u.usuario) throw new Error('Solo quien generó la solicitud puede eliminarla.');
   DB.solicitudes = DB.solicitudes.filter(x => x.num !== numSol);
   bit('SOLICITUD ELIMINADA', numSol); guardar();
 }
 function aprobarSolicitud(numSol, aprobGer) {
   const s = solDe(numSol);
-  if (!s || s.estatus !== 'FINALIZADO') throw new Error('Solo se aprueban solicitudes FINALIZADAS.');
+  if (!s || (s.estatus !== 'PENDIENTE DE APROBACIÓN' && s.estatus !== 'FINALIZADO')) throw new Error('Solo se pueden aprobar solicitudes pendientes de aprobación.');
   if (!puede('aprobar', s.origen)) throw new Error('No tiene permiso para aprobar solicitudes de ' + almNombre(s.origen) + '.');
   if (s.generadoPor.usuario === S.u.usuario) throw new Error('No puede aprobar una solicitud generada por usted.');
   const tipoA = s.lineas.some(l => item(l.id).tipoA);
@@ -1131,20 +1271,73 @@ function aprobarSolicitud(numSol, aprobGer) {
     mov({ doc: v.num, tipo: s.tipo, id: l.id, cant: l.cant, origen: s.origen, destino: s.destino, estAnt: 'DISPONIBLE', estNue: destinoEst, resp: s.resp.nombre, cedula: s.resp.cedula, obs: s.proyecto });
   });
   v.hist.push({ ev: 'Solicitud ' + s.num + ' aprobada', fecha: nowISO(), usr: S.u.nombre, color: 'verde' });
-  Object.assign(s, { estatus: 'APROBADO', procesadoPor: quien(), procesadoEn: nowISO(), vale: v.num, aprobGer: tipoA ? aprobGer : '' });
+  Object.assign(s, { estatus: 'APROBADA', procesadoPor: quien(), procesadoEn: nowISO(), vale: v.num, aprobGer: tipoA ? aprobGer : '' });
   bit('SOLICITUD APROBADA', `${s.num} → ${v.num}`); guardar();
   notificarSistema('Solicitud aprobada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue APROBADA por ${S.u.nombre}. Se generó el vale ${v.num}.`, 'ok', { doc: v.num });
   return v;
 }
 function anularSolicitud(numSol, motivo) {
   const s = solDe(numSol);
-  if (!s || s.estatus !== 'FINALIZADO') throw new Error('Solo se anulan solicitudes FINALIZADAS.');
+  if (!s || (s.estatus !== 'PENDIENTE DE APROBACIÓN' && s.estatus !== 'FINALIZADO')) throw new Error('Solo se pueden anular solicitudes pendientes de aprobación.');
   if (!puede('aprobar', s.origen)) throw new Error('No tiene permiso para anular solicitudes de ' + almNombre(s.origen) + '.');
   if (s.generadoPor.usuario === S.u.usuario) throw new Error('No puede anular una solicitud generada por usted.');
   if (!String(motivo || '').trim()) throw new Error('El motivo de anulación es obligatorio.');
-  Object.assign(s, { estatus: 'ANULADO', procesadoPor: quien(), procesadoEn: nowISO(), motivo });
+  Object.assign(s, { estatus: 'ANULADA', procesadoPor: quien(), procesadoEn: nowISO(), motivo });
   bit('SOLICITUD ANULADA', `${s.num}: ${motivo}`); guardar();
   notificarSistema('Solicitud anulada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue ANULADA por ${S.u.nombre}. Motivo: ${motivo}.`, 'err', { doc: s.num });
+}
+
+/* ---------- Configuración de destinos por almacén (Solicitudes y préstamos) ---------- */
+const DESTINOS_SOLICITUD = {
+  CENTRAL: [
+    { c: 'FABRICACION', n: 'Almacén Fabricación' },
+    { c: 'ECO', n: 'Almacén Eco' },
+    { c: 'SMB', n: 'Almacén SMB' }
+  ],
+  PELLAS: [
+    { c: 'Coordinación Electricidad', n: 'Coordinación Electricidad' },
+    { c: 'Andamios', n: 'Andamios' },
+    { c: 'Coordinación Mecánica', n: 'Coordinación Mecánica' },
+    { c: 'Coordinación Civil', n: 'Coordinación Civil' },
+    { c: 'Coordinación Tuberías', n: 'Coordinación Tuberías' },
+    { c: 'Coordinación Logística', n: 'Coordinación Logística' },
+    { c: 'Servicios Generales', n: 'Servicios Generales' },
+    { c: 'Taller / Mantto', n: 'Taller / Mantto' },
+    { c: 'Seguridad Industrial', n: 'Seguridad Industrial' }
+  ],
+  ECO: [
+    { c: 'ECO', n: 'Almacén Eco' }
+  ],
+  SMB: [
+    { c: 'SMB', n: 'Almacén SMB' }
+  ],
+  FABRICACION: [
+    { c: 'FABRICACION', n: 'Almacén Fabricación' }
+  ],
+  'BOCA GRANDE': [
+    { c: 'BOCA GRANDE', n: 'Almacén Boca Grande' }
+  ],
+  PMH: [
+    { c: 'PMH', n: 'Almacén PMH' }
+  ],
+  BRIQUETAS: [
+    { c: 'BRIQUETAS', n: 'Almacén Briquetas' }
+  ]
+};
+
+function destinosParaAlmacen(origen) {
+  if (DESTINOS_SOLICITUD[origen]) return DESTINOS_SOLICITUD[origen];
+  return [{ c: origen, n: almNombre(origen) }];
+}
+
+function selectorDestinoSol(origen, selDestino, disabled) {
+  const lista = destinosParaAlmacen(origen);
+  const dis = disabled ? 'disabled' : '';
+  if (lista.length <= 1) {
+    const d = lista[0] || { c: origen, n: almNombre(origen) };
+    return `<input value="${esc(d.n)}" readonly ${dis}><input type="hidden" id="fDestino" value="${esc(d.c)}">`;
+  }
+  return `<select id="fDestino" ${dis} onchange="F.destino=this.value">${lista.map(d => `<option value="${esc(d.c)}" ${d.c === selDestino ? 'selected' : ''}>${esc(d.n)}</option>`).join('')}</select>`;
 }
 
 /* ---------- Transferencias ---------- */
@@ -1163,6 +1356,7 @@ function crearTransferencia(d) {
     proyecto: d.proyecto || '',
     cuenta: d.cuenta || '',
     despacha: d.despacha || S.u.nombre,
+    salidaTimaca: d.salidaTimaca || '',
     obs: d.obs || '',
     lineas,
     estatus: 'PENDIENTE DE RECEPCIÓN'
@@ -1177,6 +1371,57 @@ function crearTransferencia(d) {
   v.hist.push({ ev: 'Creada', fecha: v.fecha, usr: S.u.nombre, det: `Enviada a ${almNombre(d.destino)}`, color: '' });
   bit('TRANSFERENCIA CREADA', `${v.num} ${d.origen} → ${d.destino}`); guardar();
   notificarSistema('Nueva transferencia enviada', `Transferencia ${v.num} enviada desde ${almNombre(v.origen)} hacia ${almNombre(v.destino)} por ${v.realizadoPor.nombre}. Esperando recepción.`, 'info', { doc: v.num });
+  return v;
+}
+function actualizarTransferencia(num, d) {
+  const v = valeDe(num);
+  if (!v) throw new Error('Transferencia no encontrada: ' + num);
+  if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') throw new Error(`Esta transferencia ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`);
+  if (!d.lineas || !d.lineas.length) throw new Error('Agregue al menos un ítem en la carga de material.');
+  if (!destinosPermitidos(v.origen).includes(d.destino)) throw new Error('Destino no permitido.');
+
+  // 1. Revertir temporalmente la retención original de stock del origen
+  v.lineas.forEach(l => {
+    const eo = exi(v.origen, l.id);
+    eo.pend -= l.cant;
+    if (l.est === 'VACIO') eo.vacio += l.cant; else eo.disp += l.cant;
+  });
+
+  // 2. Validar que el stock alcance para las nuevas líneas
+  try {
+    validarStock(v.origen, d.lineas);
+  } catch (err) {
+    // Si falla la validación, restaurar la retención original antes de lanzar error
+    v.lineas.forEach(l => {
+      const eo = exi(v.origen, l.id);
+      if (l.est === 'VACIO') eo.vacio -= l.cant; else eo.disp -= l.cant;
+      eo.pend += l.cant;
+    });
+    throw err;
+  }
+
+  // 3. Aplicar retención para las nuevas líneas
+  d.lineas.forEach(l => {
+    const eo = exi(v.origen, l.id);
+    if (l.est === 'VACIO') eo.vacio -= l.cant; else eo.disp -= l.cant;
+    eo.pend += l.cant;
+  });
+
+  // 4. Actualizar datos de cabecera y líneas
+  v.destino = d.destino;
+  v.resp = d.resp || null;
+  v.sup = d.sup || '';
+  v.proyecto = d.proyecto || '';
+  v.cuenta = d.cuenta || '';
+  v.despacha = d.despacha || S.u.nombre;
+  v.salidaTimaca = d.salidaTimaca || '';
+  v.obs = d.obs || '';
+  v.lineas = d.lineas.map(l => Object.assign({}, l));
+  v.hist.push({ ev: 'Modificada', fecha: nowISO(), usr: S.u.nombre, det: `Destino: ${almNombre(v.destino)} · ${v.lineas.length} ítems`, color: 'azul' });
+
+  bit('TRANSFERENCIA MODIFICADA', `${v.num} ${v.origen} → ${v.destino}`);
+  guardar();
+  notificarSistema('Transferencia modificada', `La transferencia ${v.num} fue actualizada por ${S.u.nombre}. Destino: ${almNombre(v.destino)}.`, 'info', { doc: v.num });
   return v;
 }
 function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
@@ -1247,7 +1492,7 @@ function procesarVencimientos() {
 }
 
 /* ---------- Devoluciones (persona → almacén que prestó) ---------- */
-function registrarDevolucion(valeNum, items, recibe, obs) {
+function registrarDevolucion(valeNum, items, recibe, obs, salidaTimaca) {
   const v = valeDe(valeNum);
   if (!v || !['PRH', 'ASI'].includes(v.tipo)) throw new Error('Indique un vale de préstamo o asignación válido.');
   if (v.origen !== S.ctx && !S.u.admin) throw new Error('La devolución se registra en el almacén que realizó el préstamo: ' + almNombre(v.origen) + '.');
@@ -1259,7 +1504,7 @@ function registrarDevolucion(valeNum, items, recibe, obs) {
     const l = v.lineas[x.i]; const c = Number(x.cant);
     if (c > saldoLinea(l)) throw new Error(`La cantidad a devolver de ${l.cod} supera el saldo pendiente (${saldoLinea(l)}).`);
   });
-  const dv = nuevoVale('DEV', { origen: v.origen, destino: v.origen, resp: v.resp, sup: v.sup, proyecto: v.proyecto, cuenta: v.cuenta, ref: v.num, obs: obs || '', extra: { recibe } });
+  const dv = nuevoVale('DEV', { origen: v.destino || v.origen, destino: v.origen, resp: v.resp, sup: v.sup, proyecto: v.proyecto, cuenta: v.cuenta, ref: v.num, obs: obs || '', extra: { recibe }, salidaTimaca: salidaTimaca || '' });
   sel.forEach(x => {
     const l = v.lineas[x.i]; const c = Number(x.cant); const cond = x.cond;
     const e = exi(v.origen, l.id);
@@ -1273,7 +1518,7 @@ function registrarDevolucion(valeNum, items, recibe, obs) {
     const ld = Object.assign({}, l, { cant: c, dev: 0, cond, condRet: cond });
     delete ld.consumo;
     dv.lineas.push(ld);
-    mov({ doc: dv.num, tipo: 'DEV', id: l.id, cant: c, origen: v.origen, destino: v.origen, estAnt: v.tipo === 'PRH' ? 'EN PRÉSTAMO' : 'ASIGNADO', estNue, resp: v.resp.nombre, cedula: v.resp.cedula, obs: 'Ref. ' + v.num });
+    mov({ doc: dv.num, tipo: 'DEV', id: l.id, cant: c, origen: v.destino || v.origen, destino: v.origen, estAnt: v.tipo === 'PRH' ? 'EN PRÉSTAMO' : 'ASIGNADO', estNue, resp: v.resp.nombre, cedula: v.resp.cedula, obs: 'Ref. ' + v.num });
   });
   v.hist.push({ ev: 'Devolución ' + dv.num, fecha: nowISO(), usr: S.u.nombre, color: 'verde' });
   bit('DEVOLUCIÓN REGISTRADA', `${dv.num} ref. ${v.num}`); guardar();
@@ -1448,7 +1693,7 @@ function registrarEntrada(d) {
 function estadoCatalogo(e, it) {
   if (it && !it.activo) return 'INACTIVO';
   if (e.disp > 0) return 'DISPONIBLE';
-  if (e.vacio > 0) return 'VACÍO (POR RECARGAR)';
+  if (e.vacio > 0) return 'VACÍO';
   if (e.prest + e.asig + (e.cajas || 0) > 0) return 'SIN DISPONIBILIDAD';
   if (e.dan + e.rep + e.ext > 0) return 'FUERA DE SERVICIO';
   return 'SIN EXISTENCIA';
@@ -1801,38 +2046,41 @@ function semilla() {
 
   let idc = 0;
   const C = (cod, desc, mod, cat, marca, modelo, serial, umb, costo, o) => DB.catalogo.push(Object.assign({ id: ++idc, cod, desc, mod, cat, marca, modelo, serial, umb, costo, tipoA: false, talla: '', vida: 0, activo: true }, o || {}));
-  C('HE000101', 'Llave combinada 3/4"', 'HERRAMIENTA', 'Llaves', 'STANLEY', '87-076', '', 'UND', 9.5);
-  C('HE000102', 'Llave combinada 1/2"', 'HERRAMIENTA', 'Llaves', 'STANLEY', '87-072', '', 'UND', 7.8);
-  C('HE000110', 'Señorita de cadena 1 ton', 'HERRAMIENTA', 'Izaje', 'TRUPER', 'POLI-1', '', 'UND', 48);
-  C('HE000120', 'Alicate universal 8"', 'HERRAMIENTA', 'Alicates', 'TRUPER', 'T201-8', '', 'UND', 11.2);
-  C('HE000130', 'Llave ajustable 12"', 'HERRAMIENTA', 'Llaves', 'TOTAL', 'THT101126', '', 'UND', 13.5);
-  C('HE000140', 'Martillo de bola 2 lb', 'HERRAMIENTA', 'Golpe', 'TRUPER', 'MB-32F', '', 'UND', 12);
-  C('HE000150', 'Juego de destornilladores 6 piezas', 'HERRAMIENTA', 'Destornilladores', 'STANLEY', 'STHT65199', '', 'JGO', 16.4);
-  C('HE000160', 'Arco de segueta 12"', 'HERRAMIENTA', 'Corte', 'TRUPER', 'AS-12', '', 'UND', 8.9);
-  C('HE000170', 'Nivel de aluminio 24"', 'HERRAMIENTA', 'Medición', 'STANLEY', '42-468', '', 'UND', 21);
-  C('HE000180', 'Cinta métrica 8 m', 'HERRAMIENTA', 'Medición', 'STANLEY', '33-428', '', 'UND', 10.5);
-  C('HE000190', 'Vernier / Calibrador pie de rey 6"', 'HERRAMIENTA', 'Medición', 'MITUTOYO', '530-104', '', 'UND', 45);
-  C('HE000195', 'Micrómetro exterior 0-1"', 'HERRAMIENTA', 'Medición', 'MITUTOYO', '103-137', '', 'UND', 68);
-  C('HE000200', 'Juego de llaves Allen milimétricas 10 pzas', 'HERRAMIENTA', 'Llaves', 'STANLEY', '69-253', '', 'JGO', 14.5);
-  C('HE000210', 'Alicate de presión (Perro) 10"', 'HERRAMIENTA', 'Alicates', 'VISE-GRIP', '10R', '', 'UND', 15.8);
-  C('HE000220', 'Multímetro digital industrial', 'HERRAMIENTA', 'Eléctricas', 'FLUKE', '117', '', 'UND', 185);
-  C('HE000230', 'Piqueta / Martillo quita escoria', 'HERRAMIENTA', 'Soldadura', 'TRUPER', 'MP-500', '', 'UND', 7.5);
-  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482190', 'UND', 165);
-  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482191', 'UND', 165);
-  C('HE000600', 'Taladro percutor 1/2"', 'HERRAMIENTA', 'Eléctricas', 'DEWALT', 'DWD024', 'SN-7781001', 'UND', 138);
-  C('HE000700', 'Máquina de soldar inverter 250 A', 'HERRAMIENTA', 'Soldadura', 'LINCOLN', 'Invertec V275', 'LN-250-0091', 'UND', 920, { tipoA: true });
-  C('HE000710', 'Equipo de oxicorte completo', 'HERRAMIENTA', 'Soldadura', 'HARRIS', 'Ironworker', 'HR-3301', 'EQP', 410, { tipoA: true });
-  ['OX-0001', 'OX-0002', 'OX-0003', 'OX-0004'].forEach(s => C('CI000101', 'Cilindro de oxígeno industrial 6 m³', 'CILINDRO', 'Oxígeno', 'AGA', '6 m³', s, 'CIL', 210));
-  ['AC-0001', 'AC-0002'].forEach(s => C('CI000201', 'Cilindro de acetileno 4 m³', 'CILINDRO', 'Acetileno', 'AGA', '4 m³', s, 'CIL', 245));
-  C('CI000301', 'Cilindro de argón 10 m³', 'CILINDRO', 'Argón', 'PRAXAIR', '10 m³', 'AR-0001', 'CIL', 260);
-  C('CI000401', 'Cilindro de CO2 25 kg', 'CILINDRO', 'CO2', 'PRAXAIR', '25 kg', 'CO-0001', 'CIL', 180);
-  C('EP000101', 'Casco de seguridad', 'EPP', 'Protección de cabeza', 'MSA', 'V-Gard', '', 'UND', 18.5, { talla: 'Única', vida: 730 });
-  C('EP000201', 'Botas de seguridad punta de acero T-42', 'EPP', 'Calzado', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '42', vida: 365 });
-  C('EP000202', 'Botas de seguridad punta de acero T-40', 'EPP', 'Calzado', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '40', vida: 365 });
-  C('EP000301', 'Lentes de seguridad claros', 'EPP', 'Protección visual', '3M', 'Virtua', '', 'UND', 6.5, { talla: 'Única', vida: 90 });
-  C('EP000401', 'Guantes de carnaza 16"', 'EPP', 'Protección de manos', 'STEELPRO', 'Carnaza', '', 'PAR', 5.2, { talla: 'L', vida: 30 });
-  C('EP000501', 'Protector auditivo tipo copa', 'EPP', 'Protección auditiva', '3M', 'H9A', '', 'UND', 24, { talla: 'Única', vida: 365 });
-  C('EP000601', 'Respirador media cara', 'EPP', 'Protección respiratoria', '3M', '6200', '', 'UND', 31, { talla: 'M', vida: 180 });
+  C('HE000101', 'Llave combinada 3/4"', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '87-076', '', 'UND', 9.5);
+  C('HE000102', 'Llave combinada 1/2"', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '87-072', '', 'UND', 7.8);
+  C('HE000110', 'Señorita de cadena 1 ton', 'HERRAMIENTA', 'Equipos y accesorios para elevación y cargas', 'TRUPER', 'POLI-1', '', 'UND', 48);
+  C('HE000120', 'Alicate universal 8"', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'T201-8', '', 'UND', 11.2);
+  C('HE000130', 'Llave ajustable 12"', 'HERRAMIENTA', 'Herramientas manuales', 'TOTAL', 'THT101126', '', 'UND', 13.5);
+  C('HE000140', 'Martillo de bola 2 lb', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'MB-32F', '', 'UND', 12);
+  C('HE000150', 'Juego de destornilladores 6 piezas', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', 'STHT65199', '', 'JGO', 16.4);
+  C('HE000160', 'Arco de segueta 12"', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'AS-12', '', 'UND', 8.9);
+  C('HE000170', 'Nivel de aluminio 24"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'STANLEY', '42-468', '', 'UND', 21);
+  C('HE000180', 'Cinta métrica 8 m', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'STANLEY', '33-428', '', 'UND', 10.5);
+  C('HE000190', 'Vernier / Calibrador pie de rey 6"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'MITUTOYO', '530-104', '', 'UND', 45);
+  C('HE000195', 'Micrómetro exterior 0-1"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'MITUTOYO', '103-137', '', 'UND', 68);
+  C('HE000200', 'Juego de llaves Allen milimétricas 10 pzas', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '69-253', '', 'JGO', 14.5);
+  C('HE000210', 'Alicate de presión (Perro) 10"', 'HERRAMIENTA', 'Herramientas manuales', 'VISE-GRIP', '10R', '', 'UND', 15.8);
+  C('HE000220', 'Multímetro digital industrial', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'FLUKE', '117', '', 'UND', 185);
+  C('HE000230', 'Piqueta / Martillo quita escoria', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'TRUPER', 'MP-500', '', 'UND', 7.5);
+  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Herramientas eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482190', 'UND', 165);
+  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Herramientas eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482191', 'UND', 165);
+  C('HE000600', 'Taladro percutor 1/2"', 'HERRAMIENTA', 'Herramientas eléctricas', 'DEWALT', 'DWD024', 'SN-7781001', 'UND', 138);
+  C('HE000700', 'Máquina de soldar inverter 250 A', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'LINCOLN', 'Invertec V275', 'LN-250-0091', 'UND', 920, { tipoA: true });
+  C('HE000710', 'Equipo de oxicorte completo', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'HARRIS', 'Ironworker', 'HR-3301', 'EQP', 410, { tipoA: true });
+  C('HE000800', 'Roscadora eléctrica de banco 1/2" a 2"', 'HERRAMIENTA', 'Herramientas mayores', 'RIDGID', '300 Compact', 'SN-RD-3001', 'UND', 2450, { tipoA: true });
+  C('HE000810', 'Pistola de impacto neumática 1/2"', 'HERRAMIENTA', 'Herramientas neumáticas e hidráulicas', 'INGERSOLL RAND', '231C', 'SN-IR-2311', 'UND', 215);
+  C('HE000820', 'Biseladora portátil de tubos 2"-6"', 'HERRAMIENTA', 'Herramientas de fabricación', 'PROTEM', 'US25', 'SN-PR-2501', 'UND', 1850, { tipoA: true });
+  ['OX-0001', 'OX-0002', 'OX-0003', 'OX-0004'].forEach(s => C('CI000101', 'Cilindro de oxígeno industrial 6 m³', 'CILINDRO', 'Cilindros y gases', 'AGA', '6 m³', s, 'CIL', 210));
+  ['AC-0001', 'AC-0002'].forEach(s => C('CI000201', 'Cilindro de acetileno 4 m³', 'CILINDRO', 'Cilindros y gases', 'AGA', '4 m³', s, 'CIL', 245));
+  C('CI000301', 'Cilindro de argón 10 m³', 'CILINDRO', 'Cilindros y gases', 'PRAXAIR', '10 m³', 'AR-0001', 'CIL', 260);
+  C('CI000401', 'Cilindro de CO2 25 kg', 'CILINDRO', 'Cilindros y gases', 'PRAXAIR', '25 kg', 'CO-0001', 'CIL', 180);
+  C('EP000101', 'Casco de seguridad', 'EPP', 'EPP', 'MSA', 'V-Gard', '', 'UND', 18.5, { talla: 'Única', vida: 730 });
+  C('EP000201', 'Botas de seguridad punta de acero T-42', 'EPP', 'EPP', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '42', vida: 365 });
+  C('EP000202', 'Botas de seguridad punta de acero T-40', 'EPP', 'EPP', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '40', vida: 365 });
+  C('EP000301', 'Lentes de seguridad claros', 'EPP', 'EPP', '3M', 'Virtua', '', 'UND', 6.5, { talla: 'Única', vida: 90 });
+  C('EP000401', 'Guantes de carnaza 16"', 'EPP', 'EPP', 'STEELPRO', 'Carnaza', '', 'PAR', 5.2, { talla: 'L', vida: 30 });
+  C('EP000501', 'Protector auditivo tipo copa', 'EPP', 'EPP', '3M', 'H9A', '', 'UND', 24, { talla: 'Única', vida: 365 });
+  C('EP000601', 'Respirador media cara', 'EPP', 'EPP', '3M', '6200', '', 'UND', 31, { talla: 'M', vida: 180 });
 
   const IT = (cod, serial) => DB.catalogo.find(i => i.cod === cod && (!serial || i.serial === serial));
   const L = (cod, cant, cond = 'ÓPTIMO', serial) => { const it = IT(cod, serial); return lineaDe(it, cant, it.mod === 'CILINDRO' && cond === 'ÓPTIMO' ? 'LLENO' : cond); };
@@ -1851,6 +2099,7 @@ function semilla() {
     ['HE000190', 6], ['HE000195', 4], ['HE000200', 12], ['HE000210', 10], ['HE000220', 5], ['HE000230', 14],
     ['EP000101', 60], ['EP000201', 40], ['EP000202', 30], ['EP000301', 100], ['EP000401', 150], ['EP000501', 40], ['EP000601', 25]].forEach(([c, n]) => ini('CENTRAL', c, n));
     [['HE000521', 'SN-4482190'], ['HE000521', 'SN-4482191'], ['HE000600', 'SN-7781001'], ['HE000700', 'LN-250-0091'], ['HE000710', 'HR-3301'],
+    ['HE000800', 'SN-RD-3001'], ['HE000810', 'SN-IR-2311'], ['HE000820', 'SN-PR-2501'],
     ['CI000101', 'OX-0001'], ['CI000101', 'OX-0002'], ['CI000101', 'OX-0003'], ['CI000101', 'OX-0004'], ['CI000201', 'AC-0001'], ['CI000201', 'AC-0002'], ['CI000301', 'AR-0001'], ['CI000401', 'CO-0001']].forEach(([c, s]) => ini('CENTRAL', c, 1, s));
     [['HE000130', 4], ['HE000140', 3], ['HE000120', 4], ['EP000301', 20], ['EP000401', 30]].forEach(([c, n]) => ini('ECO', c, n));
     ini('PMH', 'HE000140', 2); ini('FABRICACION', 'HE000160', 3); ini('SMB', 'HE000180', 2);
@@ -1873,7 +2122,7 @@ function semilla() {
   const s1 = sol('pellas', T(24), 'PRH', 'PELLAS', 'V-4.031.435', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('CI000101', 1, 'LLENO', 'OX-0002'), L('HE000120', 1)], { fechaReq: D(-24), fechaDev: D(-10) });
   const v1 = como('drivero', T(24, 1), () => aprobarSolicitud(s1.num));
   como('pellas', T(12), () => registrarDevolucion(v1.num, [{ i: 0, cant: 1, cond: 'VACÍO' }, { i: 1, cant: 1, cond: 'BUENO' }], 'Luis Alvarado', 'Cilindro devuelto vacío'));
-  const t5 = como('pellas', T(11), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de cilindro vacío para recarga', lineas: [L('CI000101', 1, 'VACÍO', 'OX-0002')] }));
+  const t5 = como('pellas', T(11), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de cilindro vacío', lineas: [L('CI000101', 1, 'VACÍO', 'OX-0002')] }));
   como('central', T(11, 4), () => aceptarTransferencia(t5.num));
 
   /* Préstamos en Central */
@@ -1907,6 +2156,7 @@ function semilla() {
   /* Transferencias pendientes (una por vencer) */
   como('central', T(0, -11), () => crearTransferencia({ origen: 'CENTRAL', destino: 'ECO', obs: 'Reposición de EPP', lineas: [L('EP000301', 15, 'NUEVO'), L('EP000401', 25, 'NUEVO')] }));
   como('central', T(0, -3), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PELLAS', obs: 'Requerimiento Planta Pellas TTE-C-0681', lineas: [L('HE000101', 5), L('HE000110', 6)] }));
+  como('pellas', T(0, -2), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de herramientas a Almacén Central', lineas: [L('HE000102', 2), L('HE000140', 1)] }));
 
   /* Costos y bitácora del Maestro */
   como('gerencia', T(5), () => { const pc = S.ctx; S.ctx = 'MAESTRO'; cambiarCosto(IT('HE000110').id, 52, 'Actualización de proveedor'); S.ctx = pc; });
@@ -2225,7 +2475,7 @@ function menuDef() {
       ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
   }
   const c = S.ctx;
-  const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus === 'FINALIZADO').length;
+  const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA').length;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
   const pendExt = (DB.extSol || []).filter(x => x.alm === c && x.estatus === 'PENDIENTE').length;
   const m = [
@@ -2244,7 +2494,7 @@ function menuDef() {
     ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
     ['Consultas y kárdex', [ ['cPrest', 'Préstamos vigentes'], ['cVenc', 'Préstamos vencidos'], ['cAsig', 'Asignaciones por persona'],
-      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cKardex', 'Kardex por código'], ['cEpp', 'Historial de EPP'], ['cCil', 'Cilindros por serial']]]
+      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cKardex', 'Kardex por código']]]
   );
   if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aPers', 'Responsables y supervisores'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
@@ -3292,10 +3542,7 @@ VISTAS.cajasTipos = p => {
                 <div style="width:90px">
                   <label style="font-size:11px;font-weight:700;color:var(--texto-2);display:block;margin-bottom:3px">Unidad</label>
                   <select id="dirInpUmb">
-                    <option value="UND">UND</option>
-                    <option value="JGO">JGO</option>
-                    <option value="PAR">PAR</option>
-                    <option value="KIT">KIT</option>
+                    ${opciones(UMBS_OFICIALES, 'UND')}
                   </select>
                 </div>
                 <div style="width:95px">
@@ -3649,19 +3896,59 @@ function cambiarTipoMov(t) {
   ir(RUTA_TIPO[t], { tipo: t });
 }
 function nuevoF(tipo, extra) {
-  return Object.assign({ tipo, num: null, origen: S.ctx, destino: tipo === 'TRF' ? destinosPermitidos(S.ctx)[0] : S.ctx, resp: null, sup: '', proyecto: '', cuenta: '',
+  let defDest = S.ctx;
+  if (tipo === 'TRF') {
+    defDest = (destinosPermitidos(S.ctx) || [])[0] || 'CENTRAL';
+  } else if (tipo === 'PRH' || tipo === 'ASI') {
+    const list = destinosParaAlmacen(S.ctx);
+    defDest = list.length ? list[0].c : S.ctx;
+  }
+  return Object.assign({ tipo, num: null, origen: S.ctx, destino: defDest, resp: null, sup: '', proyecto: '', cuenta: '',
     fechaReq: hoy(), fechaDev: sumarDias(hoy(), 7), fechaAsig: hoy(), obs: '', lineas: [], sel: -1, cap: null, valeRef: '', detalle: '', malUso: 'NO', dictamen: 'POR EVALUAR', hecho: null }, extra || {});
 }
 VISTAS.solNueva = p => {
   if (p && p.num) {
     const s = solDe(p.num);
+    if (!s) return ir('sol');
+    if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') {
+      toast(`La solicitud ${s.num} ya fue APROBADA (Vale ${s.vale || ''}). Por norma de control interno, las asignaciones y préstamos aprobados no se pueden editar.`, 'err');
+      return ir('sol', { sel: s.num });
+    }
+    if (s.estatus === 'ANULADO' || s.estatus === 'ANULADA') {
+      toast(`La solicitud ${s.num} está ANULADA y no se puede editar.`, 'err');
+      return ir('sol', { sel: s.num });
+    }
     F = nuevoF(s.tipo, { num: s.num, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, fechaReq: s.fechaReq || hoy(), fechaDev: s.fechaDev || sumarDias(hoy(), 7), fechaAsig: s.fechaAsig || hoy(), obs: s.obs, lineas: s.lineas.map(l => Object.assign({}, l)) });
   } else F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
   pintarSolicitud();
 };
-VISTAS.trfNueva = () => {
+VISTAS.trfNueva = p => {
   if (!puede('transferir', S.ctx)) { $('area').innerHTML = cab('Nueva transferencia') + avisoSinPermiso('Su usuario no tiene permiso para registrar transferencias desde este almacén.'); return; }
-  F = nuevoF('TRF'); pintarFormulario();
+  if (p && p.num) {
+    const v = valeDe(p.num);
+    if (!v) return ir('trfEnv');
+    if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') {
+      toast(`La transferencia ${v.num} ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`, 'err');
+      return ir('trfEnv');
+    }
+    F = nuevoF('TRF', {
+      num: v.num,
+      origen: v.origen,
+      destino: v.destino,
+      resp: v.resp,
+      sup: v.sup,
+      proyecto: v.proyecto,
+      cuenta: v.cuenta,
+      despacha: v.despacha,
+      salidaTimaca: v.salidaTimaca,
+      obs: v.obs,
+      lineas: v.lineas.map(l => Object.assign({}, l)),
+      lineasOriginales: v.lineas.map(l => Object.assign({}, l))
+    });
+  } else {
+    F = nuevoF('TRF');
+  }
+  pintarFormulario();
 };
 VISTAS.mov = p => { F = nuevoF(p && p.tipo === 'EXT' ? 'EXT' : 'DAN'); pintarFormulario(); };
 VISTAS.dan = () => VISTAS.mov({ tipo: 'DAN' });
@@ -3672,9 +3959,9 @@ function campo(lbl, html, extraCls) { return `<div class="campo ${extraCls || ''
 function pintarFormulario() {
   const t = F.tipo, bloqueado = !!F.hecho;
   const ro = bloqueado ? 'disabled' : '';
-  const titulos = { PRH: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', ASI: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', TRF: '🚚 Nueva transferencia', DAN: '➕ Registrar movimiento y carga de material', EXT: '➕ Registrar movimiento y carga de material' };
+  const titulos = { PRH: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', ASI: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', TRF: F.num ? '🚚 Editar transferencia ' + F.num : '🚚 Nueva transferencia', DAN: '➕ Registrar movimiento y carga de material', EXT: '➕ Registrar movimiento y carga de material' };
   const subt = { PRH: 'El préstamo es por tiempo definido. Al finalizar, la solicitud pasa a aprobación del supervisor del almacén.', ASI: 'La asignación es por tiempo indefinido. El EPP entregado se registra como dotación. Al finalizar, pasa a aprobación del supervisor.',
-    TRF: 'La transferencia no requiere aprobación. El almacén destino tendrá ' + DB.config.plazoHoras + ' horas para aceptarla; si no lo hace, el material regresa automáticamente.',
+    TRF: F.num ? 'Modifique los datos o ítems de la transferencia antes de que sea aceptada por el almacén receptor.' : 'La transferencia no requiere aprobación. El almacén destino tendrá ' + DB.config.plazoHoras + ' horas para aceptarla; si no lo hace, el material regresa automáticamente.',
     DAN: 'Registre el daño de un ítem del almacén o de uno entregado en préstamo o asignación.', EXT: 'Registre el robo o extravío de un ítem del almacén o de uno entregado en préstamo o asignación.' };
   let cabecera = campo('Tipo de movimiento', `<select id="fTipo" ${bloqueado || F.num || OPC_MOV().length === 1 ? 'disabled' : ''} onchange="cambiarTipoMov(this.value)">${opciones(OPC_MOV(), t)}</select>`)
     + campo('Almacén origen', `<input value="${esc(almNombre(F.origen).replace('Almacén ', '').toUpperCase())}" readonly>`);
@@ -3687,9 +3974,10 @@ function pintarFormulario() {
       + campo('Cargo', `<input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Se completa al elegir el responsable">`)
       + campo('Cuenta auxiliar', `<input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Se completa al elegir el proyecto">`)
       + campo('Proyecto / Orden de trabajo', `<input id="fProy" ${ro} autocomplete="off" placeholder="Escriba el proyecto u OT" value="${esc(F.proyecto)}">`)
-      + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`);
+      + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`)
+      + campo('N° de salida TIMACA (opcional)', `<input id="fSalidaTimaca" ${ro} placeholder="Opcional" value="${esc(F.salidaTimaca || '')}">`);
   } else if (t === 'PRH' || t === 'ASI') {
-    cabecera += campo('Almacén destino', `<select id="fDestino" ${ro}>${DB.almacenes.map(a => `<option value="${a.c}" ${a.c === F.destino ? 'selected' : ''}>${esc(a.n)}</option>`).join('')}</select>`);
+    cabecera += campo('Destino / Área solicitante', selectorDestinoSol(F.origen, F.destino, ro));
   } else {
     const vales = valesConSaldo(F.origen);
     cabecera += campo('Vale de referencia (opcional)', `<select id="fValeRef" ${ro} onchange="elegirValeRef(this.value)"><option value="">Ítem en existencia del almacén</option>${vales.map(v => `<option value="${v.num}" ${v.num === F.valeRef ? 'selected' : ''}>${v.num} · ${esc(v.resp.nombre)}</option>`).join('')}</select>`);
@@ -3725,7 +4013,7 @@ function pintarFormulario() {
         <div class="der">
           ${F.hecho ? `<button class="btn btn-claro" onclick="ir('${RUTA_TIPO[t]}',{tipo:'${t}'})">Nuevo registro</button>` : `<button class="btn btn-claro" onclick="ir('${t === 'TRF' ? 'trfEnv' : (t === 'PRH' || t === 'ASI') ? 'sol' : 'cIncid'}')">Cancelar</button>`}
           ${(t === 'PRH' || t === 'ASI') && !F.hecho ? `<button class="btn btn-claro" onclick="finalizarFormulario(false)">Guardar sin finalizar</button>` : ''}
-          ${F.hecho ? '' : `<button class="btn btn-verde" onclick="finalizarFormulario(true)">Finalizar registro / movimiento</button>`}
+          ${F.hecho ? '' : `<button class="btn btn-verde" onclick="finalizarFormulario(true)">${F.num ? '✔ Guardar cambios' : 'Finalizar registro / movimiento'}</button>`}
           <button class="btn btn-azul" ${F.hecho ? '' : 'disabled'} title="${(t === 'PRH' || t === 'ASI') ? 'El vale se genera cuando el supervisor aprueba la solicitud' : 'Disponible al finalizar el registro'}" onclick="imprimirVale('${F.hecho || ''}')">🖨 Imprimir vale</button>
         </div>
       </div>
@@ -3744,6 +4032,7 @@ function leerCabecera() {
   if (g('fDestino') !== undefined) F.destino = g('fDestino');
   if (g('fDespacha') !== undefined) F.despacha = g('fDespacha').trim();
   if (g('fSup') !== undefined) F.sup = g('fSup').trim();
+  if (g('fSalidaTimaca') !== undefined) F.salidaTimaca = g('fSalidaTimaca').trim();
   if (g('fFReq') !== undefined) F.fechaReq = g('fFReq');
   if (g('fFDev') !== undefined) F.fechaDev = g('fFDev');
   if (g('fFAsig') !== undefined) F.fechaAsig = g('fFAsig');
@@ -3780,11 +4069,22 @@ function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO'
 const estDe = (it, cond) => it.mod === 'CILINDRO' && cond === 'VACÍO' ? 'VACIO' : 'DISP';
 function dispCaptura(it, cond) {
   const est = estDe(it, cond);
+  let extra = 0;
+  if (F.lineasOriginales) {
+    extra = F.lineasOriginales.filter(l => l.id === it.id && l.est === est).reduce((a, l) => a + l.cant, 0);
+  }
   const usado = F.lineas.filter(l => l.id === it.id && l.est === est).reduce((a, l) => a + l.cant, 0);
-  return dispItem(F.origen, it.id, est) - usado;
+  return (dispItem(F.origen, it.id, est) + extra) - usado;
 }
 const aceptaVacios = () => F.tipo === 'TRF' || F.tipo === 'DAN' || F.tipo === 'EXT';
-function dispTotalItem(it) { const e = exi(F.origen, it.id); return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0); }
+function dispTotalItem(it) {
+  const e = exi(F.origen, it.id);
+  let extra = 0;
+  if (F.lineasOriginales) {
+    extra = F.lineasOriginales.filter(l => l.id === it.id).reduce((a, l) => a + l.cant, 0);
+  }
+  return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0) + extra;
+}
 function itemsBuscables() {
   return DB.catalogo.filter(it => it.activo && !(F.tipo === 'PRH' && it.mod === 'EPP')).filter(it => dispTotalItem(it) > 0);
 }
@@ -3877,6 +4177,29 @@ function salvarLinea(confirmado) {
   F.lineas.push(lineaDe(it, cant, cond));
   limpiarCaptura(); pintarLineas(); $('cCod').focus();
 }
+function cambiarCantLinea(i, val) {
+  const l = F.lineas[i];
+  if (!l) return;
+  const c = parseInt(val, 10);
+  let extra = 0;
+  if (F.lineasOriginales) {
+    const orig = F.lineasOriginales.find(x => x.id === l.id && x.est === l.est);
+    if (orig) extra = orig.cant;
+  }
+  const dispTotal = dispItem(F.origen, l.id, l.est) + (F.lineasOriginales ? extra : l.cant);
+  if (isNaN(c) || c <= 0) {
+    toast('La cantidad debe ser mayor a 0.', 'err');
+    pintarLineas();
+    return;
+  }
+  if (c > dispTotal) {
+    toast(`Stock insuficiente en ${almNombre(F.origen)}. Máximo disponible: ${dispTotal} ${l.umb}.`, 'err');
+    pintarLineas();
+    return;
+  }
+  l.cant = c;
+  pintarTotales();
+}
 function pintarLineas() {
   const conRef = !!F.valeRef, bloqueado = !!F.hecho;
   let filas;
@@ -3884,10 +4207,11 @@ function pintarLineas() {
   else filas = F.lineas.map((l, i) => conRef ? `<tr>
       <td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.umb)}</td>
       <td class="cen">${l.saldo}</td><td class="cen"><input type="number" min="0" max="${l.saldo}" value="${l.cant}" ${bloqueado ? 'disabled' : ''} style="width:70px;padding:4px;text-align:center" onchange="F.lineas[${i}].cant=Math.max(0,Math.min(${l.saldo},Number(this.value)||0));this.value=F.lineas[${i}].cant;pintarTotales()"></td><td colspan="2"></td></tr>`
-    : `<tr class="${F.sel === i ? 'sel' : ''}" onclick="${bloqueado ? '' : `F.sel=${i};pintarLineas()`}">
+    : `<tr class="${F.sel === i ? 'sel' : ''}">
       <td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td>
-      <td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>
-      <td class="cen">${bloqueado ? '' : `<button class="btn btn-rojo btn-mini" ${F.sel === i ? '' : 'disabled'} onclick="event.stopPropagation();eliminarLinea(${i})">Eliminar</button>`}</td></tr>`).join('');
+      <td>${esc(l.cond)}</td>
+      <td class="cen">${bloqueado || l.serial ? `<b>${l.cant}</b>` : `<input type="number" min="1" max="${dispItem(F.origen, l.id, l.est) + (F.lineasOriginales ? ((F.lineasOriginales.find(x => x.id === l.id && x.est === l.est) || {}).cant || l.cant) : l.cant)}" value="${l.cant}" style="width:60px;padding:3px;text-align:center;font-weight:700" onchange="cambiarCantLinea(${i}, this.value)">`}</td>
+      <td class="cen">${bloqueado ? '' : `<button class="btn btn-rojo btn-mini" title="Eliminar ítem de la solicitud" onclick="event.stopPropagation();eliminarLinea(${i})">🗑 Eliminar</button>`}</td></tr>`).join('');
   const th = conRef ? '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Unidad</th><th class="cen">Saldo</th><th class="cen">Cantidad</th><th colspan="2"></th>'
     : '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th><th class="cen">Acción</th>';
   $('fLineas').innerHTML = `<div style="overflow:auto"><table class="grid"><thead><tr>${th}</tr></thead><tbody>${filas}</tbody></table></div>`;
@@ -3895,33 +4219,57 @@ function pintarLineas() {
 }
 function pintarTotales() {
   const lin = F.lineas.filter(l => l.cant > 0);
-  $('fTotales').innerHTML = `Total de líneas: <b>${lin.length}</b> · Total de unidades: <b>${lin.reduce((a, l) => a + l.cant, 0)}</b>${!F.valeRef && !F.hecho && F.lineas.length ? ' · Seleccione una línea para eliminarla' : ''}`;
+  $('fTotales').innerHTML = `Total de líneas: <b>${lin.length}</b> · Total de unidades: <b>${lin.reduce((a, l) => a + l.cant, 0)}</b>${!F.valeRef && !F.hecho && F.lineas.length ? ' · Puede eliminar o ajustar la cantidad de cualquier ítem' : ''}`;
 }
 function eliminarLinea(i) {
   const l = F.lineas[i];
-  confirmar(`¿Eliminar la línea <b>${esc(l.cod)} · ${esc(l.desc)}</b> (${l.cant} ${esc(l.umb)})?`, () => { F.lineas.splice(i, 1); F.sel = -1; pintarLineas(); if ($('cCod')) $('cCod').focus(); }, 'Eliminar');
+  if (!l) return;
+  confirmar(`¿Eliminar la línea <b>${esc(l.cod)} · ${esc(l.desc)}</b> (${l.cant} ${esc(l.umb)})?`, () => {
+    F.lineas.splice(i, 1);
+    F.sel = -1;
+    pintarLineas();
+    if ($('cCod')) $('cCod').focus();
+    toast('Ítem eliminado de la solicitud.', 'ok');
+  }, 'Eliminar ítem');
 }
 function finalizarFormulario(finalizar) {
   leerCabecera();
   run(() => {
     const t = F.tipo;
     if (t === 'PRH' || t === 'ASI') {
-      const s = guardarSolicitud({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, finalizar);
-      toast(finalizar ? `Solicitud ${s.num} finalizada y enviada a aprobación de: ${aprobadoresDe(s.origen).join(', ') || 'supervisor autorizado'}.` : `Solicitud ${s.num} guardada como NO FINALIZADO.`, 'ok');
+      const s = guardarSolicitud({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, true);
+      toast(`Solicitud ${s.num} guardada (PENDIENTE DE APROBACIÓN).`, 'ok');
       ir('sol', { sel: s.num });
     } else if (t === 'TRF') {
-      const v = crearTransferencia({
-        origen: F.origen,
-        destino: F.destino,
-        resp: F.resp,
-        sup: F.sup,
-        proyecto: F.proyecto,
-        cuenta: F.cuenta,
-        despacha: F.despacha || S.u.nombre,
-        obs: F.obs,
-        lineas: F.lineas
-      });
-      F.hecho = v.num; toast(`Transferencia ${v.num} registrada. Pendiente de recepción en ${almNombre(v.destino)}.`, 'ok'); pintarMenu(); pintarFormulario();
+      if (F.num) {
+        const v = actualizarTransferencia(F.num, {
+          destino: F.destino,
+          resp: F.resp,
+          sup: F.sup,
+          proyecto: F.proyecto,
+          cuenta: F.cuenta,
+          despacha: F.despacha || S.u.nombre,
+          salidaTimaca: F.salidaTimaca || '',
+          obs: F.obs,
+          lineas: F.lineas
+        });
+        toast(`Transferencia ${v.num} actualizada exitosamente.`, 'ok');
+        ir('trfEnv', { sel: v.num });
+      } else {
+        const v = crearTransferencia({
+          origen: F.origen,
+          destino: F.destino,
+          resp: F.resp,
+          sup: F.sup,
+          proyecto: F.proyecto,
+          cuenta: F.cuenta,
+          despacha: F.despacha || S.u.nombre,
+          salidaTimaca: F.salidaTimaca || '',
+          obs: F.obs,
+          lineas: F.lineas
+        });
+        F.hecho = v.num; toast(`Transferencia ${v.num} registrada. Pendiente de recepción en ${almNombre(v.destino)}.`, 'ok'); pintarMenu(); pintarFormulario();
+      }
     } else {
       const lineas = F.valeRef ? F.lineas.filter(l => l.cant > 0) : F.lineas;
       if (!F.valeRef && t !== 'TRF' && !F.resp) throw new Error('Seleccione el responsable custodio desde la lista de personal.');
@@ -3936,12 +4284,12 @@ function finalizarFormulario(finalizar) {
    ===================================================================== */
 function pintarSolicitud() {
   const t = F.tipo, s = F.num ? solDe(F.num) : null;
-  const est = s ? s.estatus : 'NO FINALIZADO';
+  const est = s ? formatoEstSol(s.estatus) : 'PENDIENTE DE APROBACIÓN';
   const L = txt => `<div class="lb">${txt}</div>`;
   const fechas = t === 'PRH'
     ? L('Fecha requerida') + `<div class="vl"><input type="date" id="fFReq" value="${F.fechaReq}"></div>` + L('Fecha de devolución') + `<div class="vl"><input type="date" id="fFDev" value="${F.fechaDev}"></div>`
     : L('Fecha de asignación') + `<div class="vl"><input type="date" id="fFAsig" value="${F.fechaAsig}"></div><div class="vacio"></div>`;
-  $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al finalizar, la solicitud pasa a aprobación del supervisor del almacén.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
+  $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al guardar, la solicitud queda PENDIENTE DE APROBACIÓN para el supervisor.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
     + `<div class="form-reg"><div class="sipf">
       ${L('Empresa')}<div class="vl"><input value="TIMACA" readonly></div>
       ${L('Número')}<div class="vl"><input id="sNum" value="${esc(F.num || '')}" placeholder="Se asigna al salvar" readonly></div>
@@ -3957,13 +4305,14 @@ function pintarSolicitud() {
       ${L('Tipo de asignación')}<div class="vl"><select id="fTA" onchange="cambiarTipoSol(this.value === 'DEF' ? 'PRH' : 'ASI')">${opciones([['DEF', 'TIEMPO DEFINIDO'], ['IND', 'TIEMPO INDEFINIDO']], t === 'PRH' ? 'DEF' : 'IND')}</select></div>
       ${L('Supervisor autoriza')}<div class="vl"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}"></div>
       ${fechas}
-      ${L('Almacén')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
-      ${L('Estatus')}<div class="vl">${estB(est)}<button class="btn btn-navy btn-mini" onclick="salvarSolicitud()">💾 Salvar</button></div>
+      ${L('Almacén origen')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
+      ${L('Destino / Área solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
+      ${L('Estatus')}<div class="vl">${estB(est)}</div>
     </div>
     <div class="carga" style="margin-top:14px"><div class="carga-h">CARGA DE MATERIAL</div>${filaCaptura()}<div id="fLineas"></div></div>
     <div class="pie-form"><div class="totales" id="fTotales"></div><div class="der">
       <button class="btn btn-claro" onclick="ir('sol')">Cancelar</button>
-      <button class="btn btn-verde" onclick="finalizarFormulario(true)">✔ Finalizar solicitud</button>
+      <button class="btn btn-verde" onclick="finalizarFormulario(true)">💾 Guardar solicitud</button>
       <button class="btn btn-azul" disabled title="El vale se genera cuando el supervisor aprueba la solicitud">🖨 Imprimir vale</button>
     </div></div></div>${datalistPersonal()}`;
   bindResponsableProyecto();
@@ -3978,8 +4327,8 @@ function cambiarTipoSol(t) {
 function salvarSolicitud() {
   leerCabecera();
   run(() => {
-    const s = guardarSolicitud({ num: F.num, tipo: F.tipo, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, false);
-    F.num = s.num; $('sNum').value = s.num; toast(`Solicitud ${s.num} guardada (NO FINALIZADO). Puede seguir editándola.`, 'ok');
+    const s = guardarSolicitud({ num: F.num, tipo: F.tipo, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, true);
+    F.num = s.num; $('sNum').value = s.num; toast(`Solicitud ${s.num} guardada (PENDIENTE DE APROBACIÓN). Puede seguir editándola.`, 'ok');
   });
 }
 function bindResponsableProyecto() {
@@ -4080,7 +4429,6 @@ VISTAS.ent = () => {
 };
 function pintarEntrada() {
   const bloq = !!E.hecho, ro = bloq ? 'disabled' : '';
-  const cats = [...new Set(DB.catalogo.map(i => i.cat))].sort();
   const umbs = [...new Set(DB.catalogo.map(i => i.umb))].sort();
   $('area').innerHTML = cab('➕ Entrada de ítems al catálogo', 'Registre herramientas, cilindros o EPP que ingresan al almacén. Si el código ya existe se suma la cantidad; si es nuevo, se crea en el catálogo. Lo recibido por transferencia entra solo al aceptarla.')
     + (E.hecho ? `<div class="franja-est verde"><span>Entrada <b>${E.hecho}</b> registrada. Los ítems ya aparecen en el catálogo de ${esc(almNombre(S.ctx))}.</span><span><button class="btn btn-claro btn-mini" onclick="ir('cCatAlm')">Ver catálogo</button></span></div>` : '')
@@ -4093,7 +4441,7 @@ function pintarEntrada() {
         <div class="campo" style="position:relative"><label>Código</label><input id="eCod" autocomplete="off" placeholder="Nuevo o existente"></div>
         <div class="campo" style="grid-column:span 2"><label>Descripción</label><input id="eDesc"></div>
         ${campo('Módulo', `<select id="eMod" onchange="condEntrada()">${opciones(Object.entries(MODULOS))}</select>`)}
-        ${campo('Categoría', `<input id="eCat" list="dlCat">`)}${campo('Unidad', `<input id="eUmb" list="dlUmb" value="UND">`)}
+        ${campo('Categoría', `<select id="eCat">${opciones(CATEGORIAS_OFICIALES, 'Herramientas manuales')}</select>`)}${campo('Unidad', `<select id="eUmb">${opciones(UMBS_OFICIALES, 'UND')}</select>`)}
         ${campo('Marca', `<input id="eMarca" placeholder="Ej. STANLEY">`)}${campo('Modelo', `<input id="eModelo">`)}${campo('Serial (ítem único)', `<input id="eSerial" placeholder="Opcional">`)}
         ${campo('Condición', `<select id="eCond"></select>`)}${campo('Cantidad', `<input id="eCant" type="number" min="1" value="1" style="text-align:center;font-weight:800">`)}
         <div class="campo" style="justify-content:flex-end"><label>&nbsp;</label><button class="btn-salvar" onclick="agregarEntrada()">Agregar ítem</button></div>
@@ -4102,12 +4450,16 @@ function pintarEntrada() {
     <div class="pie-form"><div class="totales" id="eTot"></div><div class="der">
       ${bloq ? `<button class="btn btn-claro" onclick="ir('ent')">Nueva entrada</button>` : `<button class="btn btn-claro" onclick="ir('cCatAlm')">Cancelar</button><button class="btn btn-verde" onclick="registrarEntradaUI()">✔ Registrar entrada</button>`}
       <button class="btn btn-azul" ${bloq ? '' : 'disabled'} onclick="imprimirVale('${E.hecho || ''}')">🖨 Imprimir vale</button>
-    </div></div></div>
-    <datalist id="dlCat">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist><datalist id="dlUmb">${umbs.map(c => `<option value="${esc(c)}">`).join('')}</datalist>`;
+    </div></div></div>`;
   if (!bloq) {
     condEntrada();
     bindAC('eCod', q => { q = q.trim().toLowerCase(); if (q.length < 2) return []; const g = {}; DB.catalogo.filter(i => (i.cod + ' ' + i.desc).toLowerCase().includes(q)).forEach(i => g[i.cod] = g[i.cod] || i); return Object.values(g).slice(0, 15).map(i => ({ val: i, html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(MODULOS[i.mod])} · ${esc(i.cat)} · código existente</small>` })); },
-      i => { E.base = i; $('eCod').value = i.cod; $('eDesc').value = i.desc; $('eMod').value = i.mod; $('eCat').value = i.cat; $('eUmb').value = i.umb; ['eDesc', 'eMod', 'eCat', 'eUmb'].forEach(x => $(x).disabled = true); condEntrada(); $('eMarca').focus(); });
+      i => { E.base = i; $('eCod').value = i.cod; $('eDesc').value = i.desc; $('eMod').value = i.mod; $('eCat').value = i.cat;
+        if ($('eUmb')) {
+          if (!UMBS_OFICIALES.includes(i.umb)) $('eUmb').innerHTML = opciones(UMBS_OFICIALES.concat([i.umb]), i.umb);
+          else $('eUmb').value = i.umb;
+        }
+        ['eDesc', 'eMod', 'eCat', 'eUmb'].forEach(x => $(x).disabled = true); condEntrada(); $('eMarca').focus(); });
     $('eCod').addEventListener('input', () => { if (E.base) { E.base = null; ['eDesc', 'eMod', 'eCat', 'eUmb'].forEach(x => $(x).disabled = false); } });
   }
   pintarLineasEntrada();
@@ -4160,11 +4512,11 @@ VISTAS.doc = p => {
   const color = EST_COLOR[est] === 'ambar' ? 'naranja' : (EST_COLOR[est] || 'gris');
   let franjaDer = '';
   if (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN') franjaDer = `<span style="display:flex;align-items:center;gap:10px">Tiempo restante para aceptar: ${cronoHTML(d, true)}</span>`;
-  else if (d.procesadoEn) franjaDer = `${est === 'APROBADO' ? 'Aprobada' : est === 'ANULADO' ? 'Anulada' : 'Procesada'} por <b>${esc(d.procesadoPor.nombre)}</b> el ${fFH(d.procesadoEn)}${d.motivo ? ' · Motivo: ' + esc(d.motivo) : ''}`;
-  else if (esSol && est === 'FINALIZADO') franjaDer = 'Pendiente de aprobación del supervisor de ' + esc(almNombre(d.origen));
+  else if (d.procesadoEn) franjaDer = `${(est === 'APROBADO' || est === 'APROBADA') ? 'Aprobada' : (est === 'ANULADO' || est === 'ANULADA') ? 'Anulada' : 'Procesada'} por <b>${esc(d.procesadoPor.nombre)}</b> el ${fFH(d.procesadoEn)}${d.motivo ? ' · Motivo: ' + esc(d.motivo) : ''}`;
+  else if (esSol && (est === 'FINALIZADO' || est === 'PENDIENTE DE APROBACIÓN')) franjaDer = 'Pendiente de aprobación del supervisor de ' + esc(almNombre(d.origen));
   const R = (lbl, v) => campo(lbl, `<input value="${esc(v ?? '')}" readonly>`);
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
-    + R('Almacén origen', almNombre(d.origen)) + R('Almacén destino', almNombre(d.destino));
+    + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', almNombre(d.destino));
   if (t === 'TRF') {
     c += R('Realizado por', d.realizadoPor.nombre) + R('Cédula', d.realizadoPor.cedula) + R('Cargo', d.realizadoPor.cargo);
     if (d.despacha) c += R('Quién despacha', d.despacha);
@@ -4233,9 +4585,9 @@ VISTAS.doc = p => {
     : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
   const und = d.lineas.reduce((a, l) => a + l.cant, 0);
   const acciones = accionesDoc(d, esSol, p);
-  const nota = esSol ? (d.estatus === 'FINALIZADO' ? motivoNoAprueba(d) : d.estatus === 'NO FINALIZADO' ? 'La solicitud aún no está finalizada. Ábrala desde "Solicitudes del almacén" con "Editar solicitud" y presione "Finalizar solicitud".' : d.estatus === 'APROBADO' ? (puedeImprimir() ? 'Solicitud aprobada: ya puede imprimir el vale ' + d.vale + '.' : 'Solicitud aprobada. El personal del almacén imprimirá el vale ' + d.vale + '.') : '') : '';
+  const nota = esSol ? ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') ? motivoNoAprueba(d) : (d.estatus === 'APROBADO' || d.estatus === 'APROBADA') ? (d.vale ? `Vale ${d.vale} emitido.` : '') : '') : '';
   $('area').innerHTML = cab(esSol ? 'Solicitud ' + d.num : TIPOS[t].titulo.charAt(0) + TIPOS[t].titulo.slice(1).toLowerCase() + ' ' + d.num, 'Vista de solo lectura: muestra exactamente lo registrado.', `<button class="btn btn-claro" onclick="${p.back ? `ir('${p.back}')` : 'history.back()'}">Volver</button>`)
-    + `<div class="franja-est ${color}" style="${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'flex-wrap:wrap' : ''}"><span>Estatus: ${estB(est)}</span><span>${franjaDer}</span>${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? `<div class="crono-barra"><i data-ini="${d.fecha}" data-vence="${d.vence}"></i></div><span style="font-size:12px;color:var(--texto-2)">${d.destino === S.ctx ? `Si no la acepta o rechaza antes de que el reloj llegue a cero, la transferencia vencerá y el material regresará a ${esc(almNombre(d.origen))}.` : `${esc(almNombre(d.destino))} debe aceptarla antes de que el reloj llegue a cero; si no, el material regresará automáticamente a ${esc(almNombre(d.origen))}.`}</span>` : ''}</div>${nota ? `<div class="franja-est ${d.estatus === 'APROBADO' ? 'verde' : 'naranja'}"><span>ℹ️ ${esc(nota)}</span></div>` : ''}
+    + `<div class="franja-est ${color}" style="${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'flex-wrap:wrap' : ''}"><span>Estatus: ${estB(est)}</span><span>${franjaDer}</span>${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? `<div class="crono-barra"><i data-ini="${d.fecha}" data-vence="${d.vence}"></i></div><span style="font-size:12px;color:var(--texto-2)">${d.destino === S.ctx ? `Si no la acepta o rechaza antes de que el reloj llegue a cero, la transferencia vencerá y el material regresará a ${esc(almNombre(d.origen))}.` : `${esc(almNombre(d.destino))} debe aceptarla antes de que el reloj llegue a cero; si no, el material regresará automáticamente a ${esc(almNombre(d.origen))}.`}</span>` : ''}</div>${nota ? `<div class="franja-est ${(d.estatus === 'APROBADO' || d.estatus === 'APROBADA') ? 'verde' : 'naranja'}"><span>ℹ️ ${esc(nota)}</span></div>` : ''}
     <div class="form-reg"><div class="f3">${c}</div>${extraTxt}${d.obs ? campo('Observación', `<input value="${esc(d.obs)}" readonly>`) : ''}
       <div class="carga"><div class="carga-h">CARGA DE MATERIAL</div>
         <div style="overflow:auto"><table class="grid"><thead>${esDevch ? '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th class="cen">Entregado</th><th class="cen">Recibido</th><th class="cen">Diferencia</th><th class="cen">Condición</th><th class="cen">Reportes Incidentes</th></tr>' : '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th>' + (conSaldo ? '<th class="cen">Devuelto</th><th class="cen">Saldo</th>' : '') + '</tr>'}</thead><tbody>${filas}</tbody></table></div>
@@ -4247,7 +4599,7 @@ VISTAS.doc = p => {
 };
 function aprobadoresDe(alm) { return DB.usuarios.filter(u => u.activo && !u.admin && u.perm.aprobar.includes(alm)).map(u => u.nombre); }
 function motivoNoAprueba(s) {
-  if (s.estatus !== 'FINALIZADO') return '';
+  if (s.estatus !== 'FINALIZADO' && s.estatus !== 'PENDIENTE DE APROBACIÓN') return '';
   const quienes = aprobadoresDe(s.origen); const lista = quienes.length ? quienes.join(', ') : 'un supervisor autorizado';
   if (s.generadoPor.usuario === S.u.usuario) return `Usted generó esta solicitud, por lo que no puede aprobarla. Debe aceptarla: ${lista}.`;
   if (!puede('aprobar', s.origen)) return `Su usuario no tiene permiso de aprobación en ${almNombre(s.origen)}. Puede aceptarla: ${lista}.`;
@@ -4257,15 +4609,20 @@ function accionesDoc(d, esSol, p) {
   let h = '';
   if (enMaestro()) return esSol ? '' : `<button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>`;
   if (esSol) {
-    if (d.estatus === 'FINALIZADO' && d.origen === S.ctx) {
+    if ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') && d.origen === S.ctx) {
       const ok = puede('aprobar', d.origen) && d.generadoPor.usuario !== S.u.usuario;
       h += `<button class="btn btn-rojo" ${ok ? '' : 'disabled'} onclick="accionAnular('${d.num}')">Anular solicitud</button><button class="btn btn-verde" ${ok ? '' : 'disabled'} onclick="accionAprobar('${d.num}')">Aceptar solicitud</button>`;
     }
     if (d.vale && puedeImprimir()) h += `<button class="btn btn-azul" onclick="imprimirVale('${d.vale}')">🖨 Imprimir vale</button>`;
     return h;
   }
-  if (d.tipo === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' && d.destino === S.ctx && puede('recibir', d.destino)) {
-    h += `<button class="btn btn-rojo" onclick="accionRechazarTrf('${d.num}')">Rechazar transferencia</button><button class="btn btn-verde" onclick="accionAceptarTrf('${d.num}')">Aceptar transferencia</button>`;
+  if (d.tipo === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN') {
+    if (d.destino === S.ctx && puede('recibir', d.destino)) {
+      h += `<button class="btn btn-rojo" onclick="accionRechazarTrf('${d.num}')">Rechazar transferencia</button><button class="btn btn-verde" onclick="accionAceptarTrf('${d.num}')">Aceptar transferencia</button>`;
+    }
+    if (d.origen === S.ctx && puede('transferir', d.origen)) {
+      h += `<button class="btn btn-claro" onclick="editarTransferencia('${d.num}')">✏️ Editar transferencia</button>`;
+    }
   }
   if ((d.tipo === 'PRH' || d.tipo === 'ASI') && saldoVale(d) > 0 && d.origen === S.ctx) {
     h += `<button class="btn btn-claro" onclick="ir('dev',{vale:'${d.num}'})">Registrar devolución</button>`;
@@ -4292,22 +4649,31 @@ VISTAS.sol = p => {
   const filtro = (p && p.f) || 'TODAS', tab = (p && p.tab) || 'alm';
   let rows = DB.solicitudes.filter(s => s.origen === S.ctx);
   if (tab === 'mias') rows = rows.filter(s => s.generadoPor.usuario === S.u.usuario);
-  if (filtro !== 'TODAS') rows = rows.filter(s => s.estatus === filtro);
+  if (filtro !== 'TODAS') {
+    if (filtro === 'PENDIENTE DE APROBACIÓN') rows = rows.filter(s => s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA');
+    else if (filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
+    else if (filtro === 'ANULADA') rows = rows.filter(s => s.estatus === 'ANULADO' || s.estatus === 'ANULADA');
+    else rows = rows.filter(s => s.estatus === filtro);
+  }
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const cols = [
-    { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
+    { t: 'Número', k: 'num', f: r => {
+      const editable = r.estatus !== 'APROBADO' && r.estatus !== 'APROBADA' && r.estatus !== 'ANULADO' && r.estatus !== 'ANULADA';
+      return `<a href="javascript:void(0)" onclick="event.stopPropagation();${editable ? `ir('solNueva',{num:'${r.num}'})` : `ir('doc',{num:'${r.num}',back:'sol'})`}" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="${editable ? 'Haga clic para editar la solicitud ' + r.num : 'Haga clic para visualizar'}">${esc(r.num)}</a>`;
+    }},
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
     { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
+    { t: 'Destino / Área', v: r => r.destino ? almNombre(r.destino) : '—', f: r => `<span class="est est-gris" style="font-size:11px">${esc(almNombre(r.destino || r.origen))}</span>` },
     { t: 'Cuenta auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:800">${esc(r.cuenta)}</span>` : '—' },
     { t: 'Proyecto / OT', k: 'proyecto', td: 'wrap' },
     { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '' },
     { t: 'Generado por', v: r => r.generadoPor.nombre },
-    { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) },
+    { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) },
     { t: 'Vale', v: r => r.vale || '' }
   ];
   $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido) de ' + esc(almNombre(S.ctx)) + '.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
-    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones(['TODAS', 'NO FINALIZADO', 'FINALIZADO', 'APROBADO', 'ANULADO'], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
+    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE APROBACIÓN', 'Pendiente de aprobación'], ['APROBADA', 'Aprobada'], ['ANULADA', 'Anulada']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
     + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
@@ -4325,26 +4691,33 @@ function tiraSol(s) {
   if ($('tsCuenta')) $('tsCuenta').textContent = s.cuenta || '—';
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
-  const propia = S.u.admin || s.generadoPor.usuario === S.u.usuario;
-  $('bEdit').disabled = !(s.estatus === 'NO FINALIZADO' && propia);
-  $('bDel').disabled = !(s.estatus === 'NO FINALIZADO' && propia);
+  const editable = s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA';
+  $('bEdit').disabled = !editable;
+  $('bDel').disabled = !editable;
   $('bVer').disabled = false; $('bImp').disabled = !s.vale;
-  const info = s.estatus === 'FINALIZADO' ? 'Pendiente de aprobación. ' + motivoNoAprueba(s) + ' El vale se podrá imprimir cuando sea aprobada.'
-    : s.estatus === 'APROBADO' ? `Aprobada por ${s.procesadoPor.nombre}. ` + (puedeImprimir() ? `Use "Imprimir vale" para imprimir el vale ${s.vale}.` : `El personal del almacén imprimirá el vale ${s.vale}.`)
-    : s.estatus === 'NO FINALIZADO' ? 'Borrador: use "Editar solicitud" y luego "Finalizar solicitud" para enviarla a aprobación.'
-    : s.estatus === 'ANULADO' ? 'Anulada: ' + (s.motivo || '') : '';
-  $('tsInfo').innerHTML = info ? `<div class="franja-est ${s.estatus === 'APROBADO' ? 'verde' : s.estatus === 'ANULADO' ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>ℹ️ ${esc(info)}</span></div>` : '';
+  const esApr = s.estatus === 'APROBADO' || s.estatus === 'APROBADA';
+  const esAnu = s.estatus === 'ANULADO' || s.estatus === 'ANULADA';
+  const info = esApr ? (s.procesadoPor ? `Aprobada por ${s.procesadoPor.nombre}. Vale ${s.vale || ''} emitido.` : (s.vale ? `Vale ${s.vale} emitido.` : ''))
+    : esAnu ? 'Anulada: ' + (s.motivo || '')
+    : (motivoNoAprueba(s) || '');
+  $('tsInfo').innerHTML = info ? `<div class="franja-est ${esApr ? 'verde' : esAnu ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>${esc(info)}</span></div>` : '';
 }
-function accionEliminarSol() { const s = selDe('gSol'); confirmar(`¿Eliminar la solicitud <b>${s.num}</b>? Esta acción solo aplica a solicitudes no finalizadas.`, () => { eliminarSolicitud(s.num); toast('Solicitud eliminada.', 'ok'); refrescar(); }, 'Eliminar'); }
+function accionEliminarSol() {
+  const s = selDe('gSol');
+  if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') return toast('No se puede eliminar una solicitud aprobada.', 'err');
+  confirmar(`¿Eliminar la solicitud <b>${s.num}</b>?`, () => { eliminarSolicitud(s.num); toast('Solicitud eliminada.', 'ok'); refrescar(); }, 'Eliminar');
+}
 
 /* =====================================================================
    APROBACIÓN (supervisores autorizados del almacén origen)
    ===================================================================== */
 VISTAS.aprobar = p => {
-  const filtro = (p && p.f) || 'FINALIZADO';
+  const filtro = (p && p.f) || 'PENDIENTE DE APROBACIÓN';
   const tienePerm = puede('aprobar', S.ctx);
-  let rows = DB.solicitudes.filter(s => s.origen === S.ctx && s.estatus !== 'NO FINALIZADO');
-  if (filtro !== 'TODAS') rows = rows.filter(s => s.estatus === filtro);
+  let rows = DB.solicitudes.filter(s => s.origen === S.ctx);
+  if (filtro === 'PENDIENTE DE APROBACIÓN') rows = rows.filter(s => s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA');
+  else if (filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
+  else if (filtro === 'ANULADA') rows = rows.filter(s => s.estatus === 'ANULADO' || s.estatus === 'ANULADA');
   rows.sort((a, b) => (b.finalizadaEn || b.fecha).localeCompare(a.finalizadaEn || a.fecha));
   const cols = [
     { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
@@ -4355,15 +4728,15 @@ VISTAS.aprobar = p => {
     { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '—' },
     { t: 'Generado por', v: r => r.generadoPor ? r.generadoPor.nombre : '—' },
     { t: 'Tipo A', v: r => r.lineas.some(l => (item(l.id) || {}).tipoA) ? 'SI' : 'NO', cls: 'cen' },
-    { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) }
+    { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) }
   ];
-  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes finalizadas de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
+  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes pendientes de aprobación de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
     + (tienePerm ? '' : avisoSinPermiso('Su usuario no tiene permiso de aprobación en este almacén. Puede consultar las solicitudes, pero no aceptarlas ni anularlas.'))
     + `<div class="fila-filtros">
-        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['FINALIZADO', 'Pendientes de aprobación'], ['APROBADO', 'Aprobadas'], ['ANULADO', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
+        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['PENDIENTE DE APROBACIÓN', 'Pendientes de aprobación'], ['APROBADA', 'Aprobadas'], ['ANULADA', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
         ${buscador('gApr', 'Buscar por número, cuenta auxiliar, proyecto, responsable…')}
       </div>`
-    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'FINALIZADO' ? 'No hay solicitudes pendientes de aprobación en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
+    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'PENDIENTE DE APROBACIÓN' ? 'No hay solicitudes pendientes de aprobación en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taCuenta"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
     <div id="taMotivo"></div>
     <div class="barra-btn">
@@ -4378,7 +4751,7 @@ function tiraApr(s) {
   if ($('taCuenta')) $('taCuenta').textContent = s.cuenta || '—';
   $('taProy').textContent = s.proyecto;
   $('taResp').textContent = s.resp ? s.resp.nombre : '';
-  const ok = s.estatus === 'FINALIZADO' && puede('aprobar', s.origen) && s.generadoPor.usuario !== S.u.usuario;
+  const ok = (s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA') && puede('aprobar', s.origen) && s.generadoPor.usuario !== S.u.usuario;
   $('aVer').disabled = false; $('aOk').disabled = !ok; $('aNo').disabled = !ok;
   const m = motivoNoAprueba(s);
   $('aOk').title = m; $('aNo').title = m;
@@ -4387,7 +4760,7 @@ function tiraApr(s) {
 function accionAprobar(n) {
   const s = solDe(n);
   const tipoA = s.lineas.filter(l => item(l.id).tipoA);
-  const despues = v => { cerrarModal(); toast(`Solicitud ${n} aprobada. Vale ${v.num} generado.`, 'ok'); pintarMenu(); abrirModal('Solicitud aprobada', `<p class="ayuda-txt">La solicitud <b>${n}</b> quedó aprobada y se generó el vale <b>${v.num}</b>. Las existencias de ${esc(almNombre(v.origen))} fueron actualizadas.<br><br>El personal del almacén verá la solicitud como <b>APROBADO</b> en "Solicitudes del almacén" y desde allí imprimirá el vale original para las firmas.</p>`, [{ t: 'Entendido', cls: 'btn-navy', fn: () => { cerrarModal(); refrescar(); } }]); };
+  const despues = v => { cerrarModal(); toast(`Solicitud ${n} aprobada. Vale ${v.num} generado.`, 'ok'); pintarMenu(); abrirModal('Solicitud aprobada', `<p class="ayuda-txt">La solicitud <b>${n}</b> quedó aprobada y se generó el vale <b>${v.num}</b>. Las existencias de ${esc(almNombre(v.origen))} fueron actualizadas.<br><br>El personal del almacén verá la solicitud como <b>APROBADA</b> en "Solicitudes del almacén" y desde allí imprimirá el vale original para las firmas.</p>`, [{ t: 'Entendido', cls: 'btn-navy', fn: () => { cerrarModal(); refrescar(); } }]); };
   if (tipoA.length) {
     abrirModal('Aprobación de Gerencia requerida', `<p class="ayuda-txt" style="margin-bottom:10px">La solicitud contiene ítems Tipo A: <b>${tipoA.map(l => esc(l.cod + ' · ' + l.desc)).join(', ')}</b>. Indique el número de aprobación de Gerencia para continuar.</p>${campo('N° de aprobación de Gerencia', '<input id="mdGer">')}`,
       [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Aceptar solicitud', cls: 'btn-verde', fn: () => run(() => despues(aprobarSolicitud(n, $('mdGer').value))) }]);
@@ -4398,27 +4771,52 @@ function accionAnular(n) { pedirTexto('Anular solicitud ' + n, 'Motivo de anulac
 /* =====================================================================
    TRANSFERENCIAS
    ===================================================================== */
-const colsTrf = (recibidas) => [{ t: 'N° vale', k: 'num' }, { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
+const colsTrf = (recibidas) => [
+  { t: 'N° vale', k: 'num', f: r => (!recibidas && r.estatus === 'PENDIENTE DE RECEPCIÓN') ? `<a href="javascript:void(0)" onclick="event.stopPropagation();editarTransferencia('${r.num}')" style="color:var(--azul);font-weight:800;text-decoration:underline" title="Haga clic para editar la transferencia ${r.num}">${esc(r.num)}</a>` : `<b>${esc(r.num)}</b>` },
+  { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
+  { t: 'Tiempo restante (12 h)', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
+  { t: 'Estatus', k: 'estatus', f: r => {
+    if (r.estatus === 'PENDIENTE DE RECEPCIÓN') return `<span class="est est-naranja">⏱ POR ACEPTAR</span>`;
+    if (r.estatus === 'RECIBIDA') return `<span class="est est-verde">ACEPTADA</span>`;
+    if (r.estatus === 'RECHAZADA') return `<span class="est est-rojo">RECHAZADA</span>`;
+    return estB(r.estatus);
+  }},
   { t: 'Realizado por', v: r => r.realizadoPor.nombre },
   { t: 'Quién despacha', v: r => r.despacha || r.realizadoPor.nombre },
   { t: 'Responsable', v: r => r.resp ? r.resp.nombre : '—' },
   { t: 'Proyecto / OT', v: r => r.proyecto || '—' },
   { t: 'Supervisor', v: r => r.sup || '—' },
-  { t: 'Líneas', v: r => r.lineas.length, cls: 'num' }, { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
-  { t: 'Tiempo restante', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
-  { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus) },
-  { t: 'Procesado por', v: r => r.procesadoPor ? r.procesadoPor.nombre : '' }, { t: 'Fecha procesamiento', v: r => r.procesadoEn ? fFH(r.procesadoEn) : '', s: r => r.procesadoEn || '' },
-  { t: 'Motivo', v: r => r.motivo || '' }];
+  { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
+  { t: 'Procesado por', v: r => r.procesadoPor ? r.procesadoPor.nombre : '' },
+  { t: 'Fecha procesamiento', v: r => r.procesadoEn ? fFH(r.procesadoEn) : '', s: r => r.procesadoEn || '' },
+  { t: 'Motivo', v: r => r.motivo || '' }
+];
 VISTAS.trfRec = p => {
-  const filtro = (p && p.f) || 'PENDIENTE DE RECEPCIÓN';
-  let rows = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx);
-  if (filtro !== 'TODAS') rows = rows.filter(v => v.estatus === filtro);
+  p = p || {};
+  const f = {
+    est: p.f || p.est || 'PENDIENTE DE RECEPCIÓN',
+    desde: p.desde || sumarDias(hoy(), -90),
+    hasta: p.hasta || hoy()
+  };
+  let rows = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && fechaLocal(new Date(v.fecha)) >= f.desde && fechaLocal(new Date(v.fecha)) <= f.hasta);
+  if (f.est !== 'TODAS') {
+    if (f.est === 'POR ACEPTAR' || f.est === 'PENDIENTE DE RECEPCIÓN') rows = rows.filter(v => v.estatus === 'PENDIENTE DE RECEPCIÓN');
+    else if (f.est === 'ACEPTADAS' || f.est === 'RECIBIDA') rows = rows.filter(v => v.estatus === 'RECIBIDA');
+    else if (f.est === 'RECHAZADAS' || f.est === 'RECHAZADA') rows = rows.filter(v => v.estatus === 'RECHAZADA');
+    else rows = rows.filter(v => v.estatus === f.est);
+  }
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const perm = puede('recibir', S.ctx);
-  $('area').innerHTML = cab('Transferencias recibidas', `Transferencias enviadas a ${esc(almNombre(S.ctx))}. Tiene ${DB.config.plazoHoras} horas para aceptar o rechazar cada una; si no, el material regresa al almacén de origen.`)
+  const recarga = `ir('trfRec',{f:$('frEst').value,desde:$('frDesde').value,hasta:$('frHasta').value})`;
+  $('area').innerHTML = cab('Transferencias recibidas', `Transferencias enviadas a ${esc(almNombre(S.ctx))}. Tiene ${DB.config.plazoHoras} horas para aceptar o rechazar cada una; si no, el material regresa al almacén de origen.`, botonesExport('gRec', 'Transferencias recibidas ' + almNombre(S.ctx)))
     + (perm ? '' : avisoSinPermiso('Su usuario no tiene permiso para recibir transferencias en este almacén. Puede consultarlas, pero no aceptarlas ni rechazarlas.'))
-    + `<div class="fila-filtros">${campo('Estatus', `<select onchange="ir('trfRec',{f:this.value})">${opciones([['PENDIENTE DE RECEPCIÓN', 'Pendientes de recepción'], 'RECIBIDA', 'RECHAZADA', 'VENCIDA', ['TODAS', 'Todas']], filtro)}</select>`)}${buscador('gRec')}</div>`
+    + `<div class="fila-filtros">
+        ${campo('Estatus', `<select id="frEst" onchange="${recarga}">${opciones([['PENDIENTE DE RECEPCIÓN', 'Por aceptar'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['TODAS', 'Todas']], f.est)}</select>`)}
+        ${campo('Desde', `<input type="date" id="frDesde" value="${f.desde}" onchange="${recarga}">`)}
+        ${campo('Hasta', `<input type="date" id="frHasta" value="${f.hasta}" onchange="${recarga}">`)}
+        ${buscador('gRec')}
+      </div>`
     + grid('gRec', colsTrf(true), rows, { onSel: v => tiraTrf(v, 'r'), pag: 15, vacio: 'No hay transferencias para mostrar.' })
     + `<div class="sel-strip"><span class="lbl">Transferencia seleccionada</span><span class="box" id="trNum"></span><span class="box" id="trInfo" style="flex:1"></span></div>
     <div class="barra-btn">
@@ -4431,11 +4829,15 @@ VISTAS.trfRec = p => {
 };
 function tiraTrf(v, k) {
   if (k === 'r') {
-    $('trNum').textContent = v.num; $('trInfo').textContent = `Desde ${almNombre(v.origen)} · ${v.realizadoPor.nombre} · ${v.estatus}`;
+    $('trNum').textContent = v.num;
+    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
+    $('trInfo').innerHTML = `${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(v) + ' · ' : ''}Desde <b>${esc(almNombre(v.origen))}</b> · ${esc(v.realizadoPor.nombre)} · ${estB(estTxt)}`;
     const ok = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('recibir', v.destino);
     $('rVer').disabled = false; $('rImp').disabled = false; $('rOk').disabled = !ok; $('rNo').disabled = !ok;
   } else {
     $('teNum').textContent = v.num; $('teInfo').textContent = `Hacia ${almNombre(v.destino)} · ${v.estatus}`;
+    const editable = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('transferir', v.origen);
+    if ($('eEdit')) $('eEdit').disabled = !editable;
     ['eVer', 'eImp', 'eHist'].forEach(i => $(i).disabled = false);
   }
 }
@@ -4444,6 +4846,18 @@ function accionAceptarTrf(n) {
   confirmar(`¿Aceptar la transferencia <b>${n}</b> desde ${esc(almNombre(v.origen))}? Los ${v.lineas.reduce((a, l) => a + l.cant, 0)} ítems quedarán disponibles en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(n); toast(`Transferencia ${n} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
 }
 function accionRechazarTrf(n) { pedirTexto('Rechazar transferencia ' + n, 'Motivo del rechazo (obligatorio)', v => { rechazarTransferencia(n, v); toast(`Transferencia ${n} rechazada. El material regresó al almacén de origen.`, 'ok'); pintarMenu(); refrescar(); }, 'Rechazar transferencia', 'btn-rojo', true); }
+function editarTransferencia(n) {
+  if (!n) return;
+  const v = valeDe(n);
+  if (!v) return toast('Transferencia no encontrada.', 'err');
+  if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') {
+    return toast(`La transferencia ${v.num} ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`, 'err');
+  }
+  if (!puede('transferir', v.origen)) {
+    return toast(`Su usuario no tiene permiso para editar transferencias desde ${almNombre(v.origen)}.`, 'err');
+  }
+  ir('trfNueva', { num: v.num });
+}
 VISTAS.trfEnv = p => {
   p = p || {};
   const f = { dest: p.dest || '', est: p.est || 'TODAS', desde: p.desde || sumarDias(hoy(), -90), hasta: p.hasta || hoy() };
@@ -4463,6 +4877,7 @@ VISTAS.trfEnv = p => {
     <div class="sel-strip"><span class="lbl">Transferencia seleccionada</span><span class="box" id="teNum"></span><span class="box" id="teInfo" style="flex:1"></span></div>
     <div class="barra-btn">
       ${puede('transferir', S.ctx) ? `<button class="btn-sip" onclick="ir('trfNueva')">Nueva transferencia</button>` : ''}
+      <button class="btn-sip" id="eEdit" disabled onclick="editarTransferencia(selDe('gEnv').num)">Editar transferencia</button>
       <button class="btn-sip" id="eVer" disabled onclick="ir('doc',{num:selDe('gEnv').num,back:'trfEnv'})">Visualizar transferencia</button>
       <button class="btn-sip" id="eImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gEnv').num)">Imprimir vale</button>
       <button class="btn-sip" id="eHist" disabled onclick="verHistorial(selDe('gEnv').num)">Ver historial</button>
@@ -4482,9 +4897,17 @@ VISTAS.dev = p => {
   if (v) {
     const opc = l => l.mod === 'CILINDRO' ? ['LLENO', 'VACÍO', 'DAÑADO', 'EXTRAVIADO'] : ['BUENO', 'DAÑADO', 'EXTRAVIADO'];
     cuerpo = `<div class="form-reg"><div class="f3">
-        ${campo('Vale', `<input value="${v.num} · ${TIPOS[v.tipo].n}" readonly>`)}${campo('Responsable custodio', `<input value="${esc(v.resp.nombre)}" readonly>`)}${campo('Cédula', `<input value="${esc(v.resp.cedula)}" readonly>`)}
-        ${campo('Proyecto / OT', `<input value="${esc(v.proyecto)}" readonly>`)}${campo(v.tipo === 'PRH' ? 'Fecha de devolución' : 'Fecha de asignación', `<input value="${fF(v.fechaDev || v.fechaAsig)}" readonly>`)}${campo('Estado del vale', `<div style="padding-top:6px">${estB(estadoVale(v))}</div>`)}
-        ${campo('Recibido por', `<input id="dvRecibe" autocomplete="off" value="${esc(S.u.nombre)}">`)}${campo('Observación', `<input id="dvObs" placeholder="Opcional">`)}<div></div>
+        ${campo('Vale', `<input value="${v.num} · ${TIPOS[v.tipo].n}" readonly>`)}
+        ${campo('Origen devolución (Área/Custodio)', `<input value="${esc(almNombre(v.destino || v.origen))}" readonly>`)}
+        ${campo('Almacén receptor', `<input value="${esc(almNombre(v.origen))}" readonly>`)}
+        ${campo('Responsable custodio', `<input value="${esc(v.resp.nombre)}" readonly>`)}
+        ${campo('Cédula', `<input value="${esc(v.resp.cedula)}" readonly>`)}
+        ${campo('Proyecto / OT', `<input value="${esc(v.proyecto)}" readonly>`)}
+        ${campo(v.tipo === 'PRH' ? 'Fecha de devolución' : 'Fecha de asignación', `<input value="${fF(v.fechaDev || v.fechaAsig)}" readonly>`)}
+        ${campo('Estado del vale', `<div style="padding-top:6px">${estB(estadoVale(v))}</div>`)}
+        ${campo('Recibido por', `<input id="dvRecibe" autocomplete="off" value="${esc(S.u.nombre)}">`)}
+        ${campo('N° de salida TIMACA (opcional)', `<input id="dvSalidaTimaca" placeholder="Opcional" value="${esc(v.salidaTimaca || '')}">`)}
+        ${campo('Observación', `<input id="dvObs" placeholder="Opcional">`)}
       </div>
       <div class="carga"><div class="carga-h">ÍTEMS CON SALDO PENDIENTE</div>
       <div style="overflow:auto"><table class="grid"><thead><tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th class="cen">Entregado</th><th class="cen">Devuelto</th><th class="cen">Saldo</th><th class="cen">Cant. a devolver</th><th>Condición de retorno</th></tr></thead>
@@ -4494,12 +4917,17 @@ VISTAS.dev = p => {
       <div class="pie-form"><div class="totales">La cantidad propuesta es el saldo completo; ajústela para devoluciones parciales.</div><div class="der"><button class="btn btn-claro" onclick="ir('dev')">Cancelar</button><button class="btn btn-verde" onclick="accionDevolver('${v.num}')">Registrar devolución</button></div></div></div>`;
   }
   $('area').innerHTML = cab('Registrar devolución', 'La devolución se registra en el almacén que prestó o asignó, contra el vale original. Para regresar material a Central, use una transferencia.')
-    + `<div class="panel"><div class="panel-h">Vale a devolver</div><div class="panel-b"><div class="fila-filtros">${campo('Préstamo o asignación con saldo', `<select onchange="ir('dev',{vale:this.value})" style="min-width:420px"><option value="">Seleccione…</option>${vales.map(x => `<option value="${x.num}" ${x.num === sel ? 'selected' : ''}>${x.num} · ${esc(x.resp.nombre)} · ${esc(x.proyecto)} · saldo ${saldoVale(x)}</option>`).join('')}</select>`)}</div>
+    + `<div class="panel"><div class="panel-h">Vale a devolver</div><div class="panel-b"><div class="fila-filtros">${campo('Préstamo o asignación con saldo', `<select onchange="ir('dev',{vale:this.value})" style="min-width:420px"><option value="">Seleccione…</option>${vales.map(x => `<option value="${x.num}" ${x.num === sel ? 'selected' : ''}>${x.num} · ${esc(x.resp.nombre)} · ${esc(almNombre(x.destino || x.origen))} · saldo ${saldoVale(x)}</option>`).join('')}</select>`)}</div>
     ${vales.length ? '' : '<p class="ayuda-txt">No hay préstamos ni asignaciones con saldo pendiente en este almacén.</p>'}</div></div>` + cuerpo + datalistPersonal();
 };
 function accionDevolver(n) {
   const items = [...document.querySelectorAll('.dvCant')].map(inp => ({ i: +inp.dataset.i, cant: Number(inp.value), cond: document.querySelector(`.dvCond[data-i="${inp.dataset.i}"]`).value }));
-  run(() => { const dv = registrarDevolucion(n, items, $('dvRecibe').value.trim(), $('dvObs').value); toast(`Devolución ${dv.num} registrada.`, 'ok'); hechoDoc(dv, 'dev'); });
+  run(() => {
+    const salidaTimaca = $('dvSalidaTimaca') ? $('dvSalidaTimaca').value.trim() : '';
+    const dv = registrarDevolucion(n, items, $('dvRecibe').value.trim(), $('dvObs').value, salidaTimaca);
+    toast(`Devolución ${dv.num} registrada.`, 'ok');
+    hechoDoc(dv, 'dev');
+  });
 }
 function hechoDoc(v, volver) {
   $('area').innerHTML = cab(TIPOS[v.tipo].n + ' registrada') + `<div class="franja-est verde"><span>Se generó el vale <b>${v.num}</b>${v.ref ? ' con referencia a ' + v.ref : ''}.</span></div>
@@ -4711,7 +5139,7 @@ VISTAS.dash = p => {
     aviso(porAceptar.length, porAceptar.length ? `Transferencias por aceptar · la más próxima vence en ${cronoHTML(porAceptar[0])}` : 'Transferencias por aceptar', ['trfRec'], porAceptar.length ? 'naranja' : 'verde'),
     aviso(envPend.length, `Transferencias enviadas pendientes · ${envRiesgo.length} vencen en menos de 2 horas`, ['trfEnv', { est: 'PENDIENTE DE RECEPCIÓN' }], envRiesgo.length ? 'rojo' : ''),
     aviso(envMal.length, 'Transferencias enviadas rechazadas o vencidas (últimos 7 días)', ['trfEnv'], envMal.length ? 'rojo' : 'verde'),
-    vacios ? aviso(vacios, c === 'CENTRAL' ? 'Cilindros vacíos en Central para enviar a recarga' : 'Cilindros vacíos por enviar a Central', ['cCil'], 'naranja') : ''
+    vacios ? aviso(vacios, c === 'CENTRAL' ? 'Cilindros vacíos en Central' : 'Cilindros vacíos por transferir a Central', ['cCil'], 'naranja') : ''
   ].join('');
   // Movimientos de los últimos 30 días por tipo (documentos)
   const desde = new Date(ahora().getTime() - 30 * 86400000).toISOString();
@@ -4746,32 +5174,42 @@ VISTAS.dash = p => {
    CATÁLOGO DEL ALMACÉN (totales horizontales y verticales, sin montos)
    ===================================================================== */
 VISTAS.cCatAlm = p => {
-  p = p || {}; const mod = p.mod || '', est = p.est || '', todos = !!p.todos;
-  let rows = Object.entries(DB.exi[S.ctx] || {}).map(([id, e]) => Object.assign({ it: item(+id) }, e)).filter(r => r.it && (!mod || r.it.mod === mod));
+  p = p || {}; const mod = p.mod || '', cat = p.cat || '', est = p.est || '', todos = !!p.todos;
+  let rows = Object.entries(DB.exi[S.ctx] || {}).map(([id, e]) => Object.assign({ it: item(+id) }, e)).filter(r => r.it && (!mod || r.it.mod === mod) && (!cat || r.it.cat === cat));
   rows.forEach(r => { r.total = r.disp + r.vacio + r.prest + r.asig + r.dan + r.rep + r.ext; r.estado = estadoCatalogo(r, r.it); });
   if (!todos) rows = rows.filter(r => r.total > 0);
   if (est) rows = rows.filter(r => r.estado === est);
   rows.sort((a, b) => a.it.cod.localeCompare(b.it.cod) || (a.it.serial || '').localeCompare(b.it.serial || ''));
-  const hayCil = rows.some(r => r.it.mod === 'CILINDRO');
-  const cols = [{ t: 'Código', v: r => r.it.cod, f: r => `<b>${esc(r.it.cod)}</b>` }, { t: 'Descripción', v: r => r.it.desc, td: 'wrap' }, { t: 'Marca / Modelo', v: r => `${r.it.marca} / ${r.it.modelo}`, td: 'wrap' }, { t: 'Serial', v: r => r.it.serial || '' },
-    { t: 'Categoría', v: r => r.it.cat, td: 'wrap' }, { t: 'Unidad', v: r => r.it.umb, cls: 'cen' }, { t: 'Estado', v: r => r.estado, f: r => estB(r.estado) },
+  const cols = [
+    { t: 'Código', v: r => r.it.cod, f: r => `<b>${esc(r.it.cod)}</b>` },
+    { t: 'Descripción', v: r => r.it.desc, td: 'wrap' },
+    { t: 'Marca / Modelo', v: r => `${r.it.marca} / ${r.it.modelo}`, td: 'wrap' },
+    { t: 'Serial', v: r => r.it.serial || '' },
+    { t: 'Categoría', v: r => r.it.cat, td: 'wrap' },
+    { t: 'Unidad', v: r => r.it.umb, cls: 'cen' },
+    { t: 'Estado', v: r => r.estado, f: r => estB(r.estado) },
     { t: 'Disponibles', k: 'disp', cls: 'cen', td: 'col-disp', sum: true },
-    ].concat(hayCil ? [{ t: 'Vacíos', k: 'vacio', cls: 'cen', td: 'col-vac', sum: true }] : []).concat([
-    { t: 'Prestados', k: 'prest', cls: 'cen', td: 'col-prest', sum: true }, { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig', sum: true }, { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan', sum: true },
-    { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall', sum: true }, { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext', sum: true }, { t: 'Total', k: 'total', cls: 'cen', td: 'col-total', sum: true }]);
-  const rec = `ir('cCatAlm',{mod:$('caMod').value,est:$('caEst').value,todos:$('caTod').checked})`;
+    { t: 'Prestados', k: 'prest', cls: 'cen', td: 'col-prest', sum: true },
+    { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig', sum: true },
+    { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan', sum: true },
+    { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall', sum: true },
+    { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext', sum: true },
+    { t: 'Total', k: 'total', cls: 'cen', td: 'col-total', sum: true }
+  ];
+  const rec = `ir('cCatAlm',{mod:$('caMod').value,cat:$('caCat').value,est:$('caEst').value,todos:$('caTod').checked})`;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
   $('area').innerHTML = cab('📦 Catálogo del almacén', 'Existencia de cada ítem por estado. El total suma cada fila y cada columna. Lo recibido por transferencia se agrega automáticamente al aceptarla.',
     `${botonesExport('gCatA', 'Catálogo ' + almNombre(S.ctx))} <button class="btn btn-navy btn-mini" onclick="ir('ent')">➕ Entrada de ítems</button>`)
     + (pendRec ? `<div class="franja-est naranja"><span>Tiene <b>${pendRec}</b> transferencia(s) por aceptar. Su material se sumará al catálogo al aceptarlas.</span><button class="btn btn-navy btn-mini" onclick="ir('trfRec')">Ver transferencias recibidas</button></div>` : '')
     + `<div class="fila-filtros">${campo('Módulo', `<select id="caMod" onchange="${rec}"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}
-      ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO (POR RECARGAR)', 'SIN DISPONIBILIDAD', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
+      ${campo('Categoría', `<select id="caCat" onchange="${rec}"><option value="">Todas</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
+      ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO', 'SIN DISPONIBILIDAD', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
       <label style="font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center;padding-bottom:9px"><input type="checkbox" id="caTod" ${todos ? 'checked' : ''} onchange="${rec}"> Incluir ítems sin existencia</label>
       ${buscador('gCatA', 'Buscar código, descripción, marca, serial…')}</div>`
     + grid('gCatA', cols, rows, { pag: 50, totales: true, compacto: true, onSel: r => { $('caKdx').disabled = false; $('caTit').textContent = `${r.it.cod} · ${r.it.desc} · ${r.it.marca} / ${r.it.modelo}${r.it.serial ? ' · ' + r.it.serial : ''}`; }, vacio: 'No hay ítems con existencia en este almacén.' })
     + `<div class="sel-strip"><span class="lbl">Ítem seleccionado</span><span class="box" id="caTit" style="flex:1"></span></div>
     <div class="barra-btn"><button class="btn-sip" onclick="ir('ent')">➕ Entrada de ítems</button><button class="btn-sip" id="caKdx" disabled onclick="const r=selDe('gCatA');ir('cKardex',{q:r.it.serial||r.it.cod})">📜 Ver kardex del ítem</button></div>
-    <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Vacío = cilindros vacíos pendientes de recarga · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
+    <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
 };
 VISTAS.cExist = p => VISTAS.cCatAlm(p);
 
@@ -4783,7 +5221,7 @@ VISTAS.cExistAnterior = p => {
   const rows = Object.entries(DB.exi[S.ctx] || {}).map(([id, e]) => Object.assign({ it: item(+id) }, e)).filter(r => r.it && (!mod || r.it.mod === mod) && (totalExi(r) - r.pend) > 0);
   const cols = [{ t: 'Código', v: r => r.it.cod }, { t: 'Descripción', v: r => r.it.desc }, { t: 'Marca / Modelo', v: r => `${r.it.marca} / ${r.it.modelo}` }, { t: 'Serial', v: r => r.it.serial || '' },
     { t: 'Módulo', v: r => r.it.mod, f: r => chipMod(r.it.mod) }, { t: 'Categoría', v: r => r.it.cat }, { t: 'UMB', v: r => r.it.umb },
-    { t: 'Disponible', k: 'disp', cls: 'cen', td: 'col-disp' }, { t: 'Vacíos', k: 'vacio', cls: 'cen', td: 'col-vac' }, { t: 'En préstamo', k: 'prest', cls: 'cen', td: 'col-prest' }, { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig' },
+    { t: 'Disponible', k: 'disp', cls: 'cen', td: 'col-disp' }, { t: 'En préstamo', k: 'prest', cls: 'cen', td: 'col-prest' }, { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig' },
     { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan' }, { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall' }, { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext' }, { t: 'Total', v: r => totalExi(r) - r.pend, cls: 'cen', td: 'col-total' }];
   $('area').innerHTML = cab('Existencias del almacén', 'Catálogo de ' + esc(almNombre(S.ctx)) + ' con su existencia por estado.', botonesExport('gEx', 'Existencias ' + almNombre(S.ctx)))
     + `<div class="fila-filtros">${campo('Módulo', `<select onchange="ir('cExist',{mod:this.value})"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}${buscador('gEx')}</div>`
@@ -4860,14 +5298,144 @@ function accInc(a) {
 }
 
 VISTAS.cVales = p => {
-  const tipo = (p && p.tipo) || '';
-  let rows = DB.vales.filter(v => (v.origen === S.ctx || (v.tipo === 'TRF' && v.destino === S.ctx)) && (!tipo || v.tipo === tipo)).sort((a, b) => b.fecha.localeCompare(a.fecha));
-  const cols = [{ t: 'N° vale', k: 'num' }, { t: 'Tipo', v: r => TIPOS[r.tipo].n }, { t: 'Fecha', v: r => fFH(r.fecha), s: r => r.fecha }, { t: 'Origen → Destino', v: r => `${almNombre(r.origen)} → ${almNombre(r.destino)}` },
-    { t: 'Responsable / Realizado por', v: r => r.resp ? r.resp.nombre : r.realizadoPor.nombre }, { t: 'Referencia', v: r => r.ref || r.solicitud || '' }, { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
-    { t: 'Impresiones', v: r => r.impresiones || 0, cls: 'num' }, { t: 'Estado', v: r => estadoVale(r), f: r => estB(estadoVale(r)) }];
-  $('area').innerHTML = cab('Vales emitidos', 'Todos los vales del almacén, disponibles para visualizar e imprimir.', botonesExport('gVal', 'Vales emitidos ' + almNombre(S.ctx)))
-    + `<div class="fila-filtros">${campo('Tipo de vale', `<select onchange="ir('cVales',{tipo:this.value})"><option value="">Todos</option>${opciones(['PRH', 'ASI', 'TRF', 'ENT', 'DEV', 'DAN', 'EXT', 'PLZ', ].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}${buscador('gVal')}</div>`
-    + grid('gVal', cols, rows, { pag: 15, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
+  p = p || {};
+  const tipo = p.tipo || '';
+  const mod = p.mod || '';
+  const cat = p.cat || '';
+  const alm = p.alm || '';
+  const proy = p.proy || '';
+  const vale = p.vale || '';
+  const desde = p.desde || '';
+  const hasta = p.hasta || '';
+
+  const getValeMods = v => {
+    const mods = new Set();
+    (v.lineas || []).forEach(l => {
+      const it = item(l.id);
+      if (it && it.mod) mods.add(it.mod);
+      else if (l.mod) mods.add(l.mod);
+    });
+    if (mods.size) return [...mods];
+    if (v.ref) {
+      const orig = valeDe(v.ref);
+      if (orig) {
+        (orig.lineas || []).forEach(l => {
+          const it = item(l.id);
+          if (it && it.mod) mods.add(it.mod);
+        });
+      }
+    }
+    return mods.size ? [...mods] : ['HERRAMIENTA'];
+  };
+
+  const getValeCats = v => {
+    const cats = new Set();
+    (v.lineas || []).forEach(l => {
+      const it = item(l.id);
+      if (it && it.cat) cats.add(it.cat);
+      else if (l.cat) cats.add(l.cat);
+    });
+    if (cats.size) return [...cats];
+    if (v.ref) {
+      const orig = valeDe(v.ref);
+      if (orig) {
+        (orig.lineas || []).forEach(l => {
+          const it = item(l.id);
+          if (it && it.cat) cats.add(it.cat);
+        });
+      }
+    }
+    return [...cats];
+  };
+
+  const getStatusVale = v => {
+    const mods = getValeMods(v);
+    if (mods.includes('CILINDRO')) {
+      if (v.tipo === 'DEV') return 'DISPONIBLE';
+      if (['PRH', 'ASI'].includes(v.tipo)) {
+        return saldoVale(v) > 0 ? 'NO DISPONIBLE' : 'DISPONIBLE';
+      }
+      if (v.tipo === 'TRF') {
+        return v.estatus === 'RECIBIDA' ? 'DISPONIBLE' : 'NO DISPONIBLE';
+      }
+      if (['DAN', 'EXT'].includes(v.tipo)) return 'NO DISPONIBLE';
+      if (v.tipo === 'ENT') return 'DISPONIBLE';
+    }
+    return estadoVale(v);
+  };
+
+  const badgeStatus = v => {
+    const st = getStatusVale(v);
+    if (st === 'DISPONIBLE') return '<span class="est est-verde" style="font-weight:700">DISPONIBLE</span>';
+    if (st === 'NO DISPONIBLE') return '<span class="est est-rojo" style="font-weight:700">NO DISPONIBLE</span>';
+    return estB(st);
+  };
+
+  let rows = DB.vales.filter(v => {
+    // Almacén destino (filtrar exclusivamente por el almacén destino del vale)
+    if (alm && alm !== 'TODOS') {
+      if (v.destino !== alm) return false;
+    }
+    // N° de vale concreto
+    if (vale) {
+      if (!(v.num || '').toUpperCase().includes(vale.toUpperCase().trim())) return false;
+    }
+    if (tipo && v.tipo !== tipo) return false;
+    if (mod && !getValeMods(v).includes(mod)) return false;
+    if (cat && !getValeCats(v).includes(cat)) return false;
+    if (proy) {
+      const matchCta = (v.cuenta || '').toUpperCase().includes(proy.toUpperCase());
+      const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
+      if (!matchCta && !matchP) return false;
+    }
+    const fStr = (v.fecha || '').slice(0, 10);
+    if (desde && fStr < desde) return false;
+    if (hasta && fStr > hasta) return false;
+    return true;
+  }).sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+  const cols = [
+    { t: 'N° de Vale', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
+    { t: 'Tipo', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo },
+    { t: 'Módulo', v: r => getValeMods(r).map(m => MODULOS[m] || m).join(', '), f: r => getValeMods(r).map(m => `<span class="chip-mod m-${m}" style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">${esc(MODULOS[m] || m)}</span>`).join(' ') },
+    { t: 'Fecha', v: r => fFH(r.fecha), s: r => r.fecha },
+    { t: 'Origen', v: r => almNombre(r.origen).replace('Almacén ', '') },
+    { t: 'Destino', v: r => almNombre(r.destino).replace('Almacén ', '') },
+    { t: 'Cuenta Auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.cuenta)}</span>` : '—' },
+    { t: 'Proyecto', v: r => r.proyecto || '—', td: 'wrap' },
+    { t: 'Despachado por', v: r => r.despacha || (r.realizadoPor ? (r.realizadoPor.nombre || r.realizadoPor) : '—') },
+    { t: 'N° de Referencia', v: r => r.ref || r.solicitud || '—' },
+    { t: 'Cantidad', v: r => (r.lineas || []).reduce((a, l) => a + (Number(l.cant) || 1), 0), cls: 'num' },
+    { t: 'Códigos / Ítems', v: r => (r.lineas || []).map(l => l.serial ? `${l.cod} (${l.serial})` : l.cod).join(', ') || '—', td: 'wrap' },
+    { t: 'Responsable', v: r => r.resp ? (r.resp.nombre || r.resp) : '—' },
+    { t: 'Cédula', v: r => (r.resp && r.resp.cedula) ? r.resp.cedula : '—' },
+    { t: 'Cargo', v: r => (r.resp && r.resp.cargo) ? r.resp.cargo : '—' },
+    { t: 'Supervisor', v: r => r.sup || r.supervisor || '—' },
+    { t: 'N° de Salida TIMACA', v: r => r.salidaTimaca || r.numSalida || '—' },
+    { t: 'Cant. Retornada', v: r => r.tipo === 'DEV' ? (r.lineas || []).reduce((a, l) => a + (Number(l.cant) || 0), 0) : ['PRH', 'ASI'].includes(r.tipo) ? ((r.lineas || []).reduce((a, l) => a + (Number(l.dev) || 0), 0) || '—') : '—', cls: 'num' },
+    { t: 'Saldo por Devolver', v: r => ['PRH', 'ASI'].includes(r.tipo) ? saldoVale(r) : '—', cls: 'num' },
+    { t: 'Condición de Retorno', v: r => { const conds = (r.lineas || []).map(l => l.condicion || l.cond || l.condRet).filter(Boolean); return conds.length ? [...new Set(conds)].join(', ') : (r.tipo === 'DEV' ? 'ÓPTIMO' : '—'); } },
+    { t: 'Días de Atraso', v: r => (r.tipo === 'PRH' && r.fechaDev && r.fechaDev < hoy() && saldoVale(r) > 0) ? diasEntre(r.fechaDev, hoy()) : 0, cls: 'num', f: r => { const d = (r.tipo === 'PRH' && r.fechaDev && r.fechaDev < hoy() && saldoVale(r) > 0) ? diasEntre(r.fechaDev, hoy()) : 0; return d > 0 ? `<span style="color:#dc2626;font-weight:700">${d} días</span>` : '<span style="color:#6b7280">0</span>'; } },
+    { t: 'Status', v: r => getStatusVale(r), f: r => badgeStatus(r) },
+    { t: 'Observaciones', v: r => r.obs || r.observaciones || '—', td: 'wrap' }
+  ];
+
+  const recargar = `ir('cVales',{tipo:$('vTipo').value,mod:$('vMod').value,cat:$('vCat').value,alm:$('vAlm').value,proy:$('vProy').value,vale:$('vVale').value,desde:$('vDesde').value,hasta:$('vHasta').value})`;
+
+  $('area').innerHTML = cab('Vales emitidos (Trazabilidad integral)', 'Todos los vales y movimientos (Herramientas, Cilindros y EPP). Filtrado por destino, N° de vale, movimiento, módulo, categoría, proyecto y fechas.', botonesExport('gVal', 'Vales emitidos ' + (alm && alm !== 'TODOS' ? ('Destino ' + almNombre(alm)) : 'Todos los destinos')))
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('N° de Vale', `<input id="vVale" value="${esc(vale)}" placeholder="Ej. PRH-000001" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Almacén destino', `<select id="vAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' || !alm ? 'selected' : ''}>Todos los destinos</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
+        ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
+        ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
+        ${campo('Categoría', `<select id="vCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
+        ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
+        ${campo('Desde', `<input type="date" id="vDesde" value="${esc(desde)}" onchange="${recargar}">`)}
+        ${campo('Hasta', `<input type="date" id="vHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
+        ${(tipo || mod || cat || (alm && alm !== 'TODOS') || proy || vale || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gVal', 'Buscar código, serial, cédula, responsable, vale…')}
+      </div>`
+    + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
     + `<div class="barra-btn"><button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,back:'cVales'})">Visualizar</button><button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num)">Imprimir vale</button></div>`;
 };
 const colsKardex = maestro => [{ t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha }, { t: 'Documento', k: 'doc' }, { t: 'Movimiento', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo }, { t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Serial', k: 'serial' },
@@ -4882,27 +5450,9 @@ VISTAS.cKardex = p => {
     + `<div class="fila-filtros">${campo('Código, serial o documento', `<input id="kq" value="${esc(q)}" placeholder="Ej. HE000120 u OX-0002" onkeydown="if(event.key==='Enter')ir('cKardex',{q:this.value})">`)}<button class="btn btn-navy" onclick="ir('cKardex',{q:$('kq').value})">Buscar</button>${q ? `<button class="btn btn-claro" onclick="ir('cKardex')">Ver todos</button>` : ''}${buscador('gKdx', 'Filtrar resultados…')}</div>`
     + grid('gKdx', colsKardex(false), rows, { pag: 20, vacio: q ? 'Sin movimientos para ' + q + ' en este almacén.' : 'Sin movimientos.' });
 };
-VISTAS.cEpp = p => {
-  const f = (p && p.f) || 'ULTIMAS';
-  let rows = entregasEPP([S.ctx]);
-  if (f === 'ULTIMAS') rows = rows.filter(x => x.ultima);
-  if (f === 'ALERTA') rows = rows.filter(x => x.ultima && (x.estado === 'VENCIDA' || x.estado === 'PRÓXIMA'));
-  rows.sort((a, b) => a.repo.localeCompare(b.repo));
-  const cols = [{ t: 'Cédula', k: 'cedula' }, { t: 'Trabajador', k: 'nombre' }, { t: 'Cargo', k: 'cargo' }, { t: 'Código', k: 'cod' }, { t: 'EPP', k: 'desc' }, { t: 'Talla', k: 'talla' }, { t: 'Cant.', k: 'cant', cls: 'num' },
-    { t: 'Fecha de entrega', v: r => fF(r.fecha), s: r => r.fecha }, { t: 'Vida útil (días)', k: 'vida', cls: 'num' }, { t: 'Reposición', v: r => fF(r.repo), s: r => r.repo }, { t: 'Vale', k: 'vale' },
-    { t: 'Estado', k: 'estado', f: r => `<span class="est est-${{ VENCIDA: 'rojo', 'PRÓXIMA': 'naranja', VIGENTE: 'verde', REEMPLAZADA: 'gris' }[r.estado]}">${r.estado}</span>` }];
-  $('area').innerHTML = cab('Historial de EPP', 'Entregas de dotación por trabajador, con alerta de reposición según la vida útil.', botonesExport('gEpp', 'Historial EPP ' + almNombre(S.ctx)))
-    + `<div class="fila-filtros">${campo('Mostrar', `<select onchange="ir('cEpp',{f:this.value})">${opciones([['ULTIMAS', 'Última entrega por trabajador'], ['ALERTA', 'Reposición vencida o próxima'], ['TODAS', 'Todo el historial']], f)}</select>`)}${buscador('gEpp', 'Buscar cédula o nombre…')}</div>`
-    + grid('gEpp', cols, rows, { pag: 20, vacio: 'No hay entregas de EPP registradas en este almacén.' });
-};
-VISTAS.cCil = () => {
-  const rows = DB.catalogo.filter(i => i.mod === 'CILINDRO').map(it => ({ it, e: exi(S.ctx, it.id) })).filter(r => totalExi(r.e) > 0 || r.e.pend > 0);
-  const estado = e => e.disp ? 'LLENO · DISPONIBLE' : e.vacio ? 'VACÍO' : e.prest ? 'EN PRÉSTAMO' : e.pend ? 'ENVIADO (PENDIENTE DE RECEPCIÓN)' : e.dan || e.rep ? 'DAÑADO' : e.ext ? 'EXTRAVIADO' : e.asig ? 'ASIGNADO' : '';
-  const cols = [{ t: 'Serial', v: r => r.it.serial }, { t: 'Código', v: r => r.it.cod }, { t: 'Gas / Descripción', v: r => r.it.desc }, { t: 'Capacidad', v: r => r.it.modelo }, { t: 'Proveedor', v: r => r.it.marca }, { t: 'Estado', v: r => estado(r.e) }];
-  $('area').innerHTML = cab('Cilindros por serial', 'Ubicación y estado de cada cilindro bajo responsabilidad de ' + esc(almNombre(S.ctx)) + '.', botonesExport('gCil', 'Cilindros ' + almNombre(S.ctx)))
-    + (S.ctx !== 'CENTRAL' && rows.some(r => r.e.vacio) && puede('transferir', S.ctx) ? `<div class="franja-est naranja"><span>Hay cilindros vacíos en este almacén. Envíelos a Central con una transferencia.</span><button class="btn btn-navy btn-mini" onclick="ir('trfNueva')">Nueva transferencia</button></div>` : '')
-    + grid('gCil', cols, rows, { onSel: r => ir('cKardex', { q: r.it.serial }), vacio: 'No hay cilindros en este almacén.' });
-};
+
+VISTAS.cEpp = p => ir('cVales', Object.assign({ mod: 'EPP' }, p || {}));
+VISTAS.cCil = p => ir('cVales', Object.assign({ mod: 'CILINDRO' }, p || {}));
 
 /* =====================================================================
    MÓDULO MAESTRO · Vista consolidada (único lugar con información monetaria)
@@ -5193,16 +5743,53 @@ VISTAS.mAcc = p => {
    ===================================================================== */
 const alertaMin = () => Number(DB.config.alertaMin) || 30;
 function fmtCrono(ms) { if (ms <= 0) return '00:00:00'; const t = Math.floor(ms / 1000); return `${pad(Math.floor(t / 3600))}:${pad(Math.floor(t % 3600 / 60))}:${pad(t % 60)}`; }
-function claseCrono(ms) { return ms <= alertaMin() * 60000 ? 'rojo' : ms <= 2 * 3600000 ? 'ambar' : 'verde'; }
+function claseCrono(ms) { return ms <= 5 * 60000 ? 'rojo' : ms <= 30 * 60000 ? 'ambar' : 'verde'; }
 /* Reloj en vivo: <span class="crono"> se actualiza cada segundo */
 function cronoHTML(v, grande) {
   const ms = new Date(v.vence) - ahora();
   return `<span class="crono ${claseCrono(ms)} ${grande ? 'grande' : ''}" data-vence="${v.vence}" data-ini="${v.fecha}">⏱ ${fmtCrono(ms)}</span>`;
 }
-const S_ALERTA = { avisados: new Set(), ocultos: new Set() };
+const S_ALERTA = { avisados30: new Set(), avisados5: new Set(), ocultos: new Set() };
 function pendientesPorAceptar() {
   if (!S.u || enMaestro() || !puede('recibir', S.ctx)) return [];
   return DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN').sort((a, b) => a.vence.localeCompare(b.vence));
+}
+function verificarAlertasTransferencias() {
+  if (!S.u || enMaestro()) return;
+  const pend = pendientesPorAceptar();
+  const ahoraMs = ahora().getTime();
+  pend.forEach(v => {
+    const msRestantes = new Date(v.vence).getTime() - ahoraMs;
+    const minRestantes = msRestantes / 60000;
+
+    // 1. Notificación preventiva a los 30 minutos
+    if (minRestantes <= 30 && minRestantes > 5 && !S_ALERTA.avisados30.has(v.num)) {
+      S_ALERTA.avisados30.add(v.num);
+      notificarSistema(
+        '⏱ Transferencia por vencer: 30 min restantes',
+        `A la transferencia ${v.num} enviada desde ${almNombre(v.origen)} le quedan 30 minutos para ser aceptada en ${almNombre(v.destino)}.`,
+        'info',
+        { doc: v.num }
+      );
+    }
+
+    // 2. Notificación crítica y urgente a los 5 minutos
+    if (minRestantes <= 5 && minRestantes > 0 && !S_ALERTA.avisados5.has(v.num)) {
+      S_ALERTA.avisados5.add(v.num);
+      notificarSistema(
+        '🚨 ¡URGENTE! Transferencia por vencer en 5 minutos',
+        `A la transferencia ${v.num} enviada desde ${almNombre(v.origen)} le quedan solo 5 minutos antes de vencer y retornar al almacén de origen.`,
+        'err',
+        { doc: v.num }
+      );
+      if ($('modalFondo').style.display !== 'flex' && $('vistaImpresion').style.display !== 'block') {
+        abrirModal('🚨 Transferencia por vencer en 5 minutos', `<div class="franja-est rojo" style="justify-content:center">${cronoHTML(v, true)}</div>
+          <p class="ayuda-txt">A la transferencia <b>${v.num}</b> enviada por <b>${esc(almNombre(v.origen))}</b> le quedan <b>menos de 5 minutos</b> para ser aceptada en ${esc(almNombre(v.destino))}.</p>
+          <p class="ayuda-txt" style="margin-top:8px">Si el reloj llega a 00:00:00, la transferencia <b>vencerá automáticamente</b>: el material no ingresará al inventario y regresará a ${esc(almNombre(v.origen))}.</p>`,
+          [{ t: 'Recordarme después', cls: 'btn-claro', fn: cerrarModal }, { t: 'Ver y aceptar ahora', cls: 'btn-verde', fn: () => { cerrarModal(); ir('doc', { num: v.num, back: 'trfRec' }); } }]);
+      }
+    }
+  });
 }
 function tickCronos() {
   if (!S.u) return;
@@ -5216,16 +5803,17 @@ function tickCronos() {
   document.querySelectorAll('.crono-barra i').forEach(el => {
     const ini = new Date(el.dataset.ini), fin = new Date(el.dataset.vence);
     const pct = Math.max(0, Math.min(100, (fin - ahora()) / (fin - ini) * 100));
-    el.style.width = pct + '%'; el.style.background = pct * (fin - ini) / 100 <= alertaMin() * 60000 ? 'var(--rojo)' : pct < 25 ? 'var(--ambar)' : 'var(--verde)';
+    el.style.width = pct + '%'; el.style.background = pct * (fin - ini) / 100 <= 5 * 60000 ? 'var(--rojo)' : pct * (fin - ini) / 100 <= 30 * 60000 ? 'var(--ambar)' : 'var(--verde)';
   });
   if (vencio && procesarVencimientos()) { toast('Una transferencia venció sin ser aceptada y su material regresó al almacén de origen.', 'err'); pintarMenu(); refrescar(); }
+  verificarAlertasTransferencias();
   pintarBannerAlerta();
 }
-/* Aviso cuando quedan pocos minutos para aceptar */
+/* Aviso flotante cuando quedan pocos minutos para aceptar */
 function pintarBannerAlerta() {
   const caja = $('bannerTrf'); if (!caja) return;
   const enPantalla = S.vista === 'doc' && S.param ? S.param.num : null;
-  const urg = pendientesPorAceptar().filter(v => (new Date(v.vence) - ahora()) <= alertaMin() * 60000 && !S_ALERTA.ocultos.has(v.num) && v.num !== enPantalla);
+  const urg = pendientesPorAceptar().filter(v => (new Date(v.vence) - ahora()) <= 30 * 60000 && !S_ALERTA.ocultos.has(v.num) && v.num !== enPantalla);
   if (!urg.length) { caja.style.display = 'none'; caja.innerHTML = ''; return; }
   const firma = urg.map(v => v.num).join('|');
   if (caja.dataset.firma !== firma) {
@@ -5237,16 +5825,6 @@ function pintarBannerAlerta() {
       <button class="btn btn-navy btn-mini" onclick="ir('doc',{num:'${v.num}',back:'trfRec'})">Ver y aceptar ahora</button></div>`).join('');
   }
   caja.style.display = 'block';
-  // Ventana emergente una sola vez por transferencia al cruzar el umbral
-  const nueva = urg.find(v => !S_ALERTA.avisados.has(v.num));
-  if (!caja.innerHTML) return;
-  if (nueva && $('modalFondo').style.display !== 'flex' && $('vistaImpresion').style.display !== 'block') {
-    urg.forEach(v => S_ALERTA.avisados.add(v.num));
-    abrirModal('⚠️ Transferencia por vencer', `<div class="franja-est rojo" style="justify-content:center">${cronoHTML(nueva, true)}</div>
-      <p class="ayuda-txt">A la transferencia <b>${nueva.num}</b> enviada por <b>${esc(almNombre(nueva.origen))}</b> le quedan menos de <b>${alertaMin()} minutos</b> para ser aceptada.</p>
-      <p class="ayuda-txt" style="margin-top:8px">Si no la acepta o rechaza a tiempo, <b>vencerá automáticamente</b>: el material no ingresará a su catálogo y regresará a ${esc(almNombre(nueva.origen))}, que tendrá que enviarla de nuevo.</p>`,
-      [{ t: 'Recordarme después', cls: 'btn-claro', fn: cerrarModal }, { t: 'Ver y aceptar ahora', cls: 'btn-verde', fn: () => { cerrarModal(); ir('doc', { num: nueva.num, back: 'trfRec' }); } }]);
-  }
 }
 function urgOcultar() { pendientesPorAceptar().forEach(v => S_ALERTA.ocultos.add(v.num)); $('bannerTrf').style.display = 'none'; }
 
@@ -5678,18 +6256,29 @@ function plantilla(enc, nombre) {
   else { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + enc.join(';') + '\r\n'], { type: 'text/csv' })); a.download = nombre + '.csv'; a.click(); }
 }
 
-VISTAS.aCat = () => {
+VISTAS.aCat = p => {
+  p = p || {};
+  const mod = p.mod || '', cat = p.cat || '';
+  let rows = DB.catalogo;
+  if (mod) rows = rows.filter(r => r.mod === mod);
+  if (cat) rows = rows.filter(r => r.cat === cat);
   const cols = [{ t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Módulo', v: r => r.mod, f: r => chipMod(r.mod) }, { t: 'Categoría', k: 'cat' }, { t: 'Marca', k: 'marca' }, { t: 'Modelo', k: 'modelo' }, { t: 'Serial', k: 'serial' },
     { t: 'UMB', k: 'umb' }, { t: 'Tipo A', v: r => r.tipoA ? 'SI' : 'NO' }, { t: 'Talla', k: 'talla' }, { t: 'Vida útil (días)', k: 'vida', cls: 'num' }, { t: 'Estado', v: r => r.activo ? 'ACTIVO' : 'INACTIVO' }];
-  $('area').innerHTML = cab('Catálogo', 'Definición de ítems. El costo unitario se gestiona únicamente desde el Maestro.', botonesExport('gCat', 'Catálogo'))
-    + `<div class="fila-filtros">${buscador('gCat')}</div>` + grid('gCat', cols, DB.catalogo, { pag: 20, onSel: () => { $('caEd').disabled = false; } })
+  const rec = `ir('aCat',{mod:$('acMod').value,cat:$('acCat').value})`;
+  $('area').innerHTML = cab('Catálogo maestro', 'Definición de ítems y categorías oficiales TIMACA.', botonesExport('gCat', 'Catálogo'))
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('Módulo', `<select id="acMod" onchange="${rec}"><option value="">Todos los módulos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}
+        ${campo('Categoría', `<select id="acCat" onchange="${rec}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
+        ${(mod || cat) ? `<button class="btn btn-claro" onclick="ir('aCat')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gCat')}
+      </div>` + grid('gCat', cols, rows, { pag: 20, onSel: () => { $('caEd').disabled = false; } })
     + `<div class="barra-btn"><button class="btn-sip" onclick="editarItem()">Nuevo ítem</button><button class="btn-sip" id="caEd" disabled onclick="editarItem(selDe('gCat'))">Editar ítem</button></div>`;
 };
 function editarItem(it) {
-  const n = !it; it = it || { cod: '', desc: '', mod: 'HERRAMIENTA', cat: '', marca: '', modelo: '', serial: '', umb: 'UND', tipoA: false, talla: '', vida: 0, activo: true, costo: 0 };
+  const n = !it; it = it || { cod: '', desc: '', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: '', modelo: '', serial: '', umb: 'UND', tipoA: false, talla: '', vida: 0, activo: true, costo: 0 };
   const I = (id, l, v) => campo(l, `<input id="${id}" value="${esc(v)}">`);
   abrirModal(n ? 'Nuevo ítem' : 'Editar ítem ' + it.cod, `<div class="f3">${I('ciCod', 'Código', it.cod)}${I('ciDesc', 'Descripción', it.desc)}${campo('Módulo', `<select id="ciMod">${opciones(Object.entries(MODULOS), it.mod)}</select>`)}
-    ${I('ciCat', 'Categoría', it.cat)}${I('ciMar', 'Marca', it.marca)}${I('ciMod2', 'Modelo', it.modelo)}${I('ciSer', 'Serial (solo ítems únicos)', it.serial)}${I('ciUmb', 'Unidad (UMB)', it.umb)}
+    ${campo('Categoría', `<select id="ciCat">${opciones(CATEGORIAS_OFICIALES, it.cat || 'Herramientas manuales')}</select>`)}${I('ciMar', 'Marca', it.marca)}${I('ciMod2', 'Modelo', it.modelo)}${I('ciSer', 'Serial (solo ítems únicos)', it.serial)}${campo('Unidad (UMB)', `<select id="ciUmb">${opciones(UMBS_OFICIALES.includes(it.umb) ? UMBS_OFICIALES : UMBS_OFICIALES.concat([it.umb]), it.umb || 'UND')}</select>`)}
     ${campo('Tipo A (requiere aprobación de Gerencia)', `<select id="ciTA">${opciones([['0', 'NO'], ['1', 'SI']], it.tipoA ? '1' : '0')}</select>`)}${I('ciTal', 'Talla (EPP)', it.talla)}${I('ciVid', 'Vida útil en días (EPP)', it.vida)}
     ${campo('Estado', `<select id="ciAct">${opciones([['1', 'ACTIVO'], ['0', 'INACTIVO']], it.activo ? '1' : '0')}</select>`)}</div>`,
     [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Guardar', cls: 'btn-verde', fn: () => run(() => {
