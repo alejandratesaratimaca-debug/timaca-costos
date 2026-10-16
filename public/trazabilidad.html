@@ -989,6 +989,43 @@ function asegurarEstatusSolicitudes() {
   });
 }
 
+function asegurarTransferenciaDemoCentral() {
+  if (!DB || !Array.isArray(DB.vales) || !Array.isArray(DB.catalogo) || !DB.catalogo.length) return;
+  const hayPendCentral = DB.vales.some(v => v.tipo === 'TRF' && v.destino === 'CENTRAL' && v.estatus === 'PENDIENTE DE RECEPCIÓN');
+  if (!hayPendCentral) {
+    const ahora = new Date();
+    const fecha = new Date(ahora.getTime() - 2 * 3600000).toISOString();
+    const vence = new Date(ahora.getTime() + 10 * 3600000).toISOString();
+    const it1 = DB.catalogo.find(i => i.cod === 'HE000102') || DB.catalogo[0];
+    const it2 = DB.catalogo.find(i => i.cod === 'HE000140') || DB.catalogo[1] || DB.catalogo[0];
+    DB.corr = DB.corr || {};
+    DB.corr.TRF = (DB.corr.TRF || 0) + 1;
+    const num = `TRF-${String(DB.corr.TRF).padStart(7, '0')}`;
+    DB.vales.unshift({
+      tipo: 'TRF',
+      num,
+      fecha,
+      vence,
+      origen: 'PELLAS',
+      destino: 'CENTRAL',
+      resp: { nombre: 'Freddy Cecilio Acosta Romero', cedula: 'V-14.905.458', cargo: 'Mecánico de primera' },
+      sup: 'Albin Cedeño',
+      proyecto: 'Mantenimiento Mayor Planta Pellas',
+      cuenta: 'TTE-C-0681',
+      despacha: 'Supervisor Pellas',
+      realizadoPor: { usuario: 'pellas', nombre: 'Almacén Pellas' },
+      estatus: 'PENDIENTE DE RECEPCIÓN',
+      obs: 'Retorno de herramientas a Almacén Central',
+      salidaTimaca: 'SAL-PELLAS-0042',
+      hist: [{ ev: 'Creada', fecha, usr: 'Almacén Pellas', det: 'Enviada a Almacén Central' }],
+      lineas: [
+        { id: it1.id, cod: it1.cod, desc: it1.desc, marca: it1.marca, modelo: it1.modelo, serial: it1.serial || '', cat: it1.cat, umb: it1.umb, cond: 'BUENO', cant: 2, mod: it1.mod },
+        { id: it2.id, cod: it2.cod, desc: it2.desc, marca: it2.marca, modelo: it2.modelo, serial: it2.serial || '', cat: it2.cat, umb: it2.umb, cond: 'BUENO', cant: 1, mod: it2.mod }
+      ]
+    });
+  }
+}
+
 function cargarDatos() {
   try {
     const r = localStorage.getItem(LS_KEY);
@@ -1003,6 +1040,7 @@ function cargarDatos() {
         asegurarPlanificacionCajas();
         asegurarCategoriasOficiales();
         asegurarEstatusSolicitudes();
+        asegurarTransferenciaDemoCentral();
         guardar();
         return;
       }
@@ -1016,6 +1054,7 @@ function cargarDatos() {
   asegurarPlanificacionCajas();
   asegurarCategoriasOficiales();
   asegurarEstatusSolicitudes();
+  asegurarTransferenciaDemoCentral();
   guardar();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
@@ -4737,7 +4776,12 @@ const colsTrf = (recibidas) => [
   { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
   { t: 'Tiempo restante (12 h)', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
-  { t: 'Estatus', k: 'estatus', f: r => estB(r.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (r.estatus === 'RECIBIDA' ? 'ACEPTADA' : r.estatus)) },
+  { t: 'Estatus', k: 'estatus', f: r => {
+    if (r.estatus === 'PENDIENTE DE RECEPCIÓN') return `<span class="est est-naranja">⏱ POR ACEPTAR</span>`;
+    if (r.estatus === 'RECIBIDA') return `<span class="est est-verde">ACEPTADA</span>`;
+    if (r.estatus === 'RECHAZADA') return `<span class="est est-rojo">RECHAZADA</span>`;
+    return estB(r.estatus);
+  }},
   { t: 'Realizado por', v: r => r.realizadoPor.nombre },
   { t: 'Quién despacha', v: r => r.despacha || r.realizadoPor.nombre },
   { t: 'Responsable', v: r => r.resp ? r.resp.nombre : '—' },
