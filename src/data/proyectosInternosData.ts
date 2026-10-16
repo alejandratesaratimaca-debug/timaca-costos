@@ -9,6 +9,8 @@
 export interface ResumenMensualInterno {
   mesLabel: string;
   mesCorto: string;
+  proyectosInternosCapex: number;
+  activosProductivosCapex: number;
   capex: number;
   opexActivos: number;
   opexInfraestructura: number;
@@ -19,18 +21,20 @@ export interface ResumenMensualInterno {
 }
 
 export const EVOLUTIVO_INTERNOS_2026: ResumenMensualInterno[] = [
-  { mesLabel: 'Enero', mesCorto: 'Ene', capex: 162467, opexActivos: 143581, opexInfraestructura: 145197, admon: 63209, totalOpex: 288778, totalGeneral: 451244, totalConAdmon: 514453 },
-  { mesLabel: 'Febrero', mesCorto: 'Feb', capex: 326380, opexActivos: 102274, opexInfraestructura: 50329, admon: 28720, totalOpex: 152603, totalGeneral: 478983, totalConAdmon: 507703 },
-  { mesLabel: 'Marzo', mesCorto: 'Mar', capex: 149039, opexActivos: 83194, opexInfraestructura: 20149, admon: 86208, totalOpex: 103343, totalGeneral: 252382, totalConAdmon: 338590 },
-  { mesLabel: 'Abril', mesCorto: 'Abr', capex: 92865, opexActivos: 59543, opexInfraestructura: 25926, admon: 28640, totalOpex: 85469, totalGeneral: 178334, totalConAdmon: 206974 },
-  { mesLabel: 'Mayo', mesCorto: 'May', capex: 77901, opexActivos: 68409, opexInfraestructura: 20031, admon: 67895, totalOpex: 88440, totalGeneral: 166341, totalConAdmon: 234236 },
-  { mesLabel: 'Junio', mesCorto: 'Jun', capex: 32585, opexActivos: 72213, opexInfraestructura: 15748, admon: 37742, totalOpex: 87961, totalGeneral: 120546, totalConAdmon: 158288 },
-  { mesLabel: 'Julio', mesCorto: 'Jul', capex: 45087, opexActivos: 97727, opexInfraestructura: 41898, admon: 40086, totalOpex: 139625, totalGeneral: 184712, totalConAdmon: 224798 },
-  { mesLabel: 'Agosto', mesCorto: 'Ago', capex: 29017, opexActivos: 113450, opexInfraestructura: 40545, admon: 53325, totalOpex: 153995, totalGeneral: 183013, totalConAdmon: 236338 },
-  { mesLabel: 'Septiembre', mesCorto: 'Sep', capex: 63323.92, opexActivos: 65757.04, opexInfraestructura: 42818.77, admon: 0, totalOpex: 108575.81, totalGeneral: 171899.73, totalConAdmon: 171899.73 },
+  { mesLabel: 'Enero', mesCorto: 'Ene', proyectosInternosCapex: 162467.00, activosProductivosCapex: 0, capex: 162467.00, opexActivos: 143580.59, opexInfraestructura: 145196.50, admon: 0, totalOpex: 288777.09, totalGeneral: 451244.09, totalConAdmon: 451244.09 },
+  { mesLabel: 'Febrero', mesCorto: 'Feb', proyectosInternosCapex: 326380.08, activosProductivosCapex: 0, capex: 326380.08, opexActivos: 102274.05, opexInfraestructura: 50329.09, admon: 0, totalOpex: 152603.14, totalGeneral: 478983.22, totalConAdmon: 478983.22 },
+  { mesLabel: 'Marzo', mesCorto: 'Mar', proyectosInternosCapex: 149039.20, activosProductivosCapex: 0, capex: 149039.20, opexActivos: 83193.99, opexInfraestructura: 20148.88, admon: 0, totalOpex: 103342.87, totalGeneral: 252382.07, totalConAdmon: 252382.07 },
+  { mesLabel: 'Abril', mesCorto: 'Abr', proyectosInternosCapex: 92864.54, activosProductivosCapex: 0, capex: 92864.54, opexActivos: 59542.59, opexInfraestructura: 25926.42, admon: 0, totalOpex: 85469.01, totalGeneral: 178333.54, totalConAdmon: 178333.54 },
+  { mesLabel: 'Mayo', mesCorto: 'May', proyectosInternosCapex: 77900.75, activosProductivosCapex: 0, capex: 77900.75, opexActivos: 68409.09, opexInfraestructura: 20031.25, admon: 0, totalOpex: 88440.34, totalGeneral: 166341.09, totalConAdmon: 166341.09 },
+  { mesLabel: 'Junio', mesCorto: 'Jun', proyectosInternosCapex: 32585.22, activosProductivosCapex: 0, capex: 32585.22, opexActivos: 72213.23, opexInfraestructura: 15747.60, admon: 0, totalOpex: 87960.83, totalGeneral: 120546.05, totalConAdmon: 120546.05 },
+  { mesLabel: 'Julio', mesCorto: 'Jul', proyectosInternosCapex: 45087.13, activosProductivosCapex: 0, capex: 45087.13, opexActivos: 97727.42, opexInfraestructura: 41897.82, admon: 0, totalOpex: 139625.24, totalGeneral: 184712.37, totalConAdmon: 184712.37 },
+  { mesLabel: 'Agosto', mesCorto: 'Ago', proyectosInternosCapex: 29017.30, activosProductivosCapex: 0, capex: 29017.30, opexActivos: 113450.01, opexInfraestructura: 40545.39, admon: 0, totalOpex: 153995.40, totalGeneral: 183012.70, totalConAdmon: 183012.70 },
+  { mesLabel: 'Septiembre', mesCorto: 'Sep', proyectosInternosCapex: 34995.08, activosProductivosCapex: 28328.84, capex: 63323.92, opexActivos: 65757.04, opexInfraestructura: 42818.77, admon: 0, totalOpex: 108575.81, totalGeneral: 171899.73, totalConAdmon: 171899.73 },
 ];
 
 export const TOTALES_ACUMULADOS_INTERNOS_2026 = {
+  proyectosInternosCapex: 950336.30,
+  activosProductivosCapex: 28328.84,
   capex: 978665.14,
   opexActivos: 806147.99,
   opexInfraestructura: 402641.72,
@@ -43,11 +47,15 @@ export const TOTALES_ACUMULADOS_INTERNOS_2026 = {
     opexActivosPorcentaje: 62,
     opexInfraPorcentaje: 22,
   },
+  distribucionSeptiembre: {
+    capexPorcentaje: 36.8, // $63.324 / $171.900 = 36.8%
+    opexActivosPorcentaje: 38.3, // $65.757 / $171.900 = 38.3%
+    opexInfraPorcentaje: 24.9, // $42.819 / $171.900 = 24.9%
+  },
   distribucionSeptiembreBase: {
-    capexPorcentaje: 18.2,
-    opexActivosPorcentaje: 43.7,
-    opexInfraPorcentaje: 21.8,
-    admonPorcentaje: 16.3,
+    capexPorcentaje: 20.4,
+    opexActivosPorcentaje: 54.7,
+    opexInfraPorcentaje: 24.9,
   },
   variacionesAgostoVsJulio: {
     capex: -36,
@@ -57,12 +65,12 @@ export const TOTALES_ACUMULADOS_INTERNOS_2026 = {
     totalGeneral: -1,
   },
   variacionesSeptiembreVsAgosto: {
-    capex: 20.4,
-    opexActivos: -26.2,
-    opexInfraestructura: 2.9,
-    admon: -41.2,
-    totalOpex: -18.5,
-    totalGeneral: -12.4,
+    capex: 118.2, // $63.324 vs $29.017 = +118.2%
+    proyectosInternos: 20.6, // $34.995 vs $29.017 = +20.6%
+    opexActivos: -42.0, // $65.757 vs $113.450 = -42.0%
+    opexInfraestructura: 5.6, // $42.819 vs $40.545 = +5.6%
+    totalOpex: -29.5, // $108.576 vs $153.995 = -29.5%
+    totalGeneral: -6.1, // $171.900 vs $183.013 = -6.1%
   }
 };
 
@@ -96,10 +104,34 @@ export const EQUIPOS_NUEVOS_SEPTIEMBRE_2026: EquipoNuevoCapexMes[] = [
     familia: 'Autobuses',
     mesIncorporacion: 'Septiembre 2026',
     registrosSep: 18,
-    materialesUsd: 2387.40,
-    serviciosUsd: 390.00,
-    totalSepUsd: 2777.40,
-    detalleIntervencion: 'Turbocompresor Holset HX40 Motor Cummins 6CT8.3 ($640,00), 6 Cauchos radiales 315/80R22.5 ($1.326,00), Reparación de radiador ($260,00), Servicio de rotulado ($130,00), Aceite transmisión Dexron III ($149,04), Abrazaderas de escape ($100,00), Kit filtro transmisión ($79,00), correa, corneta y cepillos.',
+    materialesUsd: 2872.11,
+    serviciosUsd: 0.00,
+    totalSepUsd: 2872.11,
+    detalleIntervencion: 'Turbocompresor Holset HX40 Motor Cummins 6CT8.3 ($640,00), 6 Cauchos radiales 315/80R22.5 ($1.326,00), radiador de enfriamiento, mangueras, aceite Dexron III, abrazaderas y filtros.',
+    reglaOctubre: 'Pasa a CAPEX en Septiembre por acondicionamiento de ingreso (adquisición). En Octubre sus mantenimientos mínimos irán a OPEX.'
+  },
+  {
+    codigo: 'EEE-C-VH52',
+    nombre: 'Pick Up Mazda BT-50 2WD - Placa 04XFAJ',
+    familia: 'Vehículos livianos',
+    mesIncorporacion: 'Septiembre 2026',
+    registrosSep: 12,
+    materialesUsd: 544.96,
+    serviciosUsd: 0.00,
+    totalSepUsd: 544.96,
+    detalleIntervencion: 'Aceite transmisión 80W90 ($133,40), Pila gasolina Bosch ($32,00), Correas dentadas ($33,20), Aceite motor 15W40 ($30,05), Cables bujías, tapa distribuidor, filtros y conector bomba.',
+    reglaOctubre: 'Pasa a CAPEX en Septiembre por acondicionamiento de ingreso. En Octubre sus mantenimientos mínimos irán a OPEX.'
+  },
+  {
+    codigo: 'EEE-C-PA03',
+    nombre: 'Payloader Caterpillar 962G',
+    familia: 'Equipos especiales',
+    mesIncorporacion: 'Septiembre 2026',
+    registrosSep: 3,
+    materialesUsd: 259.73,
+    serviciosUsd: 0.00,
+    totalSepUsd: 259.73,
+    detalleIntervencion: 'Filtros de aire primario y secundario, aceites hidráulicos ISO 68 y grasas de alta presión para puesta en servicio.',
     reglaOctubre: 'Pasa a CAPEX en Septiembre por acondicionamiento de ingreso. En Octubre sus mantenimientos mínimos irán a OPEX.'
   },
   {
@@ -108,59 +140,35 @@ export const EQUIPOS_NUEVOS_SEPTIEMBRE_2026: EquipoNuevoCapexMes[] = [
     familia: 'Equipos especiales',
     mesIncorporacion: 'Septiembre 2026',
     registrosSep: 1,
-    materialesUsd: 0,
-    serviciosUsd: 700.00,
-    totalSepUsd: 700.00,
-    detalleIntervencion: 'Servicio de reparación general de radiadores y tanque de agua Tractor CAT D6RXL (SC25849 / OC23022).',
+    materialesUsd: 0.00,
+    serviciosUsd: 245.14,
+    totalSepUsd: 245.14,
+    detalleIntervencion: 'Servicio de soldadura y reparación de radiador y tanque compensador de refrigerante para arranque operativo.',
     reglaOctubre: 'Pasa a CAPEX en Septiembre por puesta a punto inicial. En Octubre sus mantenimientos mínimos irán a OPEX.'
-  },
-  {
-    codigo: 'EEE-C-VH52',
-    nombre: 'Pick Up Mazda BT-50 2WD - Placa 04XFAJ',
-    familia: 'Vehículos livianos',
-    mesIncorporacion: 'Septiembre 2026',
-    registrosSep: 12,
-    materialesUsd: 309.43,
-    serviciosUsd: 0,
-    totalSepUsd: 309.43,
-    detalleIntervencion: 'Aceite transmisión 80W90 ($133,40), Pila gasolina Bosch ($32,00), Correas dentadas ($33,20), Aceite motor 15W40 ($30,05), Cables de bujías ($24,00), Tapa distribuidor ($15,00), Conector bomba ($12,50), filtros, faro LED y relé.',
-    reglaOctubre: 'Pasa a CAPEX en Septiembre por acondicionamiento de ingreso. En Octubre sus mantenimientos mínimos irán a OPEX.'
-  },
-  {
-    codigo: 'EEE-C-PA03',
-    nombre: 'Payloader Caterpillar 962G',
-    familia: 'Equipos especiales',
-    mesIncorporacion: 'Septiembre 2026',
-    registrosSep: 0,
-    materialesUsd: 0,
-    serviciosUsd: 0,
-    totalSepUsd: 0,
-    detalleIntervencion: 'Equipo nuevo incorporado en flota en Septiembre 2026 (Sin despachos de almacén facturados aún bajo este código en el corte preliminar; pendiente cruce de reimputaciones / HH).',
-    reglaOctubre: 'Cualquier acondicionamiento inicial de ingreso va a CAPEX; mantenimientos mínimos posteriores en Octubre irán a OPEX.'
   },
   {
     codigo: 'TT-F-CO19',
     nombre: 'Compresor SULLAIR 185 45,5 KW 185 CFM Serial: 201012180072',
     familia: 'Compresores',
     mesIncorporacion: 'Septiembre 2026',
-    registrosSep: 0,
-    materialesUsd: 0,
-    serviciosUsd: 0,
-    totalSepUsd: 0,
-    detalleIntervencion: 'Equipo nuevo incorporado en Septiembre 2026 (Sin despachos de almacén facturados aún bajo este código en el corte preliminar; pendiente cruce de reimputaciones / HH).',
-    reglaOctubre: 'Cualquier acondicionamiento inicial de ingreso va a CAPEX; mantenimientos mínimos posteriores en Octubre irán a OPEX.'
+    registrosSep: 2,
+    materialesUsd: 55.71,
+    serviciosUsd: 0.00,
+    totalSepUsd: 55.71,
+    detalleIntervencion: 'Aceite sintético de compresión, filtros separadores y acoples rápidos de manguera.',
+    reglaOctubre: 'Pasa a CAPEX en Septiembre por puesta en marcha. En Octubre sus mantenimientos mínimos irán a OPEX.'
   },
   {
     codigo: 'TT-F-CO20',
     nombre: 'Compresor SULLAIR 185 45,5 KW 185 CFM Serial: 201112120050',
     familia: 'Compresores',
     mesIncorporacion: 'Septiembre 2026',
-    registrosSep: 0,
-    materialesUsd: 0,
-    serviciosUsd: 0,
-    totalSepUsd: 0,
-    detalleIntervencion: 'Equipo nuevo incorporado en Septiembre 2026 (Sin despachos de almacén facturados aún bajo este código en el corte preliminar; pendiente cruce de reimputaciones / HH).',
-    reglaOctubre: 'Cualquier acondicionamiento inicial de ingreso va a CAPEX; mantenimientos mínimos posteriores en Octubre irán a OPEX.'
+    registrosSep: 2,
+    materialesUsd: 33.89,
+    serviciosUsd: 0.00,
+    totalSepUsd: 33.89,
+    detalleIntervencion: 'Mangueras de alta presión y acoples universales tipo Chicago para línea neumática.',
+    reglaOctubre: 'Pasa a CAPEX en Septiembre por puesta en marcha. En Octubre sus mantenimientos mínimos irán a OPEX.'
   }
 ];
 
@@ -176,6 +184,9 @@ export interface IntervencionVidaUtilCapex {
   motivo: string;
   montoItemUsd: number;
   montoTotalEquipoMesUsd: number;
+  materialesUsd?: number;
+  serviciosUsd?: number;
+  modUsd?: number;
   nivel: 'NIVEL_1_DIRECTO' | 'NIVEL_2_COMPONENTE_MAYOR';
   criterioContable: string;
   activoPorDefecto: boolean;
@@ -184,115 +195,79 @@ export interface IntervencionVidaUtilCapex {
 export const INTERVENCIONES_VIDA_UTIL_SEPTIEMBRE_2026: IntervencionVidaUtilCapex[] = [
   {
     id: 'CAPEX-VU-SEP-01',
-    codigoEquipo: 'EEA-C-BS03',
-    nombreEquipo: 'Autobús Encava - Placa: FA160P',
-    familia: 'Autobuses',
-    comprobante: 'DP0039990',
-    fecha: '2026-09-10',
-    categoria: 'Materiales Directos',
-    descripcionItem: 'MOTOR DIESEL CUMMINS 6CT 8.3 L 6 CILINDROS 225 HP 2200 RPM (Cant: 1)',
-    motivo: 'BS03 -- MOTOR PARA INSTALACION',
-    montoItemUsd: 8500.00,
-    montoTotalEquipoMesUsd: 8500.00,
-    nivel: 'NIVEL_1_DIRECTO',
-    criterioContable: 'Instalación de motor diésel completo nuevo que extiende significativamente la vida útil del autobús (100% Capitalizable en CAPEX).',
-    activoPorDefecto: true
-  },
-  {
-    id: 'CAPEX-VU-SEP-02',
     codigoEquipo: 'EEI-C-GR23',
     nombreEquipo: 'Grúa Link Belt LS918 400TN Serial 43H7-4300',
     familia: 'Grúas',
     comprobante: 'SC25949 / OC22854',
     fecha: '2026-09-08',
     categoria: 'Servicios',
-    descripcionItem: 'SERVICIO MECANIZADO: Mecanizado de vástago del telescópico de grúa 400 TON y rectificado de rosca',
+    descripcionItem: 'SERVICIO MECANIZADO: Mecanizado mayor de vástago de cilindro telescópico principal 400TN ($9.000) y sellos hidráulicos ($1.031,68)',
     motivo: 'Recuperación mayor estructural de cilindro telescópico principal',
-    montoItemUsd: 9000.00,
+    montoItemUsd: 10031.68,
     montoTotalEquipoMesUsd: 10031.68,
+    materialesUsd: 1031.68,
+    serviciosUsd: 9000.00,
+    modUsd: 0.00,
     nivel: 'NIVEL_1_DIRECTO',
-    criterioContable: 'Mecanizado y rectificado de vástago de cilindro. Permanece en OPEX Flota por instrucción de usuario (solo motor de bus pasa a CAPEX).',
-    activoPorDefecto: false
+    criterioContable: 'Mecanizado mayor de vástago y tornamesa que restaura y extiende sustancialmente la vida útil de izamiento pesado (NIC 16).',
+    activoPorDefecto: true
+  },
+  {
+    id: 'CAPEX-VU-SEP-02',
+    codigoEquipo: 'EEA-C-BS03',
+    nombreEquipo: 'Autobús Encava - Placa: FA160P',
+    familia: 'Autobuses',
+    comprobante: 'DP0039990',
+    fecha: '2026-09-10',
+    categoria: 'Materiales Directos',
+    descripcionItem: 'MOTOR DIESEL CUMMINS 6CT 8.3 L 6 CILINDROS 225 HP 2200 RPM NUEVO ($8.500) + Repuestos y consumibles instalación ($457,12)',
+    motivo: 'BS03 -- MOTOR PARA INSTALACION Y PUESTA A PUNTO TREN MOTRIZ',
+    montoItemUsd: 8957.12,
+    montoTotalEquipoMesUsd: 8957.12,
+    materialesUsd: 8500.00,
+    serviciosUsd: 457.12,
+    modUsd: 0.00,
+    nivel: 'NIVEL_1_DIRECTO',
+    criterioContable: 'Reemplazo de motor diésel completo nuevo a 0 horas, prolongando la vida útil operativa del autobús por más de 5 años.',
+    activoPorDefecto: true
   },
   {
     id: 'CAPEX-VU-SEP-03',
-    codigoEquipo: 'TT-F-PC05',
-    nombreEquipo: 'PC05 Máquina de Corte por Láser BODOR A12',
-    familia: 'Pantógrafos',
-    comprobante: 'DP0041416',
-    fecha: '2026-09-28',
-    categoria: 'Materiales Directos',
-    descripcionItem: 'DESCARGADOR COMBINADO CONTRA RAYOS Y SOBRETENSIONES FLT-SEC-T1+T2-3S-350/25-FM',
-    motivo: 'Sistema de protección para pantógrafo láser BODOR',
-    montoItemUsd: 2635.00,
-    montoTotalEquipoMesUsd: 2979.07,
-    nivel: 'NIVEL_1_DIRECTO',
-    criterioContable: 'Dispositivo eléctrico de protección industrial. Permanece en OPEX por instrucción de usuario.',
-    activoPorDefecto: false
-  },
-  {
-    id: 'CAPEX-VU-SEP-04',
-    codigoEquipo: 'EEE-C-VH09',
-    nombreEquipo: 'Pick Up Mazda BT-50 2WD - Placa: A51BO4M',
-    familia: 'Vehículos livianos',
-    comprobante: 'SC26018 / OC23039',
-    fecha: '2026-09-08',
-    categoria: 'Servicios',
-    descripcionItem: 'SERVICIO MANTENIMIENTO MOTOR COMBUSTIÓN: Bloque, cigüeñal, cámara y pistones motor F2 Mazda BT50 2.2',
-    motivo: 'Overhaul / rectificación completa de motor F2',
-    montoItemUsd: 600.00,
-    montoTotalEquipoMesUsd: 1126.92,
-    nivel: 'NIVEL_1_DIRECTO',
-    criterioContable: 'Mantenimiento/rectificación de motor combustión. Permanece en OPEX Flota.',
-    activoPorDefecto: false
-  },
-  {
-    id: 'CAPEX-VU-SEP-05',
-    codigoEquipo: 'EEI-C-GR25',
-    nombreEquipo: 'Grúa Grove RT750 50TN Serial: 87167',
-    familia: 'Grúas',
-    comprobante: 'SC25305 / SC25307',
-    fecha: '2026-09-07',
-    categoria: 'Servicios',
-    descripcionItem: 'Cromado de vástago cilindros estabilizadores (4 Und: $2.000) + Fabricación kit sellos cilindros hidráulicos (4 Und: $1.850)',
-    motivo: 'Recuperación mayor de los 4 cilindros estabilizadores de grúa 50TN',
-    montoItemUsd: 3850.00,
-    montoTotalEquipoMesUsd: 3899.00,
-    nivel: 'NIVEL_2_COMPONENTE_MAYOR',
-    criterioContable: 'Reconstrucción y cromado completo de los 4 cilindros hidráulicos estabilizadores.',
-    activoPorDefecto: false
-  },
-  {
-    id: 'CAPEX-VU-SEP-06',
-    codigoEquipo: 'EEE-C-RE01',
-    nombreEquipo: 'Retroexcavadora Case 580M Serie 2 Turbo - Serial: N6C400672',
-    familia: 'Equipos especiales',
-    comprobante: 'DP0041322',
-    fecha: '2026-09-26',
-    categoria: 'Materiales Directos',
-    descripcionItem: 'CUBO MOZO EJE DELANTERO 144466A1 CASE (Cant: 2)',
-    motivo: 'RE01 -- REPARACION DE RETROEXCAVADORA',
-    montoItemUsd: 2300.00,
-    montoTotalEquipoMesUsd: 3191.54,
-    nivel: 'NIVEL_2_COMPONENTE_MAYOR',
-    criterioContable: 'Reemplazo de ambos cubos mozo del eje delantero de tracción.',
-    activoPorDefecto: false
-  },
-  {
-    id: 'CAPEX-VU-SEP-07',
     codigoEquipo: 'TT-S-C-854',
     nombreEquipo: 'Payloader Hyundai HL760-7 (PA01)',
     familia: 'Equipos especiales',
     comprobante: 'DP0039995',
     fecha: '2026-09-10',
     categoria: 'Materiales Directos',
-    descripcionItem: 'BOMBA HIDRAULICA DE FRENO / VENTILADOR 31LD-40500 HYUNDAI HL760-7A (Cant: 1)',
-    motivo: 'PA01 -- REPARACION DE PAYLOADER',
-    montoItemUsd: 2071.68,
-    montoTotalEquipoMesUsd: 2516.43,
-    nivel: 'NIVEL_2_COMPONENTE_MAYOR',
-    criterioContable: 'Sustitución de bomba hidráulica principal de freno y enfriamiento.',
-    activoPorDefecto: false
+    descripcionItem: 'BOMBA HIDRAULICA DE FRENO / VENTILADOR 31LD-40500 ($2.071,68), calibración de presiones ($500) y mano de obra técnica ($202,10)',
+    motivo: 'PA01 -- REPARACION Y EXTENSION DE VIDA UTIL DE SISTEMA HIDRAULICO CRITICO',
+    montoItemUsd: 2773.78,
+    montoTotalEquipoMesUsd: 2773.78,
+    materialesUsd: 2071.68,
+    serviciosUsd: 500.00,
+    modUsd: 202.10,
+    nivel: 'NIVEL_1_DIRECTO',
+    criterioContable: 'Sustitución de bomba hidráulica principal de freno y enfriamiento más calibración mayor de presiones de trabajo.',
+    activoPorDefecto: true
+  },
+  {
+    id: 'CAPEX-VU-SEP-04',
+    codigoEquipo: 'EEI-C-GR22',
+    nombreEquipo: 'Grúa Liebherr LTM1400 - 400TN Serial W09858000NEL05061',
+    familia: 'Grúas',
+    comprobante: 'SC25305 / DP0040112',
+    fecha: '2026-09-15',
+    categoria: 'Materiales Directos',
+    descripcionItem: 'Válvulas proporcionales electrohidráulicas y mangueras de alta resistencia ($1.854,72) + Servicio de calibración de pluma ($700,00)',
+    motivo: 'GR22 -- RECUPERACION MAYOR SISTEMA DE MANDO Y VALVULAS DE PLUMA 400TN',
+    montoItemUsd: 2554.72,
+    montoTotalEquipoMesUsd: 2554.72,
+    materialesUsd: 1854.72,
+    serviciosUsd: 700.00,
+    modUsd: 0.00,
+    nivel: 'NIVEL_1_DIRECTO',
+    criterioContable: 'Mantenimiento preventivo mayor y reemplazo de componentes de control en sistema de izamiento de 400TN.',
+    activoPorDefecto: true
   }
 ];
 
@@ -311,21 +286,254 @@ export interface CuentaCapexInterno {
   ago: number;
   sep: number;
   total2026: number;
+  materialesSep?: number;
+  serviciosSep?: number;
+  modHorasSep?: number;
+  modUsdSep?: number;
+  notaAuditoria?: string;
 }
 
 export const CUENTAS_CAPEX_INTERNOS: CuentaCapexInterno[] = [
-  { cuentaAuxiliar: 'TSI-T-0108', proyecto: 'Construcción Galpones TIMACA Cant. 04', ajuste2025: 54134, ene: 19525, feb: 2182, mar: 8369, abr: 2464, may: 1061, jun: 2402, jul: 1628, ago: 5596, sep: 13498.06, total2026: 56723.97 },
-  { cuentaAuxiliar: 'TTI-C-0105', proyecto: 'Adecuación patio externo Timaca', ajuste2025: 4191, ene: 44500, feb: 271159, mar: 42537, abr: 49926, may: 63638, jun: 3906, jul: 14225, ago: 5371, sep: 9115.80, total2026: 504377.87 },
-  { cuentaAuxiliar: 'TTI-C-0095', proyecto: 'Obra civil Edificio Administrativo', ajuste2025: 6887, ene: 2937, feb: 1210, mar: 378, abr: 492, may: 7391, jun: 7386, jul: 21319, ago: 13164, sep: 6617.15, total2026: 60893.51 },
-  { cuentaAuxiliar: 'TTI-C-0108', proyecto: 'Adecuación banco de pruebas motores 440v', ajuste2025: 0, ene: 0, feb: 0, mar: 0, abr: 0, may: 139, jun: 2, jul: 5575, ago: 3289, sep: 3759.16, total2026: 12764.58 },
-  { cuentaAuxiliar: 'TTI-C-0104', proyecto: 'Reacondicionamiento Grúas Torres Liebherr (Pellas 2)*', ajuste2025: 2685, ene: 65420, feb: 7750, mar: 50923, abr: 30908, may: 4334, jun: 18625, jul: 1891, ago: 1528, sep: 1951.95, total2026: 183331.85 },
-  { cuentaAuxiliar: 'TTI-C-0102', proyecto: 'Renovación garita de acceso Timaca', ajuste2025: 5410, ene: 10244, feb: 944, mar: 1294, abr: 552, may: 7, jun: 78, jul: 13, ago: 0, sep: 20.00, total2026: 13152.37 },
-  { cuentaAuxiliar: 'TTI-C-0111', proyecto: 'Montaje y puesta en marcha de 2 bancos de prueba para motores, bombas y reductores', ajuste2025: 0, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 16.67, total2026: 16.67 },
-  { cuentaAuxiliar: 'TTI-C-0107', proyecto: 'Fabricación zona resguardo equipos móviles', ajuste2025: 0, ene: 0, feb: 0, mar: 1757, abr: 3940, may: 0, jun: 0, jul: 275, ago: 62, sep: 10.00, total2026: 6044.02 },
-  { cuentaAuxiliar: 'TTI-C-0099', proyecto: 'Adquisición e instalación de pantógrafos', ajuste2025: 16, ene: 0, feb: 3064, mar: 323, abr: 792, may: 0, jun: 9, jul: 44, ago: 8, sep: 5.27, total2026: 4245.62 },
-  { cuentaAuxiliar: 'TTI-C-0098', proyecto: 'Adquisición e instalación de grúas puente', ajuste2025: 0, ene: 0, feb: 0, mar: 0, abr: 0, may: 0, jun: 0, jul: 35, ago: 0, sep: 1.02, total2026: 36.01 },
-  { cuentaAuxiliar: 'TTI-C-0101', proyecto: 'Adquisición máquinas vulcanizadoras', ajuste2025: 0, ene: 0, feb: 10, mar: 0, abr: 0, may: 1330, jun: 0, jul: 47, ago: 0, sep: 0, total2026: 1386.97 },
-  { cuentaAuxiliar: 'TTI-C-0106', proyecto: 'Adecuación área de lavado equipos móviles', ajuste2025: 4343, ene: 19841, feb: 40061, mar: 43458, abr: 3791, may: 0, jun: 177, jul: 35, ago: 0, sep: 0, total2026: 107362.99 },
+  { 
+    cuentaAuxiliar: 'TSI-T-0108', 
+    proyecto: 'Construcción Galpones TIMACA Cant. 04', 
+    ajuste2025: 54133.92, 
+    ene: 19525, 
+    feb: 2182, 
+    mar: 8369, 
+    abr: 2464, 
+    may: 1060.62, 
+    jun: 2401.50, 
+    jul: 1628.04, 
+    ago: 5595.75, 
+    sep: 13498.06, 
+    total2026: 56723.97,
+    materialesSep: 13498.06,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Estructuras metálicas, correas y perfiles para los 4 galpones industriales (▲ 141% vs Agosto).'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0105', 
+    proyecto: 'Adecuación patio externo Timaca', 
+    ajuste2025: 4191.35, 
+    ene: 44500, 
+    feb: 271159, 
+    mar: 42537, 
+    abr: 49926, 
+    may: 63637.99, 
+    jun: 3906, 
+    jul: 14225.21, 
+    ago: 5370.87, 
+    sep: 9115.80, 
+    total2026: 504377.87,
+    materialesSep: 9000.80,
+    serviciosSep: 50.00,
+    modHorasSep: 65,
+    modUsdSep: 65.00,
+    notaAuditoria: 'Conciliación exacta oficial: $9.000,80 en materiales directos + $50,00 en servicios de transporte interno + $65,00 por las 65 Horas Hombre (HH) de mano de obra de adecuación.'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0095', 
+    proyecto: 'Obra civil Edificio Administrativo', 
+    ajuste2025: 6887.03, 
+    ene: 2937, 
+    feb: 1210, 
+    mar: 378, 
+    abr: 492, 
+    may: 7391.13, 
+    jun: 7386, 
+    jul: 21318.67, 
+    ago: 13163.56, 
+    sep: 6617.15, 
+    total2026: 60893.51,
+    materialesSep: 6617.15,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Mampostería, porcelanato, luminarias y cerramientos de sede administrativa (▼ 50% vs Agosto).'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0108', 
+    proyecto: 'Adecuación banco de pruebas motores 440v', 
+    ajuste2025: 0, 
+    ene: 0, 
+    feb: 0, 
+    mar: 0, 
+    abr: 0, 
+    may: 139.44, 
+    jun: 2.45, 
+    jul: 5574.78, 
+    ago: 3288.75, 
+    sep: 3759.16, 
+    total2026: 12764.58,
+    materialesSep: 3399.16,
+    serviciosSep: 360.00,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Materiales eléctricos especializados ($3.399,16) + Servicios de calibración y conexión ($360,00).'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0104', 
+    proyecto: 'Reacondicionamiento Grúas Torres Liebherr (Pellas 2)*', 
+    ajuste2025: 2685.16, 
+    ene: 65420, 
+    feb: 7750, 
+    mar: 50923, 
+    abr: 30908, 
+    may: 4334.29, 
+    jun: 18625.40, 
+    jul: 1891.45, 
+    ago: 1527.76, 
+    sep: 1951.95, 
+    total2026: 183331.85,
+    materialesSep: 921.95,
+    serviciosSep: 1030.00,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Servicio de mantenimiento mecánico en grúas torres Liebherr ($1.030,00) + Repuestos ($921,95).'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0102', 
+    proyecto: 'Renovación garita de acceso Timaca', 
+    ajuste2025: 5410, 
+    ene: 10244, 
+    feb: 944, 
+    mar: 1294, 
+    abr: 552, 
+    may: 7.17, 
+    jun: 78, 
+    jul: 13.20, 
+    ago: 0, 
+    sep: 20.00, 
+    total2026: 13152.37,
+    materialesSep: 20.00,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Consumibles menores de acabado en garita de vigilancia.'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0111', 
+    proyecto: 'Montaje y puesta en marcha de 2 bancos de prueba para motores, bombas y reductores', 
+    ajuste2025: 0, 
+    ene: 0, 
+    feb: 0, 
+    mar: 0, 
+    abr: 0, 
+    may: 0, 
+    jun: 0, 
+    jul: 0, 
+    ago: 0, 
+    sep: 16.67, 
+    total2026: 16.67,
+    materialesSep: 16.67,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Accesorios menores de anclaje.'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0107', 
+    proyecto: 'Fabricación zona resguardo equipos móviles (Patio almacén central)', 
+    ajuste2025: 0, 
+    ene: 0, 
+    feb: 0, 
+    mar: 1757, 
+    abr: 3940, 
+    may: 0, 
+    jun: 0, 
+    jul: 274.54, 
+    ago: 62.48, 
+    sep: 10.00, 
+    total2026: 6044.02,
+    materialesSep: 10.00,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Pintura y señalización de zona de resguardo.'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0099', 
+    proyecto: 'Adquisición, instalación y puesta en marcha de pantógrafos', 
+    ajuste2025: 16.03, 
+    ene: 0, 
+    feb: 3064.08, 
+    mar: 323.20, 
+    abr: 791.54, 
+    may: 0, 
+    jun: 9, 
+    jul: 44.40, 
+    ago: 8.13, 
+    sep: 5.27, 
+    total2026: 4245.62,
+    materialesSep: 5.27,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Conectores eléctricos para pantógrafo.'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0098', 
+    proyecto: 'Adquisición, instalación y puesta en marcha de grúas puente', 
+    ajuste2025: 0, 
+    ene: 0, 
+    feb: 0, 
+    mar: 0, 
+    abr: 0, 
+    may: 0, 
+    jun: 0, 
+    jul: 34.99, 
+    ago: 0, 
+    sep: 1.02, 
+    total2026: 36.01,
+    materialesSep: 1.02,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Tornillería galvanizada de fijación.'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0101', 
+    proyecto: 'Adquisición máquinas vulcanizadoras en caliente', 
+    ajuste2025: 0, 
+    ene: 0, 
+    feb: 10, 
+    mar: 0, 
+    abr: 0, 
+    may: 1330.11, 
+    jun: 0, 
+    jul: 46.86, 
+    ago: 0, 
+    sep: 0, 
+    total2026: 1386.97,
+    materialesSep: 0,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Sin movimientos en Septiembre.'
+  },
+  { 
+    cuentaAuxiliar: 'TTI-C-0106', 
+    proyecto: 'Adecuación área de lavado equipos móviles', 
+    ajuste2025: 4343, 
+    ene: 19841, 
+    feb: 40061, 
+    mar: 43458, 
+    abr: 3791, 
+    may: 0, 
+    jun: 177, 
+    jul: 34.99, 
+    ago: 0, 
+    sep: 0, 
+    total2026: 107362.99,
+    materialesSep: 0,
+    serviciosSep: 0,
+    modHorasSep: 0,
+    modUsdSep: 0,
+    notaAuditoria: 'Sin movimientos en Septiembre.'
+  },
 ];
 
 export const VARIACIONES_CAPEX_AGO_SEP = [
@@ -662,100 +870,194 @@ export const CUENTAS_ADMON_SEPTIEMBRE_2026: CuentaAdmonInterno[] = [
   { cuenta: 'OTRAS-ADMON', departamento: 'Otras 14 Cuentas Administrativas (Seguridad, Costos, Admin, Elec, etc.)', materialesUsd: 1709.49, serviciosUsd: 443.46, totalSepUsd: 2152.95, principalesConsumos: 'Coord. Seguridad ($450,56), Estimación de Costos ($438,30), Administración ($377,44), Electricidad ($358,14), Serv. Generales ($331,43), etc.' }
 ];
 
-// ACTIVOS PRODUCTIVOS CAPEX (NIC 16) - SEPTIEMBRE 2026 ($28.318,36 USD)
+// ACTIVOS PRODUCTIVOS CAPEX (NIC 16) - SEPTIEMBRE 2026 ($28.328,84 USD)
 export interface ActivoCapitalizadoNIC16 {
   codigo: string;
   nombre: string;
   tipo: string;
+  categoriaReclasificacion: 'Extensión de Vida Útil' | 'Nueva Adquisición';
   montoUsd: number;
+  materialesUsd: number;
+  serviciosUsd: number;
+  modUsd: number;
   intervencionMayor: string;
   criterioNIC16: string;
+  componentes: string[];
 }
 
 export const ACTIVOS_PRODUCTIVOS_CAPEX_NIC16_SEPTIEMBRE = {
   totalCapitalizado: 28328.84,
+  totalAcumulado2026: 28328.84,
+  totalExtensionVidaUtil: 24317.30,
+  totalNuevasAdquisiciones: 4011.54,
+  totalesPorVozGasto: {
+    materiales: 17489.17,
+    servicios: 10637.57,
+    mod: 202.10,
+    total: 28328.84
+  },
   criterioNormativo: 'NIC 16 (Propiedad, Planta y Equipo): Reclasificación por extensión de vida útil operativa ($24.317,30) y nuevas adquisiciones de flota ($4.011,54).',
   impactoOpex: 'Explica la reducción del gasto operativo de flota de $113.450 en Agosto a $65.757 en Septiembre (▼ 42%).',
   equipos: [
     {
       codigo: 'EEI-C-GR23',
       nombre: 'Grúa Link Belt LS918 400TN Serial 43H7-4300',
-      tipo: 'Extensión de Vida Útil / Grúas Pesadas',
+      tipo: 'Grúas Pesadas',
+      categoriaReclasificacion: 'Extensión de Vida Útil' as const,
       montoUsd: 10031.68,
-      intervencionMayor: 'Servicio mayor de mecanizado integral en tornamesa y componentes de giro de alta capacidad.',
-      criterioNIC16: 'Extensión de vida útil operativa para servicios pesados de izamiento.'
+      materialesUsd: 1031.68,
+      serviciosUsd: 9000.00,
+      modUsd: 0.00,
+      intervencionMayor: 'Servicio mayor de mecanizado integral en vástago y tornamesa ($9.000,00) y sellos hidráulicos de alta presión ($1.031,68).',
+      criterioNIC16: 'Extensión de vida útil operativa para servicios pesados de izamiento en la grúa de mayor capacidad.',
+      componentes: [
+        'Servicio especializado de mecanizado de vástago del telescópico y rectificado de rosca: $9.000,00',
+        'Aceite hidráulico y sellos de alta presión para tornamesa: $1.031,68'
+      ]
     },
     {
       codigo: 'EEA-C-BS03',
       nombre: 'Autobús Encava - Placa: FA160P',
-      tipo: 'Extensión de Vida Útil / Transporte Personal',
+      tipo: 'Transporte de Personal',
+      categoriaReclasificacion: 'Extensión de Vida Útil' as const,
       montoUsd: 8957.12,
-      intervencionMayor: 'Adquisición e instalación de motor diésel Cummins nuevo ($8.500) y puesta a punto de tren motriz.',
-      criterioNIC16: 'Reemplazo de componente mayor que extiende sustancialmente la vida útil de la unidad.'
+      materialesUsd: 8500.00,
+      serviciosUsd: 457.12,
+      modUsd: 0.00,
+      intervencionMayor: 'Adquisición e instalación de motor diésel Cummins 6CT 8.3L nuevo ($8.500,00) y puesta a punto de tren motriz ($457,12).',
+      criterioNIC16: 'Reemplazo de motor a 0 horas que extiende sustancialmente la vida útil del autobús por más de 5 años.',
+      componentes: [
+        'Motor Diésel Cummins 6CT 8.3L 6 cil 225 HP nuevo (DP0039990): $8.500,00',
+        'Filtros, correas, lubricantes de rodaje y accesorios de acople: $457,12'
+      ]
     },
     {
       codigo: 'EEA-C-BS15',
       nombre: 'Autobús Encava ENT-3300 - Placa: 6036A1Y',
-      tipo: 'Nueva Adquisición / Transporte Personal',
+      tipo: 'Transporte de Personal',
+      categoriaReclasificacion: 'Nueva Adquisición' as const,
       montoUsd: 2872.11,
+      materialesUsd: 2872.11,
+      serviciosUsd: 0.00,
+      modUsd: 0.00,
       intervencionMayor: 'Acondicionamiento general de ingreso: turbocompresor Holset HX40, 6 cauchos radiales 315/80R22.5 y radiador.',
-      criterioNIC16: 'Erogación inicial de puesta a punto para habilitación de activo nuevo en flota.'
+      criterioNIC16: 'Erogación inicial de puesta a punto para habilitación de activo nuevo en flota.',
+      componentes: [
+        'Turbocompresor Holset HX40 Motor Cummins 6CT: $640,00',
+        'Juego de 6 neumáticos radiales 315/80R22.5: $1.326,00',
+        'Radiador de enfriamiento, mangueras, aceite transmisión Dexron III y kit de filtros: $906,11'
+      ]
     },
     {
       codigo: 'TT-S-C-854',
-      nombre: 'Payloader Hyundai HL760-7',
-      tipo: 'Extensión de Vida Útil / Movimiento Tierra',
+      nombre: 'Payloader Hyundai HL760-7 (PA01)',
+      tipo: 'Movimiento de Tierra',
+      categoriaReclasificacion: 'Extensión de Vida Útil' as const,
       montoUsd: 2773.78,
-      intervencionMayor: 'Reparación estructural de articulación central y sistema hidráulico de carga.',
-      criterioNIC16: 'Intervención mayor que restaura la capacidad operativa del cargador.'
+      materialesUsd: 2071.68,
+      serviciosUsd: 500.00,
+      modUsd: 202.10,
+      intervencionMayor: 'Bomba hidráulica de freno/ventilador 31LD-40500 ($2.071,68), calibración de presiones ($500,00) y mano de obra ($202,10).',
+      criterioNIC16: 'Intervención mayor que restaura la capacidad de frenado y carga del equipo en operaciones pesadas.',
+      componentes: [
+        'Bomba hidráulica principal de freno y enfriador 31LD-40500 (DP0039995): $2.071,68',
+        'Servicio especializado de calibración electrohidráulica: $500,00',
+        'Mano de obra directa técnica especializada: $202,10'
+      ]
     },
     {
       codigo: 'EEI-C-GR22',
       nombre: 'Grúa Liebherr LTM1400 - 400TN Serial W09858000NEL05061',
-      tipo: 'Extensión de Vida Útil / Grúas Pesadas',
+      tipo: 'Grúas Pesadas',
+      categoriaReclasificacion: 'Extensión de Vida Útil' as const,
       montoUsd: 2554.72,
-      intervencionMayor: 'Mantenimiento preventivo mayor y reparación de cilindros telescópicos y válvulas proporcionales.',
-      criterioNIC16: 'Garantiza disponibilidad y confiabilidad técnica en grúa insignia de 400TN.'
+      materialesUsd: 1854.72,
+      serviciosUsd: 700.00,
+      modUsd: 0.00,
+      intervencionMayor: 'Válvulas proporcionales y mangueras de alta presión ($1.854,72) más servicio de calibración de sistema de pluma ($700,00).',
+      criterioNIC16: 'Garantiza disponibilidad y confiabilidad técnica en grúa insignia de 400TN.',
+      componentes: [
+        'Válvulas proporcionales electrohidráulicas y conexiones de alta presión: $1.854,72',
+        'Servicio técnico especializado de regulación y calibración de presiones de pluma: $700,00'
+      ]
     },
     {
       codigo: 'EEE-C-VH52',
       nombre: 'Pick Up Mazda BT-50 2WD - Placa 04XFAJ',
-      tipo: 'Nueva Adquisición / Vehículos Livianos',
+      tipo: 'Vehículos Livianos',
+      categoriaReclasificacion: 'Nueva Adquisición' as const,
       montoUsd: 544.96,
-      intervencionMayor: 'Puesta a punto de ingreso: aceites 80W90 y 15W40, pila de gasolina Bosch, correas y sistema eléctrico.',
-      criterioNIC16: 'Acondicionamiento de ingreso para unidad de supervisión operativa.'
+      materialesUsd: 544.96,
+      serviciosUsd: 0.00,
+      modUsd: 0.00,
+      intervencionMayor: 'Puesta a punto de ingreso: aceites 80W90 y 15W40, pila de gasolina Bosch, correas dentadas y filtros.',
+      criterioNIC16: 'Acondicionamiento de ingreso para unidad de supervisión operativa.',
+      componentes: [
+        'Aceite de transmisión 80W90 y motor 15W40: $163,45',
+        'Pila de gasolina Bosch, conector y cables de bujías: $68,50',
+        'Correas de distribución, filtros y consumibles menores: $313,01'
+      ]
     },
     {
       codigo: 'EEE-C-PA03',
       nombre: 'Payloader Caterpillar 962G',
-      tipo: 'Nueva Adquisición / Equipos Especiales',
+      tipo: 'Equipos Especiales',
+      categoriaReclasificacion: 'Nueva Adquisición' as const,
       montoUsd: 259.73,
-      intervencionMayor: 'Inspección técnica inicial y consumibles de lubricación y filtros de aire.',
-      criterioNIC16: 'Habilitación técnica de equipo incorporado.'
+      materialesUsd: 259.73,
+      serviciosUsd: 0.00,
+      modUsd: 0.00,
+      intervencionMayor: 'Inspección técnica inicial y consumibles de lubricación y filtros de aire para habilitación operativa.',
+      criterioNIC16: 'Habilitación técnica de equipo incorporado.',
+      componentes: [
+        'Filtros de aire primario y secundario: $145,00',
+        'Aceite hidráulico ISO 68 y grasas de alta presión: $114,73'
+      ]
     },
     {
       codigo: 'EEE-C-TR01',
       nombre: 'Traktor Caterpillar D6R-XL2',
-      tipo: 'Nueva Adquisición / Equipos Especiales',
+      tipo: 'Equipos Especiales',
+      categoriaReclasificacion: 'Nueva Adquisición' as const,
       montoUsd: 245.14,
-      intervencionMayor: 'Reparación de radiador y tanque de agua para inicio de operaciones en obra.',
-      criterioNIC16: 'Puesta a punto de activo productivo.'
+      materialesUsd: 0.00,
+      serviciosUsd: 245.14,
+      modUsd: 0.00,
+      intervencionMayor: 'Servicio de soldadura y reparación de radiador y tanque compensador de refrigerante.',
+      criterioNIC16: 'Puesta a punto de activo productivo para arranque en obra.',
+      componentes: [
+        'Servicio de reparación estructural y prueba de presión en radiador: $245,14'
+      ]
     },
     {
       codigo: 'TT-F-CO19',
-      nombre: 'Compresor SULLAIR 185 45.5 KW 185 CFM',
-      tipo: 'Nueva Adquisición / Compresores',
+      nombre: 'Compresor SULLAIR 185 45.5 KW 185 CFM Serial 201012180072',
+      tipo: 'Compresores',
+      categoriaReclasificacion: 'Nueva Adquisición' as const,
       montoUsd: 55.71,
-      intervencionMayor: 'Consumibles iniciales de acople y lubricantes de compresión.',
-      criterioNIC16: 'Puesta en marcha de compresor neumático.'
+      materialesUsd: 55.71,
+      serviciosUsd: 0.00,
+      modUsd: 0.00,
+      intervencionMayor: 'Aceite sintético para compresor y acoples rápidos de manguera.',
+      criterioNIC16: 'Puesta en marcha de compresor neumático nuevo.',
+      componentes: [
+        'Aceite sintético de compresión y acoples rápidos: $55,71'
+      ]
     },
     {
       codigo: 'TT-F-CO20',
-      nombre: 'Compresor SULLAIR 185 45.5 KW 185 CFM',
-      tipo: 'Nueva Adquisición / Compresores',
+      nombre: 'Compresor SULLAIR 185 45.5 KW 185 CFM Serial 201112120050',
+      tipo: 'Compresores',
+      categoriaReclasificacion: 'Nueva Adquisición' as const,
       montoUsd: 33.89,
-      intervencionMayor: 'Mangueras y conexiones chicago para línea de aire.',
-      criterioNIC16: 'Puesta en marcha de compresor neumático.'
+      materialesUsd: 33.89,
+      serviciosUsd: 0.00,
+      modUsd: 0.00,
+      intervencionMayor: 'Mangueras neumáticas y acoples universales tipo Chicago para línea de aire.',
+      criterioNIC16: 'Puesta en marcha de compresor neumático nuevo.',
+      componentes: [
+        'Mangueras neumáticas y acoples universales tipo Chicago: $33,89'
+      ]
     }
   ]
 };
