@@ -177,10 +177,10 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
           map.set(cod, { codigo: cod, nombre: nom, total: 0, count: 0 });
         }
         const it = map.get(cod)!;
-        it.total += s.montoTotal;
+        it.total += (s.montoTotal || 0);
         it.count += 1;
       });
-    return Array.from(map.values()).sort((a, b) => b.total - a.total);
+    return Array.from(map.values()).sort((a, b) => (b.total || 0) - (a.total || 0));
   }, []);
 
   // Salidas internas de Septiembre clasificadas con bloque y categoría
@@ -226,10 +226,10 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
           itemDescripcion: s.itemDescripcion,
           categoria: s.categoria,
           subcategoria: s.subcategoria,
-          cantidad: s.cantidad,
-          unidadMedida: s.unidadMedida,
-          precioUnitario: s.precioUnitario,
-          montoTotal: s.montoTotal,
+          cantidad: s.cantidad ?? 0,
+          unidadMedida: s.unidadMedida ?? 'UND',
+          precioUnitario: s.montoUnitario ?? (s.cantidad && s.cantidad > 0 ? (s.montoTotal / s.cantidad) : 0),
+          montoTotal: s.montoTotal ?? 0,
           solicitante: s.solicitante,
           observaciones: s.observaciones,
           bloque,
@@ -277,7 +277,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
       );
     }
 
-    return list.sort((a, b) => b.montoTotal - a.montoTotal);
+    return list.sort((a, b) => (b.montoTotal || 0) - (a.montoTotal || 0));
   }, [salidasInternasSeptiembre, filtroBloqueAuditoria, filtroCategoriaAuditoria, selectedCuentasAuditoria, busquedaAuditoria]);
 
   const salidasInternasMostradas = useMemo(() => {
@@ -286,7 +286,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   }, [salidasInternasAuditadas, filasAMostrarAuditoria]);
 
   const totalMontoAuditado = useMemo(() => {
-    return salidasInternasAuditadas.reduce((acc, s) => acc + s.montoTotal, 0);
+    return salidasInternasAuditadas.reduce((acc, s) => acc + (s.montoTotal || 0), 0);
   }, [salidasInternasAuditadas]);
 
   const toggleCuentaAuditoria = (cod: string) => {
@@ -481,7 +481,8 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   const totalOpexEfectivoMes = opexFlotaEfectivoMes + opexInfraEfectivoMes;
   const totalGeneralMes = esSeptiembre ? 171899.73 : (capexEfectivoMes + totalOpexEfectivoMes);
 
-  const formatExact = (val: number) => {
+  const formatExact = (val: number | undefined | null) => {
+    if (val === undefined || val === null || isNaN(val)) return '$0';
     return '$' + val.toLocaleString('de-DE', { minimumFractionDigits: val % 1 !== 0 ? 2 : 0, maximumFractionDigits: 2 });
   };
 
@@ -2105,16 +2106,16 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                             {s.itemDescripcion}
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono font-semibold text-neutral-800 whitespace-nowrap">
-                            {s.cantidad.toLocaleString('de-DE')}
+                            {(s.cantidad ?? 0).toLocaleString('de-DE')}
                           </td>
                           <td className="py-2.5 px-3 font-mono text-neutral-500 whitespace-nowrap">
                             {s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida}
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono text-neutral-600 whitespace-nowrap">
-                            ${s.precioUnitario.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${(s.precioUnitario ?? 0).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono font-black text-neutral-900 whitespace-nowrap bg-neutral-50/50">
-                            ${s.montoTotal.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            ${(s.montoTotal ?? 0).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                           <td className="py-2.5 px-3 text-neutral-600 max-w-[140px] truncate" title={s.solicitante}>
                             {s.solicitante || '-'}
