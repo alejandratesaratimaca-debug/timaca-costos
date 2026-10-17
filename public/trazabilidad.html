@@ -535,7 +535,7 @@ const EST_COLOR = {
   'NO FINALIZADO': 'naranja', 'FINALIZADO': 'naranja', 'APROBADO': 'verde', 'ANULADO': 'rojo',
   'PENDIENTE DE RECEPCIÓN': 'gris', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
-  'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris',
+  'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris', 'TRANSFERIDO': 'azul',
   'EN INVESTIGACIÓN': 'naranja', 'RECUPERADO': 'verde', 'ACTIVO': 'verde', 'INACTIVO': 'gris',
   'DISPONIBLE': 'verde', 'VACÍO': 'naranja', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
   'SUFICIENTE': 'verde', 'LIMITANTE': 'naranja', 'NO EXISTE': 'gris'
@@ -1365,7 +1365,13 @@ function crearTransferencia(d) {
   lineas.forEach(l => {
     const e = exi(d.origen, l.id);
     if (l.est === 'VACIO') e.vacio -= l.cant;
-    else if (l.est === 'DAN') e.dan -= l.cant;
+    else if (l.est === 'DAN') {
+      e.dan -= l.cant;
+      const incOrigen = (DB.incid || []).find(i => i.alm === d.origen && i.id === l.id && i.estado === 'DAÑADO');
+      if (incOrigen) {
+        incOrigen.hist.push({ ev: 'EN TRÁNSITO', fecha: v.fecha, usr: S.u.nombre, det: `Enviado a ${almNombre(d.destino)} mediante transferencia ${v.num}` });
+      }
+    }
     else e.disp -= l.cant;
     e.pend += l.cant;
     mov({ doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: d.origen, destino: d.destino, estAnt: nomBucket[l.est] || 'DISPONIBLE', estNue: 'PENDIENTE DE RECEPCIÓN', resp: (d.resp ? d.resp.nombre : S.u.nombre), cedula: (d.resp ? d.resp.cedula : S.u.cedula), obs: (d.proyecto ? 'Proyecto: ' + d.proyecto : 'Transferencia creada' + (l.est === 'DAN' ? ' (DAÑADO)' : '')) });
@@ -1445,15 +1451,38 @@ function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
       estNue: (aceptar ? 'RECIBIDO EN ' + almNombre(v.destino) : 'REINTEGRADO A ' + almNombre(v.origen)) + (l.est === 'VACIO' ? ' (VACÍO)' : (l.est === 'DAN' ? ' (DAÑADO)' : '')),
       resp: sistema ? 'SISTEMA' : S.u.nombre, cedula: sistema ? '' : S.u.cedula, usr: sistema ? 'SISTEMA' : S.u.usuario,
       obs: aceptar ? ('Transferencia aceptada' + (l.est === 'DAN' ? ' (DAÑADO)' : '')) : (sistema ? 'Vencida: sin respuesta en ' + DB.config.plazoHoras + ' h' : 'Rechazada: ' + motivo) });
-    if (aceptar && (l.est === 'DAN' || l.cond === 'DAÑADO')) {
-      nuevaIncidencia('DAN', v.destino, l, l.cant, 'DAÑADO', {
-        valeRef: v.num,
-        origenTrf: v.origen,
-        detalle: `Recibido con daño por transferencia ${v.num} desde ${almNombre(v.origen)}${v.obs ? ' · Obs: ' + v.obs : ''}`,
-        malUso: 'NO',
-        tipoA: !!(item(l.id) || {}).tipoA,
-        resp: v.resp ? v.resp.nombre : (v.despacha || v.realizadoPor.nombre)
-      });
+    if (l.est === 'DAN' || l.cond === 'DAÑADO') {
+      const incOrigen = (DB.incid || []).find(i => i.alm === v.origen && i.id === l.id && ['DAÑADO', 'EN TALLER'].includes(i.estado));
+      if (aceptar) {
+        if (incOrigen) {
+          incOrigen.estado = 'TRANSFERIDO';
+          incOrigen.destinoTrf = v.destino;
+          incOrigen.trfRef = v.num;
+          incOrigen.hist.push({
+            ev: 'TRANSFERIDO',
+            fecha,
+            usr: sistema ? 'SISTEMA' : S.u.nombre,
+            det: `Transferido a ${almNombre(v.destino)} mediante vale ${v.num}`
+          });
+        }
+        nuevaIncidencia('DAN', v.destino, l, l.cant, 'DAÑADO', {
+          valeRef: v.num,
+          origenTrf: v.origen,
+          detalle: `Recibido con daño por transferencia ${v.num} desde ${almNombre(v.origen)}${v.obs ? ' · Obs: ' + v.obs : ''}`,
+          malUso: 'NO',
+          tipoA: !!(item(l.id) || {}).tipoA,
+          resp: v.resp ? v.resp.nombre : (v.despacha || v.realizadoPor.nombre)
+        });
+      } else {
+        if (incOrigen) {
+          incOrigen.hist.push({
+            ev: 'REINTEGRADO',
+            fecha,
+            usr: sistema ? 'SISTEMA' : S.u.nombre,
+            det: `Transferencia ${v.num} ${sistema ? 'vencida sin respuesta' : 'rechazada (' + motivo + ')'}. Reintegrado al almacén.`
+          });
+        }
+      }
     }
   });
   v.procesadoPor = sistema ? { usuario: 'SISTEMA', nombre: 'SISTEMA' } : quien();
@@ -5317,7 +5346,7 @@ VISTAS.cIncid = p => {
   let rows = DB.incid || [];
   if (alm !== 'TODOS') rows = rows.filter(i => i.alm === alm);
   if (f === 'ABIERTAS') rows = rows.filter(i => ['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(i.estado));
-  else if (f === 'TRF') rows = rows.filter(i => i.origenTrf);
+  else if (f === 'TRF') rows = rows.filter(i => i.origenTrf || i.destinoTrf);
   else if (f !== 'TODAS') rows = rows.filter(i => i.tipo === f);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const esCentral = S.ctx === 'CENTRAL' || S.u.admin || enMaestro();
@@ -5325,7 +5354,7 @@ VISTAS.cIncid = p => {
     { t: 'Documento', k: 'valeRef' },
     { t: 'Tipo', v: r => TIPOS[r.tipo].n },
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
-    { t: 'Almacén / Origen', v: r => r.origenTrf ? `${almNombre(r.alm)} (desde ${almNombre(r.origenTrf)})` : almNombre(r.alm), f: r => r.origenTrf ? `<b>${esc(almNombre(r.alm))}</b> <span class="est est-ambar" style="font-size:10.5px">Desde ${esc(almNombre(r.origenTrf))}</span>` : esc(almNombre(r.alm)) },
+    { t: 'Almacén / Origen', v: r => r.origenTrf ? `${almNombre(r.alm)} (desde ${almNombre(r.origenTrf)})` : (r.destinoTrf ? `${almNombre(r.alm)} (hacia ${almNombre(r.destinoTrf)})` : almNombre(r.alm)), f: r => r.origenTrf ? `<b>${esc(almNombre(r.alm))}</b> <span class="est est-ambar" style="font-size:10.5px">Desde ${esc(almNombre(r.origenTrf))}</span>` : (r.destinoTrf ? `<b>${esc(almNombre(r.alm))}</b> <span class="est est-azul" style="font-size:10.5px">→ ${esc(almNombre(r.destinoTrf))}</span>` : esc(almNombre(r.alm))) },
     { t: 'Código', k: 'cod' },
     { t: 'Descripción', k: 'desc' },
     { t: 'Serial', k: 'serial' },
@@ -5336,10 +5365,10 @@ VISTAS.cIncid = p => {
     { t: 'Estado', k: 'estado', f: r => estB(r.estado) }
   ];
   const recarga = `ir('cIncid',{f:$('inFiltro').value,alm:$('inAlm')?$('inAlm').value:'${alm}'})`;
-  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja). Incluye ítems recibidos por transferencia desde otros almacenes.',
+  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja). Incluye ítems recibidos o enviados por transferencia.',
     `${botonesExport('gInc', 'Dañados y extraviados ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm)))} <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
     + `<div class="fila-filtros">
-        ${campo('Mostrar', `<select id="inFiltro" onchange="${recarga}">${opciones([['ABIERTAS', 'Casos abiertos'], ['DAN', 'Daños directos'], ['TRF', 'Recibidos por transferencia'], ['EXT', 'Robos / extravíos'], ['TODAS', 'Todos los casos']], f)}</select>`)}
+        ${campo('Mostrar', `<select id="inFiltro" onchange="${recarga}">${opciones([['ABIERTAS', 'Casos abiertos'], ['DAN', 'Daños directos'], ['TRF', 'Transferencias (recibidas / enviadas)'], ['EXT', 'Robos / extravíos'], ['TODAS', 'Todos los casos']], f)}</select>`)}
         ${esCentral ? campo('Almacén', `<select id="inAlm" onchange="${recarga}"><option value="CENTRAL" ${alm === 'CENTRAL' ? 'selected' : ''}>Almacén Central (y recibidos)</option><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.filter(a => a.c !== 'CENTRAL').map(a => [a.c, a.n]), alm)}</select>`) : ''}
         ${buscador('gInc')}
       </div>`
@@ -5355,7 +5384,7 @@ VISTAS.cIncid = p => {
 };
 function tiraInc(r) {
   $('tiNum').textContent = r.valeRef;
-  const origTxt = r.origenTrf ? ` · Recibido desde ${almNombre(r.origenTrf)}` : '';
+  const origTxt = r.origenTrf ? ` · Recibido desde ${almNombre(r.origenTrf)}` : (r.destinoTrf ? ` · Transferido a ${almNombre(r.destinoTrf)} (${r.trfRef || ''})` : '');
   $('tiInfo').innerHTML = `${esc(r.cod)} · ${esc(r.desc)} · ${estB(r.estado)}${origTxt}`;
   $('iRep').disabled = r.estado !== 'DAÑADO'; $('iOk').disabled = r.estado !== 'EN TALLER'; $('iHal').disabled = r.estado !== 'EN INVESTIGACIÓN';
   $('iBaja').disabled = !['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(r.estado); $('iVer').disabled = false;
