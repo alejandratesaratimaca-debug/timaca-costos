@@ -1445,6 +1445,16 @@ function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
       estNue: (aceptar ? 'RECIBIDO EN ' + almNombre(v.destino) : 'REINTEGRADO A ' + almNombre(v.origen)) + (l.est === 'VACIO' ? ' (VACÍO)' : (l.est === 'DAN' ? ' (DAÑADO)' : '')),
       resp: sistema ? 'SISTEMA' : S.u.nombre, cedula: sistema ? '' : S.u.cedula, usr: sistema ? 'SISTEMA' : S.u.usuario,
       obs: aceptar ? ('Transferencia aceptada' + (l.est === 'DAN' ? ' (DAÑADO)' : '')) : (sistema ? 'Vencida: sin respuesta en ' + DB.config.plazoHoras + ' h' : 'Rechazada: ' + motivo) });
+    if (aceptar && (l.est === 'DAN' || l.cond === 'DAÑADO')) {
+      nuevaIncidencia('DAN', v.destino, l, l.cant, 'DAÑADO', {
+        valeRef: v.num,
+        origenTrf: v.origen,
+        detalle: `Recibido con daño por transferencia ${v.num} desde ${almNombre(v.origen)}${v.obs ? ' · Obs: ' + v.obs : ''}`,
+        malUso: 'NO',
+        tipoA: !!(item(l.id) || {}).tipoA,
+        resp: v.resp ? v.resp.nombre : (v.despacha || v.realizadoPor.nombre)
+      });
+    }
   });
   v.procesadoPor = sistema ? { usuario: 'SISTEMA', nombre: 'SISTEMA' } : quien();
   v.procesadoEn = fecha;
@@ -5301,17 +5311,38 @@ VISTAS.cVenc = p => vistaPrestamos('Préstamos vencidos', 'Préstamos con fecha 
 VISTAS.cAsig = p => vistaPrestamos('Asignaciones por persona', 'Herramientas asignadas y EPP entregado por trabajador.', 'ASI', p ? p.est ?? '' : '', 'cAsig');
 
 VISTAS.cIncid = p => {
-  const f = (p && p.f) || 'ABIERTAS';
-  let rows = DB.incid.filter(i => i.alm === S.ctx);
+  p = p || {};
+  const f = p.f || 'ABIERTAS';
+  const alm = p.alm || S.ctx;
+  let rows = DB.incid || [];
+  if (alm !== 'TODOS') rows = rows.filter(i => i.alm === alm);
   if (f === 'ABIERTAS') rows = rows.filter(i => ['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(i.estado));
+  else if (f === 'TRF') rows = rows.filter(i => i.origenTrf);
   else if (f !== 'TODAS') rows = rows.filter(i => i.tipo === f);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
-  const cols = [{ t: 'Documento', k: 'valeRef' }, { t: 'Tipo', v: r => TIPOS[r.tipo].n }, { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha }, { t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Serial', k: 'serial' },
-    { t: 'Cant.', k: 'cant', cls: 'num' }, { t: 'Responsable', v: r => r.resp || '' }, { t: 'Mal uso', v: r => r.tipo === 'DAN' ? (r.malUso || 'NO') : '' }, { t: 'Tipo A', v: r => r.tipoA ? 'SI' : 'NO' },
-    { t: 'Detalle', v: r => r.detalle || '' }, { t: 'Estado', k: 'estado', f: r => estB(r.estado) }];
-  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja).',
-    `${botonesExport('gInc', 'Dañados y extraviados ' + almNombre(S.ctx))} <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
-    + `<div class="fila-filtros">${campo('Mostrar', `<select onchange="ir('cIncid',{f:this.value})">${opciones([['ABIERTAS', 'Casos abiertos'], ['DAN', 'Daños'], ['EXT', 'Robos / extravíos'], ['TODAS', 'Todos']], f)}</select>`)}${buscador('gInc')}</div>`
+  const esCentral = S.ctx === 'CENTRAL' || S.u.admin || enMaestro();
+  const cols = [
+    { t: 'Documento', k: 'valeRef' },
+    { t: 'Tipo', v: r => TIPOS[r.tipo].n },
+    { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
+    { t: 'Almacén / Origen', v: r => r.origenTrf ? `${almNombre(r.alm)} (desde ${almNombre(r.origenTrf)})` : almNombre(r.alm), f: r => r.origenTrf ? `<b>${esc(almNombre(r.alm))}</b> <span class="est est-ambar" style="font-size:10.5px">Desde ${esc(almNombre(r.origenTrf))}</span>` : esc(almNombre(r.alm)) },
+    { t: 'Código', k: 'cod' },
+    { t: 'Descripción', k: 'desc' },
+    { t: 'Serial', k: 'serial' },
+    { t: 'Cant.', k: 'cant', cls: 'num' },
+    { t: 'Responsable', v: r => r.resp || '' },
+    { t: 'Mal uso', v: r => r.tipo === 'DAN' ? (r.malUso || 'NO') : '' },
+    { t: 'Detalle', v: r => r.detalle || '', td: 'wrap' },
+    { t: 'Estado', k: 'estado', f: r => estB(r.estado) }
+  ];
+  const recarga = `ir('cIncid',{f:$('inFiltro').value,alm:$('inAlm')?$('inAlm').value:'${alm}'})`;
+  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja). Incluye ítems recibidos por transferencia desde otros almacenes.',
+    `${botonesExport('gInc', 'Dañados y extraviados ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm)))} <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
+    + `<div class="fila-filtros">
+        ${campo('Mostrar', `<select id="inFiltro" onchange="${recarga}">${opciones([['ABIERTAS', 'Casos abiertos'], ['DAN', 'Daños directos'], ['TRF', 'Recibidos por transferencia'], ['EXT', 'Robos / extravíos'], ['TODAS', 'Todos los casos']], f)}</select>`)}
+        ${esCentral ? campo('Almacén', `<select id="inAlm" onchange="${recarga}"><option value="CENTRAL" ${alm === 'CENTRAL' ? 'selected' : ''}>Almacén Central (y recibidos)</option><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.filter(a => a.c !== 'CENTRAL').map(a => [a.c, a.n]), alm)}</select>`) : ''}
+        ${buscador('gInc')}
+      </div>`
     + grid('gInc', cols, rows, { pag: 15, onSel: r => tiraInc(r) })
     + `<div class="sel-strip"><span class="lbl">Caso seleccionado</span><span class="box" id="tiNum"></span><span class="box" id="tiInfo" style="flex:1"></span></div>
     <div class="barra-btn">
@@ -5323,7 +5354,9 @@ VISTAS.cIncid = p => {
     </div>`;
 };
 function tiraInc(r) {
-  $('tiNum').textContent = r.valeRef; $('tiInfo').textContent = `${r.cod} · ${r.desc} · ${r.estado}`;
+  $('tiNum').textContent = r.valeRef;
+  const origTxt = r.origenTrf ? ` · Recibido desde ${almNombre(r.origenTrf)}` : '';
+  $('tiInfo').innerHTML = `${esc(r.cod)} · ${esc(r.desc)} · ${estB(r.estado)}${origTxt}`;
   $('iRep').disabled = r.estado !== 'DAÑADO'; $('iOk').disabled = r.estado !== 'EN TALLER'; $('iHal').disabled = r.estado !== 'EN INVESTIGACIÓN';
   $('iBaja').disabled = !['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(r.estado); $('iVer').disabled = false;
 }
