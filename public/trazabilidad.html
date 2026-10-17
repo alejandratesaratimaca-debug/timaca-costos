@@ -113,9 +113,9 @@ main#area{flex:1;min-width:0;overflow:auto;padding:24px 30px 44px;background:#ff
 .fila-filtros .campo{margin-bottom:0;min-width:150px}
 
 /* Tablas */
-.grid-wrap{border:1px solid var(--borde);border-radius:8px;overflow:auto;background:#fff}
-table.grid{width:100%;border-collapse:collapse;font-size:12px}
-table.grid th{background:#F8FAFC;color:var(--texto-2);font-weight:800;text-align:left;padding:10px 10px;border-bottom:2px solid var(--borde);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:1}
+.grid-wrap{border:1px solid var(--borde);border-radius:8px;overflow:auto;background:#fff;max-height:calc(100vh - 310px);min-height:180px;position:relative}
+table.grid{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+table.grid th{background:#F8FAFC;color:var(--texto-2);font-weight:800;text-align:left;padding:10px 10px;border-bottom:2px solid var(--borde);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:20;box-shadow:0 1px 2px rgba(0,0,0,0.06)}
 table.grid th .ord{color:var(--navy);margin-left:4px}
 table.grid td{padding:9px 10px;border-bottom:1px solid #F1F5F9;white-space:nowrap}
 table.grid tbody tr{cursor:pointer}
@@ -2542,7 +2542,7 @@ function menuDef() {
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
     ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
-    ['Consultas y kárdex', [ ['cPrest', 'Préstamos vigentes'], ['cVenc', 'Préstamos vencidos'], ['cAsig', 'Asignaciones por persona'],
+    ['Consultas y kárdex', [ ['cPrest', 'Préstamos y asignaciones'],
       ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cKardex', 'Kardex por código']]]
   );
   if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aPers', 'Responsables y supervisores'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
@@ -5215,7 +5215,7 @@ VISTAS.dash = p => {
   
   const avisos = [
     aviso(pendAprob, 'Solicitudes por aprobar', ['aprobar'], pendAprob ? '' : 'verde'),
-    aviso(venc.length, venc.length ? `Préstamos vencidos · máximo ${venc[0].dias} día(s) de atraso` : 'Préstamos vencidos', ['cVenc'], venc.length ? 'rojo' : 'verde'),
+    aviso(venc.length, venc.length ? `Préstamos vencidos · máximo ${venc[0].dias} día(s) de atraso` : 'Préstamos vencidos', ['cPrest', { est: 'VENCIDO' }], venc.length ? 'rojo' : 'verde'),
     aviso(epp.length, 'EPP con reposición vencida o próxima (15 días)', ['cEpp', { f: 'ALERTA' }], epp.length ? 'naranja' : 'verde'),
     aviso(porAceptar.length, porAceptar.length ? `Transferencias por aceptar · la más próxima vence en ${cronoHTML(porAceptar[0])}` : 'Transferencias por aceptar', ['trfRec'], porAceptar.length ? 'naranja' : 'verde'),
     aviso(envPend.length, `Transferencias enviadas por aceptar · ${envRiesgo.length} vencen en menos de 2 horas`, ['trfEnv', { est: 'PENDIENTE DE RECEPCIÓN' }], envRiesgo.length ? 'rojo' : ''),
@@ -5308,42 +5308,139 @@ VISTAS.cExistAnterior = p => {
     + `<div class="fila-filtros">${campo('Módulo', `<select onchange="ir('cExist',{mod:this.value})"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}${buscador('gEx')}</div>`
     + grid('gEx', cols, rows, { pag: 20, onSel: r => ir('cKardex', { q: r.it.serial || r.it.cod }) }) + '<p class="ayuda-txt" style="margin-top:8px">Haga clic en un ítem para ver su kardex.</p>';
 };
-function vistaPrestamos(tit, sub, tipo, estado, id) {
-  let rows = DB.vales.filter(v => v.origen === S.ctx && (tipo ? v.tipo === tipo : (v.tipo === 'PRH' || v.tipo === 'ASI')));
+function vistaPrestamos(tit, sub, p) {
+  if (typeof p === 'string') {
+    p = { tipo: arguments[2], est: arguments[3], id: arguments[4] };
+  }
+  p = p || {};
+  const id = p.id || 'cPrest';
+  const tipo = p.tipo !== undefined ? p.tipo : '';
+  const estado = p.est !== undefined ? p.est : 'ABIERTOS';
+  const resp = p.resp || '';
+  const proy = p.proy || '';
+  const cuenta = p.cuenta || '';
+  const desde = p.desde || '';
+  const hasta = p.hasta || '';
+
+  let rows = DB.vales.filter(v => {
+    if (v.origen !== S.ctx) return false;
+    if (tipo) {
+      if (v.tipo !== tipo) return false;
+    } else {
+      if (v.tipo !== 'PRH' && v.tipo !== 'ASI') return false;
+    }
+    // Responsable
+    if (resp) {
+      const nom = (v.resp && v.resp.nombre) ? v.resp.nombre : (typeof v.resp === 'string' ? v.resp : '');
+      const ci = (v.resp && v.resp.cedula) ? v.resp.cedula : '';
+      if (nom !== resp && ci !== resp) return false;
+    }
+    // Proyecto
+    if (proy) {
+      const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
+      const matchC = (v.cuenta || '').toUpperCase() === proy.toUpperCase();
+      if (!matchP && !matchC) return false;
+    }
+    // Cuenta auxiliar
+    if (cuenta) {
+      if (!(v.cuenta || '').toUpperCase().includes(cuenta.toUpperCase().trim())) return false;
+    }
+    // Rango de fechas
+    const fStr = (v.fecha || '').slice(0, 10);
+    if (desde && fStr < desde) return false;
+    if (hasta && fStr > hasta) return false;
+
+    return true;
+  });
+
   rows = rows.map(v => ({ v, est: estadoVale(v) }));
-  if (estado === 'ABIERTOS') rows = rows.filter(r => ['VIGENTE', 'VENCIDO', 'DEVOLUCIÓN PARCIAL'].includes(r.est));
-  else if (estado) rows = rows.filter(r => r.est === estado);
+  if (estado === 'ABIERTOS') {
+    rows = rows.filter(r => ['VIGENTE', 'VENCIDO', 'DEVOLUCIÓN PARCIAL'].includes(r.est));
+  } else if (estado) {
+    rows = rows.filter(r => r.est === estado);
+  }
   rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha));
+
   const cols = [
-    { t: 'N° de vale', v: r => r.v.num },
-    { t: 'Tipo de movimiento', v: r => `${r.v.tipo} - ${TIPOS[r.v.tipo].n}` },
+    { t: 'N° de vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
+    { t: 'Tipo', v: r => `${r.v.tipo} - ${TIPOS[r.v.tipo] ? TIPOS[r.v.tipo].n : r.v.tipo}` },
     { t: 'Fecha y hora', v: r => fFH(r.v.fecha), s: r => r.v.fecha },
-    { t: 'Cuenta auxiliar', v: r => r.v.cuenta || '—' },
-    { t: 'Descripción del proyecto', v: r => r.v.proyecto || '—' },
-    { t: 'Responsable', v: r => r.v.resp ? r.v.resp.nombre : '—' },
+    { t: 'Cuenta auxiliar', v: r => r.v.cuenta || '—', f: r => r.v.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.v.cuenta)}</span>` : '—' },
+    { t: 'Proyecto', v: r => r.v.proyecto || '—', td: 'wrap' },
+    { t: 'Responsable', v: r => r.v.resp ? r.v.resp.nombre : '—', f: r => r.v.resp ? `<b>${esc(r.v.resp.nombre)}</b>` : '—' },
     { t: 'Cédula', v: r => r.v.resp ? r.v.resp.cedula : '—' },
     { t: 'Cargo', v: r => r.v.resp ? r.v.resp.cargo : '—' },
     { t: 'Supervisor', v: r => r.v.sup || '—' },
-    { t: 'Fecha de devolución', v: r => r.v.fechaDev ? fF(r.v.fechaDev) : (r.v.tipo === 'ASI' ? 'Indefinida' : '—'), s: r => r.v.fechaDev || '9999' },
-    { t: 'Días de atraso', v: r => r.v.tipo === 'PRH' && r.est === 'VENCIDO' ? diasEntre(r.v.fechaDev, hoy()) : 0, cls: 'cen', td: 'col-dan' },
+    { t: 'Fecha devolución', v: r => r.v.fechaDev ? fF(r.v.fechaDev) : (r.v.tipo === 'ASI' ? 'Indefinida' : '—'), s: r => r.v.fechaDev || '9999' },
+    { t: 'Días atraso', v: r => (r.v.tipo === 'PRH' && r.est === 'VENCIDO') ? diasEntre(r.v.fechaDev, hoy()) : 0, cls: 'cen', f: r => {
+      const d = (r.v.tipo === 'PRH' && r.est === 'VENCIDO') ? diasEntre(r.v.fechaDev, hoy()) : 0;
+      return d > 0 ? `<span style="color:#dc2626;font-weight:800">${d} d</span>` : '<span style="color:#94a3b8">0</span>';
+    } },
     { t: 'Extensiones', v: r => r.v.extensiones || 0, cls: 'cen' },
     { t: 'Saldo', v: r => saldoVale(r.v), cls: 'cen', td: 'col-prest' },
     { t: 'Estado', v: r => r.est, f: r => estB(r.est) }
   ];
+
+  // Construir lista de responsables únicos para selector
+  const mapResp = new Map();
+  (DB.personal || []).forEach(p => {
+    if (p && p.nombre) mapResp.set(p.nombre, p.cedula ? `${p.nombre} (${p.cedula})` : p.nombre);
+  });
+  (DB.vales || []).forEach(v => {
+    if (v.resp && v.resp.nombre && !mapResp.has(v.resp.nombre)) {
+      mapResp.set(v.resp.nombre, v.resp.cedula ? `${v.resp.nombre} (${v.resp.cedula})` : v.resp.nombre);
+    }
+  });
+  const listaResp = [...mapResp.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+  const recargar = `ir('cPrest',{tipo:$('pTipo').value,est:$('pEst').value,resp:$('pResp').value,proy:$('pProy').value,cuenta:$('pCuenta').value,desde:$('pDesde').value,hasta:$('pHasta').value})`;
+  const hayFiltros = Boolean(tipo || (estado && estado !== 'ABIERTOS') || resp || proy || cuenta || desde || hasta);
+
   $('area').innerHTML = cab(tit, sub, botonesExport('gPr', tit + ' ' + almNombre(S.ctx)))
-    + `<div class="fila-filtros">${id === 'cAsig' ? '' : campo('Tipo', `<select onchange="ir('${id}',{tipo:this.value,est:'${estado}'})"><option value="">Préstamos y asignaciones</option>${opciones([['PRH', 'Préstamos'], ['ASI', 'Asignaciones']], tipo)}</select>`)}
-      ${campo('Estado', `<select onchange="ir('${id}',{tipo:'${tipo}',est:this.value})">${opciones([['ABIERTOS', 'Con saldo pendiente'], ['VIGENTE', 'Vigentes'], ['VENCIDO', 'Vencidos'], ['DEVOLUCIÓN PARCIAL', 'Devolución parcial'], ['CERRADO', 'Cerrados'], ['ENTREGADO', 'EPP entregado'], ['', 'Todos']], estado)}</select>`)}${buscador('gPr', 'Buscar responsable, cédula, código, proyecto…')}</div>`
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('Tipo', `<select id="pTipo" onchange="${recargar}">
+          <option value="">Todos (Préstamos y Asignaciones)</option>
+          <option value="PRH" ${tipo === 'PRH' ? 'selected' : ''}>PRH - Préstamos de herramientas</option>
+          <option value="ASI" ${tipo === 'ASI' ? 'selected' : ''}>ASI - Asignaciones a personas</option>
+        </select>`)}
+        ${campo('Estado', `<select id="pEst" onchange="${recargar}">
+          ${opciones([
+            ['ABIERTOS', 'Con saldo pendiente (Vigentes y Vencidos)'],
+            ['VIGENTE', 'Vigentes'],
+            ['VENCIDO', 'Vencidos'],
+            ['DEVOLUCIÓN PARCIAL', 'Devolución parcial'],
+            ['CERRADO', 'Cerrados'],
+            ['ENTREGADO', 'EPP entregado'],
+            ['', 'Todos los estados']
+          ], estado)}
+        </select>`)}
+        ${campo('Responsable', `<select id="pResp" onchange="${recargar}" style="max-width:200px">
+          <option value="">Todos los responsables</option>
+          ${opciones(listaResp, resp)}
+        </select>`)}
+        ${campo('Proyecto', `<select id="pProy" onchange="${recargar}" style="max-width:200px">
+          <option value="">Todos los proyectos</option>
+          ${opciones(DB.proyectos.map(pr => [pr.cuenta, `${pr.cuenta} · ${(pr.nombre.length > 25 ? pr.nombre.slice(0, 25) + '…' : pr.nombre)}`]), proy)}
+        </select>`)}
+        ${campo('Cuenta aux.', `<input id="pCuenta" value="${esc(cuenta)}" placeholder="Ej. 10.01.05" style="max-width:110px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Desde', `<input type="date" id="pDesde" value="${esc(desde)}" onchange="${recargar}">`)}
+        ${campo('Hasta', `<input type="date" id="pHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
+        ${hayFiltros ? `<button class="btn btn-claro" onclick="ir('cPrest')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gPr', 'Buscar responsable, cédula, código, proyecto, vale…')}
+      </div>`
     + grid('gPr', cols, rows, { pag: 15, onSel: r => tiraPr(r.v) })
     + `<div class="sel-strip"><span class="lbl">Vale seleccionado</span><span class="box" id="tpNum"></span><span class="box" id="tpInfo" style="flex:1"></span></div>
-    <div class="barra-btn"><button class="btn-sip" id="pVer" disabled onclick="ir('doc',{num:selDe('gPr').v.num,back:'${id}'})">Visualizar vale</button>
+    <div class="barra-btn">
+      <button class="btn-sip" id="pVer" disabled onclick="ir('doc',{num:selDe('gPr').v.num,back:'cPrest'})">Visualizar vale</button>
       <button class="btn-sip" id="pImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gPr').v.num)">Imprimir vale</button>
       <button class="btn-sip" id="pDev" disabled onclick="ir('dev',{vale:selDe('gPr').v.num})">Registrar devolución</button>
-      <button class="btn-sip" id="pPlz" disabled onclick="ir('plz',{vale:selDe('gPr').v.num})">Extender plazo</button></div>`;
+      <button class="btn-sip" id="pPlz" disabled onclick="ir('plz',{vale:selDe('gPr').v.num})">Extender plazo</button>
+    </div>`;
 }
 function tiraPr(v) { $('tpNum').textContent = v.num; $('tpInfo').textContent = `${v.resp ? v.resp.nombre : ''} · ${v.proyecto || ''}`; $('pVer').disabled = false; $('pImp').disabled = false; $('pDev').disabled = saldoVale(v) === 0; $('pPlz').disabled = !(v.tipo === 'PRH' && saldoVale(v) > 0); }
-VISTAS.cPrest = p => vistaPrestamos('Préstamos vigentes', 'Préstamos y asignaciones con saldo pendiente de devolución.', p ? p.tipo ?? 'PRH' : 'PRH', p ? p.est ?? 'ABIERTOS' : 'ABIERTOS', 'cPrest');
-VISTAS.cVenc = p => vistaPrestamos('Préstamos vencidos', 'Préstamos con fecha de devolución vencida y saldo pendiente.', 'PRH', p ? p.est ?? 'VENCIDO' : 'VENCIDO', 'cVenc');
-VISTAS.cAsig = p => vistaPrestamos('Asignaciones por persona', 'Herramientas asignadas y EPP entregado por trabajador.', 'ASI', p ? p.est ?? '' : '', 'cAsig');
+VISTAS.cPrest = p => vistaPrestamos('Préstamos y asignaciones', 'Control integral de préstamos vigentes, vencidos, devoluciones y asignaciones en ' + almNombre(S.ctx) + '.', p);
+VISTAS.cVenc = p => VISTAS.cPrest(Object.assign({ est: 'VENCIDO', tipo: 'PRH' }, p || {}));
+VISTAS.cAsig = p => VISTAS.cPrest(Object.assign({ tipo: 'ASI', est: '' }, p || {}));
 
 VISTAS.cIncid = p => {
   p = p || {};
