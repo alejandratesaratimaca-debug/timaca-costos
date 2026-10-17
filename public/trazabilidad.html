@@ -536,6 +536,7 @@ const EST_COLOR = {
   'PENDIENTE DE RECEPCIÓN': 'gris', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
   'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris', 'TRANSFERIDO': 'azul',
+  'EN ESPERA DE ACEPTACIÓN': 'naranja', 'POR ACEPTAR': 'naranja',
   'EN INVESTIGACIÓN': 'naranja', 'RECUPERADO': 'verde', 'ACTIVO': 'verde', 'INACTIVO': 'gris',
   'DISPONIBLE': 'verde', 'VACÍO': 'naranja', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
   'SUFICIENTE': 'verde', 'LIMITANTE': 'naranja', 'NO EXISTE': 'gris'
@@ -4837,9 +4838,10 @@ const colsTrf = (recibidas) => [
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
   { t: 'Tiempo restante (12 h)', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
   { t: 'Estatus', k: 'estatus', f: r => {
-    if (r.estatus === 'PENDIENTE DE RECEPCIÓN') return `<span class="est est-naranja">⏱ POR ACEPTAR</span>`;
+    if (r.estatus === 'PENDIENTE DE RECEPCIÓN') return `<span class="est est-naranja">⏱ EN ESPERA DE ACEPTACIÓN</span>`;
     if (r.estatus === 'RECIBIDA') return `<span class="est est-verde">ACEPTADA</span>`;
     if (r.estatus === 'RECHAZADA') return `<span class="est est-rojo">RECHAZADA</span>`;
+    if (r.estatus === 'VENCIDA') return `<span class="est est-rojo">VENCIDA</span>`;
     return estB(r.estatus);
   }},
   { t: 'Realizado por', v: r => r.realizadoPor.nombre },
@@ -4877,7 +4879,7 @@ VISTAS.trfRec = p => {
   $('area').innerHTML = cab('Transferencias recibidas', `Transferencias enviadas a ${esc(almNombre(S.ctx))}. Tiene ${DB.config.plazoHoras} horas para aceptar o rechazar cada una; si no, el material regresa al almacén de origen.`, botonesExport('gRec', 'Transferencias recibidas ' + almNombre(S.ctx)))
     + (perm ? '' : avisoSinPermiso('Su usuario no tiene permiso para recibir transferencias en este almacén. Puede consultarlas, pero no aceptarlas ni rechazarlas.'))
     + `<div class="fila-filtros">
-        ${campo('Estatus', `<select id="frEst" onchange="${recarga}">${opciones([['PENDIENTE DE RECEPCIÓN', 'Por aceptar'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['TODAS', 'Todas']], f.est)}</select>`)}
+        ${campo('Estatus', `<select id="frEst" onchange="${recarga}">${opciones([['PENDIENTE DE RECEPCIÓN', 'En espera de aceptación'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['TODAS', 'Todas']], f.est)}</select>`)}
         ${campo('Desde', `<input type="date" id="frDesde" value="${f.desde}" onchange="${recarga}">`)}
         ${campo('Hasta', `<input type="date" id="frHasta" value="${f.hasta}" onchange="${recarga}">`)}
         ${buscador('gRec')}
@@ -4895,7 +4897,7 @@ VISTAS.trfRec = p => {
 function tiraTrf(v, k) {
   if (k === 'r') {
     $('trNum').textContent = v.num;
-    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
+    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'EN ESPERA DE ACEPTACIÓN' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
     const nDan = (v.lineas || []).filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
     const badgeDan = nDan > 0 ? ` · <span class="est est-rojo">⚠️ CONTIENE ${nDan} ÍTEM(S) DAÑADO(S)</span>` : '';
     const obsTxt = v.obs ? `<br><small style="color:var(--texto-2);font-size:12px"><b>Observación:</b> ${esc(v.obs)}</small>` : '';
@@ -4903,7 +4905,12 @@ function tiraTrf(v, k) {
     const ok = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('recibir', v.destino);
     $('rVer').disabled = false; $('rImp').disabled = false; $('rOk').disabled = !ok; $('rNo').disabled = !ok;
   } else {
-    $('teNum').textContent = v.num; $('teInfo').textContent = `Hacia ${almNombre(v.destino)} · ${v.estatus}`;
+    $('teNum').textContent = v.num;
+    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'EN ESPERA DE ACEPTACIÓN' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
+    const nDan = (v.lineas || []).filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
+    const badgeDan = nDan > 0 ? ` · <span class="est est-rojo">⚠️ CONTIENE ${nDan} ÍTEM(S) DAÑADO(S)</span>` : '';
+    const obsTxt = v.obs ? `<br><small style="color:var(--texto-2);font-size:12px"><b>Observación:</b> ${esc(v.obs)}</small>` : '';
+    $('teInfo').innerHTML = `${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(v) + ' · ' : ''}Hacia <b>${esc(almNombre(v.destino))}</b> · ${estB(estTxt)}${badgeDan}${obsTxt}`;
     const editable = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('transferir', v.origen);
     if ($('eEdit')) $('eEdit').disabled = !editable;
     ['eVer', 'eImp', 'eHist'].forEach(i => $(i).disabled = false);
@@ -4941,11 +4948,11 @@ VISTAS.trfEnv = p => {
   if (f.est !== 'TODAS') rows = rows.filter(v => v.estatus === f.est);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const cuenta = e => rows.filter(v => v.estatus === e).length;
-  const resumen = `Creadas: <b>${rows.length}</b> · Recibidas: <b>${cuenta('RECIBIDA')}</b> · Rechazadas: <b>${cuenta('RECHAZADA')}</b> · Vencidas: <b>${cuenta('VENCIDA')}</b> · Pendientes: <b>${cuenta('PENDIENTE DE RECEPCIÓN')}</b>`;
+  const resumen = `Creadas: <b>${rows.length}</b> · Recibidas: <b>${cuenta('RECIBIDA')}</b> · Rechazadas: <b>${cuenta('RECHAZADA')}</b> · Vencidas: <b>${cuenta('VENCIDA')}</b> · En espera de aceptación: <b>${cuenta('PENDIENTE DE RECEPCIÓN')}</b>`;
   const recarga = `ir('trfEnv',{dest:$('feDest').value,est:$('feEst').value,desde:$('feDesde').value,hasta:$('feHasta').value})`;
   $('area').innerHTML = cab('Transferencias enviadas', 'Registro histórico permanente de las transferencias creadas desde ' + esc(almNombre(S.ctx)) + '.', botonesExport('gEnv', 'Transferencias enviadas ' + almNombre(S.ctx)))
     + `<div class="fila-filtros">${campo('Destino', selAlm('feDest', f.dest, destinosPermitidos(S.ctx), true, recarga))}
-      ${campo('Estatus', `<select id="feEst" onchange="${recarga}">${opciones(['TODAS', 'PENDIENTE DE RECEPCIÓN', 'RECIBIDA', 'RECHAZADA', 'VENCIDA'], f.est)}</select>`)}
+      ${campo('Estatus', `<select id="feEst" onchange="${recarga}">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE RECEPCIÓN', 'En espera de aceptación'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['VENCIDA', 'Vencidas']], f.est)}</select>`)}
       ${campo('Desde', `<input type="date" id="feDesde" value="${f.desde}" onchange="${recarga}">`)}${campo('Hasta', `<input type="date" id="feHasta" value="${f.hasta}" onchange="${recarga}">`)}${buscador('gEnv')}</div>`
     + grid('gEnv', colsTrf(false), rows, { onSel: v => tiraTrf(v, 'e'), pag: 15, vacio: 'No hay transferencias en el período.' })
     + `<div class="franja-est gris" style="margin-top:10px"><span>Resumen del período: ${resumen}</span></div>
