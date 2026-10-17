@@ -4603,7 +4603,7 @@ VISTAS.doc = p => {
         <td class="cen"><span class="est est-${l.condicion === 'ÓPTIMO' ? 'verde' : 'rojo'}">${esc(l.condicion || l.cond)}</span></td>
         <td class="cen">${l.danRef ? `<span class="est est-rojo">${esc(l.danRef)}</span> ` : ''}${l.extRef ? `<span class="est est-naranja">${esc(l.extRef)}</span>` : ''}${(!l.danRef && !l.extRef) ? '—' : ''}</td>
       </tr>`).join('')
-    : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
+    : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${l.cond === 'DAÑADO' ? '<span class="est est-rojo">DAÑADO</span>' : esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
   const und = d.lineas.reduce((a, l) => a + l.cant, 0);
   const acciones = accionesDoc(d, esSol, p);
   const nota = esSol ? ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') ? motivoNoAprueba(d) : (d.estatus === 'APROBADO' || d.estatus === 'APROBADA') ? (d.vale ? `Vale ${d.vale} emitido.` : '') : '') : '';
@@ -4808,7 +4808,12 @@ const colsTrf = (recibidas) => [
   { t: 'Responsable', v: r => r.resp ? r.resp.nombre : '—' },
   { t: 'Proyecto / OT', v: r => r.proyecto || '—' },
   { t: 'Supervisor', v: r => r.sup || '—' },
-  { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
+  { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), f: r => {
+    const u = r.lineas.reduce((a, l) => a + l.cant, 0);
+    const d = r.lineas.some(l => l.cond === 'DAÑADO' || l.est === 'DAN');
+    return d ? `<b>${u}</b> <span class="est est-rojo" style="font-size:10px;padding:2px 5px;margin-left:4px" title="Contiene ítems dañados">⚠️ DAÑADO</span>` : `<b>${u}</b>`;
+  }, cls: 'num' },
+  { t: 'Observación', v: r => r.obs || '—', td: 'wrap' },
   { t: 'Procesado por', v: r => r.procesadoPor ? r.procesadoPor.nombre : '' },
   { t: 'Fecha procesamiento', v: r => r.procesadoEn ? fFH(r.procesadoEn) : '', s: r => r.procesadoEn || '' },
   { t: 'Motivo', v: r => r.motivo || '' }
@@ -4852,7 +4857,10 @@ function tiraTrf(v, k) {
   if (k === 'r') {
     $('trNum').textContent = v.num;
     const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
-    $('trInfo').innerHTML = `${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(v) + ' · ' : ''}Desde <b>${esc(almNombre(v.origen))}</b> · ${esc(v.realizadoPor.nombre)} · ${estB(estTxt)}`;
+    const nDan = (v.lineas || []).filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
+    const badgeDan = nDan > 0 ? ` · <span class="est est-rojo">⚠️ CONTIENE ${nDan} ÍTEM(S) DAÑADO(S)</span>` : '';
+    const obsTxt = v.obs ? `<br><small style="color:var(--texto-2);font-size:12px"><b>Observación:</b> ${esc(v.obs)}</small>` : '';
+    $('trInfo').innerHTML = `${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(v) + ' · ' : ''}Desde <b>${esc(almNombre(v.origen))}</b> · ${esc(v.realizadoPor.nombre)} · ${estB(estTxt)}${badgeDan}${obsTxt}`;
     const ok = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('recibir', v.destino);
     $('rVer').disabled = false; $('rImp').disabled = false; $('rOk').disabled = !ok; $('rNo').disabled = !ok;
   } else {
@@ -4864,7 +4872,14 @@ function tiraTrf(v, k) {
 }
 function accionAceptarTrf(n) {
   const v = valeDe(n);
-  confirmar(`¿Aceptar la transferencia <b>${n}</b> desde ${esc(almNombre(v.origen))}? Los ${v.lineas.reduce((a, l) => a + l.cant, 0)} ítems quedarán disponibles en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(n); toast(`Transferencia ${n} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
+  const nDan = v.lineas.filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
+  const nDisp = v.lineas.filter(l => l.cond !== 'DAÑADO' && l.est !== 'DAN' && l.est !== 'VACIO').reduce((a, l) => a + l.cant, 0);
+  const nVac = v.lineas.filter(l => l.est === 'VACIO').reduce((a, l) => a + l.cant, 0);
+  const det = [];
+  if (nDisp > 0) det.push(`<b>${nDisp}</b> disponibles`);
+  if (nVac > 0) det.push(`<b>${nVac}</b> vacíos`);
+  if (nDan > 0) det.push(`<b style="color:var(--rojo)">${nDan} DAÑADOS</b> (ingresarán a Dañados / En taller)`);
+  confirmar(`¿Aceptar la transferencia <b>${n}</b> desde ${esc(almNombre(v.origen))}?<br><br>Carga: ${det.join(', ')} en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(n); toast(`Transferencia ${n} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
 }
 function accionRechazarTrf(n) { pedirTexto('Rechazar transferencia ' + n, 'Motivo del rechazo (obligatorio)', v => { rechazarTransferencia(n, v); toast(`Transferencia ${n} rechazada. El material regresó al almacén de origen.`, 'ok'); pintarMenu(); refrescar(); }, 'Rechazar transferencia', 'btn-rojo', true); }
 function editarTransferencia(n) {
