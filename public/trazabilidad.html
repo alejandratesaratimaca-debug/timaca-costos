@@ -1115,17 +1115,17 @@ function mov(m) {
 
 /* ----------------------------- Líneas ----------------------------- */
 function lineaDe(it, cant, cond) {
-  const est = (it.mod === 'CILINDRO' && cond === 'VACÍO') ? 'VACIO' : 'DISP';
+  const est = cond === 'DAÑADO' ? 'DAN' : ((it.mod === 'CILINDRO' && cond === 'VACÍO') ? 'VACIO' : 'DISP');
   return { id: it.id, cod: it.cod, desc: it.desc, marca: it.marca, modelo: it.modelo, serial: it.serial || '', cat: it.cat, umb: it.umb, mod: it.mod, cond, est, cant: Number(cant), dev: 0 };
 }
-const nomBucket = { DISP: 'DISPONIBLE', VACIO: 'VACÍO' };
+const nomBucket = { DISP: 'DISPONIBLE', VACIO: 'VACÍO', DAN: 'DAÑADO' };
 function validarStock(alm, lineas) {
   const req = {};
   lineas.forEach(l => { const k = l.id + '|' + l.est; req[k] = (req[k] || 0) + Number(l.cant); });
   Object.keys(req).forEach(k => {
     const [id, est] = k.split('|'); const e = exi(alm, +id); const it = item(+id);
-    const d = est === 'VACIO' ? e.vacio : e.disp;
-    if (req[k] > d) throw new Error(`Existencia insuficiente en ${almNombre(alm)} para ${it.cod} · ${it.desc}${it.serial ? ' (' + it.serial + ')' : ''}: disponible ${d}, requerido ${req[k]}.`);
+    const d = est === 'VACIO' ? e.vacio : (est === 'DAN' ? e.dan : e.disp);
+    if (req[k] > d) throw new Error(`Existencia insuficiente en ${almNombre(alm)} para ${it.cod} · ${it.desc}${it.serial ? ' (' + it.serial + ')' : ''} [${nomBucket[est] || est}]: disponible ${d}, requerido ${req[k]}.`);
   });
 }
 function saldoLinea(l) { return l.consumo ? 0 : (l.cant - (l.dev || 0)); }
@@ -1364,9 +1364,11 @@ function crearTransferencia(d) {
   v.vence = new Date(new Date(v.fecha).getTime() + DB.config.plazoHoras * 3600000).toISOString();
   lineas.forEach(l => {
     const e = exi(d.origen, l.id);
-    if (l.est === 'VACIO') e.vacio -= l.cant; else e.disp -= l.cant;
+    if (l.est === 'VACIO') e.vacio -= l.cant;
+    else if (l.est === 'DAN') e.dan -= l.cant;
+    else e.disp -= l.cant;
     e.pend += l.cant;
-    mov({ doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: d.origen, destino: d.destino, estAnt: nomBucket[l.est], estNue: 'PENDIENTE DE RECEPCIÓN', resp: (d.resp ? d.resp.nombre : S.u.nombre), cedula: (d.resp ? d.resp.cedula : S.u.cedula), obs: (d.proyecto ? 'Proyecto: ' + d.proyecto : 'Transferencia creada') });
+    mov({ doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: d.origen, destino: d.destino, estAnt: nomBucket[l.est] || 'DISPONIBLE', estNue: 'PENDIENTE DE RECEPCIÓN', resp: (d.resp ? d.resp.nombre : S.u.nombre), cedula: (d.resp ? d.resp.cedula : S.u.cedula), obs: (d.proyecto ? 'Proyecto: ' + d.proyecto : 'Transferencia creada' + (l.est === 'DAN' ? ' (DAÑADO)' : '')) });
   });
   v.hist.push({ ev: 'Creada', fecha: v.fecha, usr: S.u.nombre, det: `Enviada a ${almNombre(d.destino)}`, color: '' });
   bit('TRANSFERENCIA CREADA', `${v.num} ${d.origen} → ${d.destino}`); guardar();
@@ -1384,7 +1386,9 @@ function actualizarTransferencia(num, d) {
   v.lineas.forEach(l => {
     const eo = exi(v.origen, l.id);
     eo.pend -= l.cant;
-    if (l.est === 'VACIO') eo.vacio += l.cant; else eo.disp += l.cant;
+    if (l.est === 'VACIO') eo.vacio += l.cant;
+    else if (l.est === 'DAN') eo.dan += l.cant;
+    else eo.disp += l.cant;
   });
 
   // 2. Validar que el stock alcance para las nuevas líneas
@@ -1394,7 +1398,9 @@ function actualizarTransferencia(num, d) {
     // Si falla la validación, restaurar la retención original antes de lanzar error
     v.lineas.forEach(l => {
       const eo = exi(v.origen, l.id);
-      if (l.est === 'VACIO') eo.vacio -= l.cant; else eo.disp -= l.cant;
+      if (l.est === 'VACIO') eo.vacio -= l.cant;
+      else if (l.est === 'DAN') eo.dan -= l.cant;
+      else eo.disp -= l.cant;
       eo.pend += l.cant;
     });
     throw err;
@@ -1403,7 +1409,9 @@ function actualizarTransferencia(num, d) {
   // 3. Aplicar retención para las nuevas líneas
   d.lineas.forEach(l => {
     const eo = exi(v.origen, l.id);
-    if (l.est === 'VACIO') eo.vacio -= l.cant; else eo.disp -= l.cant;
+    if (l.est === 'VACIO') eo.vacio -= l.cant;
+    else if (l.est === 'DAN') eo.dan -= l.cant;
+    else eo.disp -= l.cant;
     eo.pend += l.cant;
   });
 
@@ -1430,11 +1438,13 @@ function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
     const eo = exi(v.origen, l.id); eo.pend -= l.cant;
     const alm = aceptar ? v.destino : v.origen;
     const e = exi(alm, l.id);
-    if (l.est === 'VACIO') e.vacio += l.cant; else e.disp += l.cant;
+    if (l.est === 'VACIO') e.vacio += l.cant;
+    else if (l.est === 'DAN') e.dan += l.cant;
+    else e.disp += l.cant;
     mov({ fecha, doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: v.origen, destino: v.destino, estAnt: 'PENDIENTE DE RECEPCIÓN',
-      estNue: (aceptar ? 'RECIBIDO EN ' + almNombre(v.destino) : 'REINTEGRADO A ' + almNombre(v.origen)) + (l.est === 'VACIO' ? ' (VACÍO)' : ''),
+      estNue: (aceptar ? 'RECIBIDO EN ' + almNombre(v.destino) : 'REINTEGRADO A ' + almNombre(v.origen)) + (l.est === 'VACIO' ? ' (VACÍO)' : (l.est === 'DAN' ? ' (DAÑADO)' : '')),
       resp: sistema ? 'SISTEMA' : S.u.nombre, cedula: sistema ? '' : S.u.cedula, usr: sistema ? 'SISTEMA' : S.u.usuario,
-      obs: aceptar ? 'Transferencia aceptada' : (sistema ? 'Vencida: sin respuesta en ' + DB.config.plazoHoras + ' h' : 'Rechazada: ' + motivo) });
+      obs: aceptar ? ('Transferencia aceptada' + (l.est === 'DAN' ? ' (DAÑADO)' : '')) : (sistema ? 'Vencida: sin respuesta en ' + DB.config.plazoHoras + ' h' : 'Rechazada: ' + motivo) });
   });
   v.procesadoPor = sistema ? { usuario: 'SISTEMA', nombre: 'SISTEMA' } : quien();
   v.procesadoEn = fecha;
@@ -4065,8 +4075,8 @@ function filaCaptura() {
     <button class="btn-salvar" onclick="salvarLinea()">Salvar</button>
   </div>`;
 }
-function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO' ? e.vacio : e.disp; }
-const estDe = (it, cond) => it.mod === 'CILINDRO' && cond === 'VACÍO' ? 'VACIO' : 'DISP';
+function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO' ? e.vacio : (est === 'DAN' ? e.dan : e.disp); }
+const estDe = (it, cond) => cond === 'DAÑADO' ? 'DAN' : (it.mod === 'CILINDRO' && cond === 'VACÍO' ? 'VACIO' : 'DISP');
 function dispCaptura(it, cond) {
   const est = estDe(it, cond);
   let extra = 0;
@@ -4077,13 +4087,14 @@ function dispCaptura(it, cond) {
   return (dispItem(F.origen, it.id, est) + extra) - usado;
 }
 const aceptaVacios = () => F.tipo === 'TRF' || F.tipo === 'DAN' || F.tipo === 'EXT';
+const aceptaDañados = () => F.tipo === 'TRF' || F.tipo === 'DAN';
 function dispTotalItem(it) {
   const e = exi(F.origen, it.id);
   let extra = 0;
   if (F.lineasOriginales) {
     extra = F.lineasOriginales.filter(l => l.id === it.id).reduce((a, l) => a + l.cant, 0);
   }
-  return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0) + extra;
+  return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0) + (aceptaDañados() ? e.dan : 0) + extra;
 }
 function itemsBuscables() {
   return DB.catalogo.filter(it => it.activo && !(F.tipo === 'PRH' && it.mod === 'EPP')).filter(it => dispTotalItem(it) > 0);
@@ -4144,8 +4155,18 @@ function alCambiarSerial() {
   const it = item(Number($('cSerial').value)); if (!it) return;
   F.cap = it;
   const cond = $('cCond');
-  if (it.mod === 'CILINDRO') cond.innerHTML = (F.tipo === 'PRH' || F.tipo === 'ASI') ? '<option>LLENO</option>' : opciones(exi(F.origen, it.id).disp > 0 ? ['LLENO', 'VACÍO'] : ['VACÍO', 'LLENO']);
-  else cond.innerHTML = opciones(it.mod === 'EPP' ? ['NUEVO', 'ÓPTIMO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']);
+  if (it.mod === 'CILINDRO') {
+    if (F.tipo === 'PRH' || F.tipo === 'ASI') cond.innerHTML = '<option>LLENO</option>';
+    else {
+      const e = exi(F.origen, it.id);
+      const opcs = [];
+      if (e.disp > 0) opcs.push('LLENO');
+      if (e.vacio > 0) opcs.push('VACÍO');
+      if (e.dan > 0 || F.tipo === 'TRF' || F.tipo === 'DAN') opcs.push('DAÑADO');
+      if (!opcs.length) opcs.push('LLENO', 'VACÍO', 'DAÑADO');
+      cond.innerHTML = opciones(opcs);
+    }
+  } else cond.innerHTML = opciones(it.mod === 'EPP' ? ['NUEVO', 'ÓPTIMO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']);
   if (F.tipo === 'DAN') cond.value = 'DAÑADO';
   $('cCant').value = 1; $('cCant').readOnly = !!it.serial; $('cCant').title = it.serial ? 'Ítem con serial único: cantidad 1. Presione Enter o Salvar.' : '';
   actualizarDispCaptura();
