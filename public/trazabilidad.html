@@ -531,12 +531,11 @@ const UMBS_OFICIALES = [
   'M3'
 ];
 const EST_COLOR = {
-  'PENDIENTE DE APROBACIÓN': 'naranja', 'APROBADA': 'verde', 'ANULADA': 'rojo',
+  'PENDIENTE DE APROBACIÓN': 'naranja', 'POR APROBAR': 'naranja', 'APROBADA': 'verde', 'ANULADA': 'rojo',
   'NO FINALIZADO': 'naranja', 'FINALIZADO': 'naranja', 'APROBADO': 'verde', 'ANULADO': 'rojo',
-  'PENDIENTE DE RECEPCIÓN': 'gris', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
+  'PENDIENTE DE RECEPCIÓN': 'naranja', 'POR ACEPTAR': 'naranja', 'EN ESPERA DE ACEPTACIÓN': 'naranja', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
   'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris', 'TRANSFERIDO': 'azul',
-  'EN ESPERA DE ACEPTACIÓN': 'naranja', 'POR ACEPTAR': 'naranja',
   'EN INVESTIGACIÓN': 'naranja', 'RECUPERADO': 'verde', 'ACTIVO': 'verde', 'INACTIVO': 'gris',
   'DISPONIBLE': 'verde', 'VACÍO': 'naranja', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
   'SUFICIENTE': 'verde', 'LIMITANTE': 'naranja', 'NO EXISTE': 'gris'
@@ -545,7 +544,7 @@ const estB = e => `<span class="est est-${EST_COLOR[e] || 'gris'}">${esc(e)}</sp
 const formatoEstSol = e => {
   if (e === 'APROBADO' || e === 'APROBADA') return 'APROBADA';
   if (e === 'ANULADO' || e === 'ANULADA') return 'ANULADA';
-  return 'PENDIENTE DE APROBACIÓN';
+  return 'POR APROBAR';
 };
 
 /* ----------------------------- Persistencia ----------------------------- */
@@ -4569,12 +4568,12 @@ VISTAS.doc = p => {
   const d = esSol ? solDe(p.num) : valeDe(p.num);
   if (!d) { $('area').innerHTML = cab('Documento no encontrado'); return; }
   if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
-  const t = d.tipo, est = esSol ? d.estatus : estadoVale(d);
+  const t = d.tipo, est = esSol ? formatoEstSol(d.estatus) : (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : estadoVale(d));
   const color = EST_COLOR[est] === 'ambar' ? 'naranja' : (EST_COLOR[est] || 'gris');
   let franjaDer = '';
   if (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN') franjaDer = `<span style="display:flex;align-items:center;gap:10px">Tiempo restante para aceptar: ${cronoHTML(d, true)}</span>`;
   else if (d.procesadoEn) franjaDer = `${(est === 'APROBADO' || est === 'APROBADA') ? 'Aprobada' : (est === 'ANULADO' || est === 'ANULADA') ? 'Anulada' : 'Procesada'} por <b>${esc(d.procesadoPor.nombre)}</b> el ${fFH(d.procesadoEn)}${d.motivo ? ' · Motivo: ' + esc(d.motivo) : ''}`;
-  else if (esSol && (est === 'FINALIZADO' || est === 'PENDIENTE DE APROBACIÓN')) franjaDer = 'Pendiente de aprobación del supervisor de ' + esc(almNombre(d.origen));
+  else if (esSol && (est === 'FINALIZADO' || est === 'PENDIENTE DE APROBACIÓN' || est === 'POR APROBAR')) franjaDer = 'Por aprobar por el supervisor de ' + esc(almNombre(d.origen));
   const R = (lbl, v) => campo(lbl, `<input value="${esc(v ?? '')}" readonly>`);
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
     + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', almNombre(d.destino));
@@ -4734,7 +4733,7 @@ VISTAS.sol = p => {
   ];
   $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido) de ' + esc(almNombre(S.ctx)) + '.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
-    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE APROBACIÓN', 'Pendiente de aprobación'], ['APROBADA', 'Aprobada'], ['ANULADA', 'Anulada']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
+    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE APROBACIÓN', 'Por aprobar'], ['APROBADA', 'Aprobadas'], ['ANULADA', 'Anuladas']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
     + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
@@ -4791,13 +4790,13 @@ VISTAS.aprobar = p => {
     { t: 'Tipo A', v: r => r.lineas.some(l => (item(l.id) || {}).tipoA) ? 'SI' : 'NO', cls: 'cen' },
     { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) }
   ];
-  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes pendientes de aprobación de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
+  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes por aprobar de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
     + (tienePerm ? '' : avisoSinPermiso('Su usuario no tiene permiso de aprobación en este almacén. Puede consultar las solicitudes, pero no aceptarlas ni anularlas.'))
     + `<div class="fila-filtros">
-        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['PENDIENTE DE APROBACIÓN', 'Pendientes de aprobación'], ['APROBADA', 'Aprobadas'], ['ANULADA', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
+        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['PENDIENTE DE APROBACIÓN', 'Por aprobar'], ['APROBADA', 'Aprobadas'], ['ANULADA', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
         ${buscador('gApr', 'Buscar por número, cuenta auxiliar, proyecto, responsable…')}
       </div>`
-    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'PENDIENTE DE APROBACIÓN' ? 'No hay solicitudes pendientes de aprobación en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
+    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'PENDIENTE DE APROBACIÓN' ? 'No hay solicitudes por aprobar en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taCuenta"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
     <div id="taMotivo"></div>
     <div class="barra-btn">
@@ -4838,7 +4837,7 @@ const colsTrf = (recibidas) => [
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
   { t: 'Tiempo restante (12 h)', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
   { t: 'Estatus', k: 'estatus', f: r => {
-    if (r.estatus === 'PENDIENTE DE RECEPCIÓN') return `<span class="est est-naranja">⏱ EN ESPERA DE ACEPTACIÓN</span>`;
+    if (r.estatus === 'PENDIENTE DE RECEPCIÓN') return `<span class="est est-naranja">⏱ POR ACEPTAR</span>`;
     if (r.estatus === 'RECIBIDA') return `<span class="est est-verde">ACEPTADA</span>`;
     if (r.estatus === 'RECHAZADA') return `<span class="est est-rojo">RECHAZADA</span>`;
     if (r.estatus === 'VENCIDA') return `<span class="est est-rojo">VENCIDA</span>`;
@@ -4879,7 +4878,7 @@ VISTAS.trfRec = p => {
   $('area').innerHTML = cab('Transferencias recibidas', `Transferencias enviadas a ${esc(almNombre(S.ctx))}. Tiene ${DB.config.plazoHoras} horas para aceptar o rechazar cada una; si no, el material regresa al almacén de origen.`, botonesExport('gRec', 'Transferencias recibidas ' + almNombre(S.ctx)))
     + (perm ? '' : avisoSinPermiso('Su usuario no tiene permiso para recibir transferencias en este almacén. Puede consultarlas, pero no aceptarlas ni rechazarlas.'))
     + `<div class="fila-filtros">
-        ${campo('Estatus', `<select id="frEst" onchange="${recarga}">${opciones([['PENDIENTE DE RECEPCIÓN', 'En espera de aceptación'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['TODAS', 'Todas']], f.est)}</select>`)}
+        ${campo('Estatus', `<select id="frEst" onchange="${recarga}">${opciones([['PENDIENTE DE RECEPCIÓN', 'Por aceptar'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['TODAS', 'Todas']], f.est)}</select>`)}
         ${campo('Desde', `<input type="date" id="frDesde" value="${f.desde}" onchange="${recarga}">`)}
         ${campo('Hasta', `<input type="date" id="frHasta" value="${f.hasta}" onchange="${recarga}">`)}
         ${buscador('gRec')}
@@ -4897,7 +4896,7 @@ VISTAS.trfRec = p => {
 function tiraTrf(v, k) {
   if (k === 'r') {
     $('trNum').textContent = v.num;
-    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'EN ESPERA DE ACEPTACIÓN' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
+    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
     const nDan = (v.lineas || []).filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
     const badgeDan = nDan > 0 ? ` · <span class="est est-rojo">⚠️ CONTIENE ${nDan} ÍTEM(S) DAÑADO(S)</span>` : '';
     const obsTxt = v.obs ? `<br><small style="color:var(--texto-2);font-size:12px"><b>Observación:</b> ${esc(v.obs)}</small>` : '';
@@ -4906,7 +4905,7 @@ function tiraTrf(v, k) {
     $('rVer').disabled = false; $('rImp').disabled = false; $('rOk').disabled = !ok; $('rNo').disabled = !ok;
   } else {
     $('teNum').textContent = v.num;
-    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'EN ESPERA DE ACEPTACIÓN' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
+    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
     const nDan = (v.lineas || []).filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
     const badgeDan = nDan > 0 ? ` · <span class="est est-rojo">⚠️ CONTIENE ${nDan} ÍTEM(S) DAÑADO(S)</span>` : '';
     const obsTxt = v.obs ? `<br><small style="color:var(--texto-2);font-size:12px"><b>Observación:</b> ${esc(v.obs)}</small>` : '';
@@ -4948,11 +4947,11 @@ VISTAS.trfEnv = p => {
   if (f.est !== 'TODAS') rows = rows.filter(v => v.estatus === f.est);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const cuenta = e => rows.filter(v => v.estatus === e).length;
-  const resumen = `Creadas: <b>${rows.length}</b> · Recibidas: <b>${cuenta('RECIBIDA')}</b> · Rechazadas: <b>${cuenta('RECHAZADA')}</b> · Vencidas: <b>${cuenta('VENCIDA')}</b> · En espera de aceptación: <b>${cuenta('PENDIENTE DE RECEPCIÓN')}</b>`;
+  const resumen = `Creadas: <b>${rows.length}</b> · Recibidas: <b>${cuenta('RECIBIDA')}</b> · Rechazadas: <b>${cuenta('RECHAZADA')}</b> · Vencidas: <b>${cuenta('VENCIDA')}</b> · Por aceptar: <b>${cuenta('PENDIENTE DE RECEPCIÓN')}</b>`;
   const recarga = `ir('trfEnv',{dest:$('feDest').value,est:$('feEst').value,desde:$('feDesde').value,hasta:$('feHasta').value})`;
   $('area').innerHTML = cab('Transferencias enviadas', 'Registro histórico permanente de las transferencias creadas desde ' + esc(almNombre(S.ctx)) + '.', botonesExport('gEnv', 'Transferencias enviadas ' + almNombre(S.ctx)))
     + `<div class="fila-filtros">${campo('Destino', selAlm('feDest', f.dest, destinosPermitidos(S.ctx), true, recarga))}
-      ${campo('Estatus', `<select id="feEst" onchange="${recarga}">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE RECEPCIÓN', 'En espera de aceptación'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['VENCIDA', 'Vencidas']], f.est)}</select>`)}
+      ${campo('Estatus', `<select id="feEst" onchange="${recarga}">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE RECEPCIÓN', 'Por aceptar'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['VENCIDA', 'Vencidas']], f.est)}</select>`)}
       ${campo('Desde', `<input type="date" id="feDesde" value="${f.desde}" onchange="${recarga}">`)}${campo('Hasta', `<input type="date" id="feHasta" value="${f.hasta}" onchange="${recarga}">`)}${buscador('gEnv')}</div>`
     + grid('gEnv', colsTrf(false), rows, { onSel: v => tiraTrf(v, 'e'), pag: 15, vacio: 'No hay transferencias en el período.' })
     + `<div class="franja-est gris" style="margin-top:10px"><span>Resumen del período: ${resumen}</span></div>
@@ -5215,11 +5214,11 @@ VISTAS.dash = p => {
   const aviso = (n, txt, dest, cls) => `<div class="aviso ${cls || ''}" onclick="ir('${dest[0]}',${dest[1] ? JSON.stringify(dest[1]).replace(/"/g, "'") : 'null'})"><div class="a-num">${n}</div><div class="a-txt">${txt}</div></div>`;
   
   const avisos = [
-    aviso(pendAprob, 'Solicitudes pendientes de aprobación', ['aprobar'], pendAprob ? '' : 'verde'),
+    aviso(pendAprob, 'Solicitudes por aprobar', ['aprobar'], pendAprob ? '' : 'verde'),
     aviso(venc.length, venc.length ? `Préstamos vencidos · máximo ${venc[0].dias} día(s) de atraso` : 'Préstamos vencidos', ['cVenc'], venc.length ? 'rojo' : 'verde'),
     aviso(epp.length, 'EPP con reposición vencida o próxima (15 días)', ['cEpp', { f: 'ALERTA' }], epp.length ? 'naranja' : 'verde'),
     aviso(porAceptar.length, porAceptar.length ? `Transferencias por aceptar · la más próxima vence en ${cronoHTML(porAceptar[0])}` : 'Transferencias por aceptar', ['trfRec'], porAceptar.length ? 'naranja' : 'verde'),
-    aviso(envPend.length, `Transferencias enviadas pendientes · ${envRiesgo.length} vencen en menos de 2 horas`, ['trfEnv', { est: 'PENDIENTE DE RECEPCIÓN' }], envRiesgo.length ? 'rojo' : ''),
+    aviso(envPend.length, `Transferencias enviadas por aceptar · ${envRiesgo.length} vencen en menos de 2 horas`, ['trfEnv', { est: 'PENDIENTE DE RECEPCIÓN' }], envRiesgo.length ? 'rojo' : ''),
     aviso(envMal.length, 'Transferencias enviadas rechazadas o vencidas (últimos 7 días)', ['trfEnv'], envMal.length ? 'rojo' : 'verde'),
     vacios ? aviso(vacios, c === 'CENTRAL' ? 'Cilindros vacíos en Central' : 'Cilindros vacíos por transferir a Central', ['cCil'], 'naranja') : ''
   ].join('');
@@ -6459,7 +6458,7 @@ function imprimirVale(n) {
   const der = esEnt
     ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())}</div>`
     : esTrf
-    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor autoriza:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}</div>`
+    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor autoriza:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}</div>`
     : `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div><div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div><div><b>Tipo A / Aprobación:</b> ${v.lineas.some(l => item(l.id).tipoA) ? 'SI · N° ' + esc(v.aprobGer || '—') : 'NO'}</div>${v.ref ? `<div><b>Vale de referencia:</b> ${esc(v.ref)}</div>` : ''}`;
 
   let extra = '';
