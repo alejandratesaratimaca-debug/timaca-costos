@@ -2521,6 +2521,7 @@ function abrirCambioAcceso() {
 function menuDef() {
   if (enMaestro()) {
     return [['Módulo Maestro', [['mRes', 'Resumen general'], ['mKpi', 'Indicadores (KPI)'], ['mComp', 'Comparativo por almacén'], ['mExp', 'Explorador de base de datos'],
+      ['cInvPers', 'Toma física e inventario por persona'],
       ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
   }
   const c = S.ctx;
@@ -2540,7 +2541,11 @@ function menuDef() {
     ['Solicitudes', [['solNueva', 'Crear solicitud'], ['sol', 'Solicitudes del almacén']]],
     ['Aprobación', [['aprobar', 'Aprobar solicitudes', pendAprob], ['aprobarPlz', 'Aprobar extensiones', pendExt]]],
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
-    ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['ent', 'Entrada de ítems']]],
+    ['Inventario', [
+      ['cInvPers', 'En poder del personal (Toma física)'],
+      ['cCatAlm', 'Existencias en almacén']
+    ]],
+    ['Catálogo', [['cCatAlm', 'Catálogo general'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
     ['Consultas y kárdex', [ ['cPrest', 'Préstamos y asignaciones'],
       ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cValesDet', 'Detalle de vales emitidos'], ['cKardex', 'Kardex por código']]]
@@ -2555,6 +2560,7 @@ const ICONOS_MOD = {
   'Solicitudes': '📝',
   'Aprobación': '✅',
   'Transferencias': '🚚',
+  'Inventario': '📋',
   'Catálogo': '📦',
   'Movimientos': '🔁',
   'Consultas y kárdex': '📜',
@@ -2563,7 +2569,7 @@ const ICONOS_MOD = {
 };
 
 const ICONOS = { cCatAlm: '📦', ent: '➕', mov: '🔁', dash: '📊', solNueva: '📝', sol: '📑', aprobar: '✅', aprobarPlz: '⏳', trfNueva: '🚚', trfRec: '📥', trfEnv: '📤', dev: '↩️', dan: '⚠️', ext: '🚨', plz: '⏱️',
-  cExist: '🗃️', cPrest: '🔧', cVenc: '⏰', cAsig: '👷', cIncid: '🛠️', cVales: '🧾', cValesDet: '📋', cKardex: '📜', cEpp: '🦺', cCil: '🔥',
+  cInvPers: '👷', cExist: '🗃️', cPrest: '🔧', cVenc: '⏰', cAsig: '👷', cIncid: '🛠️', cVales: '🧾', cValesDet: '📋', cKardex: '📜', cEpp: '🦺', cCil: '🔥',
   cajasPlan: '🧰', cajasTipos: '📋', mCajas: '🧰',
   aUsr: '👥', aPers: '🪪', aProy: '📁', aCat: '📚', aIni: '🏁', aConf: '⚙️', aBit: '📒', aResp: '💾',
   mRes: '⭐', mKpi: '📈', mComp: '🏭', mExp: '🗄️', mTraz: '🔍', mAlert: '🔔', mCost: '💲', mAcc: '🔐' };
@@ -5295,6 +5301,250 @@ VISTAS.cCatAlm = p => {
 VISTAS.cExist = p => VISTAS.cCatAlm(p);
 
 /* =====================================================================
+   INVENTARIO EN PODER DEL PERSONAL (Toma física)
+   ===================================================================== */
+VISTAS.cInvPers = p => {
+  p = p || {};
+  const respFiltro = p.resp || '';
+  const ciFiltro = (p.ci || '').trim();
+  const alm = p.alm || (enMaestro() ? 'TODOS' : S.ctx);
+  const tipo = p.tipo || '';
+  const mod = p.mod || '';
+  const proy = p.proy || '';
+  const estFiltro = p.est || '';
+  const tab = p.tab || 'lista';
+
+  let rows = [];
+  (DB.vales || []).forEach(v => {
+    if (v.tipo !== 'PRH' && v.tipo !== 'ASI') return;
+    if (saldoVale(v) <= 0) return;
+
+    if (alm && alm !== 'TODOS') {
+      if (v.origen !== alm && v.destino !== alm) return;
+    }
+    if (tipo && v.tipo !== tipo) return;
+
+    if (proy) {
+      const matchCta = (v.cuenta || '').toUpperCase().includes(proy.toUpperCase());
+      const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
+      if (!matchCta && !matchP) return;
+    }
+
+    const estV = estadoVale(v);
+    if (estFiltro && estV !== estFiltro) return;
+
+    const respNom = v.resp ? (v.resp.nombre || v.resp) : 'Sin asignar';
+    const respCI = (v.resp && v.resp.cedula) ? v.resp.cedula : 'S/C';
+    const respCargo = (v.resp && v.resp.cargo) ? v.resp.cargo : 'Trabajador';
+    const personaDB = (DB.personal || []).find(x => (x.cedula && respCI !== 'S/C' && digitosCI(x.cedula) === digitosCI(respCI)) || normTexto(x.nombre) === normTexto(respNom));
+    const depto = personaDB ? (personaDB.departamento || personaDB.depto || personaDB.cargo || 'Operaciones') : 'Operaciones';
+    const ubicacion = v.destino ? almNombre(v.destino).replace('Almacén ', '') : almNombre(v.origen).replace('Almacén ', '');
+
+    if (respFiltro && respNom !== respFiltro) return;
+    if (ciFiltro) {
+      const ciMatch = respCI.toUpperCase().includes(ciFiltro.toUpperCase()) || respCI.replace(/\D/g, '').includes(ciFiltro.replace(/\D/g, ''));
+      const nomMatch = normTexto(respNom).includes(normTexto(ciFiltro));
+      if (!ciMatch && !nomMatch) return;
+    }
+
+    (v.lineas || []).forEach(l => {
+      const sld = saldoLinea(l);
+      if (sld <= 0) return;
+
+      const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null) || {};
+      const modLinea = l.mod || it.mod || 'HERRAMIENTA';
+      const catLinea = l.cat || it.cat || 'General';
+
+      if (mod && modLinea !== mod) return;
+
+      const diasEnPoder = diasEntre(v.fecha, hoy());
+      const diasAtraso = (v.tipo === 'PRH' && v.fechaDev && v.fechaDev < hoy()) ? diasEntre(v.fechaDev, hoy()) : 0;
+
+      rows.push({
+        v,
+        l,
+        it,
+        saldo: sld,
+        cantEntregada: Number(l.cant) || 1,
+        cantDevuelta: Number(l.dev) || 0,
+        respNom,
+        respCI,
+        respCargo,
+        depto,
+        ubicacion,
+        alm: v.origen,
+        mod: modLinea,
+        cat: catLinea,
+        est: estV,
+        diasEnPoder,
+        diasAtraso
+      });
+    });
+  });
+
+  rows.sort((a, b) => a.respNom.localeCompare(b.respNom) || b.v.fecha.localeCompare(a.v.fecha));
+
+  const personasSet = new Set(rows.map(r => r.respCI !== 'S/C' ? r.respCI : r.respNom));
+  const totItems = rows.reduce((a, r) => a + r.saldo, 0);
+  const totHerr = rows.filter(r => r.mod === 'HERRAMIENTA').reduce((a, r) => a + r.saldo, 0);
+  const totCil = rows.filter(r => r.mod === 'CILINDRO').reduce((a, r) => a + r.saldo, 0);
+  const totEpp = rows.filter(r => r.mod === 'EPP').reduce((a, r) => a + r.saldo, 0);
+  const totAsig = rows.filter(r => r.v.tipo === 'ASI').reduce((a, r) => a + r.saldo, 0);
+  const totPrest = rows.filter(r => r.v.tipo === 'PRH').reduce((a, r) => a + r.saldo, 0);
+  const totVenc = rows.filter(r => r.diasAtraso > 0).length;
+
+  const cols = [
+    { t: 'Responsable', v: r => r.respNom, f: r => `<b>${esc(r.respNom)}</b>` },
+    { t: 'Cédula', v: r => r.respCI, f: r => `<span style="font-family:monospace;font-weight:700">${esc(r.respCI)}</span>` },
+    { t: 'Cargo', v: r => r.respCargo },
+    { t: 'Almacén / Ubicación', v: r => r.ubicacion, f: r => `<b>${esc(r.ubicacion)}</b> <small style="color:var(--texto-3)">(${almNombre(r.alm).replace('Almacén ', '')})</small>` },
+    { t: 'Proyecto / OT', v: r => r.v.proyecto || '—', td: 'wrap' },
+    { t: 'Cuenta Auxiliar', v: r => r.v.cuenta || '—', f: r => r.v.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.v.cuenta)}</span>` : '—' },
+    { t: 'N° de Vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
+    { t: 'Tipo', v: r => r.v.tipo === 'ASI' ? 'Asignación' : 'Préstamo', f: r => `<span class="est ${r.v.tipo === 'ASI' ? 'est-azul' : 'est-ambar'}">${r.v.tipo === 'ASI' ? 'Asignación' : 'Préstamo'}</span>` },
+    { t: 'Módulo', v: r => MODULOS[r.mod] || r.mod, f: r => `<span class="chip-mod m-${r.mod}" style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">${esc(MODULOS[r.mod] || r.mod)}</span>` },
+    { t: 'Fecha entrega', v: r => fFH(r.v.fecha), s: r => r.v.fecha },
+    { t: 'Fecha devolución', v: r => r.v.fechaDev ? fF(r.v.fechaDev) : (r.v.tipo === 'ASI' ? 'Indefinida' : '—'), s: r => r.v.fechaDev || '9999' },
+    { t: 'Días en posesión', v: r => r.diasEnPoder + ' d', cls: 'cen' },
+    { t: 'Días atraso', v: r => r.diasAtraso ? r.diasAtraso + ' d' : '0', cls: 'cen', f: r => r.diasAtraso > 0 ? `<span style="color:#dc2626;font-weight:800">${r.diasAtraso} d</span>` : '<span style="color:#94a3b8">0</span>' },
+    { t: 'Código del ítem', v: r => r.l.cod || r.it.cod || '—', f: r => `<b>${esc(r.l.cod || r.it.cod || '—')}</b>` },
+    { t: 'Descripción del ítem', v: r => r.it.desc || r.l.desc || '—', td: 'wrap' },
+    { t: 'Marca / Modelo', v: r => [r.it.marca || r.l.marca, r.it.modelo || r.l.modelo].filter(Boolean).join(' / ') || '—' },
+    { t: 'Serial', v: r => r.l.serial || r.it.serial || '—', f: r => (r.l.serial || r.it.serial) ? `<span style="font-family:monospace;font-weight:700">${esc(r.l.serial || r.it.serial)}</span>` : '—' },
+    { t: 'Cant. Entregada', v: r => r.cantEntregada, cls: 'num' },
+    { t: 'Cant. Devuelta', v: r => r.cantDevuelta, cls: 'num' },
+    { t: 'Saldo en poder hoy', v: r => r.saldo, cls: 'cen', td: 'col-prest', f: r => `<b>${r.saldo}</b>` },
+    { t: 'UMB', v: r => r.it.umb || r.l.umb || 'UND', cls: 'cen' },
+    { t: 'Estado', v: r => r.est, f: r => estB(r.est) },
+    { t: 'Supervisor', v: r => r.v.sup || r.v.supervisor || '—' },
+    { t: 'Observaciones', v: r => r.l.obs || r.v.obs || '—', td: 'wrap' }
+  ];
+
+  const mapResp = new Map();
+  (DB.personal || []).forEach(p => {
+    if (p && p.nombre) mapResp.set(p.nombre, p.cedula ? `${p.nombre} (${p.cedula})` : p.nombre);
+  });
+  (DB.vales || []).forEach(v => {
+    if ((v.tipo === 'PRH' || v.tipo === 'ASI') && saldoVale(v) > 0 && v.resp && v.resp.nombre) {
+      if (!mapResp.has(v.resp.nombre)) mapResp.set(v.resp.nombre, v.resp.cedula ? `${v.resp.nombre} (${v.resp.cedula})` : v.resp.nombre);
+    }
+  });
+  const listaResp = [...mapResp.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+  const recargar = `ir('cInvPers',{resp:$('ipResp').value,ci:$('ipCi').value,alm:$('ipAlm').value,tipo:$('ipTipo').value,mod:$('ipMod').value,proy:$('ipProy').value,est:$('ipEst').value,tab:'${tab}'})`;
+  const hayFiltros = Boolean(respFiltro || ciFiltro || (alm && alm !== 'TODOS' && alm !== S.ctx) || tipo || mod || proy || estFiltro);
+
+  let cuerpoTab = '';
+  if (tab === 'personas') {
+    const grupo = {};
+    rows.forEach(r => {
+      const k = r.respCI !== 'S/C' ? r.respCI : r.respNom;
+      if (!grupo[k]) {
+        grupo[k] = { nom: r.respNom, ci: r.respCI, cargo: r.respCargo, depto: r.depto, ubicacion: r.ubicacion, totSaldo: 0, items: [] };
+      }
+      grupo[k].totSaldo += r.saldo;
+      grupo[k].items.push(r);
+    });
+    const listaPersonas = Object.values(grupo).sort((a, b) => a.nom.localeCompare(b.nom));
+
+    cuerpoTab = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(420px, 1fr));gap:14px;margin-top:14px">
+        ${listaPersonas.length ? listaPersonas.map(p => `
+          <div class="panel" style="margin-bottom:0;border:1px solid var(--borde);border-radius:8px">
+            <div class="panel-h" style="padding:10px 14px;background:#F8FAFC">
+              <div>
+                <b>${esc(p.nom)}</b> <span style="font-family:monospace;font-size:11.5px;color:var(--texto-2)">(${esc(p.ci)})</span>
+                <div style="font-size:11.5px;color:var(--texto-3);font-weight:500">${esc(p.cargo)} · Ubic: <b>${esc(p.ubicacion)}</b></div>
+              </div>
+              <span class="est est-azul" style="font-size:12px;font-weight:800">${p.totSaldo} ítem(s)</span>
+            </div>
+            <div class="panel-b" style="padding:10px 14px">
+              <table style="width:100%;font-size:11.5px;border-collapse:collapse">
+                <thead><tr style="border-bottom:1px solid #E2E8F0;color:var(--texto-3);text-align:left"><th style="padding:4px">Código</th><th style="padding:4px">Descripción</th><th style="padding:4px;text-align:center">Cant.</th><th style="padding:4px">Vale</th></tr></thead>
+                <tbody>
+                  ${p.items.map(it => `
+                    <tr style="border-bottom:1px solid #F1F5F9">
+                      <td style="padding:5px 4px"><b>${esc(it.l.cod || it.it.cod || '')}</b></td>
+                      <td style="padding:5px 4px">${esc(it.it.desc || it.l.desc || '')}${it.l.serial ? ` <small style="color:#64748B">(${esc(it.l.serial)})</small>` : ''}</td>
+                      <td style="padding:5px 4px;text-align:center"><b>${it.saldo}</b></td>
+                      <td style="padding:5px 4px"><a href="#" onclick="ir('doc',{num:'${it.v.num}',back:'cInvPers'});return false" style="font-weight:700">${esc(it.v.num)}</a></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              <div style="margin-top:10px;display:flex;justify-content:flex-end">
+                <button class="btn btn-claro btn-mini" onclick="ir('cInvPers',{resp:'${esc(p.nom)}',tab:'lista'})">🔍 Ver detalle completo en tabla</button>
+              </div>
+            </div>
+          </div>
+        `).join('') : '<div class="grid-vacio" style="grid-column:1/-1;text-align:center;padding:30px;background:#fff;border-radius:8px">No se encontraron trabajadores con saldo en su poder bajo los filtros aplicados.</div>'}
+      </div>
+    `;
+  } else {
+    cuerpoTab = grid('gInvP', cols, rows, { pag: 25, onSel: r => tiraInvPers(r) })
+      + `<div class="sel-strip">
+          <span class="lbl">Renglón seleccionado</span>
+          <span class="box" id="ipSelVale"></span>
+          <span class="box" id="ipSelInfo" style="flex:1"></span>
+        </div>
+        <div class="barra-btn">
+          <button class="btn-sip" id="ipBtnVer" disabled onclick="ir('doc',{num:selDe('gInvP').v.num,back:'cInvPers'})">Visualizar vale</button>
+          <button class="btn-sip" id="ipBtnDev" disabled onclick="ir('dev',{vale:selDe('gInvP').v.num})">Registrar devolución</button>
+          <button class="btn-sip" id="ipBtnPlz" disabled onclick="ir('plz',{vale:selDe('gInvP').v.num})">Extender plazo</button>
+          <button class="btn-sip" id="ipBtnKdx" disabled onclick="ir('cKardex',{q:selDe('gInvP').l.serial || selDe('gInvP').l.cod || selDe('gInvP').it.cod})">Ver Kardex del ítem</button>
+        </div>`;
+  }
+
+  $('area').innerHTML = cab('Inventario en poder del personal (Toma física)', 'Material, herramientas y cilindros en posesión física de cada trabajador. Permite auditar en tiempo real qué tiene cada persona hoy, su saldo pendiente, almacén/ubicación, y exportar a Excel/PDF para toma física.', botonesExport('gInvP', 'Toma_Fisica_Inventario_Personal_' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm))))
+    + `
+      <div style="display:flex;gap:8px;margin-bottom:14px;border-bottom:2px solid var(--borde);padding-bottom:10px;flex-wrap:wrap;align-items:center">
+        <button type="button" class="btn ${tab === 'lista' ? 'btn-navy' : 'btn-claro'}" onclick="ir('cInvPers',{tab:'lista',resp:'${esc(respFiltro)}',ci:'${esc(ciFiltro)}',alm:'${esc(alm)}',tipo:'${esc(tipo)}',mod:'${esc(mod)}',proy:'${esc(proy)}',est:'${esc(estFiltro)}'})" style="font-weight:800">
+          📋 1. Listado general para Toma Física (Ítem por ítem)
+        </button>
+        <button type="button" class="btn ${tab === 'personas' ? 'btn-navy' : 'btn-claro'}" onclick="ir('cInvPers',{tab:'personas',resp:'${esc(respFiltro)}',ci:'${esc(ciFiltro)}',alm:'${esc(alm)}',tipo:'${esc(tipo)}',mod:'${esc(mod)}',proy:'${esc(proy)}',est:'${esc(estFiltro)}'})" style="font-weight:800">
+          👤 2. Agrupado por Trabajador (${num(personasSet.size)} personas)
+        </button>
+        <span style="margin-left:auto;font-size:11.5px;color:var(--texto-3)">
+          💡 Actualizado en tiempo real con cada movimiento de asignación, préstamo o devolución.
+        </span>
+      </div>
+
+      <div class="cards" style="margin-bottom:16px">
+        ${cardC('Personas con material', num(personasSet.size), '', 'Trabajadores con saldo pendiente hoy')}
+        ${cardC('Total ítems en posesión', num(totItems), 'verde', `${totHerr} herramientas · ${totCil} cilindros · ${totEpp} EPP`)}
+        ${cardC('En asignación (ASI)', num(totAsig), 'azul', 'Herramientas de dotación / permanentes')}
+        ${cardC('En préstamo (PRH)', num(totPrest), 'ambar', 'Préstamos con plazo de retorno')}
+        ${cardC('Préstamos vencidos', num(totVenc), totVenc ? 'rojo' : 'verde', totVenc ? 'Requieren retorno o extensión' : 'Sin atrasos')}
+      </div>
+
+      <div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('Trabajador', `<select id="ipResp" onchange="${recargar}" style="max-width:210px">
+          <option value="">Todos los trabajadores</option>
+          ${opciones(listaResp, respFiltro)}
+        </select>`)}
+        ${campo('Cédula / Nombre', `<input id="ipCi" value="${esc(ciFiltro)}" placeholder="Cédula o nombre..." style="max-width:140px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Almacén / Ubicación', `<select id="ipAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
+        ${campo('Tipo de movimiento', `<select id="ipTipo" onchange="${recargar}"><option value="">Todos los tipos</option>${opciones([['ASI', 'Asignaciones (ASI)'], ['PRH', 'Préstamos (PRH)']], tipo)}</select>`)}
+        ${campo('Módulo', `<select id="ipMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
+        ${campo('Proyecto / Cuenta', `<select id="ipProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
+        ${campo('Estado', `<select id="ipEst" onchange="${recargar}"><option value="">Todos los estados</option>${opciones([['VIGENTE', 'Vigentes'], ['VENCIDO', 'Vencidos'], ['DEVOLUCIÓN PARCIAL', 'Devolución parcial']], estFiltro)}</select>`)}
+        ${hayFiltros ? `<button class="btn btn-claro" onclick="ir('cInvPers',{tab:'${tab}'})" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gInvP', 'Buscar trabajador, cédula, código, serial, herramienta, OT...')}
+      </div>
+    ` + cuerpoTab;
+};
+
+function tiraInvPers(r) {
+  $('ipSelVale').textContent = r.v.num;
+  const itTxt = `${r.respNom} (${r.respCI}) · ${r.l.cod || r.it.cod || ''} · ${r.it.desc || r.l.desc || ''}${r.l.serial ? ' (SN: ' + r.l.serial + ')' : ''} · Saldo en poder: ${r.saldo} ${r.it.umb || r.l.umb || 'UND'} · Ubic: ${r.ubicacion}`;
+  $('ipSelInfo').textContent = itTxt;
+  $('ipBtnVer').disabled = false;
+  $('ipBtnDev').disabled = false;
+  $('ipBtnPlz').disabled = r.v.tipo !== 'PRH';
+  $('ipBtnKdx').disabled = !(r.l.cod || r.it.cod || r.l.serial);
+}
+
+/* =====================================================================
    CONSULTAS DEL ALMACÉN (sin montos)
    ===================================================================== */
 VISTAS.cExistAnterior = p => {
@@ -5732,14 +5982,14 @@ VISTAS.cValesDet = p => {
     { t: 'Fecha y hora', v: r => fFH(r.v.fecha), s: r => r.v.fecha },
     { t: 'Origen', v: r => almNombre(r.v.origen).replace('Almacén ', '') },
     { t: 'Destino', v: r => almNombre(r.v.destino).replace('Almacén ', '') },
+    { t: 'Cuenta Auxiliar', v: r => r.v.cuenta || '—', f: r => r.v.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.v.cuenta)}</span>` : '—' },
+    { t: 'Descripción del proyecto', v: r => r.v.proyecto || '—', td: 'wrap' },
     { t: 'Código del ítem', v: r => r.l.cod || r.it.cod || '—', f: r => `<b>${esc(r.l.cod || r.it.cod || '—')}</b>` },
     { t: 'Descripción del ítem', v: r => r.it.desc || r.l.desc || '—', td: 'wrap' },
     { t: 'Marca / Modelo', v: r => [r.it.marca || r.l.marca, r.it.modelo || r.l.modelo].filter(Boolean).join(' / ') || '—' },
     { t: 'Serial', v: r => r.l.serial || r.it.serial || '—', f: r => (r.l.serial || r.it.serial) ? `<span style="font-family:monospace;font-weight:700">${esc(r.l.serial || r.it.serial)}</span>` : '—' },
     { t: 'Cant.', v: r => Number(r.l.cant) || 1, cls: 'num' },
     { t: 'UMB', v: r => r.it.umb || r.l.umb || 'UND', cls: 'cen' },
-    { t: 'Cuenta Auxiliar', v: r => r.v.cuenta || '—', f: r => r.v.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.v.cuenta)}</span>` : '—' },
-    { t: 'Proyecto / OT', v: r => r.v.proyecto || '—', td: 'wrap' },
     { t: 'Despachado por', v: r => r.v.despacha || (r.v.realizadoPor ? (r.v.realizadoPor.nombre || r.v.realizadoPor) : '—') },
     { t: 'N° de Referencia', v: r => r.v.ref || r.v.solicitud || '—' },
     { t: 'Responsable', v: r => r.v.resp ? (r.v.resp.nombre || r.v.resp) : '—' },
