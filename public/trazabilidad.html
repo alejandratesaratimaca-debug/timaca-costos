@@ -28,29 +28,22 @@ button,input,select,textarea{font-family:inherit;font-size:12.5px}
 :focus-visible{outline:2px solid #2563EB;outline-offset:1px}
 
 /* ================= LOGIN ================= */
-#pantallaLogin{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:96px 24px 24px;
-  background:linear-gradient(180deg,var(--navy) 0,var(--navy) 230px,#F8FAFC 230px)}
-.login-wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-start;width:100%;max-width:1000px}
-.login-card{background:#fff;border:1px solid var(--borde);border-radius:10px;width:410px;max-width:100%;box-shadow:0 14px 34px rgba(2,12,84,.18);overflow:hidden}
-.login-card .lc-logo{padding:28px 28px 18px;text-align:center;border-bottom:1px solid var(--borde-suave)}
-.login-card .lc-logo img{max-width:300px;width:100%}
-.login-card .lc-logo p{margin-top:12px;color:var(--texto-2);font-size:13px;font-weight:600}
-.login-card .lc-body{padding:22px 28px 28px}
-.campo{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;position:relative}
-.campo label{font-size:11px;font-weight:800;color:var(--texto-2);text-transform:uppercase;letter-spacing:.2px}
-.campo input,.campo select,.campo textarea{padding:8px 10px;border:1px solid var(--borde);border-radius:6px;background:#fff;color:var(--texto);width:100%}
+#pantallaLogin{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;
+  background:linear-gradient(180deg,var(--navy) 0,var(--navy) 260px,#F8FAFC 260px)}
+.login-wrap{display:flex;justify-content:center;align-items:center;width:100%;max-width:460px;margin:0 auto}
+.login-card{background:#fff;border:1px solid var(--borde);border-radius:12px;width:100%;box-shadow:0 16px 36px rgba(2,12,84,.14);overflow:hidden}
+.login-card .lc-logo{padding:30px 28px 20px;text-align:center;border-bottom:1px solid var(--borde-suave)}
+.login-card .lc-logo img{max-width:290px;width:100%;height:auto}
+.login-card .lc-logo p{margin-top:10px;color:var(--texto-2);font-size:13px;font-weight:600}
+.login-card .lc-body{padding:26px 28px 28px}
+.campo{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;position:relative}
+.campo label{font-size:11px;font-weight:800;color:var(--texto-2);text-transform:uppercase;letter-spacing:.3px}
+.campo input,.campo select,.campo textarea{padding:9px 12px;border:1px solid var(--borde);border-radius:6px;background:#fff;color:var(--texto);width:100%;font-size:12.5px}
 .campo input[readonly],.campo select:disabled,.campo input:disabled,.campo textarea[readonly]{background:#F1F5F9;color:#334155}
-.login-err{background:var(--rojo-bg);color:var(--rojo-tx);border:1px solid #FCA5A5;padding:8px 10px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
-.btn-entrar{width:100%;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:11px;font-weight:800;cursor:pointer;font-size:13.5px}
+.campo input:focus,.campo select:focus,.campo textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 2px rgba(2,132,199,0.15)}
+.login-err{background:var(--rojo-bg);color:var(--rojo-tx);border:1px solid #FCA5A5;padding:10px 12px;border-radius:6px;font-size:12px;margin-bottom:14px;display:none;font-weight:600}
+.btn-entrar{width:100%;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:12px;font-weight:800;cursor:pointer;font-size:14px;margin-top:6px;transition:background .2s}
 .btn-entrar:hover{background:var(--navy-h)}
-.demo-card{background:#fff;border:1px solid var(--borde);border-radius:10px;width:540px;max-width:100%;box-shadow:0 14px 34px rgba(2,12,84,.12);overflow:hidden}
-.demo-card h3{font-size:14px;font-weight:900;color:var(--navy);padding:14px 16px;border-bottom:1px solid var(--borde-suave)}
-.demo-card .nota{padding:10px 16px;font-size:11.5px;color:var(--texto-3);border-top:1px solid var(--borde-suave)}
-.demo-card table{width:100%;border-collapse:collapse;font-size:11.5px}
-.demo-card td,.demo-card th{padding:6px 10px;border-bottom:1px solid #F1F5F9;text-align:left}
-.demo-card th{background:#F8FAFC;color:var(--texto-2)}
-.demo-card tr.clic{cursor:pointer}
-.demo-card tr.clic:hover td{background:#EFF6FF}
 
 /* ================= APP ================= */
 #pantallaApp{display:none;min-height:100vh;flex-direction:column}
@@ -386,22 +379,18 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
       <div class="lc-logo">
         <img data-logo src="/timaca-logo.png" alt="TIMACA" onerror="if(typeof LOGO!=='undefined')this.src=LOGO" style="max-height:55px;object-fit:contain">
         <p>Sistema de Trazabilidad de Herramientas, Cilindros y EPP</p>
+        <div style="font-size:12px;color:#0284c7;font-weight:700;margin-top:6px;letter-spacing:0.5px">Creado por: Daniela Riveros</div>
       </div>
       <div class="lc-body">
         <div class="login-err" id="loginErr"></div>
         <div class="campo"><label for="lgUsuario">Usuario</label>
-          <input id="lgUsuario" autocomplete="username" placeholder="drivero (o su correo)" oninput="actualizarAccesosLogin()"></div>
+          <input id="lgUsuario" autocomplete="username" placeholder="jcubillan / jaguilar / drivero" oninput="actualizarAccesosLogin()"></div>
         <div class="campo"><label for="lgClave">Clave</label>
-          <input id="lgClave" type="password" autocomplete="current-password" placeholder="1234" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
+          <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
         <div class="campo"><label for="lgAcceso">Acceso</label>
           <select id="lgAcceso"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
         <button class="btn-entrar" onclick="iniciarSesion()">Ingresar</button>
       </div>
-    </div>
-    <div class="demo-card">
-      <h3>Usuarios de prueba <span class="chip-demo">SOLO DEMOSTRACIÓN</span></h3>
-      <table><thead><tr><th>Usuario</th><th>Clave</th><th>Perfil</th></tr></thead><tbody id="tablaDemoUsuarios"></tbody></table>
-      <div class="nota">Haga clic en un usuario para llenar los datos automáticamente. Clave general de prueba: <b>1234</b>.</div>
     </div>
   </div>
 </section>
@@ -550,70 +539,161 @@ const formatoEstSol = e => {
 /* ----------------------------- Persistencia ----------------------------- */
 const ALMS_TODOS_OFICIALES = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
 
+function asegurarStockBaseProduccion() {
+  if (!DB || !DB.catalogo) return;
+  DB.exi = DB.exi || {};
+  (DB.almacenes || []).forEach(a => { DB.exi[a.c] = DB.exi[a.c] || {}; });
+
+  // Stock base en CENTRAL para Jackson Cubillán
+  const baseCentral = [
+    ['HE000101', 30], ['HE000102', 25], ['HE000110', 12], ['HE000120', 20], ['HE000130', 10],
+    ['HE000140', 15], ['HE000150', 10], ['HE000160', 12], ['HE000170', 6], ['HE000180', 15],
+    ['HE000190', 6], ['HE000195', 4], ['HE000200', 12], ['HE000210', 10], ['HE000220', 5], ['HE000230', 14],
+    ['HE000521', 4], ['HE000600', 3], ['HE000700', 2], ['HE000710', 2], ['HE000800', 1], ['HE000810', 2], ['HE000820', 1],
+    ['CI000101', 10], ['CI000201', 6], ['CI000301', 4], ['CI000401', 4],
+    ['EP000101', 60], ['EP000201', 40], ['EP000202', 30], ['EP000301', 100], ['EP000401', 150], ['EP000501', 40], ['EP000601', 25]
+  ];
+  baseCentral.forEach(([cod, cant]) => {
+    const it = DB.catalogo.find(c => c.cod === cod);
+    if (it) {
+      DB.exi['CENTRAL'][it.id] = { disp: cant, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
+    }
+  });
+
+  // Stock base en PMH para Juan Aguilar
+  const basePmh = [
+    ['HE000101', 10], ['HE000102', 10], ['HE000120', 8], ['HE000130', 6], ['HE000140', 8],
+    ['HE000150', 6], ['HE000160', 6], ['HE000180', 8], ['HE000210', 5],
+    ['EP000101', 20], ['EP000301', 30], ['EP000401', 40], ['CI000101', 2]
+  ];
+  basePmh.forEach(([cod, cant]) => {
+    const it = DB.catalogo.find(c => c.cod === cod);
+    if (it) {
+      DB.exi['PMH'][it.id] = { disp: cant, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
+    }
+  });
+}
+
+function asegurarProduccionLimpia() {
+  if (!DB) return;
+  if (DB.produccionLimpia && DB.version >= 10) return;
+
+  // Limpiar todas las transacciones operativas demo
+  DB.vales = [];
+  DB.solicitudes = [];
+  DB.movs = [];
+  DB.incid = [];
+  DB.bit = [];
+  DB.extSol = [];
+  DB.notificaciones = [];
+  DB.intentos = {};
+
+  // Correlativos oficiales arrancando desde 01
+  DB.corr = { PRH: 0, ASI: 0, TRF: 0, SOL: 0, ENT: 0, DEV: 0, DAN: 0, EXT: 0, PLZ: 0 };
+  DB.seq = { mov: 0, inc: 0 };
+
+  // Limpiar existencias de préstamos, asignaciones, daños o extravíos viejos
+  if (DB.exi) {
+    Object.keys(DB.exi).forEach(alm => {
+      Object.keys(DB.exi[alm]).forEach(id => {
+        const e = DB.exi[alm][id];
+        e.prest = 0;
+        e.asig = 0;
+        e.dan = 0;
+        e.rep = 0;
+        e.ext = 0;
+        e.vacio = 0;
+        e.pend = 0;
+        e.baja = 0;
+        e.entregado = 0;
+      });
+    });
+  }
+
+  asegurarStockBaseProduccion();
+  DB.produccionLimpia = true;
+  DB.version = 10;
+}
+
 function asegurarUsuariosClave() {
   if (!DB || !DB.usuarios) return;
-  // Asegurar Daniela Riveros (Supervisora en todos los almacenes, clave 1234)
+  const ALMS_TODOS = ALMS_TODOS_OFICIALES;
+
+  // 1. Daniela Riveros (Creadora del Sistema & Supervisora General, clave 070717)
   let uDan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
   if (!uDan) {
-    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '070717', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Creadora del Sistema & Supervisora General', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } };
     DB.usuarios.unshift(uDan);
   } else {
     uDan.usuario = 'drivero';
     uDan.alias = 'daniela';
     uDan.correos = ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'];
-    uDan.clave = '1234';
+    uDan.clave = '070717';
     uDan.nombre = 'Daniela Riveros';
-    uDan.cargo = 'Supervisora de Herramientas & Almacenes';
+    uDan.cargo = 'Creadora del Sistema & Supervisora General';
     uDan.activo = true;
     uDan.admin = true;
-    uDan.almacenes = ALMS_TODOS_OFICIALES;
+    uDan.almacenes = ALMS_TODOS;
     uDan.maestro = true;
     uDan.editaCostos = true;
-    uDan.perm = { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+    uDan.perm = { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS };
   }
   if (S.u && (S.u.usuario === 'drivero' || S.u.alias === 'daniela')) {
     S.u.admin = true;
     S.u.maestro = true;
-    S.u.almacenes = ALMS_TODOS_OFICIALES;
+    S.u.clave = '070717';
+    S.u.almacenes = ALMS_TODOS;
   }
 
-  // Asegurar Jessica Navarro (Acceso a todos los almacenes, clave 1234)
-  let uJes = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro' || x.usuario.toLowerCase() === 'jessica');
-  if (!uJes) {
-    uJes = { usuario: 'jnavarro', alias: 'jessica', correos: ['jnavarro@timaca.com.ve', 'jessicanavarro@timaca.com.ve'], clave: '1234', nombre: 'Jessica Navarro', cedula: 'V-19.876.543', cargo: 'Coordinadora HSE & Seguridad Industrial', activo: true, admin: false, maestro: true, editaCostos: false, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: [], transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
-    DB.usuarios.splice(1, 0, uJes);
+  // 2. Jackson Cubillán (Almacén Central, clave timaca1974)
+  let uJack = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jcubillan');
+  if (!uJack) {
+    uJack = { usuario: 'jcubillan', alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], clave: 'timaca1974', nombre: 'Jackson Cubillán', cedula: 'V-16.789.012', cargo: 'Encargado de Almacén Central', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['CENTRAL'], perm: { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] } };
+    DB.usuarios.push(uJack);
   } else {
-    uJes.usuario = 'jnavarro';
-    uJes.alias = 'jessica';
-    uJes.correos = ['jnavarro@timaca.com.ve', 'jessicanavarro@timaca.com.ve'];
-    uJes.clave = '1234';
-    uJes.nombre = 'Jessica Navarro';
-    uJes.cargo = 'Coordinadora HSE & Seguridad Industrial';
-    uJes.activo = true;
-    uJes.almacenes = ALMS_TODOS_OFICIALES;
-    uJes.maestro = true;
-    uJes.perm = { aprobar: [], transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+    uJack.usuario = 'jcubillan';
+    uJack.clave = 'timaca1974';
+    uJack.nombre = 'Jackson Cubillán';
+    uJack.cargo = 'Encargado de Almacén Central';
+    uJack.activo = true;
+    uJack.almacenes = ['CENTRAL'];
+    uJack.perm = { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] };
   }
 
-  // Asegurar Alejandra Tesara (Administradora con acceso a todos los almacenes, clave 1234)
+  // 3. Juan Aguilar (Almacén PMH, clave Juan0512)
+  let uJuan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jaguilar');
+  if (!uJuan) {
+    uJuan = { usuario: 'jaguilar', alias: 'juan', correos: ['jaguilar@timaca.com.ve'], clave: 'Juan0512', nombre: 'Juan Aguilar', cedula: 'V-17.654.321', cargo: 'Encargado de Almacén PMH', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['PMH'], perm: { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] } };
+    DB.usuarios.push(uJuan);
+  } else {
+    uJuan.usuario = 'jaguilar';
+    uJuan.clave = 'Juan0512';
+    uJuan.nombre = 'Juan Aguilar';
+    uJuan.cargo = 'Encargado de Almacén PMH';
+    uJuan.activo = true;
+    uJuan.almacenes = ['PMH'];
+    uJuan.perm = { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] };
+  }
+
+  // 4. Administradores de respaldo (atesara / admin)
   let uAle = DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
   if (!uAle) {
-    uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: '1234', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos / Administradora', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
-    DB.usuarios.splice(2, 0, uAle);
+    uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: 'timaca2026', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos / Administradora', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } };
+    DB.usuarios.push(uAle);
   } else {
-    uAle.usuario = 'atesara';
-    uAle.alias = 'alejandra';
-    uAle.correos = ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'];
-    uAle.clave = '1234';
-    uAle.nombre = 'Alejandra Tesara';
-    uAle.cargo = 'Analista Principal de Costos / Administradora';
-    uAle.activo = true;
+    uAle.clave = 'timaca2026';
     uAle.admin = true;
-    uAle.maestro = true;
-    uAle.editaCostos = true;
-    uAle.almacenes = ALMS_TODOS_OFICIALES;
-    uAle.perm = { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+    uAle.almacenes = ALMS_TODOS;
   }
+  let uAdm = DB.usuarios.find(x => x.usuario.toLowerCase() === 'admin');
+  if (uAdm) {
+    uAdm.clave = 'timaca2026';
+    uAdm.admin = true;
+    uAdm.almacenes = ALMS_TODOS;
+  }
+
+  // Desactivar usuarios demo viejos que ya no correspondan
+  DB.usuarios = DB.usuarios.filter(u => !['central', 'pellas', 'eco', 'jnavarro'].includes(u.usuario.toLowerCase()));
 
   DB.notificaciones = DB.notificaciones || [];
   DB.extSol = DB.extSol || [];
@@ -990,40 +1070,8 @@ function asegurarEstatusSolicitudes() {
 }
 
 function asegurarTransferenciaDemoCentral() {
-  if (!DB || !Array.isArray(DB.vales) || !Array.isArray(DB.catalogo) || !DB.catalogo.length) return;
-  const hayPendCentral = DB.vales.some(v => v.tipo === 'TRF' && v.destino === 'CENTRAL' && v.estatus === 'PENDIENTE DE RECEPCIÓN');
-  if (!hayPendCentral) {
-    const ahora = new Date();
-    const fecha = new Date(ahora.getTime() - 2 * 3600000).toISOString();
-    const vence = new Date(ahora.getTime() + 10 * 3600000).toISOString();
-    const it1 = DB.catalogo.find(i => i.cod === 'HE000102') || DB.catalogo[0];
-    const it2 = DB.catalogo.find(i => i.cod === 'HE000140') || DB.catalogo[1] || DB.catalogo[0];
-    DB.corr = DB.corr || {};
-    DB.corr.TRF = (DB.corr.TRF || 0) + 1;
-    const num = `TRF-${String(DB.corr.TRF).padStart(7, '0')}`;
-    DB.vales.unshift({
-      tipo: 'TRF',
-      num,
-      fecha,
-      vence,
-      origen: 'PELLAS',
-      destino: 'CENTRAL',
-      resp: { nombre: 'Freddy Cecilio Acosta Romero', cedula: 'V-14.905.458', cargo: 'Mecánico de primera' },
-      sup: 'Albin Cedeño',
-      proyecto: 'Mantenimiento Mayor Planta Pellas',
-      cuenta: 'TTE-C-0681',
-      despacha: 'Supervisor Pellas',
-      realizadoPor: { usuario: 'pellas', nombre: 'Almacén Pellas' },
-      estatus: 'PENDIENTE DE RECEPCIÓN',
-      obs: 'Retorno de herramientas a Almacén Central',
-      salidaTimaca: 'SAL-PELLAS-0042',
-      hist: [{ ev: 'Creada', fecha, usr: 'Almacén Pellas', det: 'Enviada a Almacén Central' }],
-      lineas: [
-        { id: it1.id, cod: it1.cod, desc: it1.desc, marca: it1.marca, modelo: it1.modelo, serial: it1.serial || '', cat: it1.cat, umb: it1.umb, cond: 'BUENO', cant: 2, mod: it1.mod },
-        { id: it2.id, cod: it2.cod, desc: it2.desc, marca: it2.marca, modelo: it2.modelo, serial: it2.serial || '', cat: it2.cat, umb: it2.umb, cond: 'BUENO', cant: 1, mod: it2.mod }
-      ]
-    });
-  }
+  // En producción real no se inyectan transferencias ficticias
+  return;
 }
 
 function cargarDatos() {
@@ -1031,8 +1079,9 @@ function cargarDatos() {
     const r = localStorage.getItem(LS_KEY);
     if (r) {
       const parsed = JSON.parse(r);
-      if (parsed && Array.isArray(parsed.usuarios) && parsed.usuarios.length && Array.isArray(parsed.vales) && Array.isArray(parsed.catalogo) && Array.isArray(parsed.almacenes)) {
+      if (parsed && Array.isArray(parsed.usuarios) && parsed.usuarios.length && Array.isArray(parsed.catalogo) && Array.isArray(parsed.almacenes)) {
         DB = parsed;
+        asegurarProduccionLimpia();
         asegurarUsuariosClave();
         asegurarPersonalOficial();
         if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
@@ -1040,13 +1089,13 @@ function cargarDatos() {
         asegurarPlanificacionCajas();
         asegurarCategoriasOficiales();
         asegurarEstatusSolicitudes();
-        asegurarTransferenciaDemoCentral();
         guardar();
         return;
       }
     }
   } catch (e) { console.warn('Regenerando base de datos TIMACA...'); }
   DB = semilla();
+  asegurarProduccionLimpia();
   asegurarUsuariosClave();
   asegurarPersonalOficial();
   if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
@@ -1054,7 +1103,6 @@ function cargarDatos() {
   asegurarPlanificacionCajas();
   asegurarCategoriasOficiales();
   asegurarEstatusSolicitudes();
-  asegurarTransferenciaDemoCentral();
   guardar();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
@@ -1069,14 +1117,17 @@ const userDe = u => {
   if (!DB || !Array.isArray(DB.usuarios)) return null;
   const q = String(u || '').trim().toLowerCase();
   if (!q) return null;
-  if (q === 'danielariveros.c2021@gmail.com' || q === 'drivero@timaca.com.ve') {
-    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
+  if (q === 'danielariveros.c2021@gmail.com' || q === 'drivero@timaca.com.ve' || q === 'drivero' || q === 'daniela') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || (x.alias && x.alias.toLowerCase() === 'daniela'));
   }
-  if (q === 'alejandratesara.timaca@gmail.com' || q === 'atesara@timaca.com.ve') {
-    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
+  if (q === 'jcubillan' || q === 'jackson' || q === 'jackson cubillan' || q === 'jcubillan@timaca.com.ve') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'jcubillan' || (x.alias && x.alias.toLowerCase() === 'jackson'));
   }
-  if (q === 'jessicanavarro@timaca.com.ve' || q === 'jnavarro@timaca.com.ve') {
-    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro' || x.usuario.toLowerCase() === 'jessica');
+  if (q === 'jaguilar' || q === 'juan' || q === 'juan aguilar' || q === 'jaguilar@timaca.com.ve') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'jaguilar' || (x.alias && x.alias.toLowerCase() === 'juan'));
+  }
+  if (q === 'alejandratesara.timaca@gmail.com' || q === 'atesara@timaca.com.ve' || q === 'atesara' || q === 'alejandra') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || (x.alias && x.alias.toLowerCase() === 'alejandra'));
   }
   return DB.usuarios.find(x => 
     x.usuario.toLowerCase() === q || 
@@ -1101,7 +1152,7 @@ function esPersonalAlmacen(u, alm) {
   if (!u) return false; if (u.admin) return true;
   return u.perm.transferir.includes(alm) || u.perm.recibir.includes(alm) || ((u.almacenes || []).includes(alm) && !u.perm.aprobar.includes(alm));
 }
-const puedeImprimir = () => S.ctx === 'MAESTRO' || esPersonalAlmacen(S.u, S.ctx);
+const puedeImprimir = () => true;
 const puedeMaestro = u => !!u && (u.admin || u.maestro);
 const enMaestro = () => S.ctx === 'MAESTRO';
 
@@ -1215,29 +1266,80 @@ function validarSolicitud(d, finalizar) {
   } else if (!d.fechaAsig) throw new Error('Indique la fecha de asignación.');
   validarStock(d.origen, d.lineas);
 }
-function guardarSolicitud(d, finalizar) {
+function emitirValeDirecto(d) {
   validarSolicitud(d, true);
+  validarStock(d.origen, d.lineas);
+
   let s = d.num ? solDe(d.num) : null;
-  if (s) {
-    if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') throw new Error(`Esta solicitud ya fue aprobada y tiene vale emitido (${s.vale || 'VALE'}). Por regla estricta, las asignaciones y préstamos aprobados no se pueden editar.`);
-    if (s.estatus === 'ANULADO' || s.estatus === 'ANULADA') throw new Error('No se pueden modificar solicitudes anuladas.');
-  }
   const editando = !!s;
   if (!s) {
-    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'PENDIENTE DE APROBACIÓN' };
+    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'APROBADA' };
     DB.solicitudes.push(s);
   }
   Object.assign(s, {
     tipo: d.tipo, origen: d.origen, destino: d.destino, resp: d.resp, sup: d.sup, proyecto: d.proyecto, cuenta: d.cuenta,
     fechaReq: d.tipo === 'PRH' ? d.fechaReq : '', fechaDev: d.tipo === 'PRH' ? d.fechaDev : '', fechaAsig: d.tipo === 'ASI' ? d.fechaAsig : '',
     obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l)),
-    estatus: 'PENDIENTE DE APROBACIÓN',
-    finalizadaEn: nowISO()
+    estatus: 'APROBADA',
+    finalizadaEn: nowISO(),
+    procesadoEn: nowISO(),
+    procesadoPor: quien()
   });
-  bit(editando ? 'SOLICITUD MODIFICADA' : 'SOLICITUD CREADA', s.num);
-  notificarSistema(editando ? 'Solicitud actualizada' : 'Nueva solicitud generada', `Se ${editando ? 'actualizó' : 'generó'} la solicitud ${s.num} (${s.tipo}) en ${almNombre(s.origen)}. Pendiente de aprobación.`, 'info', { doc: s.num });
+
+  const lineas = s.lineas.map(l => Object.assign({}, l, { dev: 0 }));
+  const v = nuevoVale(s.tipo, {
+    origen: s.origen, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, obs: s.obs,
+    lineas, fechaReq: s.fechaReq, fechaDev: s.fechaDev, fechaAsig: s.fechaAsig, solicitud: s.num,
+    realizadoPor: quien(), aprobadoPor: quien()
+  });
+
+  lineas.forEach(l => {
+    const e = exi(s.origen, l.id);
+    e.disp -= l.cant;
+    let destinoEst;
+    if (s.tipo === 'ASI' && l.mod === 'EPP') {
+      e.entregado = (e.entregado || 0) + l.cant;
+      l.consumo = true;
+      destinoEst = 'ENTREGADO (DOTACIÓN)';
+    } else if (s.tipo === 'PRH') {
+      e.prest = (e.prest || 0) + l.cant;
+      destinoEst = 'EN PRÉSTAMO';
+    } else {
+      e.asig = (e.asig || 0) + l.cant;
+      destinoEst = 'ASIGNADO';
+    }
+    mov({
+      doc: v.num,
+      tipo: s.tipo,
+      id: l.id,
+      cant: l.cant,
+      origen: s.origen,
+      destino: s.destino,
+      estAnt: 'DISPONIBLE',
+      estNue: destinoEst,
+      resp: s.resp ? s.resp.nombre : '',
+      cedula: s.resp ? s.resp.cedula : '',
+      obs: s.proyecto
+    });
+  });
+
+  v.hist.push({ ev: 'Vale emitido directamente', fecha: nowISO(), usr: S.u.nombre, det: `Generado a partir de solicitud ${s.num}`, color: 'verde' });
+  s.vale = v.num;
+  bit(editando ? 'SOLICITUD Y VALE ACTUALIZADOS' : 'SOLICITUD Y VALE EMITIDOS', `${s.num} → ${v.num}`);
   guardar();
-  return s;
+
+  notificarSistema(
+    'Vale emitido con éxito',
+    `Se generó la solicitud ${s.num} y se emitió el vale ${v.num} (${s.tipo}) en ${almNombre(s.origen)}. Listo para imprimir y firmar.`,
+    'ok',
+    { doc: v.num }
+  );
+
+  return { solicitud: s, vale: v };
+}
+
+function guardarSolicitud(d, finalizar) {
+  return emitirValeDirecto(d).solicitud;
 }
 function eliminarSolicitud(numSol) {
   const s = solDe(numSol);
@@ -2078,18 +2180,12 @@ function semilla() {
   const ALMS_TODOS = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
   const U = (usuario, clave, nombre, cedula, cargo, o) => DB.usuarios.push(Object.assign({ usuario, clave, nombre, cedula, cargo, activo: true, admin: false, maestro: false, editaCostos: false, almacenes: [], perm: { aprobar: [], transferir: [], recibir: [] } }, o, { perm: Object.assign({ aprobar: [], transferir: [], recibir: [] }, (o || {}).perm) }));
 
-  // Usuarios Oficiales de Prueba TIMACA (clave 1234)
-  U('drivero', '1234', 'Daniela Riveros', 'V-20.123.456', 'Supervisora de Herramientas & Almacenes', { alias: 'daniela', almacenes: ALMS_TODOS, maestro: true, editaCostos: true, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
-  U('jnavarro', '1234', 'Jessica Navarro', 'V-19.876.543', 'Coordinadora HSE & Seguridad Industrial', { alias: 'jessica', almacenes: ALMS_TODOS, maestro: true, editaCostos: false, perm: { aprobar: [], transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
-  U('atesara', '1234', 'Alejandra Tesara', 'V-18.456.789', 'Analista Principal de Costos / Administradora', { alias: 'alejandra', admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
-
-  // Otros usuarios de apoyo
-  U('admin', '1234', 'Administrador del Sistema', 'V-10.000.001', 'Administrador', { admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
-  U('central', '1234', 'Mariana Duarte', 'V-17.234.567', 'Almacenista Central', { almacenes: ['CENTRAL'], perm: { transferir: ['CENTRAL'], recibir: ['CENTRAL'] } });
-  U('pellas', '1234', 'Luis Alvarado', 'V-19.333.444', 'Almacenista Pellas', { almacenes: ['PELLAS'], perm: { transferir: ['PELLAS'], recibir: ['PELLAS'] } });
-  U('eco', '1234', 'Andreína Gil', 'V-20.111.222', 'Almacenista ECO', { almacenes: ['ECO'], perm: { transferir: ['ECO'], recibir: ['ECO'] } });
-  U('gerencia', '1234', 'Lic. Alberto Márquez', 'V-9.876.543', 'Gerente de Operaciones', { maestro: true, editaCostos: true });
-  U('auditor', '1234', 'Lic. Patricia León', 'V-14.987.321', 'Auditora Interna', { maestro: true, editaCostos: false });
+  // Usuarios Oficiales de Producción TIMACA
+  U('drivero', '070717', 'Daniela Riveros', 'V-20.123.456', 'Creadora del Sistema & Supervisora General', { alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
+  U('jcubillan', 'timaca1974', 'Jackson Cubillán', 'V-16.789.012', 'Encargado de Almacén Central', { alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], almacenes: ['CENTRAL'], perm: { transferir: ['CENTRAL'], recibir: ['CENTRAL'] } });
+  U('jaguilar', 'Juan0512', 'Juan Aguilar', 'V-17.654.321', 'Encargado de Almacén PMH', { alias: 'juan', correos: ['jaguilar@timaca.com.ve'], almacenes: ['PMH'], perm: { transferir: ['PMH'], recibir: ['PMH'] } });
+  U('atesara', 'timaca2026', 'Alejandra Tesara', 'V-18.456.789', 'Analista Principal de Costos / Administradora', { alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
+  U('admin', 'timaca2026', 'Administrador del Sistema', 'V-10.000.001', 'Administrador', { admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
 
   DB.personal = JSON.parse(JSON.stringify(PERSONAL_OFICIAL));
   DB.proyectos = JSON.parse(JSON.stringify(PROYECTOS_OFICIALES));
@@ -2142,79 +2238,19 @@ function semilla() {
     return guardarSolicitud(Object.assign({ tipo, origen, destino: origen, resp: P(cedula), sup, proyecto: pr.nombre, cuenta: pr.cuenta, lineas, obs: '' }, fechas), finalizar);
   });
 
-  /* Inventario inicial */
-  como('admin', T(430), () => {
-    const ini = (alm, cod, cant, serial) => cargaInicial(alm, IT(cod, serial).id, cant);
-    [['HE000101', 30], ['HE000102', 25], ['HE000110', 12], ['HE000120', 20], ['HE000130', 10], ['HE000140', 15], ['HE000150', 10], ['HE000160', 12], ['HE000170', 6], ['HE000180', 15],
-    ['HE000190', 6], ['HE000195', 4], ['HE000200', 12], ['HE000210', 10], ['HE000220', 5], ['HE000230', 14],
-    ['EP000101', 60], ['EP000201', 40], ['EP000202', 30], ['EP000301', 100], ['EP000401', 150], ['EP000501', 40], ['EP000601', 25]].forEach(([c, n]) => ini('CENTRAL', c, n));
-    [['HE000521', 'SN-4482190'], ['HE000521', 'SN-4482191'], ['HE000600', 'SN-7781001'], ['HE000700', 'LN-250-0091'], ['HE000710', 'HR-3301'],
-    ['HE000800', 'SN-RD-3001'], ['HE000810', 'SN-IR-2311'], ['HE000820', 'SN-PR-2501'],
-    ['CI000101', 'OX-0001'], ['CI000101', 'OX-0002'], ['CI000101', 'OX-0003'], ['CI000101', 'OX-0004'], ['CI000201', 'AC-0001'], ['CI000201', 'AC-0002'], ['CI000301', 'AR-0001'], ['CI000401', 'CO-0001']].forEach(([c, s]) => ini('CENTRAL', c, 1, s));
-    [['HE000130', 4], ['HE000140', 3], ['HE000120', 4], ['EP000301', 20], ['EP000401', 30]].forEach(([c, n]) => ini('ECO', c, n));
-    ini('PMH', 'HE000140', 2); ini('FABRICACION', 'HE000160', 3); ini('SMB', 'HE000180', 2);
-  });
+  // Base limpia de operaciones: todo en blanco, correlativos desde 01
+  DB.vales = [];
+  DB.solicitudes = [];
+  DB.movs = [];
+  DB.incid = [];
+  DB.bit = [];
+  DB.extSol = [];
+  DB.notificaciones = [];
+  DB.intentos = {};
+  DB.corr = { PRH: 0, ASI: 0, TRF: 0, SOL: 0, ENT: 0, DEV: 0, DAN: 0, EXT: 0, PLZ: 0 };
+  DB.seq = { mov: 0, inc: 0 };
 
-  /* Asignación de EPP antigua (reposición vencida) */
-  const s4 = sol('central', T(400), 'ASI', 'CENTRAL', 'V-8.526.909', 'Jesús Barrios', 'TT-A-C-502', [L('EP000201', 1, 'NUEVO'), L('EP000301', 1, 'NUEVO')], { fechaAsig: D(-400) });
-  como('drivero', T(400, 1), () => aprobarSolicitud(s4.num));
-
-  /* Transferencias históricas */
-  const t1 = como('central', T(40), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PELLAS', obs: 'Dotación inicial Pellas', lineas: [L('HE000120', 5), L('HE000140', 3), L('HE000102', 4), L('CI000101', 1, 'LLENO', 'OX-0002'), L('EP000101', 10, 'NUEVO'), L('EP000401', 20, 'NUEVO')] }));
-  como('pellas', T(40, 2), () => aceptarTransferencia(t1.num));
-  const t2 = como('central', T(38), () => crearTransferencia({ origen: 'CENTRAL', destino: 'ECO', obs: 'Requerimiento flota ECO', lineas: [L('HE000101', 6), L('HE000110', 2), L('CI000101', 1, 'LLENO', 'OX-0003')] }));
-  como('eco', T(38, 5), () => aceptarTransferencia(t2.num));
-  const t3 = como('central', T(30), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PMH', obs: '', lineas: [L('HE000120', 4)] }));
-  como('admin', T(30, 3), () => rechazarTransferencia(t3.num, 'Se recibieron 2 alicates y el vale indica 4. Se devuelve para verificación.'));
-  como('central', T(25), () => crearTransferencia({ origen: 'CENTRAL', destino: 'BRIQUETAS', obs: '', lineas: [L('HE000140', 4), L('HE000170', 2)] }));
-
-  /* Cadena completa de cilindro y herramienta en Pellas */
-  const s1 = sol('pellas', T(24), 'PRH', 'PELLAS', 'V-4.031.435', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('CI000101', 1, 'LLENO', 'OX-0002'), L('HE000120', 1)], { fechaReq: D(-24), fechaDev: D(-10) });
-  const v1 = como('drivero', T(24, 1), () => aprobarSolicitud(s1.num));
-  como('pellas', T(12), () => registrarDevolucion(v1.num, [{ i: 0, cant: 1, cond: 'VACÍO' }, { i: 1, cant: 1, cond: 'BUENO' }], 'Luis Alvarado', 'Cilindro devuelto vacío'));
-  const t5 = como('pellas', T(11), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de cilindro vacío', lineas: [L('CI000101', 1, 'VACÍO', 'OX-0002')] }));
-  como('central', T(11, 4), () => aceptarTransferencia(t5.num));
-
-  /* Préstamos en Central */
-  const s2 = sol('central', T(20), 'PRH', 'CENTRAL', 'V-15.836.486', 'Jonathan Grela', 'TTE-C-0655', [L('HE000521', 1, 'ÓPTIMO', 'SN-4482190'), L('HE000101', 2)], { fechaReq: D(-20), fechaDev: D(-5) });
-  como('drivero', T(20, 2), () => aprobarSolicitud(s2.num));
-  const s3 = sol('central', T(9), 'PRH', 'CENTRAL', 'V-13.121.593', 'Mauricio Gerussi', 'TT-A-C-505', [L('HE000600', 1, 'ÓPTIMO', 'SN-7781001')], { fechaReq: D(-9), fechaDev: D(-1) });
-  const v3 = como('drivero', T(9, 1), () => aprobarSolicitud(s3.num));
-  como('central', T(2), () => extenderPlazo(v3.num, D(7), 'Mauricio Gerussi', 'Trabajo de fabricación extendido por cambio de alcance'));
-
-  /* Asignaciones */
-  const s5 = sol('central', T(20), 'ASI', 'CENTRAL', 'V-11.515.567', 'Humberto Avendaño', 'EE-A-C-509', [L('EP000101', 1, 'NUEVO'), L('EP000401', 2, 'NUEVO')], { fechaAsig: D(-20) });
-  como('drivero', T(20, 3), () => aprobarSolicitud(s5.num));
-  const s6 = sol('pellas', T(15), 'ASI', 'PELLAS', 'V-8.179.834', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('HE000140', 1)], { fechaAsig: D(-15) });
-  como('drivero', T(15, 2), () => aprobarSolicitud(s6.num));
-
-  /* ECO: préstamo con extravío y solicitud anulada */
-  const s11 = sol('eco', T(14), 'PRH', 'ECO', 'V-6.880.863', 'Mauricio Gerussi', 'EE-A-C-510', [L('HE000130', 1)], { fechaReq: D(-14), fechaDev: D(3) });
-  const v11 = como('drivero', T(14, 1), () => aprobarSolicitud(s11.num));
-  como('eco', T(9), () => { const lv = v11.lineas[0]; return registrarIncidencia('EXT', { origen: 'ECO', valeRef: v11.num, resp: v11.resp, sup: 'Mauricio Gerussi', proyecto: v11.proyecto, cuenta: v11.cuenta, detalle: 'El trabajador reporta que la llave no apareció al finalizar la jornada en el área de lavado de equipos.', lineas: [Object.assign({}, lv, { cant: 1, idx: 0 })] }); });
-  const s10 = sol('eco', T(8), 'PRH', 'ECO', 'V-9.946.019', 'Carlos Giraldo', 'EE-A-C-510', [L('HE000110', 1)], { fechaReq: D(-8), fechaDev: D(-2) });
-  como('drivero', T(8, 2), () => anularSolicitud(s10.num, 'La OT-430 no requiere izaje esta semana.'));
-
-  /* Daño en Central */
-  como('central', T(7), () => registrarIncidencia('DAN', { origen: 'CENTRAL', resp: P('V-24.037.987'), sup: 'Albin Cedeño', proyecto: 'Interconexión del sistema de transporte de mineral desde la tolva multipropósito hasta carga barcos de despacho internacional PMH - FMO (VISCO ORINOCO)', cuenta: 'TTE-C-0655', detalle: 'Carbones desgastados y guarda de protección fisurada.', malUso: 'NO', dictamen: 'REPARABLE', lineas: [L('HE000521', 1, 'DAÑADO', 'SN-4482191')] }));
-
-  /* Solicitudes pendientes y borrador */
-  sol('central', T(3), 'PRH', 'CENTRAL', 'V-26.662.373', 'Ricardo Ramos', 'TTE-C-0640', [L('HE000700', 1, 'ÓPTIMO', 'LN-250-0091'), L('HE000710', 1, 'ÓPTIMO', 'HR-3301')], { fechaReq: D(0), fechaDev: D(10) });
-  sol('pellas', T(2), 'PRH', 'PELLAS', 'V-14.905.458', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('HE000102', 2)], { fechaReq: D(0), fechaDev: D(5) });
-  sol('central', T(1), 'PRH', 'CENTRAL', 'V-15.903.045', 'José Romero', 'TTE-C-0693', [L('HE000180', 1)], { fechaReq: D(1), fechaDev: D(6) }, false);
-
-  /* Transferencias pendientes (una por vencer) */
-  como('central', T(0, -11), () => crearTransferencia({ origen: 'CENTRAL', destino: 'ECO', obs: 'Reposición de EPP', lineas: [L('EP000301', 15, 'NUEVO'), L('EP000401', 25, 'NUEVO')] }));
-  como('central', T(0, -3), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PELLAS', obs: 'Requerimiento Planta Pellas TTE-C-0681', lineas: [L('HE000101', 5), L('HE000110', 6)] }));
-  como('pellas', T(0, -2), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de herramientas a Almacén Central', lineas: [L('HE000102', 2), L('HE000140', 1)] }));
-
-  /* Costos y bitácora del Maestro */
-  como('gerencia', T(5), () => { const pc = S.ctx; S.ctx = 'MAESTRO'; cambiarCosto(IT('HE000110').id, 52, 'Actualización de proveedor'); S.ctx = pc; });
-  DB.bit.push({ fecha: T(3), usr: 'gerencia', acc: 'ACCESO MAESTRO', det: 'Ingreso a vista consolidada' });
-  DB.bit.push({ fecha: T(2), usr: 'eco', acc: 'ACCESO DENEGADO MAESTRO', det: 'Intento de ingreso sin autorización' });
-  DB.bit.push({ fecha: T(1), usr: 'auditor', acc: 'ACCESO MAESTRO', det: 'Ingreso a vista consolidada' });
-  NOW_FIX = null;
-  procesarVencimientos();
+  asegurarStockBaseProduccion();
   return DB;
 }
 
@@ -2425,32 +2461,9 @@ function encabezadoReporte(titulo, ctxTxt, filtros) {
    INICIO DE SESIÓN
    ===================================================================== */
 function pintarUsuariosDemo() {
-  const el = $('tablaDemoUsuarios');
-  if (!el) return;
-  if (!DB || !Array.isArray(DB.usuarios) || !DB.usuarios.length) {
-    cargarDatos();
-  }
-  const perfil = u => {
-    if (!u) return '';
-    if (u.usuario === 'drivero' || u.usuario === 'daniela') return 'Supervisora (Todos los Almacenes: Central, Pellas, Boca Grande, PMH, Briquetas, ECO, SMB, Fabricación)';
-    if (u.usuario === 'atesara' || u.usuario === 'alejandra') return 'Administradora (Todos los Almacenes + Maestro)';
-    if (u.usuario === 'jnavarro' || u.usuario === 'jessica') return 'HSE & Seguridad (Todos los Almacenes)';
-    if (u.admin) return 'Administrador (todo, incluido Maestro)';
-    const alms = Array.isArray(u.almacenes) ? u.almacenes : [];
-    const perm = u.perm || {};
-    return [
-      alms.length ? (DB.almacenes && alms.length === DB.almacenes.length ? 'Todos los almacenes' : alms.map(almNombre).join(', ')) : '',
-      (perm.aprobar && perm.aprobar.length) ? 'aprueba solicitudes (Supervisor)' : '', 
-      (perm.transferir && perm.transferir.length) ? 'transfiere' : '', 
-      (perm.recibir && perm.recibir.length) ? 'recibe' : '',
-      u.maestro ? 'Maestro' + (u.editaCostos ? ' (edita costos)' : ' (solo consulta de costos)') : ''
-    ].filter(Boolean).join(' · ');
-  };
-  el.innerHTML = (DB.usuarios || []).filter(u => u && u.activo).map(u => 
-    `<tr class="clic" onclick="llenarDemo('${u.usuario}')"><td><b>${esc(u.usuario)}</b></td><td><b>${esc(u.clave)}</b></td><td><b>${esc(u.nombre)}</b><br><span style="color:#0284c7;font-weight:700">${esc(perfil(u))}</span></td></tr>`
-  ).join('');
+  // En producción real no se muestran usuarios de prueba
+  return;
 }
-function llenarDemo(usr) { const u = userDe(usr); $('lgUsuario').value = u.usuario; $('lgClave').value = u.clave; actualizarAccesosLogin(); $('lgClave').focus(); }
 function opcionesAcceso(u) {
   const ops = [];
   if (puedeMaestro(u)) ops.push({ v: 'MAESTRO', t: '★ MAESTRO – Vista consolidada' });
@@ -2525,7 +2538,6 @@ function menuDef() {
       ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
   }
   const c = S.ctx;
-  const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA').length;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
   const pendExt = (DB.extSol || []).filter(x => x.alm === c && x.estatus === 'PENDIENTE').length;
   const m = [
@@ -2537,9 +2549,12 @@ function menuDef() {
       ['cajasTipos', 'Listas por especialidad']
     ]]);
   }
+  const itemsAprob = [];
+  if (pendExt > 0) itemsAprob.push(['aprobarPlz', 'Aprobar extensiones', pendExt]);
+
   m.push(
     ['Solicitudes', [['solNueva', 'Crear solicitud'], ['sol', 'Solicitudes del almacén']]],
-    ['Aprobación', [['aprobar', 'Aprobar solicitudes', pendAprob], ['aprobarPlz', 'Aprobar extensiones', pendExt]]],
+    ...(itemsAprob.length ? [['Aprobación', itemsAprob]] : []),
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
     ['Catálogo', [['cCatAlm', 'Catálogo general'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
@@ -4299,9 +4314,9 @@ function finalizarFormulario(finalizar) {
   run(() => {
     const t = F.tipo;
     if (t === 'PRH' || t === 'ASI') {
-      const s = guardarSolicitud({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, true);
-      toast(`Solicitud ${s.num} guardada (PENDIENTE DE APROBACIÓN).`, 'ok');
-      ir('sol', { sel: s.num });
+      const res = emitirValeDirecto({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas });
+      toast(`Vale ${res.vale.num} emitido exitosamente. Listo para imprimir y firmar.`, 'ok');
+      ir('doc', { num: res.vale.num, back: 'sol' });
     } else if (t === 'TRF') {
       if (F.num) {
         const v = actualizarTransferencia(F.num, {
@@ -4346,12 +4361,12 @@ function finalizarFormulario(finalizar) {
    ===================================================================== */
 function pintarSolicitud() {
   const t = F.tipo, s = F.num ? solDe(F.num) : null;
-  const est = s ? formatoEstSol(s.estatus) : 'PENDIENTE DE APROBACIÓN';
+  const est = s ? formatoEstSol(s.estatus) : 'APROBADA';
   const L = txt => `<div class="lb">${txt}</div>`;
   const fechas = t === 'PRH'
     ? L('Fecha requerida') + `<div class="vl"><input type="date" id="fFReq" value="${F.fechaReq}"></div>` + L('Fecha de devolución') + `<div class="vl"><input type="date" id="fFDev" value="${F.fechaDev}"></div>`
     : L('Fecha de asignación') + `<div class="vl"><input type="date" id="fFAsig" value="${F.fechaAsig}"></div><div class="vacio"></div>`;
-  $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al guardar, la solicitud queda PENDIENTE DE APROBACIÓN para el supervisor.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
+  $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al guardar se genera inmediatamente el vale para imprimir y firmar.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
     + `<div class="form-reg"><div class="sipf">
       ${L('Empresa')}<div class="vl"><input value="TIMACA" readonly></div>
       ${L('Número')}<div class="vl"><input id="sNum" value="${esc(F.num || '')}" placeholder="Se asigna al salvar" readonly></div>
@@ -4374,8 +4389,8 @@ function pintarSolicitud() {
     <div class="carga" style="margin-top:14px"><div class="carga-h">CARGA DE MATERIAL</div>${filaCaptura()}<div id="fLineas"></div></div>
     <div class="pie-form"><div class="totales" id="fTotales"></div><div class="der">
       <button class="btn btn-claro" onclick="ir('sol')">Cancelar</button>
-      <button class="btn btn-verde" onclick="finalizarFormulario(true)">💾 Guardar solicitud</button>
-      <button class="btn btn-azul" disabled title="El vale se genera cuando el supervisor aprueba la solicitud">🖨 Imprimir vale</button>
+      <button class="btn btn-verde" onclick="finalizarFormulario(true)">💾 Generar e imprimir vale</button>
+      ${(s && s.vale) ? `<button class="btn btn-azul" onclick="imprimirVale('${s.vale}')">🖨 Imprimir vale</button>` : ''}
     </div></div></div>${datalistPersonal()}`;
   bindResponsableProyecto();
   bindCaptura();
@@ -4387,11 +4402,7 @@ function cambiarTipoSol(t) {
   pintarSolicitud();
 }
 function salvarSolicitud() {
-  leerCabecera();
-  run(() => {
-    const s = guardarSolicitud({ num: F.num, tipo: F.tipo, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, true);
-    F.num = s.num; $('sNum').value = s.num; toast(`Solicitud ${s.num} guardada (PENDIENTE DE APROBACIÓN). Puede seguir editándola.`, 'ok');
-  });
+  finalizarFormulario(true);
 }
 function bindResponsableProyecto() {
   if ($('fResp')) {
@@ -4720,8 +4731,8 @@ VISTAS.sol = p => {
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const cols = [
     { t: 'Número', k: 'num', f: r => {
-      const editable = r.estatus !== 'APROBADO' && r.estatus !== 'APROBADA' && r.estatus !== 'ANULADO' && r.estatus !== 'ANULADA';
-      return `<a href="javascript:void(0)" onclick="event.stopPropagation();${editable ? `ir('solNueva',{num:'${r.num}'})` : `ir('doc',{num:'${r.num}',back:'sol'})`}" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="${editable ? 'Haga clic para editar la solicitud ' + r.num : 'Haga clic para visualizar'}">${esc(r.num)}</a>`;
+      const docNum = r.vale || r.num;
+      return `<a href="javascript:void(0)" onclick="event.stopPropagation();ir('doc',{num:'${docNum}',back:'sol'})" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="Haga clic para ver el vale ${docNum}">${esc(r.num)}</a>`;
     }},
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
     { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
@@ -4731,19 +4742,17 @@ VISTAS.sol = p => {
     { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '' },
     { t: 'Generado por', v: r => r.generadoPor.nombre },
     { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) },
-    { t: 'Vale', v: r => r.vale || '' }
+    { t: 'Vale', v: r => r.vale || '', f: r => r.vale ? `<a href="javascript:void(0)" onclick="event.stopPropagation();ir('doc',{num:'${r.vale}',back:'sol'})" style="font-weight:800;color:var(--azul)">${esc(r.vale)}</a>` : '—' }
   ];
-  $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido) de ' + esc(almNombre(S.ctx)) + '.')
+  $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos y asignaciones de ' + esc(almNombre(S.ctx)) + '. Al crear una solicitud, se emite de inmediato el vale para imprimir y firmar.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
-    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE APROBACIÓN', 'Por aprobar'], ['APROBADA', 'Aprobadas'], ['ANULADA', 'Anuladas']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
+    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['APROBADA', 'Aprobadas / Con vale'], ['ANULADA', 'Anuladas']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
     + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
       <button class="btn-sip" onclick="ir('solNueva')">Nueva solicitud</button>
-      <button class="btn-sip" id="bEdit" disabled onclick="ir('solNueva',{num:selDe('gSol').num})">Editar solicitud</button>
-      <button class="btn-sip" id="bDel" disabled onclick="accionEliminarSol()">Eliminar solicitud</button>
-      <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').num,back:'sol'})">Visualizar solicitud</button>
-      <button class="btn-sip" id="bImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gSol').vale)">Imprimir vale</button>
+      <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').vale || selDe('gSol').num,back:'sol'})">Visualizar vale</button>
+      <button class="btn-sip" id="bImp" disabled onclick="imprimirVale(selDe('gSol').vale || selDe('gSol').num)">🖨 Imprimir vale</button>
       <button class="btn-ayuda" onclick="ayuda('sol')">AYUDA</button>
     </div>`;
   if (p && p.sel) { const g = GR.gSol; const i = g.vis.findIndex(r => r.num === p.sel); if (i >= 0) selGrid('gSol', i); }
@@ -4753,16 +4762,10 @@ function tiraSol(s) {
   if ($('tsCuenta')) $('tsCuenta').textContent = s.cuenta || '—';
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
-  const editable = s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA';
-  $('bEdit').disabled = !editable;
-  $('bDel').disabled = !editable;
-  $('bVer').disabled = false; $('bImp').disabled = !s.vale;
-  const esApr = s.estatus === 'APROBADO' || s.estatus === 'APROBADA';
-  const esAnu = s.estatus === 'ANULADO' || s.estatus === 'ANULADA';
-  const info = esApr ? (s.procesadoPor ? `Aprobada por ${s.procesadoPor.nombre}. Vale ${s.vale || ''} emitido.` : (s.vale ? `Vale ${s.vale} emitido.` : ''))
-    : esAnu ? 'Anulada: ' + (s.motivo || '')
-    : (motivoNoAprueba(s) || '');
-  $('tsInfo').innerHTML = info ? `<div class="franja-est ${esApr ? 'verde' : esAnu ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>${esc(info)}</span></div>` : '';
+  if ($('bVer')) $('bVer').disabled = false;
+  if ($('bImp')) $('bImp').disabled = !(s.vale || s.num);
+  const info = s.vale ? `Vale oficial ${s.vale} emitido. Listo para imprimir y firmar.` : 'Solicitud registrada.';
+  $('tsInfo').innerHTML = `<div class="franja-est verde" style="margin:10px 0 0"><span>✔ ${esc(info)}</span></div>`;
 }
 function accionEliminarSol() {
   const s = selDe('gSol');
