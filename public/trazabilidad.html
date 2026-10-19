@@ -379,7 +379,6 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
       <div class="lc-logo">
         <img data-logo src="/timaca-logo.png" alt="TIMACA" onerror="if(typeof LOGO!=='undefined')this.src=LOGO" style="max-height:55px;object-fit:contain">
         <p>Sistema de Trazabilidad de Herramientas, Cilindros y EPP</p>
-        <div style="font-size:12px;color:#0284c7;font-weight:700;margin-top:6px;letter-spacing:0.5px">Creado por: Daniela Riveros</div>
       </div>
       <div class="lc-body">
         <div class="login-err" id="loginErr"></div>
@@ -390,6 +389,7 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
         <div class="campo"><label for="lgAcceso">Acceso</label>
           <select id="lgAcceso"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
         <button class="btn-entrar" onclick="iniciarSesion()">Ingresar</button>
+        <div style="text-align:center;font-size:12.5px;color:#0284c7;font-weight:700;margin-top:16px;letter-spacing:0.5px">Creado por: Daniela Riveros</div>
       </div>
     </div>
   </div>
@@ -540,45 +540,21 @@ const formatoEstSol = e => {
 const ALMS_TODOS_OFICIALES = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
 
 function asegurarStockBaseProduccion() {
-  if (!DB || !DB.catalogo) return;
+  if (!DB) return;
   DB.exi = DB.exi || {};
   (DB.almacenes || []).forEach(a => { DB.exi[a.c] = DB.exi[a.c] || {}; });
-
-  // Stock base en CENTRAL para Jackson Cubillán
-  const baseCentral = [
-    ['HE000101', 30], ['HE000102', 25], ['HE000110', 12], ['HE000120', 20], ['HE000130', 10],
-    ['HE000140', 15], ['HE000150', 10], ['HE000160', 12], ['HE000170', 6], ['HE000180', 15],
-    ['HE000190', 6], ['HE000195', 4], ['HE000200', 12], ['HE000210', 10], ['HE000220', 5], ['HE000230', 14],
-    ['HE000521', 4], ['HE000600', 3], ['HE000700', 2], ['HE000710', 2], ['HE000800', 1], ['HE000810', 2], ['HE000820', 1],
-    ['CI000101', 10], ['CI000201', 6], ['CI000301', 4], ['CI000401', 4],
-    ['EP000101', 60], ['EP000201', 40], ['EP000202', 30], ['EP000301', 100], ['EP000401', 150], ['EP000501', 40], ['EP000601', 25]
-  ];
-  baseCentral.forEach(([cod, cant]) => {
-    const it = DB.catalogo.find(c => c.cod === cod);
-    if (it) {
-      DB.exi['CENTRAL'][it.id] = { disp: cant, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
-    }
-  });
-
-  // Stock base en PMH para Juan Aguilar
-  const basePmh = [
-    ['HE000101', 10], ['HE000102', 10], ['HE000120', 8], ['HE000130', 6], ['HE000140', 8],
-    ['HE000150', 6], ['HE000160', 6], ['HE000180', 8], ['HE000210', 5],
-    ['EP000101', 20], ['EP000301', 30], ['EP000401', 40], ['CI000101', 2]
-  ];
-  basePmh.forEach(([cod, cant]) => {
-    const it = DB.catalogo.find(c => c.cod === cod);
-    if (it) {
-      DB.exi['PMH'][it.id] = { disp: cant, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
-    }
-  });
 }
 
 function asegurarProduccionLimpia() {
   if (!DB) return;
-  if (DB.produccionLimpia && DB.version >= 10) return;
+  if (DB.produccionTotalCero && DB.version >= 15) return;
 
-  // Limpiar todas las transacciones operativas demo
+  // Catálogo e inventario en 0 absoluto para inicio limpio oficial
+  DB.catalogo = [];
+  DB.exi = {};
+  (DB.almacenes || []).forEach(a => { DB.exi[a.c] = {}; });
+
+  // Limpiar todas las transacciones operativas
   DB.vales = [];
   DB.solicitudes = [];
   DB.movs = [];
@@ -588,31 +564,13 @@ function asegurarProduccionLimpia() {
   DB.notificaciones = [];
   DB.intentos = {};
 
-  // Correlativos oficiales arrancando desde 01
+  // Correlativos oficiales arrancando desde 0 para que el primer vale sea 0000001 (1), luego 2, 3...
   DB.corr = { PRH: 0, ASI: 0, TRF: 0, SOL: 0, ENT: 0, DEV: 0, DAN: 0, EXT: 0, PLZ: 0 };
   DB.seq = { mov: 0, inc: 0 };
 
-  // Limpiar existencias de préstamos, asignaciones, daños o extravíos viejos
-  if (DB.exi) {
-    Object.keys(DB.exi).forEach(alm => {
-      Object.keys(DB.exi[alm]).forEach(id => {
-        const e = DB.exi[alm][id];
-        e.prest = 0;
-        e.asig = 0;
-        e.dan = 0;
-        e.rep = 0;
-        e.ext = 0;
-        e.vacio = 0;
-        e.pend = 0;
-        e.baja = 0;
-        e.entregado = 0;
-      });
-    });
-  }
-
-  asegurarStockBaseProduccion();
+  DB.produccionTotalCero = true;
   DB.produccionLimpia = true;
-  DB.version = 10;
+  DB.version = 15;
 }
 
 function asegurarUsuariosClave() {
@@ -970,25 +928,6 @@ function asegurarPlanificacionCajas() {
   DB.exi = DB.exi || {};
   DB.exi['CENTRAL'] = DB.exi['CENTRAL'] || {};
 
-  // Asegurar herramientas de especialidad en el catálogo (Tornero, Mecánico, Electricista, Soldador)
-  const extrasCat = [
-    { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'MITUTOYO', modelo: '530-104', serial: '', umb: 'UND', costo: 45, stockIni: 6 },
-    { cod: 'HE000195', desc: 'Micrómetro exterior 0-1"', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'MITUTOYO', modelo: '103-137', serial: '', umb: 'UND', costo: 68, stockIni: 4 },
-    { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: 'STANLEY', modelo: '69-253', serial: '', umb: 'JGO', costo: 14.5, stockIni: 12 },
-    { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: 'VISE-GRIP', modelo: '10R', serial: '', umb: 'UND', costo: 15.8, stockIni: 10 },
-    { cod: 'HE000220', desc: 'Multímetro digital industrial', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'FLUKE', modelo: '117', serial: '', umb: 'UND', costo: 185, stockIni: 5 },
-    { cod: 'HE000230', desc: 'Piqueta / Martillo quita escoria', mod: 'HERRAMIENTA', cat: 'Equipos y accesorios para soldadura y oxicorte', marca: 'TRUPER', modelo: 'MP-500', serial: '', umb: 'UND', costo: 7.5, stockIni: 14 }
-  ];
-  let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
-  extrasCat.forEach(ex => {
-    let it = DB.catalogo.find(c => (c.cod || '').toUpperCase() === ex.cod);
-    if (!it) {
-      it = { id: ++maxId, cod: ex.cod, desc: ex.desc, mod: ex.mod, cat: ex.cat, marca: ex.marca, modelo: ex.modelo, serial: ex.serial, umb: ex.umb, costo: ex.costo, tipoA: false, talla: '', vida: 0, activo: true };
-      DB.catalogo.push(it);
-      DB.exi['CENTRAL'][it.id] = { disp: ex.stockIni, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
-    }
-  });
-
   DB.cajasTipos = DB.cajasTipos || [];
   const tieneViejosDemo = DB.cajasTipos.length > 0 && DB.cajasTipos.every(t => ['CH-01', 'CH-02', 'CH-03'].includes(t.id));
   if (!DB.cajasTipos.length || tieneViejosDemo) {
@@ -1036,24 +975,6 @@ function asegurarCategoriasOficiales() {
       it.cat = 'Herramientas manuales';
     } else if (!CATEGORIAS_OFICIALES.includes(it.cat)) {
       it.cat = 'Herramientas manuales';
-    }
-  });
-
-  // Asegurar que existan ítems oficiales de Herramientas mayores, Herramientas neumáticas e hidráulicas, y Herramientas de fabricación
-  const extras = [
-    { cod: 'HE000800', desc: 'Roscadora eléctrica de banco 1/2" a 2"', mod: 'HERRAMIENTA', cat: 'Herramientas mayores', marca: 'RIDGID', modelo: '300 Compact', serial: 'SN-RD-3001', umb: 'UND', costo: 2450, tipoA: true, stockIni: 1 },
-    { cod: 'HE000810', desc: 'Pistola de impacto neumática 1/2"', mod: 'HERRAMIENTA', cat: 'Herramientas neumáticas e hidráulicas', marca: 'INGERSOLL RAND', modelo: '231C', serial: 'SN-IR-2311', umb: 'UND', costo: 215, tipoA: false, stockIni: 2 },
-    { cod: 'HE000820', desc: 'Biseladora portátil de tubos 2"-6"', mod: 'HERRAMIENTA', cat: 'Herramientas de fabricación', marca: 'PROTEM', modelo: 'US25', serial: 'SN-PR-2501', umb: 'UND', costo: 1850, tipoA: true, stockIni: 1 }
-  ];
-  let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
-  extras.forEach(ex => {
-    let it = DB.catalogo.find(c => c.cod === ex.cod);
-    if (!it) {
-      it = { id: ++maxId, cod: ex.cod, desc: ex.desc, mod: ex.mod, cat: ex.cat, marca: ex.marca, modelo: ex.modelo, serial: ex.serial, umb: ex.umb, costo: ex.costo, tipoA: ex.tipoA, talla: '', vida: 0, activo: true };
-      DB.catalogo.push(it);
-      DB.exi = DB.exi || {};
-      DB.exi['CENTRAL'] = DB.exi['CENTRAL'] || {};
-      DB.exi['CENTRAL'][it.id] = { disp: ex.stockIni, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
     }
   });
 }
@@ -2023,23 +1944,28 @@ const PERSONAL_OFICIAL = [
 
 
 function asegurarPersonalOficial() {
-  if (!DB || !Array.isArray(DB.personal)) DB.personal = [];
-  const esLegacy = DB.personal.length === 0 || DB.personal.some(p => !p.tipo || !p.almacenes || p.nombre === 'Carlos Mendoza');
-  if (esLegacy) {
+  if (!DB) return;
+  if (!Array.isArray(DB.personal) || DB.personal.length === 0) {
     DB.personal = JSON.parse(JSON.stringify(PERSONAL_OFICIAL));
-  } else {
-    PERSONAL_OFICIAL.forEach(oficial => {
-      const ex = DB.personal.find(p => (p.cedula && oficial.cedula && p.cedula !== 'S/C' && digitosCI(p.cedula) === digitosCI(oficial.cedula)) || normTexto(p.nombre) === normTexto(oficial.nombre));
-      if (!ex) {
-        DB.personal.push(JSON.parse(JSON.stringify(oficial)));
-      } else {
-        if (!ex.tipo) ex.tipo = oficial.tipo;
-        if (!ex.almacenes) ex.almacenes = oficial.almacenes;
-        if (!ex.modulo) ex.modulo = oficial.modulo || 'TODOS';
-        if (ex.activo === undefined) ex.activo = true;
-      }
-    });
+    return;
   }
+  // Asegurar que las personas oficiales de base existan, sin sobreescribir ni eliminar a las nuevas personas agregadas
+  PERSONAL_OFICIAL.forEach(oficial => {
+    const ex = DB.personal.find(p => (p.cedula && oficial.cedula && p.cedula !== 'S/C' && digitosCI(p.cedula) === digitosCI(oficial.cedula)) || normTexto(p.nombre) === normTexto(oficial.nombre));
+    if (!ex) {
+      DB.personal.push(JSON.parse(JSON.stringify(oficial)));
+    } else {
+      if (!ex.tipo) ex.tipo = oficial.tipo;
+      if (!ex.almacenes) ex.almacenes = oficial.almacenes;
+      if (!ex.modulo) ex.modulo = oficial.modulo || 'TODOS';
+      if (ex.activo === undefined) ex.activo = true;
+    }
+  });
+  DB.personal.forEach(p => {
+    if (!Array.isArray(p.tipo)) p.tipo = ['RESPONSABLE'];
+    if (!Array.isArray(p.almacenes)) p.almacenes = [p.depto || 'TODOS'];
+    if (p.activo === undefined) p.activo = true;
+  });
 }
 
 const PROYECTOS_OFICIALES = [
@@ -2190,55 +2116,11 @@ function semilla() {
   DB.personal = JSON.parse(JSON.stringify(PERSONAL_OFICIAL));
   DB.proyectos = JSON.parse(JSON.stringify(PROYECTOS_OFICIALES));
 
-  let idc = 0;
-  const C = (cod, desc, mod, cat, marca, modelo, serial, umb, costo, o) => DB.catalogo.push(Object.assign({ id: ++idc, cod, desc, mod, cat, marca, modelo, serial, umb, costo, tipoA: false, talla: '', vida: 0, activo: true }, o || {}));
-  C('HE000101', 'Llave combinada 3/4"', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '87-076', '', 'UND', 9.5);
-  C('HE000102', 'Llave combinada 1/2"', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '87-072', '', 'UND', 7.8);
-  C('HE000110', 'Señorita de cadena 1 ton', 'HERRAMIENTA', 'Equipos y accesorios para elevación y cargas', 'TRUPER', 'POLI-1', '', 'UND', 48);
-  C('HE000120', 'Alicate universal 8"', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'T201-8', '', 'UND', 11.2);
-  C('HE000130', 'Llave ajustable 12"', 'HERRAMIENTA', 'Herramientas manuales', 'TOTAL', 'THT101126', '', 'UND', 13.5);
-  C('HE000140', 'Martillo de bola 2 lb', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'MB-32F', '', 'UND', 12);
-  C('HE000150', 'Juego de destornilladores 6 piezas', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', 'STHT65199', '', 'JGO', 16.4);
-  C('HE000160', 'Arco de segueta 12"', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'AS-12', '', 'UND', 8.9);
-  C('HE000170', 'Nivel de aluminio 24"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'STANLEY', '42-468', '', 'UND', 21);
-  C('HE000180', 'Cinta métrica 8 m', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'STANLEY', '33-428', '', 'UND', 10.5);
-  C('HE000190', 'Vernier / Calibrador pie de rey 6"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'MITUTOYO', '530-104', '', 'UND', 45);
-  C('HE000195', 'Micrómetro exterior 0-1"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'MITUTOYO', '103-137', '', 'UND', 68);
-  C('HE000200', 'Juego de llaves Allen milimétricas 10 pzas', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '69-253', '', 'JGO', 14.5);
-  C('HE000210', 'Alicate de presión (Perro) 10"', 'HERRAMIENTA', 'Herramientas manuales', 'VISE-GRIP', '10R', '', 'UND', 15.8);
-  C('HE000220', 'Multímetro digital industrial', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'FLUKE', '117', '', 'UND', 185);
-  C('HE000230', 'Piqueta / Martillo quita escoria', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'TRUPER', 'MP-500', '', 'UND', 7.5);
-  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Herramientas eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482190', 'UND', 165);
-  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Herramientas eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482191', 'UND', 165);
-  C('HE000600', 'Taladro percutor 1/2"', 'HERRAMIENTA', 'Herramientas eléctricas', 'DEWALT', 'DWD024', 'SN-7781001', 'UND', 138);
-  C('HE000700', 'Máquina de soldar inverter 250 A', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'LINCOLN', 'Invertec V275', 'LN-250-0091', 'UND', 920, { tipoA: true });
-  C('HE000710', 'Equipo de oxicorte completo', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'HARRIS', 'Ironworker', 'HR-3301', 'EQP', 410, { tipoA: true });
-  C('HE000800', 'Roscadora eléctrica de banco 1/2" a 2"', 'HERRAMIENTA', 'Herramientas mayores', 'RIDGID', '300 Compact', 'SN-RD-3001', 'UND', 2450, { tipoA: true });
-  C('HE000810', 'Pistola de impacto neumática 1/2"', 'HERRAMIENTA', 'Herramientas neumáticas e hidráulicas', 'INGERSOLL RAND', '231C', 'SN-IR-2311', 'UND', 215);
-  C('HE000820', 'Biseladora portátil de tubos 2"-6"', 'HERRAMIENTA', 'Herramientas de fabricación', 'PROTEM', 'US25', 'SN-PR-2501', 'UND', 1850, { tipoA: true });
-  ['OX-0001', 'OX-0002', 'OX-0003', 'OX-0004'].forEach(s => C('CI000101', 'Cilindro de oxígeno industrial 6 m³', 'CILINDRO', 'Cilindros y gases', 'AGA', '6 m³', s, 'CIL', 210));
-  ['AC-0001', 'AC-0002'].forEach(s => C('CI000201', 'Cilindro de acetileno 4 m³', 'CILINDRO', 'Cilindros y gases', 'AGA', '4 m³', s, 'CIL', 245));
-  C('CI000301', 'Cilindro de argón 10 m³', 'CILINDRO', 'Cilindros y gases', 'PRAXAIR', '10 m³', 'AR-0001', 'CIL', 260);
-  C('CI000401', 'Cilindro de CO2 25 kg', 'CILINDRO', 'Cilindros y gases', 'PRAXAIR', '25 kg', 'CO-0001', 'CIL', 180);
-  C('EP000101', 'Casco de seguridad', 'EPP', 'EPP', 'MSA', 'V-Gard', '', 'UND', 18.5, { talla: 'Única', vida: 730 });
-  C('EP000201', 'Botas de seguridad punta de acero T-42', 'EPP', 'EPP', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '42', vida: 365 });
-  C('EP000202', 'Botas de seguridad punta de acero T-40', 'EPP', 'EPP', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '40', vida: 365 });
-  C('EP000301', 'Lentes de seguridad claros', 'EPP', 'EPP', '3M', 'Virtua', '', 'UND', 6.5, { talla: 'Única', vida: 90 });
-  C('EP000401', 'Guantes de carnaza 16"', 'EPP', 'EPP', 'STEELPRO', 'Carnaza', '', 'PAR', 5.2, { talla: 'L', vida: 30 });
-  C('EP000501', 'Protector auditivo tipo copa', 'EPP', 'EPP', '3M', 'H9A', '', 'UND', 24, { talla: 'Única', vida: 365 });
-  C('EP000601', 'Respirador media cara', 'EPP', 'EPP', '3M', '6200', '', 'UND', 31, { talla: 'M', vida: 180 });
+  DB.catalogo = [];
+  DB.exi = {};
+  (DB.almacenes || []).forEach(a => { DB.exi[a.c] = {}; });
 
-  const IT = (cod, serial) => DB.catalogo.find(i => i.cod === cod && (!serial || i.serial === serial));
-  const L = (cod, cant, cond = 'ÓPTIMO', serial) => { const it = IT(cod, serial); return lineaDe(it, cant, it.mod === 'CILINDRO' && cond === 'ÓPTIMO' ? 'LLENO' : cond); };
-  const P = cedula => { const p = DB.personal.find(x => x.cedula === cedula) || DB.personal.find(x => x.cedula && digitosCI(x.cedula) === digitosCI(cedula)); return p ? { nombre: p.nombre, cedula: p.cedula, cargo: p.cargo } : { nombre: 'Responsable', cedula, cargo: 'Personal' }; };
-  const PR = clave => DB.proyectos.find(p => p.cuenta === clave || p.nombre.startsWith(clave)) || DB.proyectos[0];
-  const como = (usr, fecha, fn) => { const pu = S.u, pn = NOW_FIX, pc = S.ctx; const uObj = userDe(usr) || DB.usuarios.find(x => x.admin) || DB.usuarios[0]; S.u = uObj; S.ctx = (uObj && uObj.almacenes && uObj.almacenes[0]) ? uObj.almacenes[0] : 'CENTRAL'; NOW_FIX = fecha; procesarVencimientos(); try { return fn(); } finally { S.u = pu; NOW_FIX = pn; S.ctx = pc; } };
-  const sol = (usr, fecha, tipo, origen, cedula, sup, proy, lineas, fechas, finalizar = true) => como(usr, fecha, () => {
-    const pr = PR(proy);
-    return guardarSolicitud(Object.assign({ tipo, origen, destino: origen, resp: P(cedula), sup, proyecto: pr.nombre, cuenta: pr.cuenta, lineas, obs: '' }, fechas), finalizar);
-  });
-
-  // Base limpia de operaciones: todo en blanco, correlativos desde 01
+  // Base limpia de operaciones: todo en blanco, correlativos desde 0 (primer vale 0000001, luego 2, 3...)
   DB.vales = [];
   DB.solicitudes = [];
   DB.movs = [];
@@ -2249,6 +2131,9 @@ function semilla() {
   DB.intentos = {};
   DB.corr = { PRH: 0, ASI: 0, TRF: 0, SOL: 0, ENT: 0, DEV: 0, DAN: 0, EXT: 0, PLZ: 0 };
   DB.seq = { mov: 0, inc: 0 };
+  DB.produccionTotalCero = true;
+  DB.produccionLimpia = true;
+  DB.version = 15;
 
   asegurarStockBaseProduccion();
   return DB;
@@ -2556,12 +2441,13 @@ function menuDef() {
     ['Solicitudes', [['solNueva', 'Crear solicitud'], ['sol', 'Solicitudes del almacén']]],
     ...(itemsAprob.length ? [['Aprobación', itemsAprob]] : []),
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
+    ['Personal', [['aPers', 'Responsables y supervisores']]],
     ['Catálogo', [['cCatAlm', 'Catálogo general'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
     ['Consultas y kárdex', [ ['cPrest', 'Préstamos y asignaciones'],
       ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cValesDet', 'Detalle de vales emitidos'], ['cKardex', 'Kardex por código']]]
   );
-  if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aPers', 'Responsables y supervisores'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
+  if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
   return m;
 }
@@ -2571,7 +2457,7 @@ const ICONOS_MOD = {
   'Solicitudes': '📝',
   'Aprobación': '✅',
   'Transferencias': '🚚',
-  'Inventario': '📋',
+  'Personal': '👷',
   'Catálogo': '📦',
   'Movimientos': '🔁',
   'Consultas y kárdex': '📜',
@@ -3923,7 +3809,7 @@ function ir(id, param) {
   const esMaestro = ['mRes', 'mKpi', 'mComp', 'mExp', 'mTraz', 'mAlert', 'mCajas', 'mCost', 'mAcc'].includes(id);
   if (esMaestro && !enMaestro()) { toast('Esta opción pertenece al Maestro.', 'err'); return; }
   if (!esMaestro && enMaestro() && id !== 'doc') { toast('Esta opción pertenece a los almacenes.', 'err'); return; }
-  if (['aUsr', 'aPers', 'aProy', 'aCat', 'aIni', 'aConf', 'aBit', 'aResp'].includes(id) && !S.u.admin) { toast('Solo el administrador puede ingresar a esta opción.', 'err'); return; }
+  if (['aUsr', 'aProy', 'aCat', 'aIni', 'aConf', 'aBit', 'aResp'].includes(id) && !S.u.admin) { toast('Solo el administrador puede ingresar a esta opción.', 'err'); return; }
   S.vista = id; S.param = param || null;
   const defMenu = menuDef();
   const grupoDestino = defMenu.find(([g, items]) => items.some(it => it && it[0] === id));
@@ -4372,7 +4258,7 @@ function pintarSolicitud() {
       ${L('Número')}<div class="vl"><input id="sNum" value="${esc(F.num || '')}" placeholder="Se asigna al salvar" readonly></div>
       ${L('Fecha')}<div class="vl"><input value="${fF(s ? s.fecha : nowISO())}" readonly></div>
       ${L('Observación')}<div class="vl s5"><textarea id="fObs" rows="2" placeholder="Motivo o detalle de la solicitud">${esc(F.obs)}</textarea></div>
-      ${L('Solicitado por')}<div class="vl"><input id="fResp" autocomplete="off" placeholder="Nombre o cédula de quien solicita" value="${esc(F.resp ? F.resp.nombre : '')}"></div>
+      ${L('Solicitado por')}<div class="vl" style="display:flex;gap:4px"><input id="fResp" autocomplete="off" placeholder="Nombre o cédula de quien solicita" value="${esc(F.resp ? F.resp.nombre : '')}" style="flex:1"><button type="button" class="btn btn-claro btn-mini" title="Agregar nueva persona / custodio" onclick="abrirModalNuevoPersonalRapido('RESPONSABLE')">➕ Nuevo</button></div>
       ${L('Cédula')}<div class="vl"><input id="fCed" readonly value="${esc(F.resp ? F.resp.cedula : '')}" placeholder="Automático"></div>
       ${L('Cargo')}<div class="vl"><input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Automático"></div>
       ${L('Generado por')}<div class="vl"><input readonly value="${esc(s ? s.generadoPor.nombre : S.u.nombre)}"></div>
@@ -4380,7 +4266,7 @@ function pintarSolicitud() {
       ${L('Cuenta auxiliar')}<div class="vl"><input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Automático"></div>
       ${L('Tipo de movimiento')}<div class="vl"><select id="fTipo" onchange="cambiarTipoSol(this.value)">${opciones([['PRH', 'PRH - Préstamo'], ['ASI', 'ASI - Asignación']], t)}</select></div>
       ${L('Tipo de asignación')}<div class="vl"><select id="fTA" onchange="cambiarTipoSol(this.value === 'DEF' ? 'PRH' : 'ASI')">${opciones([['DEF', 'TIEMPO DEFINIDO'], ['IND', 'TIEMPO INDEFINIDO']], t === 'PRH' ? 'DEF' : 'IND')}</select></div>
-      ${L('Supervisor autoriza')}<div class="vl"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}"></div>
+      ${L('Supervisor autoriza')}<div class="vl" style="display:flex;gap:4px"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}" style="flex:1"><button type="button" class="btn btn-claro btn-mini" title="Agregar nuevo supervisor" onclick="abrirModalNuevoPersonalRapido('SUPERVISOR')">➕ Nuevo</button></div>
       ${fechas}
       ${L('Almacén origen')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
       ${L('Destino / Área solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
@@ -6568,6 +6454,114 @@ function editarRegistroPersonal(r) {
       cerrarModal();
       toast('Registro de personal guardado exitosamente.', 'ok');
       ir('aPers');
+    }) }
+  ], true);
+}
+
+function abrirModalNuevoPersonalRapido(rolDefecto) {
+  const almsDef = (S.ctx && S.ctx !== 'MAESTRO') ? [S.ctx] : ['CENTRAL'];
+  const esResp = rolDefecto === 'RESPONSABLE';
+  const esSup = rolDefecto === 'SUPERVISOR';
+
+  const cuerpo = `
+    <div class="f3">
+      ${campo('Nombre completo *', `<input id="rapNom" placeholder="Ej. Juan Pérez">`)}
+      ${campo('Cédula de identidad *', `<input id="rapCed" placeholder="Ej. V-12.345.678 o S/C">`)}
+      ${campo('Cargo oficial *', `<input id="rapCargo" placeholder="Ej. Montador, Soldador, Supervisor...">`)}
+    </div>
+    <div style="margin-top:10px">
+      <label style="font-size:12px;font-weight:700;display:block;margin-bottom:6px">Rol en el sistema *</label>
+      <div style="display:flex;gap:20px;padding:8px 12px;background:var(--fondo-gris,#f8fafc);border-radius:6px;border:1px solid var(--borde)">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="rapRolResp" ${esResp ? 'checked' : ''}>
+          <span><b>Responsable custodio</b> (solicita y recibe ítems en vales)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="rapRolSup" ${esSup ? 'checked' : ''}>
+          <span><b>Supervisor</b> (autoriza vales y movimientos)</span>
+        </label>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <label style="font-size:12px;font-weight:700">Almacenes autorizados *</label>
+        <div style="font-size:11.5px">
+          <a href="#" onclick="event.preventDefault();document.querySelectorAll('.rapAlmChk').forEach(c=>c.checked=true)">Marcar todos</a> · 
+          <a href="#" onclick="event.preventDefault();document.querySelectorAll('.rapAlmChk').forEach(c=>c.checked=false)">Desmarcar todos</a>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px;background:var(--fondo-gris,#f8fafc);border-radius:6px;border:1px solid var(--borde)">
+        ${DB.almacenes.map(a => `
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+            <input type="checkbox" class="rapAlmChk" value="${a.c}" ${(almsDef.includes(a.c) || a.c === 'CENTRAL') ? 'checked' : ''}>
+            <span>${esc(a.n)}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  abrirModal('➕ Agregar nueva persona al sistema', cuerpo, [
+    { t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal },
+    { t: 'Guardar y usar', cls: 'btn-verde', fn: () => run(() => {
+      const nom = $('rapNom').value.trim();
+      let ced = $('rapCed').value.trim();
+      const cargo = $('rapCargo').value.trim();
+      const rResp = $('rapRolResp').checked;
+      const rSup = $('rapRolSup').checked;
+      const almsSel = [...document.querySelectorAll('.rapAlmChk:checked')].map(c => c.value);
+
+      if (!nom) throw new Error('Indique el nombre completo de la persona.');
+      if (!cargo) throw new Error('Indique el cargo de la persona.');
+      if (!rResp && !rSup) throw new Error('Debe marcar al menos un rol: Responsable o Supervisor.');
+      if (!almsSel.length) throw new Error('Debe seleccionar al menos un almacén.');
+
+      if (!ced) ced = 'S/C';
+      else if (!/S\/C/i.test(ced)) ced = formatCedula(ced);
+
+      if (ced !== 'S/C') {
+        const dig = digitosCI(ced);
+        if (dig.length >= 5) {
+          const dup = DB.personal.find(x => x.cedula && x.cedula !== 'S/C' && digitosCI(x.cedula) === dig);
+          if (dup) throw new Error(`Ya existe una persona registrada con la cédula ${ced}: ${dup.nombre}.`);
+        }
+      }
+
+      const tipoArr = [];
+      if (rResp) tipoArr.push('RESPONSABLE');
+      if (rSup) tipoArr.push('SUPERVISOR');
+
+      const nuevaPers = {
+        id: 'p-' + (DB.personal.length + 1),
+        nombre: nom,
+        cedula: ced,
+        cargo,
+        depto: almsSel[0] || 'CENTRAL',
+        tipo: tipoArr,
+        almacenes: almsSel,
+        modulo: 'TODOS',
+        activo: true
+      };
+
+      DB.personal.push(nuevaPers);
+      bit('PERSONAL CREADO', `${nom} (${ced})`);
+      guardar();
+      cerrarModal();
+      toast('Persona registrada exitosamente en el sistema.', 'ok');
+
+      if (rolDefecto === 'RESPONSABLE') {
+        F.resp = { nombre: nom, cedula: ced, cargo };
+        if ($('fResp')) $('fResp').value = nom;
+        if ($('fCed')) $('fCed').value = ced || 'S/C';
+        if ($('fCargo')) $('fCargo').value = cargo;
+      } else if (rolDefecto === 'SUPERVISOR') {
+        F.sup = nom;
+        if ($('fSup')) $('fSup').value = nom;
+      }
+
+      if (S.vista === 'aPers') {
+        ir('aPers');
+      }
     }) }
   ], true);
 }
