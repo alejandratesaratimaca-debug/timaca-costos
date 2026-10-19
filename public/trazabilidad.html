@@ -2543,7 +2543,7 @@ function menuDef() {
     ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
     ['Consultas y kárdex', [ ['cPrest', 'Préstamos y asignaciones'],
-      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cKardex', 'Kardex por código']]]
+      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cValesDet', 'Detalle de vales emitidos'], ['cKardex', 'Kardex por código']]]
   );
   if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aPers', 'Responsables y supervisores'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
@@ -2563,7 +2563,7 @@ const ICONOS_MOD = {
 };
 
 const ICONOS = { cCatAlm: '📦', ent: '➕', mov: '🔁', dash: '📊', solNueva: '📝', sol: '📑', aprobar: '✅', aprobarPlz: '⏳', trfNueva: '🚚', trfRec: '📥', trfEnv: '📤', dev: '↩️', dan: '⚠️', ext: '🚨', plz: '⏱️',
-  cExist: '🗃️', cPrest: '🔧', cVenc: '⏰', cAsig: '👷', cIncid: '🛠️', cVales: '🧾', cKardex: '📜', cEpp: '🦺', cCil: '🔥',
+  cExist: '🗃️', cPrest: '🔧', cVenc: '⏰', cAsig: '👷', cIncid: '🛠️', cVales: '🧾', cValesDet: '📋', cKardex: '📜', cEpp: '🦺', cCil: '🔥',
   cajasPlan: '🧰', cajasTipos: '📋', mCajas: '🧰',
   aUsr: '👥', aPers: '🪪', aProy: '📁', aCat: '📚', aIni: '🏁', aConf: '⚙️', aBit: '📒', aResp: '💾',
   mRes: '⭐', mKpi: '📈', mComp: '🏭', mExp: '🗄️', mTraz: '🔍', mAlert: '🔔', mCost: '💲', mAcc: '🔐' };
@@ -5498,6 +5498,85 @@ function accInc(a) {
   pedirTexto(txt, 'Nota (opcional)', v => { accionIncidencia(r.n, a, v); toast('Caso actualizado.', 'ok'); refrescar(); }, 'Confirmar');
 }
 
+function navTabsVales(activa) {
+  return `
+    <div style="display:flex;gap:8px;margin-bottom:14px;border-bottom:2px solid var(--borde);padding-bottom:10px;flex-wrap:wrap;align-items:center">
+      <button type="button" class="btn ${activa === 'resumen' ? 'btn-navy' : 'btn-claro'}" onclick="ir('cVales')" style="font-weight:800">
+        📑 1. Resumen por vale (Cabecera)
+      </button>
+      <button type="button" class="btn ${activa === 'detalle' ? 'btn-navy' : 'btn-claro'}" onclick="ir('cValesDet')" style="font-weight:800">
+        🔍 2. Detalle de vales emitidos (Ítem por ítem)
+      </button>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--texto-3)">
+        ${activa === 'resumen' ? '💡 Vista agrupada por número de vale.' : '💡 Vista desglosada renglón por renglón con código, descripción, serial y cantidad de cada ítem.'}
+      </span>
+    </div>
+  `;
+}
+
+function getValeMods(v) {
+  const mods = new Set();
+  (v.lineas || []).forEach(l => {
+    const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null);
+    if (it && it.mod) mods.add(it.mod);
+    else if (l.mod) mods.add(l.mod);
+  });
+  if (mods.size) return [...mods];
+  if (v.ref) {
+    const orig = valeDe(v.ref);
+    if (orig) {
+      (orig.lineas || []).forEach(l => {
+        const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null);
+        if (it && it.mod) mods.add(it.mod);
+      });
+    }
+  }
+  return mods.size ? [...mods] : ['HERRAMIENTA'];
+}
+
+function getValeCats(v) {
+  const cats = new Set();
+  (v.lineas || []).forEach(l => {
+    const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null);
+    if (it && it.cat) cats.add(it.cat);
+    else if (l.cat) cats.add(l.cat);
+  });
+  if (cats.size) return [...cats];
+  if (v.ref) {
+    const orig = valeDe(v.ref);
+    if (orig) {
+      (orig.lineas || []).forEach(l => {
+        const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null);
+        if (it && it.cat) cats.add(it.cat);
+      });
+    }
+  }
+  return [...cats];
+}
+
+function getStatusVale(v) {
+  const mods = getValeMods(v);
+  if (mods.includes('CILINDRO')) {
+    if (v.tipo === 'DEV') return 'DISPONIBLE';
+    if (['PRH', 'ASI'].includes(v.tipo)) {
+      return saldoVale(v) > 0 ? 'NO DISPONIBLE' : 'DISPONIBLE';
+    }
+    if (v.tipo === 'TRF') {
+      return v.estatus === 'RECIBIDA' ? 'DISPONIBLE' : 'NO DISPONIBLE';
+    }
+    if (['DAN', 'EXT'].includes(v.tipo)) return 'NO DISPONIBLE';
+    if (v.tipo === 'ENT') return 'DISPONIBLE';
+  }
+  return estadoVale(v);
+}
+
+function badgeStatus(v) {
+  const st = getStatusVale(v);
+  if (st === 'DISPONIBLE') return '<span class="est est-verde" style="font-weight:700">DISPONIBLE</span>';
+  if (st === 'NO DISPONIBLE') return '<span class="est est-rojo" style="font-weight:700">NO DISPONIBLE</span>';
+  return estB(st);
+}
+
 VISTAS.cVales = p => {
   p = p || {};
   const tipo = p.tipo || '';
@@ -5508,69 +5587,6 @@ VISTAS.cVales = p => {
   const vale = p.vale || '';
   const desde = p.desde || '';
   const hasta = p.hasta || '';
-
-  const getValeMods = v => {
-    const mods = new Set();
-    (v.lineas || []).forEach(l => {
-      const it = item(l.id);
-      if (it && it.mod) mods.add(it.mod);
-      else if (l.mod) mods.add(l.mod);
-    });
-    if (mods.size) return [...mods];
-    if (v.ref) {
-      const orig = valeDe(v.ref);
-      if (orig) {
-        (orig.lineas || []).forEach(l => {
-          const it = item(l.id);
-          if (it && it.mod) mods.add(it.mod);
-        });
-      }
-    }
-    return mods.size ? [...mods] : ['HERRAMIENTA'];
-  };
-
-  const getValeCats = v => {
-    const cats = new Set();
-    (v.lineas || []).forEach(l => {
-      const it = item(l.id);
-      if (it && it.cat) cats.add(it.cat);
-      else if (l.cat) cats.add(l.cat);
-    });
-    if (cats.size) return [...cats];
-    if (v.ref) {
-      const orig = valeDe(v.ref);
-      if (orig) {
-        (orig.lineas || []).forEach(l => {
-          const it = item(l.id);
-          if (it && it.cat) cats.add(it.cat);
-        });
-      }
-    }
-    return [...cats];
-  };
-
-  const getStatusVale = v => {
-    const mods = getValeMods(v);
-    if (mods.includes('CILINDRO')) {
-      if (v.tipo === 'DEV') return 'DISPONIBLE';
-      if (['PRH', 'ASI'].includes(v.tipo)) {
-        return saldoVale(v) > 0 ? 'NO DISPONIBLE' : 'DISPONIBLE';
-      }
-      if (v.tipo === 'TRF') {
-        return v.estatus === 'RECIBIDA' ? 'DISPONIBLE' : 'NO DISPONIBLE';
-      }
-      if (['DAN', 'EXT'].includes(v.tipo)) return 'NO DISPONIBLE';
-      if (v.tipo === 'ENT') return 'DISPONIBLE';
-    }
-    return estadoVale(v);
-  };
-
-  const badgeStatus = v => {
-    const st = getStatusVale(v);
-    if (st === 'DISPONIBLE') return '<span class="est est-verde" style="font-weight:700">DISPONIBLE</span>';
-    if (st === 'NO DISPONIBLE') return '<span class="est est-rojo" style="font-weight:700">NO DISPONIBLE</span>';
-    return estB(st);
-  };
 
   let rows = DB.vales.filter(v => {
     // Almacén destino (filtrar exclusivamente por el almacén destino del vale)
@@ -5624,10 +5640,11 @@ VISTAS.cVales = p => {
   const recargar = `ir('cVales',{tipo:$('vTipo').value,mod:$('vMod').value,cat:$('vCat').value,alm:$('vAlm').value,proy:$('vProy').value,vale:$('vVale').value,desde:$('vDesde').value,hasta:$('vHasta').value})`;
 
   $('area').innerHTML = cab('Vales emitidos (Trazabilidad integral)', 'Todos los vales y movimientos (Herramientas, Cilindros y EPP). Filtrado por destino, N° de vale, movimiento, módulo, categoría, proyecto y fechas.', botonesExport('gVal', 'Vales emitidos ' + (alm && alm !== 'TODOS' ? ('Destino ' + almNombre(alm)) : 'Todos los destinos')))
+    + navTabsVales('resumen')
     + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
         ${campo('N° de Vale', `<input id="vVale" value="${esc(vale)}" placeholder="Ej. PRH-000001" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Almacén destino', `<select id="vAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' || !alm ? 'selected' : ''}>Todos los destinos</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
-        ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
+        ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
         ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
         ${campo('Categoría', `<select id="vCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
         ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
@@ -5636,9 +5653,142 @@ VISTAS.cVales = p => {
         ${(tipo || mod || cat || (alm && alm !== 'TODOS') || proy || vale || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
         ${buscador('gVal', 'Buscar código, serial, cédula, responsable, vale…')}
       </div>`
-    + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
-    + `<div class="barra-btn"><button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,back:'cVales'})">Visualizar</button><button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num)">Imprimir vale</button></div>`;
+    + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; $('vDet').disabled = false; } })
+    + `<div class="barra-btn">
+        <button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,back:'cVales'})">Visualizar</button>
+        <button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num)">Imprimir vale</button>
+        <button class="btn-sip" id="vDet" disabled onclick="ir('cValesDet',{vale:selDe('gVal').num})">Ver detalle de ítems</button>
+      </div>`;
 };
+
+VISTAS.cValesDet = p => {
+  p = p || {};
+  const tipo = p.tipo || '';
+  const mod = p.mod || '';
+  const cat = p.cat || '';
+  const alm = p.alm || '';
+  const proy = p.proy || '';
+  const vale = p.vale || '';
+  const itemFiltro = (p.item || '').trim().toUpperCase();
+  const desde = p.desde || '';
+  const hasta = p.hasta || '';
+
+  let rows = [];
+  (DB.vales || []).forEach(v => {
+    // Almacén destino / origen
+    if (alm && alm !== 'TODOS') {
+      if (v.destino !== alm && v.origen !== alm) return;
+    }
+    // N° de vale
+    if (vale) {
+      if (!(v.num || '').toUpperCase().includes(vale.toUpperCase().trim())) return;
+    }
+    // Tipo de movimiento
+    if (tipo && v.tipo !== tipo) return;
+    // Proyecto / cuenta
+    if (proy) {
+      const matchCta = (v.cuenta || '').toUpperCase().includes(proy.toUpperCase());
+      const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
+      if (!matchCta && !matchP) return;
+    }
+    // Fechas
+    const fStr = (v.fecha || '').slice(0, 10);
+    if (desde && fStr < desde) return;
+    if (hasta && fStr > hasta) return;
+
+    // Renglones / ítems contenidos
+    const lineas = (v.lineas && v.lineas.length) ? v.lineas : [{ cod: '—', desc: v.obs || 'Sin renglones especificados', cant: 1 }];
+    lineas.forEach(l => {
+      const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null) || {};
+      const modLinea = l.mod || it.mod || (getValeMods(v)[0] || 'HERRAMIENTA');
+      const catLinea = l.cat || it.cat || 'General';
+
+      if (mod && modLinea !== mod) return;
+      if (cat && catLinea !== cat) return;
+      if (itemFiltro) {
+        const cMatch = (l.cod || it.cod || '').toUpperCase().includes(itemFiltro);
+        const sMatch = (l.serial || it.serial || '').toUpperCase().includes(itemFiltro);
+        const dMatch = (it.desc || l.desc || '').toUpperCase().includes(itemFiltro);
+        const mMatch = (it.marca || l.marca || '').toUpperCase().includes(itemFiltro);
+        if (!cMatch && !sMatch && !dMatch && !mMatch) return;
+      }
+
+      rows.push({
+        v,
+        l,
+        it,
+        mod: modLinea,
+        cat: catLinea
+      });
+    });
+  });
+
+  rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha));
+
+  const cols = [
+    { t: 'N° de Vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
+    { t: 'Tipo de movimiento', v: r => TIPOS[r.v.tipo] ? TIPOS[r.v.tipo].n : r.v.tipo },
+    { t: 'Módulo', v: r => MODULOS[r.mod] || r.mod, f: r => `<span class="chip-mod m-${r.mod}" style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">${esc(MODULOS[r.mod] || r.mod)}</span>` },
+    { t: 'Fecha y hora', v: r => fFH(r.v.fecha), s: r => r.v.fecha },
+    { t: 'Origen', v: r => almNombre(r.v.origen).replace('Almacén ', '') },
+    { t: 'Destino', v: r => almNombre(r.v.destino).replace('Almacén ', '') },
+    { t: 'Código del ítem', v: r => r.l.cod || r.it.cod || '—', f: r => `<b>${esc(r.l.cod || r.it.cod || '—')}</b>` },
+    { t: 'Descripción del ítem', v: r => r.it.desc || r.l.desc || '—', td: 'wrap' },
+    { t: 'Marca / Modelo', v: r => [r.it.marca || r.l.marca, r.it.modelo || r.l.modelo].filter(Boolean).join(' / ') || '—' },
+    { t: 'Serial', v: r => r.l.serial || r.it.serial || '—', f: r => (r.l.serial || r.it.serial) ? `<span style="font-family:monospace;font-weight:700">${esc(r.l.serial || r.it.serial)}</span>` : '—' },
+    { t: 'Cant.', v: r => Number(r.l.cant) || 1, cls: 'num' },
+    { t: 'UMB', v: r => r.it.umb || r.l.umb || 'UND', cls: 'cen' },
+    { t: 'Cuenta Auxiliar', v: r => r.v.cuenta || '—', f: r => r.v.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.v.cuenta)}</span>` : '—' },
+    { t: 'Proyecto / OT', v: r => r.v.proyecto || '—', td: 'wrap' },
+    { t: 'Despachado por', v: r => r.v.despacha || (r.v.realizadoPor ? (r.v.realizadoPor.nombre || r.v.realizadoPor) : '—') },
+    { t: 'N° de Referencia', v: r => r.v.ref || r.v.solicitud || '—' },
+    { t: 'Responsable', v: r => r.v.resp ? (r.v.resp.nombre || r.v.resp) : '—' },
+    { t: 'Cédula', v: r => (r.v.resp && r.v.resp.cedula) ? r.v.resp.cedula : '—' },
+    { t: 'Cargo', v: r => (r.v.resp && r.v.resp.cargo) ? r.v.resp.cargo : '—' },
+    { t: 'Supervisor', v: r => r.v.sup || r.v.supervisor || '—' },
+    { t: 'N° de Salida TIMACA', v: r => r.v.salidaTimaca || r.v.numSalida || '—' },
+    { t: 'Cant. Retornada', v: r => r.v.tipo === 'DEV' ? (Number(r.l.cant) || 0) : ['PRH', 'ASI'].includes(r.v.tipo) ? (r.l.dev !== undefined ? Number(r.l.dev) : '—') : '—', cls: 'num' },
+    { t: 'Saldo por Devolver', v: r => ['PRH', 'ASI'].includes(r.v.tipo) ? Math.max(0, (Number(r.l.cant) || 1) - (Number(r.l.dev) || 0)) : '—', cls: 'num' },
+    { t: 'Condición / Retorno', v: r => r.l.condicion || r.l.cond || r.l.condRet || (r.v.tipo === 'DEV' ? 'ÓPTIMO' : '—') },
+    { t: 'Días de Atraso', v: r => (r.v.tipo === 'PRH' && r.v.fechaDev && r.v.fechaDev < hoy() && saldoVale(r.v) > 0) ? diasEntre(r.v.fechaDev, hoy()) : 0, cls: 'num', f: r => { const d = (r.v.tipo === 'PRH' && r.v.fechaDev && r.v.fechaDev < hoy() && saldoVale(r.v) > 0) ? diasEntre(r.v.fechaDev, hoy()) : 0; return d > 0 ? `<span style="color:#dc2626;font-weight:700">${d} días</span>` : '<span style="color:#6b7280">0</span>'; } },
+    { t: 'Status del Vale', v: r => getStatusVale(r.v), f: r => badgeStatus(r.v) },
+    { t: 'Observaciones', v: r => r.l.obs || r.v.obs || r.v.observaciones || '—', td: 'wrap' }
+  ];
+
+  const recargar = `ir('cValesDet',{tipo:$('vdTipo').value,mod:$('vdMod').value,cat:$('vdCat').value,alm:$('vdAlm').value,proy:$('vdProy').value,vale:$('vdValeIn').value,item:$('vdItemIn').value,desde:$('vdDesde').value,hasta:$('vdHasta').value})`;
+
+  $('area').innerHTML = cab('Detalle de vales emitidos (Ítem por ítem)', 'Desglose renglón por renglón de cada vale y movimiento. Muestra código, descripción, serial, marca, cantidad, almacén origen, destino y trazabilidad completa.', botonesExport('gValDet', 'Detalle de vales emitidos ' + (alm && alm !== 'TODOS' ? ('Destino ' + almNombre(alm)) : 'Todos los destinos')))
+    + navTabsVales('detalle')
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('N° de Vale', `<input id="vdValeIn" value="${esc(vale)}" placeholder="Ej. TRF-00064" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Código / Serial / Ítem', `<input id="vdItemIn" value="${esc(itemFiltro)}" placeholder="Código, serial..." style="max-width:140px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Almacén destino', `<select id="vdAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' || !alm ? 'selected' : ''}>Todos los destinos</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
+        ${campo('Tipo de movimiento', `<select id="vdTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
+        ${campo('Módulo', `<select id="vdMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
+        ${campo('Categoría', `<select id="vdCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
+        ${campo('Proyecto / Cuenta', `<select id="vdProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
+        ${campo('Desde', `<input type="date" id="vdDesde" value="${esc(desde)}" onchange="${recargar}">`)}
+        ${campo('Hasta', `<input type="date" id="vdHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
+        ${(tipo || mod || cat || (alm && alm !== 'TODOS') || proy || vale || itemFiltro || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cValesDet')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gValDet', 'Buscar código, descripción, serial, vale, responsable…')}
+      </div>`
+    + grid('gValDet', cols, rows, { pag: 25, onSel: r => tiraValDet(r) })
+    + `<div class="sel-strip"><span class="lbl">Renglón seleccionado</span><span class="box" id="vdVale"></span><span class="box" id="vdItem" style="flex:1"></span></div>
+    <div class="barra-btn">
+      <button class="btn-sip" id="vdVer" disabled onclick="ir('doc',{num:selDe('gValDet').v.num,back:'cValesDet'})">Visualizar vale</button>
+      <button class="btn-sip" id="vdImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gValDet').v.num)">Imprimir vale</button>
+      <button class="btn-sip" id="vdKdx" disabled onclick="ir('cKardex',{q:selDe('gValDet').l.serial || selDe('gValDet').l.cod || selDe('gValDet').it.cod})">Ver Kardex del ítem</button>
+    </div>`;
+};
+function tiraValDet(r) {
+  $('vdVale').textContent = r.v.num;
+  const serialTxt = (r.l.serial || r.it.serial) ? ` · Serial: ${r.l.serial || r.it.serial}` : '';
+  const descTxt = r.it.desc || r.l.desc || '—';
+  $('vdItem').textContent = `${r.l.cod || r.it.cod || ''} · ${descTxt}${serialTxt} · Cant: ${r.l.cant || 1} ${r.it.umb || r.l.umb || 'UND'} · ${almNombre(r.v.origen).replace('Almacén ', '')} ➔ ${almNombre(r.v.destino).replace('Almacén ', '')}`;
+  $('vdVer').disabled = false;
+  $('vdImp').disabled = false;
+  $('vdKdx').disabled = !(r.l.cod || r.it.cod || r.l.serial);
+}
 const colsKardex = maestro => [{ t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha }, { t: 'Documento', k: 'doc' }, { t: 'Movimiento', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo }, { t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Serial', k: 'serial' },
   { t: 'Cant.', k: 'cant', cls: 'num' }, { t: 'Origen', v: r => almNombre(r.origen) }, { t: 'Destino', v: r => almNombre(r.destino) }, { t: 'Estado anterior', k: 'estAnt' }, { t: 'Estado nuevo', k: 'estNue' },
   { t: 'Responsable', k: 'resp' }, { t: 'Usuario', k: 'usr' }, { t: 'Observación', k: 'obs' }].concat(maestro ? [{ t: 'Valor USD', v: r => +(r.cant * (item(r.id).costo || 0)).toFixed(2), cls: 'num' }] : []);
