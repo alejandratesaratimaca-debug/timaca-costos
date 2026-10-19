@@ -520,8 +520,8 @@ const UMBS_OFICIALES = [
   'M3'
 ];
 const EST_COLOR = {
-  'PENDIENTE DE APROBACIÓN': 'naranja', 'POR APROBAR': 'naranja', 'APROBADA': 'verde', 'ANULADA': 'rojo',
-  'NO FINALIZADO': 'naranja', 'FINALIZADO': 'naranja', 'APROBADO': 'verde', 'ANULADO': 'rojo',
+  'FINALIZADA': 'verde', 'FINALIZADO': 'verde', 'APROBADA': 'verde', 'APROBADO': 'verde', 'ANULADA': 'rojo', 'ANULADO': 'rojo',
+  'PENDIENTE DE APROBACIÓN': 'naranja', 'POR APROBAR': 'naranja', 'NO FINALIZADO': 'naranja',
   'PENDIENTE DE RECEPCIÓN': 'naranja', 'POR ACEPTAR': 'naranja', 'EN ESPERA DE ACEPTACIÓN': 'naranja', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
   'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris', 'TRANSFERIDO': 'azul',
@@ -531,9 +531,9 @@ const EST_COLOR = {
 };
 const estB = e => `<span class="est est-${EST_COLOR[e] || 'gris'}">${esc(e)}</span>`;
 const formatoEstSol = e => {
-  if (e === 'APROBADO' || e === 'APROBADA') return 'APROBADA';
+  if (e === 'FINALIZADA' || e === 'FINALIZADO' || e === 'APROBADO' || e === 'APROBADA') return 'FINALIZADA';
   if (e === 'ANULADO' || e === 'ANULADA') return 'ANULADA';
-  return 'POR APROBAR';
+  return 'FINALIZADA';
 };
 
 /* ----------------------------- Persistencia ----------------------------- */
@@ -1194,14 +1194,14 @@ function emitirValeDirecto(d) {
   let s = d.num ? solDe(d.num) : null;
   const editando = !!s;
   if (!s) {
-    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'APROBADA' };
+    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'FINALIZADA' };
     DB.solicitudes.push(s);
   }
   Object.assign(s, {
     tipo: d.tipo, origen: d.origen, destino: d.destino, resp: d.resp, sup: d.sup, proyecto: d.proyecto, cuenta: d.cuenta,
     fechaReq: d.tipo === 'PRH' ? d.fechaReq : '', fechaDev: d.tipo === 'PRH' ? d.fechaDev : '', fechaAsig: d.tipo === 'ASI' ? d.fechaAsig : '',
     obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l)),
-    estatus: 'APROBADA',
+    estatus: 'FINALIZADA',
     finalizadaEn: nowISO(),
     procesadoEn: nowISO(),
     procesadoPor: quien()
@@ -3926,7 +3926,7 @@ function pintarFormulario() {
       + campo('Cargo', `<input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Se completa al elegir el responsable">`)
       + campo('Cuenta auxiliar', `<input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Se completa al elegir el proyecto">`)
       + campo('Proyecto / Orden de trabajo', `<input id="fProy" ${ro} autocomplete="off" placeholder="Escriba el proyecto u OT" value="${esc(F.proyecto)}">`)
-      + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`)
+      + campo('Supervisor', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`)
       + campo('N° de salida TIMACA (opcional)', `<input id="fSalidaTimaca" ${ro} placeholder="Opcional" value="${esc(F.salidaTimaca || '')}">`);
   } else if (t === 'PRH' || t === 'ASI') {
     cabecera += campo('Destino / Área solicitante', selectorDestinoSol(F.origen, F.destino, ro));
@@ -3941,7 +3941,7 @@ function pintarFormulario() {
       + campo('Cargo', `<input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Se completa al elegir el responsable">`)
       + campo('Cuenta auxiliar', `<input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Se completa al elegir el proyecto">`)
       + campo('Proyecto / Orden de trabajo', `<input id="fProy" ${rd ? 'readonly' : ''} ${ro} autocomplete="off" placeholder="Escriba el proyecto u OT" value="${esc(F.proyecto)}">`)
-      + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`);
+      + campo('Supervisor', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`);
   }
   if (t === 'PRH') cabecera += campo('Fecha requerida', `<input type="date" id="fFReq" ${ro} value="${F.fechaReq}">`) + campo('Fecha de devolución', `<input type="date" id="fFDev" ${ro} value="${F.fechaDev}">`) + '<div></div>';
   if (t === 'ASI') cabecera += campo('Fecha de asignación', `<input type="date" id="fFAsig" ${ro} value="${F.fechaAsig}">`) + campo('Tipo de asignación', `<input value="TIEMPO INDEFINIDO" readonly>`) + '<div></div>';
@@ -4247,7 +4247,7 @@ function finalizarFormulario(finalizar) {
    ===================================================================== */
 function pintarSolicitud() {
   const t = F.tipo, s = F.num ? solDe(F.num) : null;
-  const est = s ? formatoEstSol(s.estatus) : 'APROBADA';
+  const est = s ? formatoEstSol(s.estatus) : 'FINALIZADA';
   const L = txt => `<div class="lb">${txt}</div>`;
   const fechas = t === 'PRH'
     ? L('Fecha requerida') + `<div class="vl"><input type="date" id="fFReq" value="${F.fechaReq}"></div>` + L('Fecha de devolución') + `<div class="vl"><input type="date" id="fFDev" value="${F.fechaDev}"></div>`
@@ -4266,7 +4266,7 @@ function pintarSolicitud() {
       ${L('Cuenta auxiliar')}<div class="vl"><input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Automático"></div>
       ${L('Tipo de movimiento')}<div class="vl"><select id="fTipo" onchange="cambiarTipoSol(this.value)">${opciones([['PRH', 'PRH - Préstamo'], ['ASI', 'ASI - Asignación']], t)}</select></div>
       ${L('Tipo de asignación')}<div class="vl"><select id="fTA" onchange="cambiarTipoSol(this.value === 'DEF' ? 'PRH' : 'ASI')">${opciones([['DEF', 'TIEMPO DEFINIDO'], ['IND', 'TIEMPO INDEFINIDO']], t === 'PRH' ? 'DEF' : 'IND')}</select></div>
-      ${L('Supervisor autoriza')}<div class="vl" style="display:flex;gap:4px"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}" style="flex:1"><button type="button" class="btn btn-claro btn-mini" title="Agregar nuevo supervisor" onclick="abrirModalNuevoPersonalRapido('SUPERVISOR')">➕ Nuevo</button></div>
+      ${L('Supervisor')}<div class="vl" style="display:flex;gap:4px"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}" style="flex:1"><button type="button" class="btn btn-claro btn-mini" title="Agregar nuevo supervisor" onclick="abrirModalNuevoPersonalRapido('SUPERVISOR')">➕ Nuevo</button></div>
       ${fechas}
       ${L('Almacén origen')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
       ${L('Destino / Área solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
@@ -4482,7 +4482,7 @@ VISTAS.doc = p => {
     if (d.resp) c += R('Responsable custodio', d.resp.nombre) + R('Cédula', d.resp.cedula) + R('Cargo', d.resp.cargo);
     if (d.cuenta) c += R('Cuenta auxiliar', d.cuenta);
     if (d.proyecto) c += R('Proyecto / OT', d.proyecto);
-    if (d.sup) c += R('Supervisor autoriza', d.sup);
+    if (d.sup) c += R('Supervisor', d.sup);
   }
   else if (t === 'ENT') c += R('Registrado por', d.realizadoPor.nombre) + (d.obs ? R('Observación', d.obs) : '');
   else if (t === 'DEVCH') {
@@ -4516,7 +4516,7 @@ VISTAS.doc = p => {
   else {
     c += R(esSol ? 'Generado por' : 'Registrado por', esSol ? d.generadoPor.nombre : d.realizadoPor.nombre);
     if (d.resp) c += R('Responsable custodio', d.resp.nombre) + R('Cédula', d.resp.cedula) + R('Cargo', d.resp.cargo);
-    c += R('Proyecto / OT', d.proyecto) + R('Cuenta auxiliar', d.cuenta) + R('Supervisor autoriza', d.sup);
+    c += R('Proyecto / OT', d.proyecto) + R('Cuenta auxiliar', d.cuenta) + R('Supervisor', d.sup);
   }
   if (t === 'PRH') c += R('Fecha requerida', fF(d.fechaReq)) + R('Fecha de devolución', fF(d.fechaDev)) + R('Extensiones', d.extensiones || 0);
   if (t === 'ASI') c += R('Fecha de asignación', fF(d.fechaAsig)) + R('Tipo de asignación', 'TIEMPO INDEFINIDO') + '<div></div>';
@@ -4609,8 +4609,7 @@ VISTAS.sol = p => {
   let rows = DB.solicitudes.filter(s => s.origen === S.ctx);
   if (tab === 'mias') rows = rows.filter(s => s.generadoPor.usuario === S.u.usuario);
   if (filtro !== 'TODAS') {
-    if (filtro === 'PENDIENTE DE APROBACIÓN') rows = rows.filter(s => s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA');
-    else if (filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
+    if (filtro === 'FINALIZADA' || filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'FINALIZADA' || s.estatus === 'FINALIZADO' || s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
     else if (filtro === 'ANULADA') rows = rows.filter(s => s.estatus === 'ANULADO' || s.estatus === 'ANULADA');
     else rows = rows.filter(s => s.estatus === filtro);
   }
@@ -4632,7 +4631,7 @@ VISTAS.sol = p => {
   ];
   $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos y asignaciones de ' + esc(almNombre(S.ctx)) + '. Al crear una solicitud, se emite de inmediato el vale para imprimir y firmar.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
-    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['APROBADA', 'Aprobadas / Con vale'], ['ANULADA', 'Anuladas']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
+    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['FINALIZADA', 'Finalizadas (con vale)'], ['ANULADA', 'Anuladas']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
     + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
@@ -4915,7 +4914,7 @@ VISTAS.plz = p => {
       ${campo('Responsable', `<input value="${v ? esc(v.resp.nombre) : ''}" readonly>`)}${campo('Proyecto / OT', `<input value="${v ? esc(v.proyecto) : ''}" readonly>`)}
       ${campo('Fecha de devolución actual', `<input value="${v ? fF(v.fechaDev) : ''}" readonly>`)}${campo('Extensiones anteriores', `<input value="${v ? (v.extensiones || 0) : ''}" readonly>`)}${campo('Estado', `<div style="padding-top:6px">${v ? estB(estadoVale(v)) : ''}</div>`)}
       ${campo('Nueva fecha de devolución solicitada', `<input type="date" id="plNueva" ${v ? '' : 'disabled'} value="${v ? sumarDias(v.fechaDev > hoy() ? v.fechaDev : hoy(), 7) : ''}">`)}
-      ${campo('Supervisor autoriza', `<input id="plSup" autocomplete="off" ${v ? '' : 'disabled'} placeholder="Seleccione el supervisor" value="${v ? esc(v.sup) : ''}">`)}
+      ${campo('Supervisor', `<input id="plSup" autocomplete="off" ${v ? '' : 'disabled'} placeholder="Seleccione el supervisor" value="${v ? esc(v.sup) : ''}">`)}
       ${campo('Motivo', `<input id="plMot" ${v ? '' : 'disabled'} placeholder="Motivo de la prórroga o extensión">`)}
     </div>
     <div class="pie-form">
@@ -6843,7 +6842,7 @@ function imprimirVale(n) {
   const der = esEnt
     ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())}</div>`
     : esTrf
-    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor autoriza:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}</div>`
+    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}</div>`
     : `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div><div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div><div><b>Tipo A / Aprobación:</b> ${v.lineas.some(l => item(l.id).tipoA) ? 'SI · N° ' + esc(v.aprobGer || '—') : 'NO'}</div>${v.ref ? `<div><b>Vale de referencia:</b> ${esc(v.ref)}</div>` : ''}`;
 
   let extra = '';
@@ -6857,8 +6856,8 @@ function imprimirVale(n) {
 
   const firmas = esEnt ? [['Entrega', 'Firma', ''], ['Recibe (almacenista)', 'Firma y Sello', v.realizadoPor.nombre], ['Supervisor', 'Firma y Sello', '']]
     : esTrf
-    ? [['Despacha (' + almNombre(v.origen).replace('Almacén ', '') + ')', 'Firma y Sello', v.despacha || v.realizadoPor.nombre], ['Recibe (' + almNombre(v.destino).replace('Almacén ', '') + ')', 'Firma y Sello', v.estatus === 'RECIBIDA' ? v.procesadoPor.nombre : ''], ['Supervisor Autoriza', 'Firma y Sello', v.sup || '']]
-    : [['Responsable / Recibe', 'Firma y Cédula', ''], ['Almacenista / Despacha', 'Firma y Sello', ''], ['Supervisor Autoriza', 'Firma y Sello', v.aprobadoPor ? v.aprobadoPor.nombre : '']];
+    ? [['Despacha (' + almNombre(v.origen).replace('Almacén ', '') + ')', 'Firma y Sello', v.despacha || v.realizadoPor.nombre], ['Recibe (' + almNombre(v.destino).replace('Almacén ', '') + ')', 'Firma y Sello', v.estatus === 'RECIBIDA' ? v.procesadoPor.nombre : ''], ['Supervisor', 'Firma y Sello', v.sup || '']]
+    : [['Responsable / Recibe', 'Firma y Cédula', ''], ['Almacenista / Despacha', 'Firma y Sello', ''], ['Supervisor', 'Firma y Sello', v.sup || (v.aprobadoPor ? v.aprobadoPor.nombre : '')]];
 
   const totPiezasNormal = (v.lineas || []).reduce((a, l) => a + (l.cant || 1), 0);
 
