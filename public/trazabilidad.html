@@ -573,6 +573,14 @@ function asegurarProduccionLimpia() {
   DB.version = 15;
 }
 
+function esCreadoraAdmin(u) {
+  if (!u) return false;
+  const usu = String(u.usuario || '').trim().toLowerCase();
+  const ali = String(u.alias || '').trim().toLowerCase();
+  const nom = String(u.nombre || '').trim().toLowerCase();
+  return usu === 'drivero' || ali === 'daniela' || nom.includes('daniela riveros') || usu === 'admin';
+}
+
 function asegurarUsuariosClave() {
   if (!DB || !DB.usuarios) return;
   const ALMS_TODOS = ALMS_TODOS_OFICIALES;
@@ -614,6 +622,8 @@ function asegurarUsuariosClave() {
     uJack.nombre = 'Jackson Cubillán';
     uJack.cargo = 'Encargado de Almacén Central';
     uJack.activo = true;
+    uJack.admin = false;
+    uJack.maestro = false;
     uJack.almacenes = ['CENTRAL'];
     uJack.perm = { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] };
   }
@@ -629,6 +639,8 @@ function asegurarUsuariosClave() {
     uJuan.nombre = 'Juan Aguilar';
     uJuan.cargo = 'Encargado de Almacén PMH';
     uJuan.activo = true;
+    uJuan.admin = false;
+    uJuan.maestro = false;
     uJuan.almacenes = ['PMH'];
     uJuan.perm = { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] };
   }
@@ -636,11 +648,11 @@ function asegurarUsuariosClave() {
   // 4. Administradores de respaldo (atesara / admin)
   let uAle = DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
   if (!uAle) {
-    uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: 'timaca2026', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos / Administradora', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } };
+    uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: 'timaca2026', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } };
     DB.usuarios.push(uAle);
   } else {
     uAle.clave = 'timaca2026';
-    uAle.admin = true;
+    uAle.admin = false;
     uAle.almacenes = ALMS_TODOS;
   }
   let uAdm = DB.usuarios.find(x => x.usuario.toLowerCase() === 'admin');
@@ -651,6 +663,30 @@ function asegurarUsuariosClave() {
   }
 
   // Desactivar usuarios demo viejos que ya no correspondan
+    // Sincronizar usuario activo si ya inició sesión
+  if (S.u) {
+    if (esCreadoraAdmin(S.u)) {
+      S.u.admin = true;
+      S.u.maestro = true;
+    } else {
+      S.u.admin = false;
+      if (S.u.usuario.toLowerCase() === 'jcubillan') {
+        S.u.maestro = false;
+        S.u.almacenes = ['CENTRAL'];
+      } else if (S.u.usuario.toLowerCase() === 'jaguilar') {
+        S.u.maestro = false;
+        S.u.almacenes = ['PMH'];
+      }
+    }
+  }
+
+  // Asegurar que solo la creadora tenga admin
+  DB.usuarios.forEach(u => {
+    if (!esCreadoraAdmin(u)) {
+      u.admin = false;
+    }
+  });
+
   DB.usuarios = DB.usuarios.filter(u => !['central', 'pellas', 'eco', 'jnavarro'].includes(u.usuario.toLowerCase()));
 
   DB.notificaciones = DB.notificaciones || [];
@@ -2110,7 +2146,7 @@ function semilla() {
   U('drivero', '070717', 'Daniela Riveros', 'V-20.123.456', 'Creadora del Sistema & Supervisora General', { alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
   U('jcubillan', 'timaca1974', 'Jackson Cubillán', 'V-16.789.012', 'Encargado de Almacén Central', { alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], almacenes: ['CENTRAL'], perm: { transferir: ['CENTRAL'], recibir: ['CENTRAL'] } });
   U('jaguilar', 'Juan0512', 'Juan Aguilar', 'V-17.654.321', 'Encargado de Almacén PMH', { alias: 'juan', correos: ['jaguilar@timaca.com.ve'], almacenes: ['PMH'], perm: { transferir: ['PMH'], recibir: ['PMH'] } });
-  U('atesara', 'timaca2026', 'Alejandra Tesara', 'V-18.456.789', 'Analista Principal de Costos / Administradora', { alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
+  U('atesara', 'timaca2026', 'Alejandra Tesara', 'V-18.456.789', 'Analista Principal de Costos', { alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
   U('admin', 'timaca2026', 'Administrador del Sistema', 'V-10.000.001', 'Administrador', { admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
 
   DB.personal = JSON.parse(JSON.stringify(PERSONAL_OFICIAL));
@@ -2447,7 +2483,7 @@ function menuDef() {
     ['Consultas y kárdex', [ ['cPrest', 'Préstamos y asignaciones'],
       ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cValesDet', 'Detalle de vales emitidos'], ['cKardex', 'Kardex por código']]]
   );
-  if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
+  if (esCreadoraAdmin(S.u)) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
   return m;
 }
@@ -3809,7 +3845,7 @@ function ir(id, param) {
   const esMaestro = ['mRes', 'mKpi', 'mComp', 'mExp', 'mTraz', 'mAlert', 'mCajas', 'mCost', 'mAcc'].includes(id);
   if (esMaestro && !enMaestro()) { toast('Esta opción pertenece al Maestro.', 'err'); return; }
   if (!esMaestro && enMaestro() && id !== 'doc') { toast('Esta opción pertenece a los almacenes.', 'err'); return; }
-  if (['aUsr', 'aProy', 'aCat', 'aIni', 'aConf', 'aBit', 'aResp'].includes(id) && !S.u.admin) { toast('Solo el administrador puede ingresar a esta opción.', 'err'); return; }
+  if (['aUsr', 'aProy', 'aCat', 'aIni', 'aConf', 'aBit', 'aResp'].includes(id) && !esCreadoraAdmin(S.u)) { toast('Solo la supervisora del sistema (Daniela Riveros) tiene acceso al módulo de Administración.', 'err'); return; }
   S.vista = id; S.param = param || null;
   const defMenu = menuDef();
   const grupoDestino = defMenu.find(([g, items]) => items.some(it => it && it[0] === id));
@@ -4258,7 +4294,7 @@ function pintarSolicitud() {
       ${L('Número')}<div class="vl"><input id="sNum" value="${esc(F.num || '')}" placeholder="Se asigna al salvar" readonly></div>
       ${L('Fecha')}<div class="vl"><input value="${fF(s ? s.fecha : nowISO())}" readonly></div>
       ${L('Observación')}<div class="vl s5"><textarea id="fObs" rows="2" placeholder="Motivo o detalle de la solicitud">${esc(F.obs)}</textarea></div>
-      ${L('Solicitado por')}<div class="vl" style="display:flex;gap:4px"><input id="fResp" autocomplete="off" placeholder="Nombre o cédula de quien solicita" value="${esc(F.resp ? F.resp.nombre : '')}" style="flex:1"><button type="button" class="btn btn-claro btn-mini" title="Agregar nueva persona / custodio" onclick="abrirModalNuevoPersonalRapido('RESPONSABLE')">➕ Nuevo</button></div>
+      ${L('Solicitado por')}<div class="vl"><input id="fResp" autocomplete="off" placeholder="Nombre o cédula de quien solicita" value="${esc(F.resp ? F.resp.nombre : '')}"></div>
       ${L('Cédula')}<div class="vl"><input id="fCed" readonly value="${esc(F.resp ? F.resp.cedula : '')}" placeholder="Automático"></div>
       ${L('Cargo')}<div class="vl"><input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Automático"></div>
       ${L('Generado por')}<div class="vl"><input readonly value="${esc(s ? s.generadoPor.nombre : S.u.nombre)}"></div>
@@ -4266,7 +4302,7 @@ function pintarSolicitud() {
       ${L('Cuenta auxiliar')}<div class="vl"><input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Automático"></div>
       ${L('Tipo de movimiento')}<div class="vl"><select id="fTipo" onchange="cambiarTipoSol(this.value)">${opciones([['PRH', 'PRH - Préstamo'], ['ASI', 'ASI - Asignación']], t)}</select></div>
       ${L('Tipo de asignación')}<div class="vl"><select id="fTA" onchange="cambiarTipoSol(this.value === 'DEF' ? 'PRH' : 'ASI')">${opciones([['DEF', 'TIEMPO DEFINIDO'], ['IND', 'TIEMPO INDEFINIDO']], t === 'PRH' ? 'DEF' : 'IND')}</select></div>
-      ${L('Supervisor')}<div class="vl" style="display:flex;gap:4px"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}" style="flex:1"><button type="button" class="btn btn-claro btn-mini" title="Agregar nuevo supervisor" onclick="abrirModalNuevoPersonalRapido('SUPERVISOR')">➕ Nuevo</button></div>
+      ${L('Supervisor')}<div class="vl"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}"></div>
       ${fechas}
       ${L('Almacén origen')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
       ${L('Destino / Área solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
