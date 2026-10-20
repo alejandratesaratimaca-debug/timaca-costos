@@ -565,6 +565,7 @@ function asegurarProduccionLimpia() {
   DB.intentos = {};
 
   // Correlativos oficiales arrancando desde 0 para que el primer vale sea 0000001 (1), luego 2, 3...
+  DB.cajasTipos = [];
   DB.corr = { PRH: 0, ASI: 0, TRF: 0, SOL: 0, ENT: 0, DEV: 0, DAN: 0, EXT: 0, PLZ: 0 };
   DB.seq = { mov: 0, inc: 0 };
 
@@ -613,7 +614,7 @@ function asegurarUsuariosClave() {
 
   // 2. Jackson Cubillán (Almacén Central, clave timaca1974)
   let uJack = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jcubillan');
-  if (!uJack) {
+  if (!uJack && !DB.usuariosEliminados.includes('jcubillan')) {
     uJack = { usuario: 'jcubillan', alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], clave: 'timaca1974', nombre: 'Jackson Cubillán', cedula: 'V-16.789.012', cargo: 'Encargado de Almacén Central', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['CENTRAL'], perm: { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] } };
     DB.usuarios.push(uJack);
   } else {
@@ -630,7 +631,7 @@ function asegurarUsuariosClave() {
 
   // 3. Juan Aguilar (Almacén PMH, clave Juan0512)
   let uJuan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jaguilar');
-  if (!uJuan) {
+  if (!uJuan && !DB.usuariosEliminados.includes('jaguilar')) {
     uJuan = { usuario: 'jaguilar', alias: 'juan', correos: ['jaguilar@timaca.com.ve'], clave: 'Juan0512', nombre: 'Juan Aguilar', cedula: 'V-17.654.321', cargo: 'Encargado de Almacén PMH', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['PMH'], perm: { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] } };
     DB.usuarios.push(uJuan);
   } else {
@@ -647,7 +648,7 @@ function asegurarUsuariosClave() {
 
   // 4. Administradores de respaldo (atesara / admin)
   let uAle = DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
-  if (!uAle) {
+  if (!uAle && !DB.usuariosEliminados.includes('atesara')) {
     uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: 'timaca2026', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } };
     DB.usuarios.push(uAle);
   } else {
@@ -963,26 +964,7 @@ function asegurarPlanificacionCajas() {
   DB.catalogo = DB.catalogo || [];
   DB.exi = DB.exi || {};
   DB.exi['CENTRAL'] = DB.exi['CENTRAL'] || {};
-
   DB.cajasTipos = DB.cajasTipos || [];
-  const tieneViejosDemo = DB.cajasTipos.length > 0 && DB.cajasTipos.every(t => ['CH-01', 'CH-02', 'CH-03'].includes(t.id));
-  if (!DB.cajasTipos.length || tieneViejosDemo) {
-    DB.cajasTipos = JSON.parse(JSON.stringify(CAJAS_ESPECIALIDADES_OFICIALES));
-  } else {
-    // Asegurar que las especialidades oficiales estén presentes
-    CAJAS_ESPECIALIDADES_OFICIALES.forEach(ofic => {
-      const ex = DB.cajasTipos.find(t => t.id === ofic.id);
-      if (!ex) {
-        DB.cajasTipos.push(JSON.parse(JSON.stringify(ofic)));
-      } else {
-        if (!ex.especialidad) ex.especialidad = ofic.especialidad;
-        if (!ex.icono) ex.icono = ofic.icono;
-        if (!ex.estadoLista) ex.estadoLista = 'BASE EDITABLE';
-      }
-    });
-    // Remover cajas viejas de demostración genéricas si ya están las nuevas especialidades
-    DB.cajasTipos = DB.cajasTipos.filter(t => !['CH-01', 'CH-02', 'CH-03'].includes(t.id));
-  }
 }
 
 function asegurarCategoriasOficiales() {
@@ -1038,6 +1020,10 @@ function cargarDatos() {
       const parsed = JSON.parse(r);
       if (parsed && Array.isArray(parsed.usuarios) && parsed.usuarios.length && Array.isArray(parsed.catalogo) && Array.isArray(parsed.almacenes)) {
         DB = parsed;
+        if (!DB.cajasTotalmenteCeroV1) {
+          DB.cajasTipos = [];
+          DB.cajasTotalmenteCeroV1 = true;
+        }
         asegurarProduccionLimpia();
         asegurarUsuariosClave();
         asegurarPersonalOficial();
@@ -1986,7 +1972,10 @@ function asegurarPersonalOficial() {
     return;
   }
   // Asegurar que las personas oficiales de base existan, sin sobreescribir ni eliminar a las nuevas personas agregadas
+  DB.personalEliminado = DB.personalEliminado || [];
   PERSONAL_OFICIAL.forEach(oficial => {
+    const claveDel = (oficial.cedula && oficial.cedula !== 'S/C') ? digitosCI(oficial.cedula) : normTexto(oficial.nombre);
+    if (DB.personalEliminado.includes(claveDel)) return;
     const ex = DB.personal.find(p => (p.cedula && oficial.cedula && p.cedula !== 'S/C' && digitosCI(p.cedula) === digitosCI(oficial.cedula)) || normTexto(p.nombre) === normTexto(oficial.nombre));
     if (!ex) {
       DB.personal.push(JSON.parse(JSON.stringify(oficial)));
@@ -2798,7 +2787,15 @@ VISTAS.cajasPlan = p => {
             </tr>
           </thead>
           <tbody>
-            ${planesFiltrados.map(pl => {
+            ${planesFiltrados.length === 0 ? `
+              <tr>
+                <td colspan="8" style="text-align:center;padding:36px 16px;color:var(--texto-3)">
+                  <div style="font-size:28px;margin-bottom:8px">🧰</div>
+                  <b style="font-size:14px;color:var(--navy)">El módulo de cajas se encuentra en blanco</b><br>
+                  <p style="margin:6px 0 12px;font-size:12px">No hay especialidades de cajas cargadas. Puede crear la primera lista oficial en <a href="javascript:void(0)" onclick="${esMaestro ? "ir('mCajas',{tab:'listas'})" : "ir('cajasTipos')"}">Listas por especialidad</a>.</p>
+                </td>
+              </tr>
+            ` : planesFiltrados.map(pl => {
               const t = pl.tipo;
               const meta = Math.max(0, parseInt(PLAN_METAS_CAJA[t.id]) || 0);
               const lim = pl.limitantes[0];
@@ -3385,6 +3382,22 @@ VISTAS.cajasTipos = p => {
     seleccionarEspecialidadLista(tipoId);
   };
 
+  window.eliminarTipoCaja = tipoId => {
+    const t = tipoCajaDe(tipoId);
+    if (!t) return;
+    confirmar(`¿Está seguro de que desea eliminar permanentemente la caja <b>${esc(t.nombre)}</b> (${esc(t.id)}) con todas sus herramientas asignadas?<br><br><small style="color:var(--rojo)">Esta acción no se puede deshacer.</small>`, () => {
+      const idx = (DB.cajasTipos || []).findIndex(x => x.id === tipoId);
+      if (idx !== -1) {
+        DB.cajasTipos.splice(idx, 1);
+        CAJA_LISTA_SEL = DB.cajasTipos[0] ? DB.cajasTipos[0].id : '';
+        bit('TIPO DE CAJA ELIMINADO', `${t.id} - ${t.nombre}`);
+        guardar();
+        toast(`Caja "${t.nombre}" eliminada correctamente.`, 'ok');
+        ir(enMaestro() ? 'mCajas' : 'cajasTipos', enMaestro() ? { tab: 'listas' } : {});
+      }
+    }, 'Eliminar caja');
+  };
+
   window.vaciarListaCaja = tipoId => {
     const t = tipoCajaDe(tipoId);
     if (!t) return;
@@ -3503,6 +3516,7 @@ VISTAS.cajasTipos = p => {
               <button class="btn btn-claro btn-mini" onclick="imprimirChecklistCaja('${sel.id}')">🖨️ Imprimir Checklist</button>
               <button class="btn btn-claro btn-mini" onclick="modalImportarContenidoCaja('${sel.id}')">📤 Cargar desde Excel</button>
               <button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${sel.id}')">✏️ Editar datos de caja</button>
+              <button class="btn btn-rojo btn-mini" onclick="eliminarTipoCaja('${sel.id}')">🗑️ Eliminar caja</button>
               ${planSel.items.length > 0 ? `<button class="btn btn-rojo btn-mini" onclick="vaciarListaCaja('${sel.id}')">🧹 Vaciar lista</button>` : ''}
             </div>
           </div>
@@ -6249,11 +6263,11 @@ function urgOcultar() { pendientesPorAceptar().forEach(v => S_ALERTA.ocultos.add
    ===================================================================== */
 VISTAS.aUsr = () => {
   const permTxt = u => u.admin ? 'Administrador' : ['aprobar', 'transferir', 'recibir'].map(p => u.perm[p].length ? `${{ aprobar: 'Aprueba', transferir: 'Transfiere', recibir: 'Recibe' }[p]}: ${u.perm[p].join(', ')}` : '').filter(Boolean).join(' · ');
-  const cols = [{ t: 'Usuario', k: 'usuario' }, { t: 'Nombre', k: 'nombre' }, { t: 'Cédula', k: 'cedula' }, { t: 'Cargo', k: 'cargo' }, { t: 'Almacenes', v: u => u.admin ? 'Todos' : u.almacenes.join(', ') },
+  const cols = [{ t: 'Usuario', k: 'usuario' }, { t: 'Nombre', k: 'nombre' }, { t: 'Cargo', k: 'cargo' }, { t: 'Almacenes', v: u => u.admin ? 'Todos' : u.almacenes.join(', ') },
     { t: 'Permisos', v: permTxt }, { t: 'Maestro', v: u => u.admin || u.maestro ? 'SI' : 'NO' }, { t: 'Edita costos', v: u => u.admin || u.editaCostos ? 'SI' : 'NO' }, { t: 'Estado', v: u => u.activo ? 'ACTIVO' : 'INACTIVO', f: u => estB(u.activo ? 'ACTIVO' : 'INACTIVO') }];
   $('area').innerHTML = cab('Usuarios y permisos', 'Los permisos se asignan por usuario y por almacén. Cada cambio queda registrado en la bitácora.')
-    + `<div class="fila-filtros">${buscador('gUsr')}</div>` + grid('gUsr', cols, DB.usuarios, { onSel: () => { $('uEd').disabled = false; $('uAct').disabled = false; } })
-    + `<div class="barra-btn"><button class="btn-sip" onclick="editarUsuario()">Nuevo usuario</button><button class="btn-sip" id="uEd" disabled onclick="editarUsuario(selDe('gUsr').usuario)">Editar usuario y permisos</button><button class="btn-sip" id="uAct" disabled onclick="activarUsuario()">Activar / desactivar</button></div>`;
+    + `<div class="fila-filtros">${buscador('gUsr')}</div>` + grid('gUsr', cols, DB.usuarios, { onSel: () => { $('uEd').disabled = false; $('uAct').disabled = false; if ($('uDel')) $('uDel').disabled = false; } })
+    + `<div class="barra-btn"><button class="btn-sip" onclick="editarUsuario()">Nuevo usuario</button><button class="btn-sip" id="uEd" disabled onclick="editarUsuario(selDe('gUsr').usuario)">Editar usuario y permisos</button><button class="btn-sip" id="uAct" disabled onclick="activarUsuario()">Activar / desactivar</button><button class="btn-sip btn-rojo" id="uDel" disabled onclick="eliminarUsuario()">🗑️ Eliminar usuario</button></div>`;
 };
 function editarUsuario(usr) {
   const u = usr ? userDe(usr) : { usuario: '', clave: '', nombre: '', cedula: '', cargo: '', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: [], perm: { aprobar: [], transferir: [], recibir: [] } };
@@ -6261,7 +6275,7 @@ function editarUsuario(usr) {
   const filas = DB.almacenes.map(a => `<tr><td>${esc(a.n)}</td>${chk('acc|' + a.c, u.almacenes.includes(a.c)).replace(/^/, '<td>') + '</td>'}<td>${chk('aprobar|' + a.c, u.perm.aprobar.includes(a.c))}</td><td>${chk('transferir|' + a.c, u.perm.transferir.includes(a.c))}</td><td>${chk('recibir|' + a.c, u.perm.recibir.includes(a.c))}</td></tr>`).join('');
   abrirModal(usr ? 'Editar usuario ' + usr : 'Nuevo usuario', `<div class="f3">
       ${campo('Usuario', `<input id="euU" value="${esc(u.usuario)}" ${usr ? 'readonly' : ''}>`)}${campo('Clave', `<input id="euC" type="password" placeholder="${usr ? 'Dejar vacío para no cambiar' : ''}">`)}${campo('Nombre', `<input id="euN" value="${esc(u.nombre)}">`)}
-      ${campo('Cédula', `<input id="euCe" value="${esc(u.cedula)}">`)}${campo('Cargo', `<input id="euCa" value="${esc(u.cargo)}">`)}<div></div>
+      ${campo('Cargo', `<input id="euCa" value="${esc(u.cargo)}" placeholder="Cargo del usuario">`)}
     </div>
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 12px;font-size:12.5px">
       <label><input type="checkbox" id="euAdm" ${u.admin ? 'checked' : ''}> Administrador</label>
@@ -6280,7 +6294,7 @@ function guardarUsuario(usr) {
   const antes = JSON.stringify({ admin: u.admin, maestro: u.maestro, editaCostos: u.editaCostos, almacenes: u.almacenes, perm: u.perm });
   const m = { acc: [], aprobar: [], transferir: [], recibir: [] };
   document.querySelectorAll('.pm').forEach(c => { if (c.checked) { const [k, a] = c.dataset.k.split('|'); m[k].push(a); } });
-  Object.assign(u, { nombre: $('euN').value.trim(), cedula: $('euCe').value.trim(), cargo: $('euCa').value.trim(), admin: $('euAdm').checked, maestro: $('euMae').checked, editaCostos: $('euCos').checked,
+  Object.assign(u, { nombre: $('euN').value.trim(), cargo: $('euCa').value.trim(), admin: $('euAdm').checked, maestro: $('euMae').checked, editaCostos: $('euCos').checked,
     almacenes: m.acc, perm: { aprobar: m.aprobar, transferir: m.transferir, recibir: m.recibir } });
   if ($('euC').value) u.clave = $('euC').value;
   if (nuevo) DB.usuarios.push(u);
@@ -6288,6 +6302,31 @@ function guardarUsuario(usr) {
   bit(nuevo ? 'USUARIO CREADO' : 'PERMISOS MODIFICADOS', `${usuario} · Antes: ${nuevo ? '—' : antes} · Después: ${despues}`);
   guardar(); cerrarModal(); toast('Usuario guardado.', 'ok'); refrescar();
 }
+function eliminarUsuario() {
+  const u = selDe('gUsr');
+  if (!u) return toast('Seleccione un usuario para eliminar.', 'err');
+  if (S.u && u.usuario.toLowerCase() === S.u.usuario.toLowerCase()) {
+    return toast('No puede eliminar el usuario con el que actualmente tiene la sesión iniciada.', 'err');
+  }
+  if (u.usuario.toLowerCase() === 'drivero' || u.alias === 'daniela') {
+    return toast('No se puede eliminar a la supervisora general y creadora del sistema.', 'err');
+  }
+  confirmar(`¿Está seguro de que desea eliminar permanentemente al usuario <b>${esc(u.usuario)}</b> (${esc(u.nombre)})?<br><br><small style="color:var(--rojo)">Esta acción borrará la cuenta y sus credenciales de acceso al sistema.</small>`, () => {
+    const idx = DB.usuarios.findIndex(x => x.usuario.toLowerCase() === u.usuario.toLowerCase());
+    if (idx !== -1) {
+      const eliminado = DB.usuarios.splice(idx, 1)[0];
+      DB.usuariosEliminados = DB.usuariosEliminados || [];
+      if (!DB.usuariosEliminados.includes(eliminado.usuario.toLowerCase())) {
+        DB.usuariosEliminados.push(eliminado.usuario.toLowerCase());
+      }
+      bit('USUARIO ELIMINADO', `${eliminado.usuario} (${eliminado.nombre})`);
+      guardar();
+      toast(`Usuario "${eliminado.usuario}" eliminado correctamente.`, 'ok');
+      refrescar();
+    }
+  }, 'Eliminar usuario');
+}
+
 function activarUsuario() { const u = selDe('gUsr'); if (u.usuario === S.u.usuario) return toast('No puede desactivar su propio usuario.', 'err'); u.activo = !u.activo; bit('USUARIO ' + (u.activo ? 'ACTIVADO' : 'DESACTIVADO'), u.usuario); guardar(); refrescar(); }
 
 function vistaListaMaestra(tipo) {
@@ -6371,13 +6410,31 @@ VISTAS.aPers = () => {
           </select>
         </div>
       </div>`
-    + grid('gPers', cols, rows, { pag: 25, onSel: () => { if ($('btnEdPers')) $('btnEdPers').disabled = false; if ($('btnActPers')) $('btnActPers').disabled = false; } })
+    + grid('gPers', cols, rows, { pag: 25, onSel: () => { if ($('btnEdPers')) $('btnEdPers').disabled = false; if ($('btnActPers')) $('btnActPers').disabled = false; if ($('btnDelPers')) $('btnDelPers').disabled = false; } })
     + `<div class="barra-btn">
         <button class="btn-sip" onclick="editarRegistroPersonal()">➕ Nuevo registro</button>
         <button class="btn-sip" id="btnEdPers" disabled onclick="editarRegistroPersonal(selDe('gPers'))">✏️ Editar registro</button>
         <button class="btn-sip" id="btnActPers" disabled onclick="toggleActivoPersonal(selDe('gPers'))">🔄 Activar / Desactivar</button>
+        <button class="btn-sip btn-rojo" id="btnDelPers" disabled onclick="eliminarRegistroPersonal(selDe('gPers'))">🗑️ Eliminar</button>
       </div>`;
 };
+
+function eliminarRegistroPersonal(p) {
+  if (!p) return toast('Seleccione una persona para eliminar.', 'err');
+  confirmar(`¿Está seguro de que desea eliminar permanentemente a <b>${esc(p.nombre)}</b> (${esc(p.cedula || 'S/C')}) de la lista de responsables y supervisores?<br><br><small style="color:var(--rojo)">Esta persona dejará de aparecer en las listas oficiales y en la creación de vales.</small>`, () => {
+    const idx = DB.personal.findIndex(x => (x.cedula && p.cedula && x.cedula !== 'S/C' && x.cedula === p.cedula) || normTexto(x.nombre) === normTexto(p.nombre));
+    if (idx !== -1) {
+      const eliminado = DB.personal.splice(idx, 1)[0];
+      DB.personalEliminado = DB.personalEliminado || [];
+      const claveDel = (eliminado.cedula && eliminado.cedula !== 'S/C') ? digitosCI(eliminado.cedula) : normTexto(eliminado.nombre);
+      if (!DB.personalEliminado.includes(claveDel)) DB.personalEliminado.push(claveDel);
+      bit('PERSONAL ELIMINADO', `${eliminado.nombre} (${eliminado.cedula || 'S/C'})`);
+      guardar();
+      toast(`"${p.nombre}" fue eliminado de la lista correctamente.`, 'ok');
+      ir('aPers');
+    }
+  }, 'Eliminar persona');
+}
 
 function toggleActivoPersonal(p) {
   if (!p) return;
