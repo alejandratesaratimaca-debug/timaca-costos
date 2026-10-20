@@ -129,41 +129,41 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
     meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 371927, 868067],
-    total2026: 3967415,
-    variacion: '+133%',
-    variacionNum: 133,
+    total2026: 3967416,
+    variacion: '+133,4%',
+    variacionNum: 133.4,
     esPositiva: true
   },
   {
-    categoria: 'Servicios',
+    categoria: 'Servicios Directos',
     meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 117970, 99540],
     total2026: 2904145,
-    variacion: '-16%',
-    variacionNum: -16,
+    variacion: '-15,6%',
+    variacionNum: -15.6,
     esPositiva: false
   },
   {
     categoria: 'Mano de Obra Directa',
     meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 277936, 196665],
-    total2026: 2218226,
-    variacion: '-29%',
-    variacionNum: -29,
+    total2026: 2218229,
+    variacion: '-29,2%',
+    variacionNum: -29.2,
     esPositiva: false
   },
   {
-    categoria: 'Horas Maquina',
+    categoria: 'Horas Máquina',
     meses: [145113, 113686, 149030, 55110, 129625, 69063, 75933, 89789, 55578],
-    total2026: 882928,
-    variacion: '-38%',
-    variacionNum: -38,
+    total2026: 882927,
+    variacion: '-38,1%',
+    variacionNum: -38.1,
     esPositiva: false
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [182000, 184037, 205893, 197190, 237466, 213292, 227455, 339978, 393375],
-    total2026: 2190686,
-    variacion: '+16%',
-    variacionNum: 16,
+    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 339978, 393375],
+    total2026: 2079459,
+    variacion: '+15,7%',
+    variacionNum: 15.7,
     esPositiva: true
   }
 ];
@@ -388,23 +388,23 @@ export const TOTALES_NOMINA_SEMANAL_SEPTIEMBRE = {
   sem36: 54804,
   sem37: 54173,
   sem38: 53833,
-  sem39: 33856,
+  sem39: 33855,
   totalSeptiembre: 196665,
   totalHorasHombre: 55277,
   explicacion: 'Semana 35 ($56.584 USD / 15.619 HH) fue imputada contablemente al cierre de Agosto por calendario de fecha de inicio, completando los $277.936 USD de Agosto. Septiembre comprende estrictamente las Semanas 36 a 39 ($196.665 USD / 55.277 HH).'
 };
 
 export const DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS = [
-  { cta: 'TTE-C-0706', proyecto: 'Recuperación Línea 1 Pellas (VISCO)', monto: 128161, hh: 35059, pct: 65.2 },
-  { cta: 'TTE-C-0671', proyecto: 'Segunda línea PMH (VISCO ORINOCO)', monto: 30305, hh: 8671, pct: 15.4 },
-  { cta: 'TTE-C-0680', proyecto: 'Boca Grande II', monto: 11870, hh: 3885, pct: 6.0 },
-  { cta: 'TTE-C-0668', proyecto: 'Planta de Briquetas', monto: 8392, hh: 2326, pct: 4.3 },
-  { cta: 'TTE-C-0669', proyecto: 'Mantenimiento PMH', monto: 5218, hh: 1512, pct: 2.7 },
-  { cta: 'TTE-C-0656', proyecto: 'Fabricación Tolvas y Ductos', monto: 3762, hh: 1213, pct: 1.9 },
-  { cta: 'TTE-C-0670', proyecto: 'Trabajos Especiales Taller', monto: 3420, hh: 912, pct: 1.7 },
-  { cta: 'TTE-C-0694', proyecto: 'Servicios de Montaje', monto: 3420, hh: 1072, pct: 1.7 },
-  { cta: 'TTE-C-0655', proyecto: 'Reparación Estructural', monto: 1768, hh: 531, pct: 0.9 },
-  { cta: 'TTE-C-0678', proyecto: 'Pila HA y HB FMO-PMH', monto: 350, hh: 96, pct: 0.2 }
+  { cta: 'TTE-C-0706', proyecto: 'Recuperación Línea 1 Planta de Pellas (VISCO ORINOCO)', monto: 128161, hh: 35059, pct: 65.2 },
+  { cta: 'TTE-C-0671', proyecto: 'Segunda Línea PMH (Incremento Capacidad)', monto: 30305, hh: 8671, pct: 15.4 },
+  { cta: 'TTE-C-0680', proyecto: 'Mantenimiento de Planta BG II', monto: 11870, hh: 3885, pct: 6.0 },
+  { cta: 'TTE-C-0668', proyecto: 'Fase 2 Planta de Briquetas (FMO / VISCO ORINOCO)', monto: 8392, hh: 2326, pct: 4.3 },
+  { cta: 'TTE-C-0669', proyecto: 'Mantenimiento Planta de Briquetas', monto: 5218, hh: 1512, pct: 2.7 },
+  { cta: 'TTE-C-0656', proyecto: 'Rehabilitación de Bandas PMH (Torre #3 a JD-8012)', monto: 3762, hh: 1213, pct: 1.9 },
+  { cta: 'TTE-C-0694', proyecto: 'Suministro e Instalación Caldera Briquetas', monto: 3696, hh: 1072, pct: 1.9 },
+  { cta: 'TTE-C-0670', proyecto: 'Mantenimiento Máquinas Briqueteras (Planta de Briquetas)', monto: 3143, hh: 912, pct: 1.6 },
+  { cta: 'TTE-C-0655', proyecto: 'Interconexión Tolva Multipropósito PMH', monto: 1768, hh: 531, pct: 0.9 },
+  { cta: 'TTE-C-0678', proyecto: 'Proyecto Pila HA y HB (Suministro Apilador PMH)', monto: 350, hh: 96, pct: 0.2 }
 ];
 
 // Aliases para compatibilidad

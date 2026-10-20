@@ -311,12 +311,12 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
 
 export const TOTALES_SERVICIOS_DIRECTOS_PELLAS = {
   abril: 48,
-  mayo: 41445,
+  mayo: 5105,
   junio: 60101,
-  julio: 61934,
+  julio: 56907,
   agosto: 63106,
   septiembre: 69056,
-  total: 295690
+  total: 254323
 };
 
 export const ANALISIS_SERVICIOS_DIRECTOS_PELLAS = [

@@ -456,8 +456,8 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                   }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="TODAS">Todas las Áreas Físicas ({AREAS_FISICAS_LISTA.length})</option>
-                  {AREAS_FISICAS_LISTA.map(a => (
+                  <option value="TODAS">Todas las Áreas Físicas ({areasFisicasLista.length})</option>
+                  {areasFisicasLista.map(a => (
                     <option key={a} value={a}>{a}</option>
                   ))}
                 </select>
@@ -475,8 +475,8 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                   }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="TODOS">Todos los Departamentos ({DEPARTAMENTOS_LISTA.length})</option>
-                  {DEPARTAMENTOS_LISTA.map(d => (
+                  <option value="TODOS">Todos los Departamentos ({departamentosLista.length})</option>
+                  {departamentosLista.map(d => (
                     <option key={d} value={d}>{d}</option>
                   ))}
                 </select>
@@ -494,8 +494,8 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                   }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="TODOS">Cualquier Curso (10 Cursos)</option>
-                  {CATALOGO_CURSOS_NOMBRES.map(c => (
+                  <option value="TODOS">Cualquier Curso ({catalogoNombres.length} Cursos)</option>
+                  {catalogoNombres.map(c => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
@@ -593,7 +593,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                       </td>
 
                       {/* 10 Cursos Columns */}
-                      {CATALOGO_CURSOS_NOMBRES.map(cName => {
+                      {catalogoNombres.map((cName: string) => {
                         const cur = t.cursos.find(c => c.curso === cName);
                         if (!cur || !cur.aplica && !cur.completado) {
                           return (
@@ -725,8 +725,8 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
                 onChange={(e) => setSelectedCursoDrive(e.target.value)}
                 className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:bg-white"
               >
-                <option value="TODOS">Todos los Cursos ({CERTIFICADOS_VERIFICADOS_DRIVE.length} certificados)</option>
-                {CATALOGO_CURSOS_NOMBRES.map(c => (
+                <option value="TODOS">Todos los Cursos ({certificadosData.length} certificados)</option>
+                {catalogoNombres.map((c: string) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
