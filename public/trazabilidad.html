@@ -28,29 +28,22 @@ button,input,select,textarea{font-family:inherit;font-size:12.5px}
 :focus-visible{outline:2px solid #2563EB;outline-offset:1px}
 
 /* ================= LOGIN ================= */
-#pantallaLogin{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:96px 24px 24px;
-  background:linear-gradient(180deg,var(--navy) 0,var(--navy) 230px,#F8FAFC 230px)}
-.login-wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-start;width:100%;max-width:1000px}
-.login-card{background:#fff;border:1px solid var(--borde);border-radius:10px;width:410px;max-width:100%;box-shadow:0 14px 34px rgba(2,12,84,.18);overflow:hidden}
-.login-card .lc-logo{padding:28px 28px 18px;text-align:center;border-bottom:1px solid var(--borde-suave)}
-.login-card .lc-logo img{max-width:300px;width:100%}
-.login-card .lc-logo p{margin-top:12px;color:var(--texto-2);font-size:13px;font-weight:600}
-.login-card .lc-body{padding:22px 28px 28px}
-.campo{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;position:relative}
-.campo label{font-size:11px;font-weight:800;color:var(--texto-2);text-transform:uppercase;letter-spacing:.2px}
-.campo input,.campo select,.campo textarea{padding:8px 10px;border:1px solid var(--borde);border-radius:6px;background:#fff;color:var(--texto);width:100%}
+#pantallaLogin{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;
+  background:linear-gradient(180deg,var(--navy) 0,var(--navy) 260px,#F8FAFC 260px)}
+.login-wrap{display:flex;justify-content:center;align-items:center;width:100%;max-width:460px;margin:0 auto}
+.login-card{background:#fff;border:1px solid var(--borde);border-radius:12px;width:100%;box-shadow:0 16px 36px rgba(2,12,84,.14);overflow:hidden}
+.login-card .lc-logo{padding:30px 28px 20px;text-align:center;border-bottom:1px solid var(--borde-suave)}
+.login-card .lc-logo img{max-width:290px;width:100%;height:auto}
+.login-card .lc-logo p{margin-top:10px;color:var(--texto-2);font-size:13px;font-weight:600}
+.login-card .lc-body{padding:26px 28px 28px}
+.campo{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;position:relative}
+.campo label{font-size:11px;font-weight:800;color:var(--texto-2);text-transform:uppercase;letter-spacing:.3px}
+.campo input,.campo select,.campo textarea{padding:9px 12px;border:1px solid var(--borde);border-radius:6px;background:#fff;color:var(--texto);width:100%;font-size:12.5px}
 .campo input[readonly],.campo select:disabled,.campo input:disabled,.campo textarea[readonly]{background:#F1F5F9;color:#334155}
-.login-err{background:var(--rojo-bg);color:var(--rojo-tx);border:1px solid #FCA5A5;padding:8px 10px;border-radius:6px;font-size:12px;margin-bottom:12px;display:none}
-.btn-entrar{width:100%;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:11px;font-weight:800;cursor:pointer;font-size:13.5px}
+.campo input:focus,.campo select:focus,.campo textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 2px rgba(2,132,199,0.15)}
+.login-err{background:var(--rojo-bg);color:var(--rojo-tx);border:1px solid #FCA5A5;padding:10px 12px;border-radius:6px;font-size:12px;margin-bottom:14px;display:none;font-weight:600}
+.btn-entrar{width:100%;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:12px;font-weight:800;cursor:pointer;font-size:14px;margin-top:6px;transition:background .2s}
 .btn-entrar:hover{background:var(--navy-h)}
-.demo-card{background:#fff;border:1px solid var(--borde);border-radius:10px;width:540px;max-width:100%;box-shadow:0 14px 34px rgba(2,12,84,.12);overflow:hidden}
-.demo-card h3{font-size:14px;font-weight:900;color:var(--navy);padding:14px 16px;border-bottom:1px solid var(--borde-suave)}
-.demo-card .nota{padding:10px 16px;font-size:11.5px;color:var(--texto-3);border-top:1px solid var(--borde-suave)}
-.demo-card table{width:100%;border-collapse:collapse;font-size:11.5px}
-.demo-card td,.demo-card th{padding:6px 10px;border-bottom:1px solid #F1F5F9;text-align:left}
-.demo-card th{background:#F8FAFC;color:var(--texto-2)}
-.demo-card tr.clic{cursor:pointer}
-.demo-card tr.clic:hover td{background:#EFF6FF}
 
 /* ================= APP ================= */
 #pantallaApp{display:none;min-height:100vh;flex-direction:column}
@@ -113,9 +106,9 @@ main#area{flex:1;min-width:0;overflow:auto;padding:24px 30px 44px;background:#ff
 .fila-filtros .campo{margin-bottom:0;min-width:150px}
 
 /* Tablas */
-.grid-wrap{border:1px solid var(--borde);border-radius:8px;overflow:auto;background:#fff}
-table.grid{width:100%;border-collapse:collapse;font-size:12px}
-table.grid th{background:#F8FAFC;color:var(--texto-2);font-weight:800;text-align:left;padding:10px 10px;border-bottom:2px solid var(--borde);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:1}
+.grid-wrap{border:1px solid var(--borde);border-radius:8px;overflow:auto;background:#fff;max-height:calc(100vh - 310px);min-height:180px;position:relative}
+table.grid{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+table.grid th{background:#F8FAFC;color:var(--texto-2);font-weight:800;text-align:left;padding:10px 10px;border-bottom:2px solid var(--borde);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:20;box-shadow:0 1px 2px rgba(0,0,0,0.06)}
 table.grid th .ord{color:var(--navy);margin-left:4px}
 table.grid td{padding:9px 10px;border-bottom:1px solid #F1F5F9;white-space:nowrap}
 table.grid tbody tr{cursor:pointer}
@@ -390,18 +383,14 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
       <div class="lc-body">
         <div class="login-err" id="loginErr"></div>
         <div class="campo"><label for="lgUsuario">Usuario</label>
-          <input id="lgUsuario" autocomplete="username" placeholder="drivero (o su correo)" oninput="actualizarAccesosLogin()"></div>
+          <input id="lgUsuario" autocomplete="username" placeholder="jcubillan / jaguilar / drivero" oninput="actualizarAccesosLogin()"></div>
         <div class="campo"><label for="lgClave">Clave</label>
-          <input id="lgClave" type="password" autocomplete="current-password" placeholder="1234" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
+          <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
         <div class="campo"><label for="lgAcceso">Acceso</label>
           <select id="lgAcceso"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
         <button class="btn-entrar" onclick="iniciarSesion()">Ingresar</button>
+        <div style="text-align:center;font-size:12.5px;color:#0284c7;font-weight:700;margin-top:16px;letter-spacing:0.5px">Creado por: Daniela Riveros</div>
       </div>
-    </div>
-    <div class="demo-card">
-      <h3>Usuarios de prueba <span class="chip-demo">SOLO DEMOSTRACIÓN</span></h3>
-      <table><thead><tr><th>Usuario</th><th>Clave</th><th>Perfil</th></tr></thead><tbody id="tablaDemoUsuarios"></tbody></table>
-      <div class="nota">Haga clic en un usuario para llenar los datos automáticamente. Clave general de prueba: <b>1234</b>.</div>
     </div>
   </div>
 </section>
@@ -531,89 +520,175 @@ const UMBS_OFICIALES = [
   'M3'
 ];
 const EST_COLOR = {
-  'PENDIENTE DE APROBACIÓN': 'naranja', 'APROBADA': 'verde', 'ANULADA': 'rojo',
-  'NO FINALIZADO': 'naranja', 'FINALIZADO': 'naranja', 'APROBADO': 'verde', 'ANULADO': 'rojo',
-  'PENDIENTE DE RECEPCIÓN': 'gris', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
+  'FINALIZADA': 'verde', 'FINALIZADO': 'verde', 'APROBADA': 'verde', 'APROBADO': 'verde', 'ANULADA': 'rojo', 'ANULADO': 'rojo',
+  'PENDIENTE DE APROBACIÓN': 'naranja', 'POR APROBAR': 'naranja', 'NO FINALIZADO': 'naranja',
+  'PENDIENTE DE RECEPCIÓN': 'naranja', 'POR ACEPTAR': 'naranja', 'EN ESPERA DE ACEPTACIÓN': 'naranja', 'RECIBIDA': 'verde', 'RECHAZADA': 'rojo', 'VENCIDA': 'naranja',
   'VIGENTE': 'azul', 'VENCIDO': 'rojo', 'DEVOLUCIÓN PARCIAL': 'ambar', 'CERRADO': 'verde', 'ENTREGADO': 'verde',
-  'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris',
+  'REGISTRADO': 'gris', 'DAÑADO': 'rojo', 'EN TALLER': 'ambar', 'REPARADO': 'verde', 'BAJA': 'gris', 'TRANSFERIDO': 'azul',
   'EN INVESTIGACIÓN': 'naranja', 'RECUPERADO': 'verde', 'ACTIVO': 'verde', 'INACTIVO': 'gris',
   'DISPONIBLE': 'verde', 'VACÍO': 'naranja', 'VACÍO (POR RECARGAR)': 'naranja', 'SIN DISPONIBILIDAD': 'ambar', 'FUERA DE SERVICIO': 'rojo', 'SIN EXISTENCIA': 'rojo',
   'SUFICIENTE': 'verde', 'LIMITANTE': 'naranja', 'NO EXISTE': 'gris'
 };
 const estB = e => `<span class="est est-${EST_COLOR[e] || 'gris'}">${esc(e)}</span>`;
 const formatoEstSol = e => {
-  if (e === 'APROBADO' || e === 'APROBADA') return 'APROBADA';
+  if (e === 'FINALIZADA' || e === 'FINALIZADO' || e === 'APROBADO' || e === 'APROBADA') return 'FINALIZADA';
   if (e === 'ANULADO' || e === 'ANULADA') return 'ANULADA';
-  return 'PENDIENTE DE APROBACIÓN';
+  return 'FINALIZADA';
 };
 
 /* ----------------------------- Persistencia ----------------------------- */
 const ALMS_TODOS_OFICIALES = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
 
+function asegurarStockBaseProduccion() {
+  if (!DB) return;
+  DB.exi = DB.exi || {};
+  (DB.almacenes || []).forEach(a => { DB.exi[a.c] = DB.exi[a.c] || {}; });
+}
+
+function asegurarProduccionLimpia() {
+  if (!DB) return;
+  if (DB.produccionTotalCero && DB.version >= 15) return;
+
+  // Catálogo e inventario en 0 absoluto para inicio limpio oficial
+  DB.catalogo = [];
+  DB.exi = {};
+  (DB.almacenes || []).forEach(a => { DB.exi[a.c] = {}; });
+
+  // Limpiar todas las transacciones operativas
+  DB.vales = [];
+  DB.solicitudes = [];
+  DB.movs = [];
+  DB.incid = [];
+  DB.bit = [];
+  DB.extSol = [];
+  DB.notificaciones = [];
+  DB.intentos = {};
+
+  // Correlativos oficiales arrancando desde 0 para que el primer vale sea 0000001 (1), luego 2, 3...
+  DB.cajasTipos = [];
+  DB.corr = { PRH: 0, ASI: 0, TRF: 0, SOL: 0, ENT: 0, DEV: 0, DAN: 0, EXT: 0, PLZ: 0 };
+  DB.seq = { mov: 0, inc: 0 };
+
+  DB.produccionTotalCero = true;
+  DB.produccionLimpia = true;
+  DB.version = 15;
+}
+
+function esCreadoraAdmin(u) {
+  if (!u) return false;
+  const usu = String(u.usuario || '').trim().toLowerCase();
+  const ali = String(u.alias || '').trim().toLowerCase();
+  const nom = String(u.nombre || '').trim().toLowerCase();
+  return usu === 'drivero' || ali === 'daniela' || nom.includes('daniela riveros') || usu === 'admin';
+}
+
 function asegurarUsuariosClave() {
   if (!DB || !DB.usuarios) return;
-  // Asegurar Daniela Riveros (Supervisora en todos los almacenes, clave 1234)
+  const ALMS_TODOS = ALMS_TODOS_OFICIALES;
+
+  // 1. Daniela Riveros (Creadora del Sistema & Supervisora General, clave 070717)
   let uDan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
   if (!uDan) {
-    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '1234', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Supervisora de Herramientas & Almacenes', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
+    uDan = { usuario: 'drivero', alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], clave: '070717', nombre: 'Daniela Riveros', cedula: 'V-20.123.456', cargo: 'Creadora del Sistema & Supervisora General', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } };
     DB.usuarios.unshift(uDan);
   } else {
     uDan.usuario = 'drivero';
     uDan.alias = 'daniela';
     uDan.correos = ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'];
-    uDan.clave = '1234';
+    uDan.clave = '070717';
     uDan.nombre = 'Daniela Riveros';
-    uDan.cargo = 'Supervisora de Herramientas & Almacenes';
+    uDan.cargo = 'Creadora del Sistema & Supervisora General';
     uDan.activo = true;
     uDan.admin = true;
-    uDan.almacenes = ALMS_TODOS_OFICIALES;
+    uDan.almacenes = ALMS_TODOS;
     uDan.maestro = true;
     uDan.editaCostos = true;
-    uDan.perm = { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+    uDan.perm = { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS };
   }
   if (S.u && (S.u.usuario === 'drivero' || S.u.alias === 'daniela')) {
     S.u.admin = true;
     S.u.maestro = true;
-    S.u.almacenes = ALMS_TODOS_OFICIALES;
+    S.u.clave = '070717';
+    S.u.almacenes = ALMS_TODOS;
   }
 
-  // Asegurar Jessica Navarro (Acceso a todos los almacenes, clave 1234)
-  let uJes = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro' || x.usuario.toLowerCase() === 'jessica');
-  if (!uJes) {
-    uJes = { usuario: 'jnavarro', alias: 'jessica', correos: ['jnavarro@timaca.com.ve', 'jessicanavarro@timaca.com.ve'], clave: '1234', nombre: 'Jessica Navarro', cedula: 'V-19.876.543', cargo: 'Coordinadora HSE & Seguridad Industrial', activo: true, admin: false, maestro: true, editaCostos: false, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: [], transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
-    DB.usuarios.splice(1, 0, uJes);
+  // 2. Jackson Cubillán (Almacén Central, clave timaca1974)
+  let uJack = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jcubillan');
+  if (!uJack && !DB.usuariosEliminados.includes('jcubillan')) {
+    uJack = { usuario: 'jcubillan', alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], clave: 'timaca1974', nombre: 'Jackson Cubillán', cedula: 'V-16.789.012', cargo: 'Encargado de Almacén Central', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['CENTRAL'], perm: { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] } };
+    DB.usuarios.push(uJack);
   } else {
-    uJes.usuario = 'jnavarro';
-    uJes.alias = 'jessica';
-    uJes.correos = ['jnavarro@timaca.com.ve', 'jessicanavarro@timaca.com.ve'];
-    uJes.clave = '1234';
-    uJes.nombre = 'Jessica Navarro';
-    uJes.cargo = 'Coordinadora HSE & Seguridad Industrial';
-    uJes.activo = true;
-    uJes.almacenes = ALMS_TODOS_OFICIALES;
-    uJes.maestro = true;
-    uJes.perm = { aprobar: [], transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+    uJack.usuario = 'jcubillan';
+    uJack.clave = 'timaca1974';
+    uJack.nombre = 'Jackson Cubillán';
+    uJack.cargo = 'Encargado de Almacén Central';
+    uJack.activo = true;
+    uJack.admin = false;
+    uJack.maestro = false;
+    uJack.almacenes = ['CENTRAL'];
+    uJack.perm = { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] };
   }
 
-  // Asegurar Alejandra Tesara (Administradora con acceso a todos los almacenes, clave 1234)
+  // 3. Juan Aguilar (Almacén PMH, clave Juan0512)
+  let uJuan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jaguilar');
+  if (!uJuan && !DB.usuariosEliminados.includes('jaguilar')) {
+    uJuan = { usuario: 'jaguilar', alias: 'juan', correos: ['jaguilar@timaca.com.ve'], clave: 'Juan0512', nombre: 'Juan Aguilar', cedula: 'V-17.654.321', cargo: 'Encargado de Almacén PMH', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['PMH'], perm: { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] } };
+    DB.usuarios.push(uJuan);
+  } else {
+    uJuan.usuario = 'jaguilar';
+    uJuan.clave = 'Juan0512';
+    uJuan.nombre = 'Juan Aguilar';
+    uJuan.cargo = 'Encargado de Almacén PMH';
+    uJuan.activo = true;
+    uJuan.admin = false;
+    uJuan.maestro = false;
+    uJuan.almacenes = ['PMH'];
+    uJuan.perm = { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] };
+  }
+
+  // 4. Administradores de respaldo (atesara / admin)
   let uAle = DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
-  if (!uAle) {
-    uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: '1234', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos / Administradora', activo: true, admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS_OFICIALES, perm: { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES } };
-    DB.usuarios.splice(2, 0, uAle);
+  if (!uAle && !DB.usuariosEliminados.includes('atesara')) {
+    uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: 'timaca2026', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } };
+    DB.usuarios.push(uAle);
   } else {
-    uAle.usuario = 'atesara';
-    uAle.alias = 'alejandra';
-    uAle.correos = ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'];
-    uAle.clave = '1234';
-    uAle.nombre = 'Alejandra Tesara';
-    uAle.cargo = 'Analista Principal de Costos / Administradora';
-    uAle.activo = true;
-    uAle.admin = true;
-    uAle.maestro = true;
-    uAle.editaCostos = true;
-    uAle.almacenes = ALMS_TODOS_OFICIALES;
-    uAle.perm = { aprobar: ALMS_TODOS_OFICIALES, transferir: ALMS_TODOS_OFICIALES, recibir: ALMS_TODOS_OFICIALES };
+    uAle.clave = 'timaca2026';
+    uAle.admin = false;
+    uAle.almacenes = ALMS_TODOS;
   }
+  let uAdm = DB.usuarios.find(x => x.usuario.toLowerCase() === 'admin');
+  if (uAdm) {
+    uAdm.clave = 'timaca2026';
+    uAdm.admin = true;
+    uAdm.almacenes = ALMS_TODOS;
+  }
+
+  // Desactivar usuarios demo viejos que ya no correspondan
+    // Sincronizar usuario activo si ya inició sesión
+  if (S.u) {
+    if (esCreadoraAdmin(S.u)) {
+      S.u.admin = true;
+      S.u.maestro = true;
+    } else {
+      S.u.admin = false;
+      if (S.u.usuario.toLowerCase() === 'jcubillan') {
+        S.u.maestro = false;
+        S.u.almacenes = ['CENTRAL'];
+      } else if (S.u.usuario.toLowerCase() === 'jaguilar') {
+        S.u.maestro = false;
+        S.u.almacenes = ['PMH'];
+      }
+    }
+  }
+
+  // Asegurar que solo la creadora tenga admin
+  DB.usuarios.forEach(u => {
+    if (!esCreadoraAdmin(u)) {
+      u.admin = false;
+    }
+  });
+
+  DB.usuarios = DB.usuarios.filter(u => !['central', 'pellas', 'eco', 'jnavarro'].includes(u.usuario.toLowerCase()));
 
   DB.notificaciones = DB.notificaciones || [];
   DB.extSol = DB.extSol || [];
@@ -889,45 +964,7 @@ function asegurarPlanificacionCajas() {
   DB.catalogo = DB.catalogo || [];
   DB.exi = DB.exi || {};
   DB.exi['CENTRAL'] = DB.exi['CENTRAL'] || {};
-
-  // Asegurar herramientas de especialidad en el catálogo (Tornero, Mecánico, Electricista, Soldador)
-  const extrasCat = [
-    { cod: 'HE000190', desc: 'Vernier / Calibrador pie de rey 6"', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'MITUTOYO', modelo: '530-104', serial: '', umb: 'UND', costo: 45, stockIni: 6 },
-    { cod: 'HE000195', desc: 'Micrómetro exterior 0-1"', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'MITUTOYO', modelo: '103-137', serial: '', umb: 'UND', costo: 68, stockIni: 4 },
-    { cod: 'HE000200', desc: 'Juego de llaves Allen milimétricas 10 pzas', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: 'STANLEY', modelo: '69-253', serial: '', umb: 'JGO', costo: 14.5, stockIni: 12 },
-    { cod: 'HE000210', desc: 'Alicate de presión (Perro) 10"', mod: 'HERRAMIENTA', cat: 'Herramientas manuales', marca: 'VISE-GRIP', modelo: '10R', serial: '', umb: 'UND', costo: 15.8, stockIni: 10 },
-    { cod: 'HE000220', desc: 'Multímetro digital industrial', mod: 'HERRAMIENTA', cat: 'Equipos e instrumentos de medición', marca: 'FLUKE', modelo: '117', serial: '', umb: 'UND', costo: 185, stockIni: 5 },
-    { cod: 'HE000230', desc: 'Piqueta / Martillo quita escoria', mod: 'HERRAMIENTA', cat: 'Equipos y accesorios para soldadura y oxicorte', marca: 'TRUPER', modelo: 'MP-500', serial: '', umb: 'UND', costo: 7.5, stockIni: 14 }
-  ];
-  let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
-  extrasCat.forEach(ex => {
-    let it = DB.catalogo.find(c => (c.cod || '').toUpperCase() === ex.cod);
-    if (!it) {
-      it = { id: ++maxId, cod: ex.cod, desc: ex.desc, mod: ex.mod, cat: ex.cat, marca: ex.marca, modelo: ex.modelo, serial: ex.serial, umb: ex.umb, costo: ex.costo, tipoA: false, talla: '', vida: 0, activo: true };
-      DB.catalogo.push(it);
-      DB.exi['CENTRAL'][it.id] = { disp: ex.stockIni, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
-    }
-  });
-
   DB.cajasTipos = DB.cajasTipos || [];
-  const tieneViejosDemo = DB.cajasTipos.length > 0 && DB.cajasTipos.every(t => ['CH-01', 'CH-02', 'CH-03'].includes(t.id));
-  if (!DB.cajasTipos.length || tieneViejosDemo) {
-    DB.cajasTipos = JSON.parse(JSON.stringify(CAJAS_ESPECIALIDADES_OFICIALES));
-  } else {
-    // Asegurar que las especialidades oficiales estén presentes
-    CAJAS_ESPECIALIDADES_OFICIALES.forEach(ofic => {
-      const ex = DB.cajasTipos.find(t => t.id === ofic.id);
-      if (!ex) {
-        DB.cajasTipos.push(JSON.parse(JSON.stringify(ofic)));
-      } else {
-        if (!ex.especialidad) ex.especialidad = ofic.especialidad;
-        if (!ex.icono) ex.icono = ofic.icono;
-        if (!ex.estadoLista) ex.estadoLista = 'BASE EDITABLE';
-      }
-    });
-    // Remover cajas viejas de demostración genéricas si ya están las nuevas especialidades
-    DB.cajasTipos = DB.cajasTipos.filter(t => !['CH-01', 'CH-02', 'CH-03'].includes(t.id));
-  }
 }
 
 function asegurarCategoriasOficiales() {
@@ -958,24 +995,6 @@ function asegurarCategoriasOficiales() {
       it.cat = 'Herramientas manuales';
     }
   });
-
-  // Asegurar que existan ítems oficiales de Herramientas mayores, Herramientas neumáticas e hidráulicas, y Herramientas de fabricación
-  const extras = [
-    { cod: 'HE000800', desc: 'Roscadora eléctrica de banco 1/2" a 2"', mod: 'HERRAMIENTA', cat: 'Herramientas mayores', marca: 'RIDGID', modelo: '300 Compact', serial: 'SN-RD-3001', umb: 'UND', costo: 2450, tipoA: true, stockIni: 1 },
-    { cod: 'HE000810', desc: 'Pistola de impacto neumática 1/2"', mod: 'HERRAMIENTA', cat: 'Herramientas neumáticas e hidráulicas', marca: 'INGERSOLL RAND', modelo: '231C', serial: 'SN-IR-2311', umb: 'UND', costo: 215, tipoA: false, stockIni: 2 },
-    { cod: 'HE000820', desc: 'Biseladora portátil de tubos 2"-6"', mod: 'HERRAMIENTA', cat: 'Herramientas de fabricación', marca: 'PROTEM', modelo: 'US25', serial: 'SN-PR-2501', umb: 'UND', costo: 1850, tipoA: true, stockIni: 1 }
-  ];
-  let maxId = DB.catalogo.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0);
-  extras.forEach(ex => {
-    let it = DB.catalogo.find(c => c.cod === ex.cod);
-    if (!it) {
-      it = { id: ++maxId, cod: ex.cod, desc: ex.desc, mod: ex.mod, cat: ex.cat, marca: ex.marca, modelo: ex.modelo, serial: ex.serial, umb: ex.umb, costo: ex.costo, tipoA: ex.tipoA, talla: '', vida: 0, activo: true };
-      DB.catalogo.push(it);
-      DB.exi = DB.exi || {};
-      DB.exi['CENTRAL'] = DB.exi['CENTRAL'] || {};
-      DB.exi['CENTRAL'][it.id] = { disp: ex.stockIni, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
-    }
-  });
 }
 
 function tipoCajaDe(id) { return (DB.cajasTipos || []).find(c => c.id === id); }
@@ -990,40 +1009,8 @@ function asegurarEstatusSolicitudes() {
 }
 
 function asegurarTransferenciaDemoCentral() {
-  if (!DB || !Array.isArray(DB.vales) || !Array.isArray(DB.catalogo) || !DB.catalogo.length) return;
-  const hayPendCentral = DB.vales.some(v => v.tipo === 'TRF' && v.destino === 'CENTRAL' && v.estatus === 'PENDIENTE DE RECEPCIÓN');
-  if (!hayPendCentral) {
-    const ahora = new Date();
-    const fecha = new Date(ahora.getTime() - 2 * 3600000).toISOString();
-    const vence = new Date(ahora.getTime() + 10 * 3600000).toISOString();
-    const it1 = DB.catalogo.find(i => i.cod === 'HE000102') || DB.catalogo[0];
-    const it2 = DB.catalogo.find(i => i.cod === 'HE000140') || DB.catalogo[1] || DB.catalogo[0];
-    DB.corr = DB.corr || {};
-    DB.corr.TRF = (DB.corr.TRF || 0) + 1;
-    const num = `TRF-${String(DB.corr.TRF).padStart(7, '0')}`;
-    DB.vales.unshift({
-      tipo: 'TRF',
-      num,
-      fecha,
-      vence,
-      origen: 'PELLAS',
-      destino: 'CENTRAL',
-      resp: { nombre: 'Freddy Cecilio Acosta Romero', cedula: 'V-14.905.458', cargo: 'Mecánico de primera' },
-      sup: 'Albin Cedeño',
-      proyecto: 'Mantenimiento Mayor Planta Pellas',
-      cuenta: 'TTE-C-0681',
-      despacha: 'Supervisor Pellas',
-      realizadoPor: { usuario: 'pellas', nombre: 'Almacén Pellas' },
-      estatus: 'PENDIENTE DE RECEPCIÓN',
-      obs: 'Retorno de herramientas a Almacén Central',
-      salidaTimaca: 'SAL-PELLAS-0042',
-      hist: [{ ev: 'Creada', fecha, usr: 'Almacén Pellas', det: 'Enviada a Almacén Central' }],
-      lineas: [
-        { id: it1.id, cod: it1.cod, desc: it1.desc, marca: it1.marca, modelo: it1.modelo, serial: it1.serial || '', cat: it1.cat, umb: it1.umb, cond: 'BUENO', cant: 2, mod: it1.mod },
-        { id: it2.id, cod: it2.cod, desc: it2.desc, marca: it2.marca, modelo: it2.modelo, serial: it2.serial || '', cat: it2.cat, umb: it2.umb, cond: 'BUENO', cant: 1, mod: it2.mod }
-      ]
-    });
-  }
+  // En producción real no se inyectan transferencias ficticias
+  return;
 }
 
 function cargarDatos() {
@@ -1031,8 +1018,13 @@ function cargarDatos() {
     const r = localStorage.getItem(LS_KEY);
     if (r) {
       const parsed = JSON.parse(r);
-      if (parsed && Array.isArray(parsed.usuarios) && parsed.usuarios.length && Array.isArray(parsed.vales) && Array.isArray(parsed.catalogo) && Array.isArray(parsed.almacenes)) {
+      if (parsed && Array.isArray(parsed.usuarios) && parsed.usuarios.length && Array.isArray(parsed.catalogo) && Array.isArray(parsed.almacenes)) {
         DB = parsed;
+        if (!DB.cajasTotalmenteCeroV1) {
+          DB.cajasTipos = [];
+          DB.cajasTotalmenteCeroV1 = true;
+        }
+        asegurarProduccionLimpia();
         asegurarUsuariosClave();
         asegurarPersonalOficial();
         if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
@@ -1040,13 +1032,13 @@ function cargarDatos() {
         asegurarPlanificacionCajas();
         asegurarCategoriasOficiales();
         asegurarEstatusSolicitudes();
-        asegurarTransferenciaDemoCentral();
         guardar();
         return;
       }
     }
   } catch (e) { console.warn('Regenerando base de datos TIMACA...'); }
   DB = semilla();
+  asegurarProduccionLimpia();
   asegurarUsuariosClave();
   asegurarPersonalOficial();
   if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
@@ -1054,7 +1046,6 @@ function cargarDatos() {
   asegurarPlanificacionCajas();
   asegurarCategoriasOficiales();
   asegurarEstatusSolicitudes();
-  asegurarTransferenciaDemoCentral();
   guardar();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
@@ -1069,14 +1060,17 @@ const userDe = u => {
   if (!DB || !Array.isArray(DB.usuarios)) return null;
   const q = String(u || '').trim().toLowerCase();
   if (!q) return null;
-  if (q === 'danielariveros.c2021@gmail.com' || q === 'drivero@timaca.com.ve') {
-    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || x.usuario.toLowerCase() === 'daniela');
+  if (q === 'danielariveros.c2021@gmail.com' || q === 'drivero@timaca.com.ve' || q === 'drivero' || q === 'daniela') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'drivero' || (x.alias && x.alias.toLowerCase() === 'daniela'));
   }
-  if (q === 'alejandratesara.timaca@gmail.com' || q === 'atesara@timaca.com.ve') {
-    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
+  if (q === 'jcubillan' || q === 'jackson' || q === 'jackson cubillan' || q === 'jcubillan@timaca.com.ve') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'jcubillan' || (x.alias && x.alias.toLowerCase() === 'jackson'));
   }
-  if (q === 'jessicanavarro@timaca.com.ve' || q === 'jnavarro@timaca.com.ve') {
-    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro' || x.usuario.toLowerCase() === 'jessica');
+  if (q === 'jaguilar' || q === 'juan' || q === 'juan aguilar' || q === 'jaguilar@timaca.com.ve') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'jaguilar' || (x.alias && x.alias.toLowerCase() === 'juan'));
+  }
+  if (q === 'alejandratesara.timaca@gmail.com' || q === 'atesara@timaca.com.ve' || q === 'atesara' || q === 'alejandra') {
+    return DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || (x.alias && x.alias.toLowerCase() === 'alejandra'));
   }
   return DB.usuarios.find(x => 
     x.usuario.toLowerCase() === q || 
@@ -1101,7 +1095,7 @@ function esPersonalAlmacen(u, alm) {
   if (!u) return false; if (u.admin) return true;
   return u.perm.transferir.includes(alm) || u.perm.recibir.includes(alm) || ((u.almacenes || []).includes(alm) && !u.perm.aprobar.includes(alm));
 }
-const puedeImprimir = () => S.ctx === 'MAESTRO' || esPersonalAlmacen(S.u, S.ctx);
+const puedeImprimir = () => true;
 const puedeMaestro = u => !!u && (u.admin || u.maestro);
 const enMaestro = () => S.ctx === 'MAESTRO';
 
@@ -1115,17 +1109,17 @@ function mov(m) {
 
 /* ----------------------------- Líneas ----------------------------- */
 function lineaDe(it, cant, cond) {
-  const est = (it.mod === 'CILINDRO' && cond === 'VACÍO') ? 'VACIO' : 'DISP';
+  const est = cond === 'DAÑADO' ? 'DAN' : ((it.mod === 'CILINDRO' && cond === 'VACÍO') ? 'VACIO' : 'DISP');
   return { id: it.id, cod: it.cod, desc: it.desc, marca: it.marca, modelo: it.modelo, serial: it.serial || '', cat: it.cat, umb: it.umb, mod: it.mod, cond, est, cant: Number(cant), dev: 0 };
 }
-const nomBucket = { DISP: 'DISPONIBLE', VACIO: 'VACÍO' };
+const nomBucket = { DISP: 'DISPONIBLE', VACIO: 'VACÍO', DAN: 'DAÑADO' };
 function validarStock(alm, lineas) {
   const req = {};
   lineas.forEach(l => { const k = l.id + '|' + l.est; req[k] = (req[k] || 0) + Number(l.cant); });
   Object.keys(req).forEach(k => {
     const [id, est] = k.split('|'); const e = exi(alm, +id); const it = item(+id);
-    const d = est === 'VACIO' ? e.vacio : e.disp;
-    if (req[k] > d) throw new Error(`Existencia insuficiente en ${almNombre(alm)} para ${it.cod} · ${it.desc}${it.serial ? ' (' + it.serial + ')' : ''}: disponible ${d}, requerido ${req[k]}.`);
+    const d = est === 'VACIO' ? e.vacio : (est === 'DAN' ? e.dan : e.disp);
+    if (req[k] > d) throw new Error(`Existencia insuficiente en ${almNombre(alm)} para ${it.cod} · ${it.desc}${it.serial ? ' (' + it.serial + ')' : ''} [${nomBucket[est] || est}]: disponible ${d}, requerido ${req[k]}.`);
   });
 }
 function saldoLinea(l) { return l.consumo ? 0 : (l.cant - (l.dev || 0)); }
@@ -1215,29 +1209,80 @@ function validarSolicitud(d, finalizar) {
   } else if (!d.fechaAsig) throw new Error('Indique la fecha de asignación.');
   validarStock(d.origen, d.lineas);
 }
-function guardarSolicitud(d, finalizar) {
+function emitirValeDirecto(d) {
   validarSolicitud(d, true);
+  validarStock(d.origen, d.lineas);
+
   let s = d.num ? solDe(d.num) : null;
-  if (s) {
-    if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') throw new Error(`Esta solicitud ya fue aprobada y tiene vale emitido (${s.vale || 'VALE'}). Por regla estricta, las asignaciones y préstamos aprobados no se pueden editar.`);
-    if (s.estatus === 'ANULADO' || s.estatus === 'ANULADA') throw new Error('No se pueden modificar solicitudes anuladas.');
-  }
   const editando = !!s;
   if (!s) {
-    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'PENDIENTE DE APROBACIÓN' };
+    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'FINALIZADA' };
     DB.solicitudes.push(s);
   }
   Object.assign(s, {
     tipo: d.tipo, origen: d.origen, destino: d.destino, resp: d.resp, sup: d.sup, proyecto: d.proyecto, cuenta: d.cuenta,
     fechaReq: d.tipo === 'PRH' ? d.fechaReq : '', fechaDev: d.tipo === 'PRH' ? d.fechaDev : '', fechaAsig: d.tipo === 'ASI' ? d.fechaAsig : '',
     obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l)),
-    estatus: 'PENDIENTE DE APROBACIÓN',
-    finalizadaEn: nowISO()
+    estatus: 'FINALIZADA',
+    finalizadaEn: nowISO(),
+    procesadoEn: nowISO(),
+    procesadoPor: quien()
   });
-  bit(editando ? 'SOLICITUD MODIFICADA' : 'SOLICITUD CREADA', s.num);
-  notificarSistema(editando ? 'Solicitud actualizada' : 'Nueva solicitud generada', `Se ${editando ? 'actualizó' : 'generó'} la solicitud ${s.num} (${s.tipo}) en ${almNombre(s.origen)}. Pendiente de aprobación.`, 'info', { doc: s.num });
+
+  const lineas = s.lineas.map(l => Object.assign({}, l, { dev: 0 }));
+  const v = nuevoVale(s.tipo, {
+    origen: s.origen, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, obs: s.obs,
+    lineas, fechaReq: s.fechaReq, fechaDev: s.fechaDev, fechaAsig: s.fechaAsig, solicitud: s.num,
+    realizadoPor: quien(), aprobadoPor: quien()
+  });
+
+  lineas.forEach(l => {
+    const e = exi(s.origen, l.id);
+    e.disp -= l.cant;
+    let destinoEst;
+    if (s.tipo === 'ASI' && l.mod === 'EPP') {
+      e.entregado = (e.entregado || 0) + l.cant;
+      l.consumo = true;
+      destinoEst = 'ENTREGADO (DOTACIÓN)';
+    } else if (s.tipo === 'PRH') {
+      e.prest = (e.prest || 0) + l.cant;
+      destinoEst = 'EN PRÉSTAMO';
+    } else {
+      e.asig = (e.asig || 0) + l.cant;
+      destinoEst = 'ASIGNADO';
+    }
+    mov({
+      doc: v.num,
+      tipo: s.tipo,
+      id: l.id,
+      cant: l.cant,
+      origen: s.origen,
+      destino: s.destino,
+      estAnt: 'DISPONIBLE',
+      estNue: destinoEst,
+      resp: s.resp ? s.resp.nombre : '',
+      cedula: s.resp ? s.resp.cedula : '',
+      obs: s.proyecto
+    });
+  });
+
+  v.hist.push({ ev: 'Vale emitido directamente', fecha: nowISO(), usr: S.u.nombre, det: `Generado a partir de solicitud ${s.num}`, color: 'verde' });
+  s.vale = v.num;
+  bit(editando ? 'SOLICITUD Y VALE ACTUALIZADOS' : 'SOLICITUD Y VALE EMITIDOS', `${s.num} → ${v.num}`);
   guardar();
-  return s;
+
+  notificarSistema(
+    'Vale emitido con éxito',
+    `Se generó la solicitud ${s.num} y se emitió el vale ${v.num} (${s.tipo}) en ${almNombre(s.origen)}. Listo para imprimir y firmar.`,
+    'ok',
+    { doc: v.num }
+  );
+
+  return { solicitud: s, vale: v };
+}
+
+function guardarSolicitud(d, finalizar) {
+  return emitirValeDirecto(d).solicitud;
 }
 function eliminarSolicitud(numSol) {
   const s = solDe(numSol);
@@ -1364,9 +1409,17 @@ function crearTransferencia(d) {
   v.vence = new Date(new Date(v.fecha).getTime() + DB.config.plazoHoras * 3600000).toISOString();
   lineas.forEach(l => {
     const e = exi(d.origen, l.id);
-    if (l.est === 'VACIO') e.vacio -= l.cant; else e.disp -= l.cant;
+    if (l.est === 'VACIO') e.vacio -= l.cant;
+    else if (l.est === 'DAN') {
+      e.dan -= l.cant;
+      const incOrigen = (DB.incid || []).find(i => i.alm === d.origen && i.id === l.id && i.estado === 'DAÑADO');
+      if (incOrigen) {
+        incOrigen.hist.push({ ev: 'EN TRÁNSITO', fecha: v.fecha, usr: S.u.nombre, det: `Enviado a ${almNombre(d.destino)} mediante transferencia ${v.num}` });
+      }
+    }
+    else e.disp -= l.cant;
     e.pend += l.cant;
-    mov({ doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: d.origen, destino: d.destino, estAnt: nomBucket[l.est], estNue: 'PENDIENTE DE RECEPCIÓN', resp: (d.resp ? d.resp.nombre : S.u.nombre), cedula: (d.resp ? d.resp.cedula : S.u.cedula), obs: (d.proyecto ? 'Proyecto: ' + d.proyecto : 'Transferencia creada') });
+    mov({ doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: d.origen, destino: d.destino, estAnt: nomBucket[l.est] || 'DISPONIBLE', estNue: 'PENDIENTE DE RECEPCIÓN', resp: (d.resp ? d.resp.nombre : S.u.nombre), cedula: (d.resp ? d.resp.cedula : S.u.cedula), obs: (d.proyecto ? 'Proyecto: ' + d.proyecto : 'Transferencia creada' + (l.est === 'DAN' ? ' (DAÑADO)' : '')) });
   });
   v.hist.push({ ev: 'Creada', fecha: v.fecha, usr: S.u.nombre, det: `Enviada a ${almNombre(d.destino)}`, color: '' });
   bit('TRANSFERENCIA CREADA', `${v.num} ${d.origen} → ${d.destino}`); guardar();
@@ -1384,7 +1437,9 @@ function actualizarTransferencia(num, d) {
   v.lineas.forEach(l => {
     const eo = exi(v.origen, l.id);
     eo.pend -= l.cant;
-    if (l.est === 'VACIO') eo.vacio += l.cant; else eo.disp += l.cant;
+    if (l.est === 'VACIO') eo.vacio += l.cant;
+    else if (l.est === 'DAN') eo.dan += l.cant;
+    else eo.disp += l.cant;
   });
 
   // 2. Validar que el stock alcance para las nuevas líneas
@@ -1394,7 +1449,9 @@ function actualizarTransferencia(num, d) {
     // Si falla la validación, restaurar la retención original antes de lanzar error
     v.lineas.forEach(l => {
       const eo = exi(v.origen, l.id);
-      if (l.est === 'VACIO') eo.vacio -= l.cant; else eo.disp -= l.cant;
+      if (l.est === 'VACIO') eo.vacio -= l.cant;
+      else if (l.est === 'DAN') eo.dan -= l.cant;
+      else eo.disp -= l.cant;
       eo.pend += l.cant;
     });
     throw err;
@@ -1403,7 +1460,9 @@ function actualizarTransferencia(num, d) {
   // 3. Aplicar retención para las nuevas líneas
   d.lineas.forEach(l => {
     const eo = exi(v.origen, l.id);
-    if (l.est === 'VACIO') eo.vacio -= l.cant; else eo.disp -= l.cant;
+    if (l.est === 'VACIO') eo.vacio -= l.cant;
+    else if (l.est === 'DAN') eo.dan -= l.cant;
+    else eo.disp -= l.cant;
     eo.pend += l.cant;
   });
 
@@ -1430,11 +1489,46 @@ function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
     const eo = exi(v.origen, l.id); eo.pend -= l.cant;
     const alm = aceptar ? v.destino : v.origen;
     const e = exi(alm, l.id);
-    if (l.est === 'VACIO') e.vacio += l.cant; else e.disp += l.cant;
+    if (l.est === 'VACIO') e.vacio += l.cant;
+    else if (l.est === 'DAN') e.dan += l.cant;
+    else e.disp += l.cant;
     mov({ fecha, doc: v.num, tipo: 'TRF', id: l.id, cant: l.cant, origen: v.origen, destino: v.destino, estAnt: 'PENDIENTE DE RECEPCIÓN',
-      estNue: (aceptar ? 'RECIBIDO EN ' + almNombre(v.destino) : 'REINTEGRADO A ' + almNombre(v.origen)) + (l.est === 'VACIO' ? ' (VACÍO)' : ''),
+      estNue: (aceptar ? 'RECIBIDO EN ' + almNombre(v.destino) : 'REINTEGRADO A ' + almNombre(v.origen)) + (l.est === 'VACIO' ? ' (VACÍO)' : (l.est === 'DAN' ? ' (DAÑADO)' : '')),
       resp: sistema ? 'SISTEMA' : S.u.nombre, cedula: sistema ? '' : S.u.cedula, usr: sistema ? 'SISTEMA' : S.u.usuario,
-      obs: aceptar ? 'Transferencia aceptada' : (sistema ? 'Vencida: sin respuesta en ' + DB.config.plazoHoras + ' h' : 'Rechazada: ' + motivo) });
+      obs: aceptar ? ('Transferencia aceptada' + (l.est === 'DAN' ? ' (DAÑADO)' : '')) : (sistema ? 'Vencida: sin respuesta en ' + DB.config.plazoHoras + ' h' : 'Rechazada: ' + motivo) });
+    if (l.est === 'DAN' || l.cond === 'DAÑADO') {
+      const incOrigen = (DB.incid || []).find(i => i.alm === v.origen && i.id === l.id && ['DAÑADO', 'EN TALLER'].includes(i.estado));
+      if (aceptar) {
+        if (incOrigen) {
+          incOrigen.estado = 'TRANSFERIDO';
+          incOrigen.destinoTrf = v.destino;
+          incOrigen.trfRef = v.num;
+          incOrigen.hist.push({
+            ev: 'TRANSFERIDO',
+            fecha,
+            usr: sistema ? 'SISTEMA' : S.u.nombre,
+            det: `Transferido a ${almNombre(v.destino)} mediante vale ${v.num}`
+          });
+        }
+        nuevaIncidencia('DAN', v.destino, l, l.cant, 'DAÑADO', {
+          valeRef: v.num,
+          origenTrf: v.origen,
+          detalle: `Recibido con daño por transferencia ${v.num} desde ${almNombre(v.origen)}${v.obs ? ' · Obs: ' + v.obs : ''}`,
+          malUso: 'NO',
+          tipoA: !!(item(l.id) || {}).tipoA,
+          resp: v.resp ? v.resp.nombre : (v.despacha || v.realizadoPor.nombre)
+        });
+      } else {
+        if (incOrigen) {
+          incOrigen.hist.push({
+            ev: 'REINTEGRADO',
+            fecha,
+            usr: sistema ? 'SISTEMA' : S.u.nombre,
+            det: `Transferencia ${v.num} ${sistema ? 'vencida sin respuesta' : 'rechazada (' + motivo + ')'}. Reintegrado al almacén.`
+          });
+        }
+      }
+    }
   });
   v.procesadoPor = sistema ? { usuario: 'SISTEMA', nombre: 'SISTEMA' } : quien();
   v.procesadoEn = fecha;
@@ -1528,7 +1622,8 @@ function registrarDevolucion(valeNum, items, recibe, obs, salidaTimaca) {
 /* ---------- Daño y Robo / Extravío ---------- */
 function nuevaIncidencia(tipo, alm, l, cant, estado, extra) {
   DB.seq.inc++;
-  const inc = Object.assign({ n: DB.seq.inc, tipo, fecha: nowISO(), alm, id: l.id, cod: l.cod, desc: l.desc, serial: l.serial, cant, estado, hist: [{ ev: estado, fecha: nowISO(), usr: S.u ? S.u.nombre : 'SISTEMA' }] }, extra || {});
+  const cat = l.cat || (l.id && item(l.id) ? item(l.id).cat : null) || (DB.catalogo.find(i => i.cod === l.cod) || {}).cat || 'General';
+  const inc = Object.assign({ n: DB.seq.inc, tipo, fecha: nowISO(), alm, id: l.id, cod: l.cod, desc: l.desc, serial: l.serial, cat, cant, estado, hist: [{ ev: estado, fecha: nowISO(), usr: S.u ? S.u.nombre : 'SISTEMA' }] }, extra || {});
   DB.incid.push(inc);
   return inc;
 }
@@ -1871,23 +1966,31 @@ const PERSONAL_OFICIAL = [
 
 
 function asegurarPersonalOficial() {
-  if (!DB || !Array.isArray(DB.personal)) DB.personal = [];
-  const esLegacy = DB.personal.length === 0 || DB.personal.some(p => !p.tipo || !p.almacenes || p.nombre === 'Carlos Mendoza');
-  if (esLegacy) {
+  if (!DB) return;
+  if (!Array.isArray(DB.personal) || DB.personal.length === 0) {
     DB.personal = JSON.parse(JSON.stringify(PERSONAL_OFICIAL));
-  } else {
-    PERSONAL_OFICIAL.forEach(oficial => {
-      const ex = DB.personal.find(p => (p.cedula && oficial.cedula && p.cedula !== 'S/C' && digitosCI(p.cedula) === digitosCI(oficial.cedula)) || normTexto(p.nombre) === normTexto(oficial.nombre));
-      if (!ex) {
-        DB.personal.push(JSON.parse(JSON.stringify(oficial)));
-      } else {
-        if (!ex.tipo) ex.tipo = oficial.tipo;
-        if (!ex.almacenes) ex.almacenes = oficial.almacenes;
-        if (!ex.modulo) ex.modulo = oficial.modulo || 'TODOS';
-        if (ex.activo === undefined) ex.activo = true;
-      }
-    });
+    return;
   }
+  // Asegurar que las personas oficiales de base existan, sin sobreescribir ni eliminar a las nuevas personas agregadas
+  DB.personalEliminado = DB.personalEliminado || [];
+  PERSONAL_OFICIAL.forEach(oficial => {
+    const claveDel = (oficial.cedula && oficial.cedula !== 'S/C') ? digitosCI(oficial.cedula) : normTexto(oficial.nombre);
+    if (DB.personalEliminado.includes(claveDel)) return;
+    const ex = DB.personal.find(p => (p.cedula && oficial.cedula && p.cedula !== 'S/C' && digitosCI(p.cedula) === digitosCI(oficial.cedula)) || normTexto(p.nombre) === normTexto(oficial.nombre));
+    if (!ex) {
+      DB.personal.push(JSON.parse(JSON.stringify(oficial)));
+    } else {
+      if (!ex.tipo) ex.tipo = oficial.tipo;
+      if (!ex.almacenes) ex.almacenes = oficial.almacenes;
+      if (!ex.modulo) ex.modulo = oficial.modulo || 'TODOS';
+      if (ex.activo === undefined) ex.activo = true;
+    }
+  });
+  DB.personal.forEach(p => {
+    if (!Array.isArray(p.tipo)) p.tipo = ['RESPONSABLE'];
+    if (!Array.isArray(p.almacenes)) p.almacenes = [p.depto || 'TODOS'];
+    if (p.activo === undefined) p.activo = true;
+  });
 }
 
 const PROYECTOS_OFICIALES = [
@@ -2028,143 +2131,36 @@ function semilla() {
   const ALMS_TODOS = ['CENTRAL', 'PELLAS', 'BOCA GRANDE', 'PMH', 'BRIQUETAS', 'ECO', 'SMB', 'FABRICACION'];
   const U = (usuario, clave, nombre, cedula, cargo, o) => DB.usuarios.push(Object.assign({ usuario, clave, nombre, cedula, cargo, activo: true, admin: false, maestro: false, editaCostos: false, almacenes: [], perm: { aprobar: [], transferir: [], recibir: [] } }, o, { perm: Object.assign({ aprobar: [], transferir: [], recibir: [] }, (o || {}).perm) }));
 
-  // Usuarios Oficiales de Prueba TIMACA (clave 1234)
-  U('drivero', '1234', 'Daniela Riveros', 'V-20.123.456', 'Supervisora de Herramientas & Almacenes', { alias: 'daniela', almacenes: ALMS_TODOS, maestro: true, editaCostos: true, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
-  U('jnavarro', '1234', 'Jessica Navarro', 'V-19.876.543', 'Coordinadora HSE & Seguridad Industrial', { alias: 'jessica', almacenes: ALMS_TODOS, maestro: true, editaCostos: false, perm: { aprobar: [], transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
-  U('atesara', '1234', 'Alejandra Tesara', 'V-18.456.789', 'Analista Principal de Costos / Administradora', { alias: 'alejandra', admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
-
-  // Otros usuarios de apoyo
-  U('admin', '1234', 'Administrador del Sistema', 'V-10.000.001', 'Administrador', { admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
-  U('central', '1234', 'Mariana Duarte', 'V-17.234.567', 'Almacenista Central', { almacenes: ['CENTRAL'], perm: { transferir: ['CENTRAL'], recibir: ['CENTRAL'] } });
-  U('pellas', '1234', 'Luis Alvarado', 'V-19.333.444', 'Almacenista Pellas', { almacenes: ['PELLAS'], perm: { transferir: ['PELLAS'], recibir: ['PELLAS'] } });
-  U('eco', '1234', 'Andreína Gil', 'V-20.111.222', 'Almacenista ECO', { almacenes: ['ECO'], perm: { transferir: ['ECO'], recibir: ['ECO'] } });
-  U('gerencia', '1234', 'Lic. Alberto Márquez', 'V-9.876.543', 'Gerente de Operaciones', { maestro: true, editaCostos: true });
-  U('auditor', '1234', 'Lic. Patricia León', 'V-14.987.321', 'Auditora Interna', { maestro: true, editaCostos: false });
+  // Usuarios Oficiales de Producción TIMACA
+  U('drivero', '070717', 'Daniela Riveros', 'V-20.123.456', 'Creadora del Sistema & Supervisora General', { alias: 'daniela', correos: ['drivero@timaca.com.ve', 'danielariveros.c2021@gmail.com'], admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
+  U('jcubillan', 'timaca1974', 'Jackson Cubillán', 'V-16.789.012', 'Encargado de Almacén Central', { alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], almacenes: ['CENTRAL'], perm: { transferir: ['CENTRAL'], recibir: ['CENTRAL'] } });
+  U('jaguilar', 'Juan0512', 'Juan Aguilar', 'V-17.654.321', 'Encargado de Almacén PMH', { alias: 'juan', correos: ['jaguilar@timaca.com.ve'], almacenes: ['PMH'], perm: { transferir: ['PMH'], recibir: ['PMH'] } });
+  U('atesara', 'timaca2026', 'Alejandra Tesara', 'V-18.456.789', 'Analista Principal de Costos', { alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
+  U('admin', 'timaca2026', 'Administrador del Sistema', 'V-10.000.001', 'Administrador', { admin: true, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } });
 
   DB.personal = JSON.parse(JSON.stringify(PERSONAL_OFICIAL));
   DB.proyectos = JSON.parse(JSON.stringify(PROYECTOS_OFICIALES));
 
-  let idc = 0;
-  const C = (cod, desc, mod, cat, marca, modelo, serial, umb, costo, o) => DB.catalogo.push(Object.assign({ id: ++idc, cod, desc, mod, cat, marca, modelo, serial, umb, costo, tipoA: false, talla: '', vida: 0, activo: true }, o || {}));
-  C('HE000101', 'Llave combinada 3/4"', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '87-076', '', 'UND', 9.5);
-  C('HE000102', 'Llave combinada 1/2"', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '87-072', '', 'UND', 7.8);
-  C('HE000110', 'Señorita de cadena 1 ton', 'HERRAMIENTA', 'Equipos y accesorios para elevación y cargas', 'TRUPER', 'POLI-1', '', 'UND', 48);
-  C('HE000120', 'Alicate universal 8"', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'T201-8', '', 'UND', 11.2);
-  C('HE000130', 'Llave ajustable 12"', 'HERRAMIENTA', 'Herramientas manuales', 'TOTAL', 'THT101126', '', 'UND', 13.5);
-  C('HE000140', 'Martillo de bola 2 lb', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'MB-32F', '', 'UND', 12);
-  C('HE000150', 'Juego de destornilladores 6 piezas', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', 'STHT65199', '', 'JGO', 16.4);
-  C('HE000160', 'Arco de segueta 12"', 'HERRAMIENTA', 'Herramientas manuales', 'TRUPER', 'AS-12', '', 'UND', 8.9);
-  C('HE000170', 'Nivel de aluminio 24"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'STANLEY', '42-468', '', 'UND', 21);
-  C('HE000180', 'Cinta métrica 8 m', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'STANLEY', '33-428', '', 'UND', 10.5);
-  C('HE000190', 'Vernier / Calibrador pie de rey 6"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'MITUTOYO', '530-104', '', 'UND', 45);
-  C('HE000195', 'Micrómetro exterior 0-1"', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'MITUTOYO', '103-137', '', 'UND', 68);
-  C('HE000200', 'Juego de llaves Allen milimétricas 10 pzas', 'HERRAMIENTA', 'Herramientas manuales', 'STANLEY', '69-253', '', 'JGO', 14.5);
-  C('HE000210', 'Alicate de presión (Perro) 10"', 'HERRAMIENTA', 'Herramientas manuales', 'VISE-GRIP', '10R', '', 'UND', 15.8);
-  C('HE000220', 'Multímetro digital industrial', 'HERRAMIENTA', 'Equipos e instrumentos de medición', 'FLUKE', '117', '', 'UND', 185);
-  C('HE000230', 'Piqueta / Martillo quita escoria', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'TRUPER', 'MP-500', '', 'UND', 7.5);
-  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Herramientas eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482190', 'UND', 165);
-  C('HE000521', 'Esmeril angular 7"', 'HERRAMIENTA', 'Herramientas eléctricas', 'BOSCH', 'GWS 7-115', 'SN-4482191', 'UND', 165);
-  C('HE000600', 'Taladro percutor 1/2"', 'HERRAMIENTA', 'Herramientas eléctricas', 'DEWALT', 'DWD024', 'SN-7781001', 'UND', 138);
-  C('HE000700', 'Máquina de soldar inverter 250 A', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'LINCOLN', 'Invertec V275', 'LN-250-0091', 'UND', 920, { tipoA: true });
-  C('HE000710', 'Equipo de oxicorte completo', 'HERRAMIENTA', 'Equipos y accesorios para soldadura y oxicorte', 'HARRIS', 'Ironworker', 'HR-3301', 'EQP', 410, { tipoA: true });
-  C('HE000800', 'Roscadora eléctrica de banco 1/2" a 2"', 'HERRAMIENTA', 'Herramientas mayores', 'RIDGID', '300 Compact', 'SN-RD-3001', 'UND', 2450, { tipoA: true });
-  C('HE000810', 'Pistola de impacto neumática 1/2"', 'HERRAMIENTA', 'Herramientas neumáticas e hidráulicas', 'INGERSOLL RAND', '231C', 'SN-IR-2311', 'UND', 215);
-  C('HE000820', 'Biseladora portátil de tubos 2"-6"', 'HERRAMIENTA', 'Herramientas de fabricación', 'PROTEM', 'US25', 'SN-PR-2501', 'UND', 1850, { tipoA: true });
-  ['OX-0001', 'OX-0002', 'OX-0003', 'OX-0004'].forEach(s => C('CI000101', 'Cilindro de oxígeno industrial 6 m³', 'CILINDRO', 'Cilindros y gases', 'AGA', '6 m³', s, 'CIL', 210));
-  ['AC-0001', 'AC-0002'].forEach(s => C('CI000201', 'Cilindro de acetileno 4 m³', 'CILINDRO', 'Cilindros y gases', 'AGA', '4 m³', s, 'CIL', 245));
-  C('CI000301', 'Cilindro de argón 10 m³', 'CILINDRO', 'Cilindros y gases', 'PRAXAIR', '10 m³', 'AR-0001', 'CIL', 260);
-  C('CI000401', 'Cilindro de CO2 25 kg', 'CILINDRO', 'Cilindros y gases', 'PRAXAIR', '25 kg', 'CO-0001', 'CIL', 180);
-  C('EP000101', 'Casco de seguridad', 'EPP', 'EPP', 'MSA', 'V-Gard', '', 'UND', 18.5, { talla: 'Única', vida: 730 });
-  C('EP000201', 'Botas de seguridad punta de acero T-42', 'EPP', 'EPP', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '42', vida: 365 });
-  C('EP000202', 'Botas de seguridad punta de acero T-40', 'EPP', 'EPP', 'WESTLAND', 'Industrial', '', 'PAR', 42, { talla: '40', vida: 365 });
-  C('EP000301', 'Lentes de seguridad claros', 'EPP', 'EPP', '3M', 'Virtua', '', 'UND', 6.5, { talla: 'Única', vida: 90 });
-  C('EP000401', 'Guantes de carnaza 16"', 'EPP', 'EPP', 'STEELPRO', 'Carnaza', '', 'PAR', 5.2, { talla: 'L', vida: 30 });
-  C('EP000501', 'Protector auditivo tipo copa', 'EPP', 'EPP', '3M', 'H9A', '', 'UND', 24, { talla: 'Única', vida: 365 });
-  C('EP000601', 'Respirador media cara', 'EPP', 'EPP', '3M', '6200', '', 'UND', 31, { talla: 'M', vida: 180 });
+  DB.catalogo = [];
+  DB.exi = {};
+  (DB.almacenes || []).forEach(a => { DB.exi[a.c] = {}; });
 
-  const IT = (cod, serial) => DB.catalogo.find(i => i.cod === cod && (!serial || i.serial === serial));
-  const L = (cod, cant, cond = 'ÓPTIMO', serial) => { const it = IT(cod, serial); return lineaDe(it, cant, it.mod === 'CILINDRO' && cond === 'ÓPTIMO' ? 'LLENO' : cond); };
-  const P = cedula => { const p = DB.personal.find(x => x.cedula === cedula) || DB.personal.find(x => x.cedula && digitosCI(x.cedula) === digitosCI(cedula)); return p ? { nombre: p.nombre, cedula: p.cedula, cargo: p.cargo } : { nombre: 'Responsable', cedula, cargo: 'Personal' }; };
-  const PR = clave => DB.proyectos.find(p => p.cuenta === clave || p.nombre.startsWith(clave)) || DB.proyectos[0];
-  const como = (usr, fecha, fn) => { const pu = S.u, pn = NOW_FIX, pc = S.ctx; const uObj = userDe(usr) || DB.usuarios.find(x => x.admin) || DB.usuarios[0]; S.u = uObj; S.ctx = (uObj && uObj.almacenes && uObj.almacenes[0]) ? uObj.almacenes[0] : 'CENTRAL'; NOW_FIX = fecha; procesarVencimientos(); try { return fn(); } finally { S.u = pu; NOW_FIX = pn; S.ctx = pc; } };
-  const sol = (usr, fecha, tipo, origen, cedula, sup, proy, lineas, fechas, finalizar = true) => como(usr, fecha, () => {
-    const pr = PR(proy);
-    return guardarSolicitud(Object.assign({ tipo, origen, destino: origen, resp: P(cedula), sup, proyecto: pr.nombre, cuenta: pr.cuenta, lineas, obs: '' }, fechas), finalizar);
-  });
+  // Base limpia de operaciones: todo en blanco, correlativos desde 0 (primer vale 0000001, luego 2, 3...)
+  DB.vales = [];
+  DB.solicitudes = [];
+  DB.movs = [];
+  DB.incid = [];
+  DB.bit = [];
+  DB.extSol = [];
+  DB.notificaciones = [];
+  DB.intentos = {};
+  DB.corr = { PRH: 0, ASI: 0, TRF: 0, SOL: 0, ENT: 0, DEV: 0, DAN: 0, EXT: 0, PLZ: 0 };
+  DB.seq = { mov: 0, inc: 0 };
+  DB.produccionTotalCero = true;
+  DB.produccionLimpia = true;
+  DB.version = 15;
 
-  /* Inventario inicial */
-  como('admin', T(430), () => {
-    const ini = (alm, cod, cant, serial) => cargaInicial(alm, IT(cod, serial).id, cant);
-    [['HE000101', 30], ['HE000102', 25], ['HE000110', 12], ['HE000120', 20], ['HE000130', 10], ['HE000140', 15], ['HE000150', 10], ['HE000160', 12], ['HE000170', 6], ['HE000180', 15],
-    ['HE000190', 6], ['HE000195', 4], ['HE000200', 12], ['HE000210', 10], ['HE000220', 5], ['HE000230', 14],
-    ['EP000101', 60], ['EP000201', 40], ['EP000202', 30], ['EP000301', 100], ['EP000401', 150], ['EP000501', 40], ['EP000601', 25]].forEach(([c, n]) => ini('CENTRAL', c, n));
-    [['HE000521', 'SN-4482190'], ['HE000521', 'SN-4482191'], ['HE000600', 'SN-7781001'], ['HE000700', 'LN-250-0091'], ['HE000710', 'HR-3301'],
-    ['HE000800', 'SN-RD-3001'], ['HE000810', 'SN-IR-2311'], ['HE000820', 'SN-PR-2501'],
-    ['CI000101', 'OX-0001'], ['CI000101', 'OX-0002'], ['CI000101', 'OX-0003'], ['CI000101', 'OX-0004'], ['CI000201', 'AC-0001'], ['CI000201', 'AC-0002'], ['CI000301', 'AR-0001'], ['CI000401', 'CO-0001']].forEach(([c, s]) => ini('CENTRAL', c, 1, s));
-    [['HE000130', 4], ['HE000140', 3], ['HE000120', 4], ['EP000301', 20], ['EP000401', 30]].forEach(([c, n]) => ini('ECO', c, n));
-    ini('PMH', 'HE000140', 2); ini('FABRICACION', 'HE000160', 3); ini('SMB', 'HE000180', 2);
-  });
-
-  /* Asignación de EPP antigua (reposición vencida) */
-  const s4 = sol('central', T(400), 'ASI', 'CENTRAL', 'V-8.526.909', 'Jesús Barrios', 'TT-A-C-502', [L('EP000201', 1, 'NUEVO'), L('EP000301', 1, 'NUEVO')], { fechaAsig: D(-400) });
-  como('drivero', T(400, 1), () => aprobarSolicitud(s4.num));
-
-  /* Transferencias históricas */
-  const t1 = como('central', T(40), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PELLAS', obs: 'Dotación inicial Pellas', lineas: [L('HE000120', 5), L('HE000140', 3), L('HE000102', 4), L('CI000101', 1, 'LLENO', 'OX-0002'), L('EP000101', 10, 'NUEVO'), L('EP000401', 20, 'NUEVO')] }));
-  como('pellas', T(40, 2), () => aceptarTransferencia(t1.num));
-  const t2 = como('central', T(38), () => crearTransferencia({ origen: 'CENTRAL', destino: 'ECO', obs: 'Requerimiento flota ECO', lineas: [L('HE000101', 6), L('HE000110', 2), L('CI000101', 1, 'LLENO', 'OX-0003')] }));
-  como('eco', T(38, 5), () => aceptarTransferencia(t2.num));
-  const t3 = como('central', T(30), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PMH', obs: '', lineas: [L('HE000120', 4)] }));
-  como('admin', T(30, 3), () => rechazarTransferencia(t3.num, 'Se recibieron 2 alicates y el vale indica 4. Se devuelve para verificación.'));
-  como('central', T(25), () => crearTransferencia({ origen: 'CENTRAL', destino: 'BRIQUETAS', obs: '', lineas: [L('HE000140', 4), L('HE000170', 2)] }));
-
-  /* Cadena completa de cilindro y herramienta en Pellas */
-  const s1 = sol('pellas', T(24), 'PRH', 'PELLAS', 'V-4.031.435', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('CI000101', 1, 'LLENO', 'OX-0002'), L('HE000120', 1)], { fechaReq: D(-24), fechaDev: D(-10) });
-  const v1 = como('drivero', T(24, 1), () => aprobarSolicitud(s1.num));
-  como('pellas', T(12), () => registrarDevolucion(v1.num, [{ i: 0, cant: 1, cond: 'VACÍO' }, { i: 1, cant: 1, cond: 'BUENO' }], 'Luis Alvarado', 'Cilindro devuelto vacío'));
-  const t5 = como('pellas', T(11), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de cilindro vacío', lineas: [L('CI000101', 1, 'VACÍO', 'OX-0002')] }));
-  como('central', T(11, 4), () => aceptarTransferencia(t5.num));
-
-  /* Préstamos en Central */
-  const s2 = sol('central', T(20), 'PRH', 'CENTRAL', 'V-15.836.486', 'Jonathan Grela', 'TTE-C-0655', [L('HE000521', 1, 'ÓPTIMO', 'SN-4482190'), L('HE000101', 2)], { fechaReq: D(-20), fechaDev: D(-5) });
-  como('drivero', T(20, 2), () => aprobarSolicitud(s2.num));
-  const s3 = sol('central', T(9), 'PRH', 'CENTRAL', 'V-13.121.593', 'Mauricio Gerussi', 'TT-A-C-505', [L('HE000600', 1, 'ÓPTIMO', 'SN-7781001')], { fechaReq: D(-9), fechaDev: D(-1) });
-  const v3 = como('drivero', T(9, 1), () => aprobarSolicitud(s3.num));
-  como('central', T(2), () => extenderPlazo(v3.num, D(7), 'Mauricio Gerussi', 'Trabajo de fabricación extendido por cambio de alcance'));
-
-  /* Asignaciones */
-  const s5 = sol('central', T(20), 'ASI', 'CENTRAL', 'V-11.515.567', 'Humberto Avendaño', 'EE-A-C-509', [L('EP000101', 1, 'NUEVO'), L('EP000401', 2, 'NUEVO')], { fechaAsig: D(-20) });
-  como('drivero', T(20, 3), () => aprobarSolicitud(s5.num));
-  const s6 = sol('pellas', T(15), 'ASI', 'PELLAS', 'V-8.179.834', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('HE000140', 1)], { fechaAsig: D(-15) });
-  como('drivero', T(15, 2), () => aprobarSolicitud(s6.num));
-
-  /* ECO: préstamo con extravío y solicitud anulada */
-  const s11 = sol('eco', T(14), 'PRH', 'ECO', 'V-6.880.863', 'Mauricio Gerussi', 'EE-A-C-510', [L('HE000130', 1)], { fechaReq: D(-14), fechaDev: D(3) });
-  const v11 = como('drivero', T(14, 1), () => aprobarSolicitud(s11.num));
-  como('eco', T(9), () => { const lv = v11.lineas[0]; return registrarIncidencia('EXT', { origen: 'ECO', valeRef: v11.num, resp: v11.resp, sup: 'Mauricio Gerussi', proyecto: v11.proyecto, cuenta: v11.cuenta, detalle: 'El trabajador reporta que la llave no apareció al finalizar la jornada en el área de lavado de equipos.', lineas: [Object.assign({}, lv, { cant: 1, idx: 0 })] }); });
-  const s10 = sol('eco', T(8), 'PRH', 'ECO', 'V-9.946.019', 'Carlos Giraldo', 'EE-A-C-510', [L('HE000110', 1)], { fechaReq: D(-8), fechaDev: D(-2) });
-  como('drivero', T(8, 2), () => anularSolicitud(s10.num, 'La OT-430 no requiere izaje esta semana.'));
-
-  /* Daño en Central */
-  como('central', T(7), () => registrarIncidencia('DAN', { origen: 'CENTRAL', resp: P('V-24.037.987'), sup: 'Albin Cedeño', proyecto: 'Interconexión del sistema de transporte de mineral desde la tolva multipropósito hasta carga barcos de despacho internacional PMH - FMO (VISCO ORINOCO)', cuenta: 'TTE-C-0655', detalle: 'Carbones desgastados y guarda de protección fisurada.', malUso: 'NO', dictamen: 'REPARABLE', lineas: [L('HE000521', 1, 'DAÑADO', 'SN-4482191')] }));
-
-  /* Solicitudes pendientes y borrador */
-  sol('central', T(3), 'PRH', 'CENTRAL', 'V-26.662.373', 'Ricardo Ramos', 'TTE-C-0640', [L('HE000700', 1, 'ÓPTIMO', 'LN-250-0091'), L('HE000710', 1, 'ÓPTIMO', 'HR-3301')], { fechaReq: D(0), fechaDev: D(10) });
-  sol('pellas', T(2), 'PRH', 'PELLAS', 'V-14.905.458', 'Freddy Cecilio Acosta Romero', 'TTE-C-0681', [L('HE000102', 2)], { fechaReq: D(0), fechaDev: D(5) });
-  sol('central', T(1), 'PRH', 'CENTRAL', 'V-15.903.045', 'José Romero', 'TTE-C-0693', [L('HE000180', 1)], { fechaReq: D(1), fechaDev: D(6) }, false);
-
-  /* Transferencias pendientes (una por vencer) */
-  como('central', T(0, -11), () => crearTransferencia({ origen: 'CENTRAL', destino: 'ECO', obs: 'Reposición de EPP', lineas: [L('EP000301', 15, 'NUEVO'), L('EP000401', 25, 'NUEVO')] }));
-  como('central', T(0, -3), () => crearTransferencia({ origen: 'CENTRAL', destino: 'PELLAS', obs: 'Requerimiento Planta Pellas TTE-C-0681', lineas: [L('HE000101', 5), L('HE000110', 6)] }));
-  como('pellas', T(0, -2), () => crearTransferencia({ origen: 'PELLAS', destino: 'CENTRAL', obs: 'Retorno de herramientas a Almacén Central', lineas: [L('HE000102', 2), L('HE000140', 1)] }));
-
-  /* Costos y bitácora del Maestro */
-  como('gerencia', T(5), () => { const pc = S.ctx; S.ctx = 'MAESTRO'; cambiarCosto(IT('HE000110').id, 52, 'Actualización de proveedor'); S.ctx = pc; });
-  DB.bit.push({ fecha: T(3), usr: 'gerencia', acc: 'ACCESO MAESTRO', det: 'Ingreso a vista consolidada' });
-  DB.bit.push({ fecha: T(2), usr: 'eco', acc: 'ACCESO DENEGADO MAESTRO', det: 'Intento de ingreso sin autorización' });
-  DB.bit.push({ fecha: T(1), usr: 'auditor', acc: 'ACCESO MAESTRO', det: 'Ingreso a vista consolidada' });
-  NOW_FIX = null;
-  procesarVencimientos();
+  asegurarStockBaseProduccion();
   return DB;
 }
 
@@ -2375,32 +2371,9 @@ function encabezadoReporte(titulo, ctxTxt, filtros) {
    INICIO DE SESIÓN
    ===================================================================== */
 function pintarUsuariosDemo() {
-  const el = $('tablaDemoUsuarios');
-  if (!el) return;
-  if (!DB || !Array.isArray(DB.usuarios) || !DB.usuarios.length) {
-    cargarDatos();
-  }
-  const perfil = u => {
-    if (!u) return '';
-    if (u.usuario === 'drivero' || u.usuario === 'daniela') return 'Supervisora (Todos los Almacenes: Central, Pellas, Boca Grande, PMH, Briquetas, ECO, SMB, Fabricación)';
-    if (u.usuario === 'atesara' || u.usuario === 'alejandra') return 'Administradora (Todos los Almacenes + Maestro)';
-    if (u.usuario === 'jnavarro' || u.usuario === 'jessica') return 'HSE & Seguridad (Todos los Almacenes)';
-    if (u.admin) return 'Administrador (todo, incluido Maestro)';
-    const alms = Array.isArray(u.almacenes) ? u.almacenes : [];
-    const perm = u.perm || {};
-    return [
-      alms.length ? (DB.almacenes && alms.length === DB.almacenes.length ? 'Todos los almacenes' : alms.map(almNombre).join(', ')) : '',
-      (perm.aprobar && perm.aprobar.length) ? 'aprueba solicitudes (Supervisor)' : '', 
-      (perm.transferir && perm.transferir.length) ? 'transfiere' : '', 
-      (perm.recibir && perm.recibir.length) ? 'recibe' : '',
-      u.maestro ? 'Maestro' + (u.editaCostos ? ' (edita costos)' : ' (solo consulta de costos)') : ''
-    ].filter(Boolean).join(' · ');
-  };
-  el.innerHTML = (DB.usuarios || []).filter(u => u && u.activo).map(u => 
-    `<tr class="clic" onclick="llenarDemo('${u.usuario}')"><td><b>${esc(u.usuario)}</b></td><td><b>${esc(u.clave)}</b></td><td><b>${esc(u.nombre)}</b><br><span style="color:#0284c7;font-weight:700">${esc(perfil(u))}</span></td></tr>`
-  ).join('');
+  // En producción real no se muestran usuarios de prueba
+  return;
 }
-function llenarDemo(usr) { const u = userDe(usr); $('lgUsuario').value = u.usuario; $('lgClave').value = u.clave; actualizarAccesosLogin(); $('lgClave').focus(); }
 function opcionesAcceso(u) {
   const ops = [];
   if (puedeMaestro(u)) ops.push({ v: 'MAESTRO', t: '★ MAESTRO – Vista consolidada' });
@@ -2475,7 +2448,6 @@ function menuDef() {
       ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
   }
   const c = S.ctx;
-  const pendAprob = DB.solicitudes.filter(s => s.origen === c && s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA').length;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
   const pendExt = (DB.extSol || []).filter(x => x.alm === c && x.estatus === 'PENDIENTE').length;
   const m = [
@@ -2487,16 +2459,20 @@ function menuDef() {
       ['cajasTipos', 'Listas por especialidad']
     ]]);
   }
+  const itemsAprob = [];
+  if (pendExt > 0) itemsAprob.push(['aprobarPlz', 'Aprobar extensiones', pendExt]);
+
   m.push(
     ['Solicitudes', [['solNueva', 'Crear solicitud'], ['sol', 'Solicitudes del almacén']]],
-    ['Aprobación', [['aprobar', 'Aprobar solicitudes', pendAprob], ['aprobarPlz', 'Aprobar extensiones', pendExt]]],
+    ...(itemsAprob.length ? [['Aprobación', itemsAprob]] : []),
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
-    ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['ent', 'Entrada de ítems']]],
+    ['Personal', [['aPers', 'Responsables y supervisores']]],
+    ['Catálogo', [['cCatAlm', 'Catálogo general'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
-    ['Consultas y kárdex', [ ['cPrest', 'Préstamos vigentes'], ['cVenc', 'Préstamos vencidos'], ['cAsig', 'Asignaciones por persona'],
-      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cKardex', 'Kardex por código']]]
+    ['Consultas y kárdex', [ ['cPrest', 'Préstamos y asignaciones'],
+      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cValesDet', 'Detalle de vales emitidos'], ['cKardex', 'Kardex por código']]]
   );
-  if (S.u.admin) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aPers', 'Responsables y supervisores'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
+  if (esCreadoraAdmin(S.u)) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
   return m;
 }
@@ -2506,6 +2482,7 @@ const ICONOS_MOD = {
   'Solicitudes': '📝',
   'Aprobación': '✅',
   'Transferencias': '🚚',
+  'Personal': '👷',
   'Catálogo': '📦',
   'Movimientos': '🔁',
   'Consultas y kárdex': '📜',
@@ -2514,7 +2491,7 @@ const ICONOS_MOD = {
 };
 
 const ICONOS = { cCatAlm: '📦', ent: '➕', mov: '🔁', dash: '📊', solNueva: '📝', sol: '📑', aprobar: '✅', aprobarPlz: '⏳', trfNueva: '🚚', trfRec: '📥', trfEnv: '📤', dev: '↩️', dan: '⚠️', ext: '🚨', plz: '⏱️',
-  cExist: '🗃️', cPrest: '🔧', cVenc: '⏰', cAsig: '👷', cIncid: '🛠️', cVales: '🧾', cKardex: '📜', cEpp: '🦺', cCil: '🔥',
+  cInvPers: '👷', cExist: '🗃️', cPrest: '🔧', cVenc: '⏰', cAsig: '👷', cIncid: '🛠️', cVales: '🧾', cValesDet: '📋', cKardex: '📜', cEpp: '🦺', cCil: '🔥',
   cajasPlan: '🧰', cajasTipos: '📋', mCajas: '🧰',
   aUsr: '👥', aPers: '🪪', aProy: '📁', aCat: '📚', aIni: '🏁', aConf: '⚙️', aBit: '📒', aResp: '💾',
   mRes: '⭐', mKpi: '📈', mComp: '🏭', mExp: '🗄️', mTraz: '🔍', mAlert: '🔔', mCost: '💲', mAcc: '🔐' };
@@ -2810,7 +2787,15 @@ VISTAS.cajasPlan = p => {
             </tr>
           </thead>
           <tbody>
-            ${planesFiltrados.map(pl => {
+            ${planesFiltrados.length === 0 ? `
+              <tr>
+                <td colspan="8" style="text-align:center;padding:36px 16px;color:var(--texto-3)">
+                  <div style="font-size:28px;margin-bottom:8px">🧰</div>
+                  <b style="font-size:14px;color:var(--navy)">El módulo de cajas se encuentra en blanco</b><br>
+                  <p style="margin:6px 0 12px;font-size:12px">No hay especialidades de cajas cargadas. Puede crear la primera lista oficial en <a href="javascript:void(0)" onclick="${esMaestro ? "ir('mCajas',{tab:'listas'})" : "ir('cajasTipos')"}">Listas por especialidad</a>.</p>
+                </td>
+              </tr>
+            ` : planesFiltrados.map(pl => {
               const t = pl.tipo;
               const meta = Math.max(0, parseInt(PLAN_METAS_CAJA[t.id]) || 0);
               const lim = pl.limitantes[0];
@@ -3397,6 +3382,22 @@ VISTAS.cajasTipos = p => {
     seleccionarEspecialidadLista(tipoId);
   };
 
+  window.eliminarTipoCaja = tipoId => {
+    const t = tipoCajaDe(tipoId);
+    if (!t) return;
+    confirmar(`¿Está seguro de que desea eliminar permanentemente la caja <b>${esc(t.nombre)}</b> (${esc(t.id)}) con todas sus herramientas asignadas?<br><br><small style="color:var(--rojo)">Esta acción no se puede deshacer.</small>`, () => {
+      const idx = (DB.cajasTipos || []).findIndex(x => x.id === tipoId);
+      if (idx !== -1) {
+        DB.cajasTipos.splice(idx, 1);
+        CAJA_LISTA_SEL = DB.cajasTipos[0] ? DB.cajasTipos[0].id : '';
+        bit('TIPO DE CAJA ELIMINADO', `${t.id} - ${t.nombre}`);
+        guardar();
+        toast(`Caja "${t.nombre}" eliminada correctamente.`, 'ok');
+        ir(enMaestro() ? 'mCajas' : 'cajasTipos', enMaestro() ? { tab: 'listas' } : {});
+      }
+    }, 'Eliminar caja');
+  };
+
   window.vaciarListaCaja = tipoId => {
     const t = tipoCajaDe(tipoId);
     if (!t) return;
@@ -3515,6 +3516,7 @@ VISTAS.cajasTipos = p => {
               <button class="btn btn-claro btn-mini" onclick="imprimirChecklistCaja('${sel.id}')">🖨️ Imprimir Checklist</button>
               <button class="btn btn-claro btn-mini" onclick="modalImportarContenidoCaja('${sel.id}')">📤 Cargar desde Excel</button>
               <button class="btn btn-claro btn-mini" onclick="modalEditarTipoCaja('${sel.id}')">✏️ Editar datos de caja</button>
+              <button class="btn btn-rojo btn-mini" onclick="eliminarTipoCaja('${sel.id}')">🗑️ Eliminar caja</button>
               ${planSel.items.length > 0 ? `<button class="btn btn-rojo btn-mini" onclick="vaciarListaCaja('${sel.id}')">🧹 Vaciar lista</button>` : ''}
             </div>
           </div>
@@ -3857,7 +3859,7 @@ function ir(id, param) {
   const esMaestro = ['mRes', 'mKpi', 'mComp', 'mExp', 'mTraz', 'mAlert', 'mCajas', 'mCost', 'mAcc'].includes(id);
   if (esMaestro && !enMaestro()) { toast('Esta opción pertenece al Maestro.', 'err'); return; }
   if (!esMaestro && enMaestro() && id !== 'doc') { toast('Esta opción pertenece a los almacenes.', 'err'); return; }
-  if (['aUsr', 'aPers', 'aProy', 'aCat', 'aIni', 'aConf', 'aBit', 'aResp'].includes(id) && !S.u.admin) { toast('Solo el administrador puede ingresar a esta opción.', 'err'); return; }
+  if (['aUsr', 'aProy', 'aCat', 'aIni', 'aConf', 'aBit', 'aResp'].includes(id) && !esCreadoraAdmin(S.u)) { toast('Solo la supervisora del sistema (Daniela Riveros) tiene acceso al módulo de Administración.', 'err'); return; }
   S.vista = id; S.param = param || null;
   const defMenu = menuDef();
   const grupoDestino = defMenu.find(([g, items]) => items.some(it => it && it[0] === id));
@@ -3974,7 +3976,7 @@ function pintarFormulario() {
       + campo('Cargo', `<input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Se completa al elegir el responsable">`)
       + campo('Cuenta auxiliar', `<input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Se completa al elegir el proyecto">`)
       + campo('Proyecto / Orden de trabajo', `<input id="fProy" ${ro} autocomplete="off" placeholder="Escriba el proyecto u OT" value="${esc(F.proyecto)}">`)
-      + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`)
+      + campo('Supervisor', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`)
       + campo('N° de salida TIMACA (opcional)', `<input id="fSalidaTimaca" ${ro} placeholder="Opcional" value="${esc(F.salidaTimaca || '')}">`);
   } else if (t === 'PRH' || t === 'ASI') {
     cabecera += campo('Destino / Área solicitante', selectorDestinoSol(F.origen, F.destino, ro));
@@ -3989,7 +3991,7 @@ function pintarFormulario() {
       + campo('Cargo', `<input id="fCargo" readonly value="${esc(F.resp ? F.resp.cargo : '')}" placeholder="Se completa al elegir el responsable">`)
       + campo('Cuenta auxiliar', `<input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Se completa al elegir el proyecto">`)
       + campo('Proyecto / Orden de trabajo', `<input id="fProy" ${rd ? 'readonly' : ''} ${ro} autocomplete="off" placeholder="Escriba el proyecto u OT" value="${esc(F.proyecto)}">`)
-      + campo('Supervisor autoriza', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`);
+      + campo('Supervisor', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`);
   }
   if (t === 'PRH') cabecera += campo('Fecha requerida', `<input type="date" id="fFReq" ${ro} value="${F.fechaReq}">`) + campo('Fecha de devolución', `<input type="date" id="fFDev" ${ro} value="${F.fechaDev}">`) + '<div></div>';
   if (t === 'ASI') cabecera += campo('Fecha de asignación', `<input type="date" id="fFAsig" ${ro} value="${F.fechaAsig}">`) + campo('Tipo de asignación', `<input value="TIEMPO INDEFINIDO" readonly>`) + '<div></div>';
@@ -4065,8 +4067,8 @@ function filaCaptura() {
     <button class="btn-salvar" onclick="salvarLinea()">Salvar</button>
   </div>`;
 }
-function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO' ? e.vacio : e.disp; }
-const estDe = (it, cond) => it.mod === 'CILINDRO' && cond === 'VACÍO' ? 'VACIO' : 'DISP';
+function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO' ? e.vacio : (est === 'DAN' ? e.dan : e.disp); }
+const estDe = (it, cond) => cond === 'DAÑADO' ? 'DAN' : (it.mod === 'CILINDRO' && cond === 'VACÍO' ? 'VACIO' : 'DISP');
 function dispCaptura(it, cond) {
   const est = estDe(it, cond);
   let extra = 0;
@@ -4077,13 +4079,14 @@ function dispCaptura(it, cond) {
   return (dispItem(F.origen, it.id, est) + extra) - usado;
 }
 const aceptaVacios = () => F.tipo === 'TRF' || F.tipo === 'DAN' || F.tipo === 'EXT';
+const aceptaDañados = () => F.tipo === 'TRF' || F.tipo === 'DAN';
 function dispTotalItem(it) {
   const e = exi(F.origen, it.id);
   let extra = 0;
   if (F.lineasOriginales) {
     extra = F.lineasOriginales.filter(l => l.id === it.id).reduce((a, l) => a + l.cant, 0);
   }
-  return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0) + extra;
+  return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0) + (aceptaDañados() ? e.dan : 0) + extra;
 }
 function itemsBuscables() {
   return DB.catalogo.filter(it => it.activo && !(F.tipo === 'PRH' && it.mod === 'EPP')).filter(it => dispTotalItem(it) > 0);
@@ -4144,8 +4147,18 @@ function alCambiarSerial() {
   const it = item(Number($('cSerial').value)); if (!it) return;
   F.cap = it;
   const cond = $('cCond');
-  if (it.mod === 'CILINDRO') cond.innerHTML = (F.tipo === 'PRH' || F.tipo === 'ASI') ? '<option>LLENO</option>' : opciones(exi(F.origen, it.id).disp > 0 ? ['LLENO', 'VACÍO'] : ['VACÍO', 'LLENO']);
-  else cond.innerHTML = opciones(it.mod === 'EPP' ? ['NUEVO', 'ÓPTIMO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']);
+  if (it.mod === 'CILINDRO') {
+    if (F.tipo === 'PRH' || F.tipo === 'ASI') cond.innerHTML = '<option>LLENO</option>';
+    else {
+      const e = exi(F.origen, it.id);
+      const opcs = [];
+      if (e.disp > 0) opcs.push('LLENO');
+      if (e.vacio > 0) opcs.push('VACÍO');
+      if (e.dan > 0 || F.tipo === 'TRF' || F.tipo === 'DAN') opcs.push('DAÑADO');
+      if (!opcs.length) opcs.push('LLENO', 'VACÍO', 'DAÑADO');
+      cond.innerHTML = opciones(opcs);
+    }
+  } else cond.innerHTML = opciones(it.mod === 'EPP' ? ['NUEVO', 'ÓPTIMO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']);
   if (F.tipo === 'DAN') cond.value = 'DAÑADO';
   $('cCant').value = 1; $('cCant').readOnly = !!it.serial; $('cCant').title = it.serial ? 'Ítem con serial único: cantidad 1. Presione Enter o Salvar.' : '';
   actualizarDispCaptura();
@@ -4237,9 +4250,9 @@ function finalizarFormulario(finalizar) {
   run(() => {
     const t = F.tipo;
     if (t === 'PRH' || t === 'ASI') {
-      const s = guardarSolicitud({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, true);
-      toast(`Solicitud ${s.num} guardada (PENDIENTE DE APROBACIÓN).`, 'ok');
-      ir('sol', { sel: s.num });
+      const res = emitirValeDirecto({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas });
+      toast(`Vale ${res.vale.num} emitido exitosamente. Listo para imprimir y firmar.`, 'ok');
+      ir('doc', { num: res.vale.num, back: 'sol' });
     } else if (t === 'TRF') {
       if (F.num) {
         const v = actualizarTransferencia(F.num, {
@@ -4284,12 +4297,12 @@ function finalizarFormulario(finalizar) {
    ===================================================================== */
 function pintarSolicitud() {
   const t = F.tipo, s = F.num ? solDe(F.num) : null;
-  const est = s ? formatoEstSol(s.estatus) : 'PENDIENTE DE APROBACIÓN';
+  const est = s ? formatoEstSol(s.estatus) : 'FINALIZADA';
   const L = txt => `<div class="lb">${txt}</div>`;
   const fechas = t === 'PRH'
     ? L('Fecha requerida') + `<div class="vl"><input type="date" id="fFReq" value="${F.fechaReq}"></div>` + L('Fecha de devolución') + `<div class="vl"><input type="date" id="fFDev" value="${F.fechaDev}"></div>`
     : L('Fecha de asignación') + `<div class="vl"><input type="date" id="fFAsig" value="${F.fechaAsig}"></div><div class="vacio"></div>`;
-  $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al guardar, la solicitud queda PENDIENTE DE APROBACIÓN para el supervisor.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
+  $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al guardar se genera inmediatamente el vale para imprimir y firmar.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
     + `<div class="form-reg"><div class="sipf">
       ${L('Empresa')}<div class="vl"><input value="TIMACA" readonly></div>
       ${L('Número')}<div class="vl"><input id="sNum" value="${esc(F.num || '')}" placeholder="Se asigna al salvar" readonly></div>
@@ -4303,7 +4316,7 @@ function pintarSolicitud() {
       ${L('Cuenta auxiliar')}<div class="vl"><input id="fCuenta" readonly value="${esc(F.cuenta)}" placeholder="Automático"></div>
       ${L('Tipo de movimiento')}<div class="vl"><select id="fTipo" onchange="cambiarTipoSol(this.value)">${opciones([['PRH', 'PRH - Préstamo'], ['ASI', 'ASI - Asignación']], t)}</select></div>
       ${L('Tipo de asignación')}<div class="vl"><select id="fTA" onchange="cambiarTipoSol(this.value === 'DEF' ? 'PRH' : 'ASI')">${opciones([['DEF', 'TIEMPO DEFINIDO'], ['IND', 'TIEMPO INDEFINIDO']], t === 'PRH' ? 'DEF' : 'IND')}</select></div>
-      ${L('Supervisor autoriza')}<div class="vl"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}"></div>
+      ${L('Supervisor')}<div class="vl"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}"></div>
       ${fechas}
       ${L('Almacén origen')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
       ${L('Destino / Área solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
@@ -4312,8 +4325,8 @@ function pintarSolicitud() {
     <div class="carga" style="margin-top:14px"><div class="carga-h">CARGA DE MATERIAL</div>${filaCaptura()}<div id="fLineas"></div></div>
     <div class="pie-form"><div class="totales" id="fTotales"></div><div class="der">
       <button class="btn btn-claro" onclick="ir('sol')">Cancelar</button>
-      <button class="btn btn-verde" onclick="finalizarFormulario(true)">💾 Guardar solicitud</button>
-      <button class="btn btn-azul" disabled title="El vale se genera cuando el supervisor aprueba la solicitud">🖨 Imprimir vale</button>
+      <button class="btn btn-verde" onclick="finalizarFormulario(true)">💾 Generar e imprimir vale</button>
+      ${(s && s.vale) ? `<button class="btn btn-azul" onclick="imprimirVale('${s.vale}')">🖨 Imprimir vale</button>` : ''}
     </div></div></div>${datalistPersonal()}`;
   bindResponsableProyecto();
   bindCaptura();
@@ -4325,11 +4338,7 @@ function cambiarTipoSol(t) {
   pintarSolicitud();
 }
 function salvarSolicitud() {
-  leerCabecera();
-  run(() => {
-    const s = guardarSolicitud({ num: F.num, tipo: F.tipo, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas }, true);
-    F.num = s.num; $('sNum').value = s.num; toast(`Solicitud ${s.num} guardada (PENDIENTE DE APROBACIÓN). Puede seguir editándola.`, 'ok');
-  });
+  finalizarFormulario(true);
 }
 function bindResponsableProyecto() {
   if ($('fResp')) {
@@ -4508,12 +4517,12 @@ VISTAS.doc = p => {
   const d = esSol ? solDe(p.num) : valeDe(p.num);
   if (!d) { $('area').innerHTML = cab('Documento no encontrado'); return; }
   if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
-  const t = d.tipo, est = esSol ? d.estatus : estadoVale(d);
+  const t = d.tipo, est = esSol ? formatoEstSol(d.estatus) : (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : estadoVale(d));
   const color = EST_COLOR[est] === 'ambar' ? 'naranja' : (EST_COLOR[est] || 'gris');
   let franjaDer = '';
   if (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN') franjaDer = `<span style="display:flex;align-items:center;gap:10px">Tiempo restante para aceptar: ${cronoHTML(d, true)}</span>`;
   else if (d.procesadoEn) franjaDer = `${(est === 'APROBADO' || est === 'APROBADA') ? 'Aprobada' : (est === 'ANULADO' || est === 'ANULADA') ? 'Anulada' : 'Procesada'} por <b>${esc(d.procesadoPor.nombre)}</b> el ${fFH(d.procesadoEn)}${d.motivo ? ' · Motivo: ' + esc(d.motivo) : ''}`;
-  else if (esSol && (est === 'FINALIZADO' || est === 'PENDIENTE DE APROBACIÓN')) franjaDer = 'Pendiente de aprobación del supervisor de ' + esc(almNombre(d.origen));
+  else if (esSol && (est === 'FINALIZADO' || est === 'PENDIENTE DE APROBACIÓN' || est === 'POR APROBAR')) franjaDer = 'Por aprobar por el supervisor de ' + esc(almNombre(d.origen));
   const R = (lbl, v) => campo(lbl, `<input value="${esc(v ?? '')}" readonly>`);
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
     + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', almNombre(d.destino));
@@ -4523,7 +4532,7 @@ VISTAS.doc = p => {
     if (d.resp) c += R('Responsable custodio', d.resp.nombre) + R('Cédula', d.resp.cedula) + R('Cargo', d.resp.cargo);
     if (d.cuenta) c += R('Cuenta auxiliar', d.cuenta);
     if (d.proyecto) c += R('Proyecto / OT', d.proyecto);
-    if (d.sup) c += R('Supervisor autoriza', d.sup);
+    if (d.sup) c += R('Supervisor', d.sup);
   }
   else if (t === 'ENT') c += R('Registrado por', d.realizadoPor.nombre) + (d.obs ? R('Observación', d.obs) : '');
   else if (t === 'DEVCH') {
@@ -4557,7 +4566,7 @@ VISTAS.doc = p => {
   else {
     c += R(esSol ? 'Generado por' : 'Registrado por', esSol ? d.generadoPor.nombre : d.realizadoPor.nombre);
     if (d.resp) c += R('Responsable custodio', d.resp.nombre) + R('Cédula', d.resp.cedula) + R('Cargo', d.resp.cargo);
-    c += R('Proyecto / OT', d.proyecto) + R('Cuenta auxiliar', d.cuenta) + R('Supervisor autoriza', d.sup);
+    c += R('Proyecto / OT', d.proyecto) + R('Cuenta auxiliar', d.cuenta) + R('Supervisor', d.sup);
   }
   if (t === 'PRH') c += R('Fecha requerida', fF(d.fechaReq)) + R('Fecha de devolución', fF(d.fechaDev)) + R('Extensiones', d.extensiones || 0);
   if (t === 'ASI') c += R('Fecha de asignación', fF(d.fechaAsig)) + R('Tipo de asignación', 'TIEMPO INDEFINIDO') + '<div></div>';
@@ -4582,7 +4591,7 @@ VISTAS.doc = p => {
         <td class="cen"><span class="est est-${l.condicion === 'ÓPTIMO' ? 'verde' : 'rojo'}">${esc(l.condicion || l.cond)}</span></td>
         <td class="cen">${l.danRef ? `<span class="est est-rojo">${esc(l.danRef)}</span> ` : ''}${l.extRef ? `<span class="est est-naranja">${esc(l.extRef)}</span>` : ''}${(!l.danRef && !l.extRef) ? '—' : ''}</td>
       </tr>`).join('')
-    : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
+    : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${l.cond === 'DAÑADO' ? '<span class="est est-rojo">DAÑADO</span>' : esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
   const und = d.lineas.reduce((a, l) => a + l.cant, 0);
   const acciones = accionesDoc(d, esSol, p);
   const nota = esSol ? ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') ? motivoNoAprueba(d) : (d.estatus === 'APROBADO' || d.estatus === 'APROBADA') ? (d.vale ? `Vale ${d.vale} emitido.` : '') : '') : '';
@@ -4650,16 +4659,15 @@ VISTAS.sol = p => {
   let rows = DB.solicitudes.filter(s => s.origen === S.ctx);
   if (tab === 'mias') rows = rows.filter(s => s.generadoPor.usuario === S.u.usuario);
   if (filtro !== 'TODAS') {
-    if (filtro === 'PENDIENTE DE APROBACIÓN') rows = rows.filter(s => s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA');
-    else if (filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
+    if (filtro === 'FINALIZADA' || filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'FINALIZADA' || s.estatus === 'FINALIZADO' || s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
     else if (filtro === 'ANULADA') rows = rows.filter(s => s.estatus === 'ANULADO' || s.estatus === 'ANULADA');
     else rows = rows.filter(s => s.estatus === filtro);
   }
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const cols = [
     { t: 'Número', k: 'num', f: r => {
-      const editable = r.estatus !== 'APROBADO' && r.estatus !== 'APROBADA' && r.estatus !== 'ANULADO' && r.estatus !== 'ANULADA';
-      return `<a href="javascript:void(0)" onclick="event.stopPropagation();${editable ? `ir('solNueva',{num:'${r.num}'})` : `ir('doc',{num:'${r.num}',back:'sol'})`}" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="${editable ? 'Haga clic para editar la solicitud ' + r.num : 'Haga clic para visualizar'}">${esc(r.num)}</a>`;
+      const docNum = r.vale || r.num;
+      return `<a href="javascript:void(0)" onclick="event.stopPropagation();ir('doc',{num:'${docNum}',back:'sol'})" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="Haga clic para ver el vale ${docNum}">${esc(r.num)}</a>`;
     }},
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
     { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
@@ -4669,19 +4677,17 @@ VISTAS.sol = p => {
     { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '' },
     { t: 'Generado por', v: r => r.generadoPor.nombre },
     { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) },
-    { t: 'Vale', v: r => r.vale || '' }
+    { t: 'Vale', v: r => r.vale || '', f: r => r.vale ? `<a href="javascript:void(0)" onclick="event.stopPropagation();ir('doc',{num:'${r.vale}',back:'sol'})" style="font-weight:800;color:var(--azul)">${esc(r.vale)}</a>` : '—' }
   ];
-  $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido) de ' + esc(almNombre(S.ctx)) + '.')
+  $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos y asignaciones de ' + esc(almNombre(S.ctx)) + '. Al crear una solicitud, se emite de inmediato el vale para imprimir y firmar.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
-    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE APROBACIÓN', 'Pendiente de aprobación'], ['APROBADA', 'Aprobada'], ['ANULADA', 'Anulada']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
+    <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['FINALIZADA', 'Finalizadas (con vale)'], ['ANULADA', 'Anuladas']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
     + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
       <button class="btn-sip" onclick="ir('solNueva')">Nueva solicitud</button>
-      <button class="btn-sip" id="bEdit" disabled onclick="ir('solNueva',{num:selDe('gSol').num})">Editar solicitud</button>
-      <button class="btn-sip" id="bDel" disabled onclick="accionEliminarSol()">Eliminar solicitud</button>
-      <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').num,back:'sol'})">Visualizar solicitud</button>
-      <button class="btn-sip" id="bImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gSol').vale)">Imprimir vale</button>
+      <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').vale || selDe('gSol').num,back:'sol'})">Visualizar vale</button>
+      <button class="btn-sip" id="bImp" disabled onclick="imprimirVale(selDe('gSol').vale || selDe('gSol').num)">🖨 Imprimir vale</button>
       <button class="btn-ayuda" onclick="ayuda('sol')">AYUDA</button>
     </div>`;
   if (p && p.sel) { const g = GR.gSol; const i = g.vis.findIndex(r => r.num === p.sel); if (i >= 0) selGrid('gSol', i); }
@@ -4691,16 +4697,10 @@ function tiraSol(s) {
   if ($('tsCuenta')) $('tsCuenta').textContent = s.cuenta || '—';
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
-  const editable = s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA';
-  $('bEdit').disabled = !editable;
-  $('bDel').disabled = !editable;
-  $('bVer').disabled = false; $('bImp').disabled = !s.vale;
-  const esApr = s.estatus === 'APROBADO' || s.estatus === 'APROBADA';
-  const esAnu = s.estatus === 'ANULADO' || s.estatus === 'ANULADA';
-  const info = esApr ? (s.procesadoPor ? `Aprobada por ${s.procesadoPor.nombre}. Vale ${s.vale || ''} emitido.` : (s.vale ? `Vale ${s.vale} emitido.` : ''))
-    : esAnu ? 'Anulada: ' + (s.motivo || '')
-    : (motivoNoAprueba(s) || '');
-  $('tsInfo').innerHTML = info ? `<div class="franja-est ${esApr ? 'verde' : esAnu ? 'rojo' : 'naranja'}" style="margin:10px 0 0"><span>${esc(info)}</span></div>` : '';
+  if ($('bVer')) $('bVer').disabled = false;
+  if ($('bImp')) $('bImp').disabled = !(s.vale || s.num);
+  const info = s.vale ? `Vale oficial ${s.vale} emitido. Listo para imprimir y firmar.` : 'Solicitud registrada.';
+  $('tsInfo').innerHTML = `<div class="franja-est verde" style="margin:10px 0 0"><span>✔ ${esc(info)}</span></div>`;
 }
 function accionEliminarSol() {
   const s = selDe('gSol');
@@ -4730,13 +4730,13 @@ VISTAS.aprobar = p => {
     { t: 'Tipo A', v: r => r.lineas.some(l => (item(l.id) || {}).tipoA) ? 'SI' : 'NO', cls: 'cen' },
     { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) }
   ];
-  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes pendientes de aprobación de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
+  $('area').innerHTML = cab('Aprobar solicitudes', 'Solicitudes por aprobar de ' + esc(almNombre(S.ctx)) + '. Solo los supervisores autorizados pueden aceptarlas o anularlas.')
     + (tienePerm ? '' : avisoSinPermiso('Su usuario no tiene permiso de aprobación en este almacén. Puede consultar las solicitudes, pero no aceptarlas ni anularlas.'))
     + `<div class="fila-filtros">
-        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['PENDIENTE DE APROBACIÓN', 'Pendientes de aprobación'], ['APROBADA', 'Aprobadas'], ['ANULADA', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
+        ${campo('Mostrar', `<select onchange="ir('aprobar',{f:this.value})">${opciones([['PENDIENTE DE APROBACIÓN', 'Por aprobar'], ['APROBADA', 'Aprobadas'], ['ANULADA', 'Anuladas'], ['TODAS', 'Todas']], filtro)}</select>`)}
         ${buscador('gApr', 'Buscar por número, cuenta auxiliar, proyecto, responsable…')}
       </div>`
-    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'PENDIENTE DE APROBACIÓN' ? 'No hay solicitudes pendientes de aprobación en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
+    + grid('gApr', cols, rows, { onSel: s => tiraApr(s), pag: 15, vacio: filtro === 'PENDIENTE DE APROBACIÓN' ? 'No hay solicitudes por aprobar en ' + almNombre(S.ctx) + '.' : 'No hay registros.' })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="taNum"></span><span class="box" id="taCuenta"></span><span class="box" id="taProy" style="flex:1"></span><span class="box" id="taResp" style="flex:1"></span></div>
     <div id="taMotivo"></div>
     <div class="barra-btn">
@@ -4780,6 +4780,7 @@ const colsTrf = (recibidas) => [
     if (r.estatus === 'PENDIENTE DE RECEPCIÓN') return `<span class="est est-naranja">⏱ POR ACEPTAR</span>`;
     if (r.estatus === 'RECIBIDA') return `<span class="est est-verde">ACEPTADA</span>`;
     if (r.estatus === 'RECHAZADA') return `<span class="est est-rojo">RECHAZADA</span>`;
+    if (r.estatus === 'VENCIDA') return `<span class="est est-rojo">VENCIDA</span>`;
     return estB(r.estatus);
   }},
   { t: 'Realizado por', v: r => r.realizadoPor.nombre },
@@ -4787,7 +4788,12 @@ const colsTrf = (recibidas) => [
   { t: 'Responsable', v: r => r.resp ? r.resp.nombre : '—' },
   { t: 'Proyecto / OT', v: r => r.proyecto || '—' },
   { t: 'Supervisor', v: r => r.sup || '—' },
-  { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), cls: 'num' },
+  { t: 'Unidades', v: r => r.lineas.reduce((a, l) => a + l.cant, 0), f: r => {
+    const u = r.lineas.reduce((a, l) => a + l.cant, 0);
+    const d = r.lineas.some(l => l.cond === 'DAÑADO' || l.est === 'DAN');
+    return d ? `<b>${u}</b> <span class="est est-rojo" style="font-size:10px;padding:2px 5px;margin-left:4px" title="Contiene ítems dañados">⚠️ DAÑADO</span>` : `<b>${u}</b>`;
+  }, cls: 'num' },
+  { t: 'Observación', v: r => r.obs || '—', td: 'wrap' },
   { t: 'Procesado por', v: r => r.procesadoPor ? r.procesadoPor.nombre : '' },
   { t: 'Fecha procesamiento', v: r => r.procesadoEn ? fFH(r.procesadoEn) : '', s: r => r.procesadoEn || '' },
   { t: 'Motivo', v: r => r.motivo || '' }
@@ -4831,11 +4837,19 @@ function tiraTrf(v, k) {
   if (k === 'r') {
     $('trNum').textContent = v.num;
     const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
-    $('trInfo').innerHTML = `${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(v) + ' · ' : ''}Desde <b>${esc(almNombre(v.origen))}</b> · ${esc(v.realizadoPor.nombre)} · ${estB(estTxt)}`;
+    const nDan = (v.lineas || []).filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
+    const badgeDan = nDan > 0 ? ` · <span class="est est-rojo">⚠️ CONTIENE ${nDan} ÍTEM(S) DAÑADO(S)</span>` : '';
+    const obsTxt = v.obs ? `<br><small style="color:var(--texto-2);font-size:12px"><b>Observación:</b> ${esc(v.obs)}</small>` : '';
+    $('trInfo').innerHTML = `${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(v) + ' · ' : ''}Desde <b>${esc(almNombre(v.origen))}</b> · ${esc(v.realizadoPor.nombre)} · ${estB(estTxt)}${badgeDan}${obsTxt}`;
     const ok = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('recibir', v.destino);
     $('rVer').disabled = false; $('rImp').disabled = false; $('rOk').disabled = !ok; $('rNo').disabled = !ok;
   } else {
-    $('teNum').textContent = v.num; $('teInfo').textContent = `Hacia ${almNombre(v.destino)} · ${v.estatus}`;
+    $('teNum').textContent = v.num;
+    const estTxt = v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : (v.estatus === 'RECIBIDA' ? 'ACEPTADA' : v.estatus);
+    const nDan = (v.lineas || []).filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
+    const badgeDan = nDan > 0 ? ` · <span class="est est-rojo">⚠️ CONTIENE ${nDan} ÍTEM(S) DAÑADO(S)</span>` : '';
+    const obsTxt = v.obs ? `<br><small style="color:var(--texto-2);font-size:12px"><b>Observación:</b> ${esc(v.obs)}</small>` : '';
+    $('teInfo').innerHTML = `${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(v) + ' · ' : ''}Hacia <b>${esc(almNombre(v.destino))}</b> · ${estB(estTxt)}${badgeDan}${obsTxt}`;
     const editable = v.estatus === 'PENDIENTE DE RECEPCIÓN' && puede('transferir', v.origen);
     if ($('eEdit')) $('eEdit').disabled = !editable;
     ['eVer', 'eImp', 'eHist'].forEach(i => $(i).disabled = false);
@@ -4843,7 +4857,14 @@ function tiraTrf(v, k) {
 }
 function accionAceptarTrf(n) {
   const v = valeDe(n);
-  confirmar(`¿Aceptar la transferencia <b>${n}</b> desde ${esc(almNombre(v.origen))}? Los ${v.lineas.reduce((a, l) => a + l.cant, 0)} ítems quedarán disponibles en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(n); toast(`Transferencia ${n} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
+  const nDan = v.lineas.filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
+  const nDisp = v.lineas.filter(l => l.cond !== 'DAÑADO' && l.est !== 'DAN' && l.est !== 'VACIO').reduce((a, l) => a + l.cant, 0);
+  const nVac = v.lineas.filter(l => l.est === 'VACIO').reduce((a, l) => a + l.cant, 0);
+  const det = [];
+  if (nDisp > 0) det.push(`<b>${nDisp}</b> disponibles`);
+  if (nVac > 0) det.push(`<b>${nVac}</b> vacíos`);
+  if (nDan > 0) det.push(`<b style="color:var(--rojo)">${nDan} DAÑADOS</b> (ingresarán a Dañados / En taller)`);
+  confirmar(`¿Aceptar la transferencia <b>${n}</b> desde ${esc(almNombre(v.origen))}?<br><br>Carga: ${det.join(', ')} en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(n); toast(`Transferencia ${n} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
 }
 function accionRechazarTrf(n) { pedirTexto('Rechazar transferencia ' + n, 'Motivo del rechazo (obligatorio)', v => { rechazarTransferencia(n, v); toast(`Transferencia ${n} rechazada. El material regresó al almacén de origen.`, 'ok'); pintarMenu(); refrescar(); }, 'Rechazar transferencia', 'btn-rojo', true); }
 function editarTransferencia(n) {
@@ -4866,11 +4887,11 @@ VISTAS.trfEnv = p => {
   if (f.est !== 'TODAS') rows = rows.filter(v => v.estatus === f.est);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
   const cuenta = e => rows.filter(v => v.estatus === e).length;
-  const resumen = `Creadas: <b>${rows.length}</b> · Recibidas: <b>${cuenta('RECIBIDA')}</b> · Rechazadas: <b>${cuenta('RECHAZADA')}</b> · Vencidas: <b>${cuenta('VENCIDA')}</b> · Pendientes: <b>${cuenta('PENDIENTE DE RECEPCIÓN')}</b>`;
+  const resumen = `Creadas: <b>${rows.length}</b> · Recibidas: <b>${cuenta('RECIBIDA')}</b> · Rechazadas: <b>${cuenta('RECHAZADA')}</b> · Vencidas: <b>${cuenta('VENCIDA')}</b> · Por aceptar: <b>${cuenta('PENDIENTE DE RECEPCIÓN')}</b>`;
   const recarga = `ir('trfEnv',{dest:$('feDest').value,est:$('feEst').value,desde:$('feDesde').value,hasta:$('feHasta').value})`;
   $('area').innerHTML = cab('Transferencias enviadas', 'Registro histórico permanente de las transferencias creadas desde ' + esc(almNombre(S.ctx)) + '.', botonesExport('gEnv', 'Transferencias enviadas ' + almNombre(S.ctx)))
     + `<div class="fila-filtros">${campo('Destino', selAlm('feDest', f.dest, destinosPermitidos(S.ctx), true, recarga))}
-      ${campo('Estatus', `<select id="feEst" onchange="${recarga}">${opciones(['TODAS', 'PENDIENTE DE RECEPCIÓN', 'RECIBIDA', 'RECHAZADA', 'VENCIDA'], f.est)}</select>`)}
+      ${campo('Estatus', `<select id="feEst" onchange="${recarga}">${opciones([['TODAS', 'Todas'], ['PENDIENTE DE RECEPCIÓN', 'Por aceptar'], ['RECIBIDA', 'Aceptadas'], ['RECHAZADA', 'Rechazadas'], ['VENCIDA', 'Vencidas']], f.est)}</select>`)}
       ${campo('Desde', `<input type="date" id="feDesde" value="${f.desde}" onchange="${recarga}">`)}${campo('Hasta', `<input type="date" id="feHasta" value="${f.hasta}" onchange="${recarga}">`)}${buscador('gEnv')}</div>`
     + grid('gEnv', colsTrf(false), rows, { onSel: v => tiraTrf(v, 'e'), pag: 15, vacio: 'No hay transferencias en el período.' })
     + `<div class="franja-est gris" style="margin-top:10px"><span>Resumen del período: ${resumen}</span></div>
@@ -4943,7 +4964,7 @@ VISTAS.plz = p => {
       ${campo('Responsable', `<input value="${v ? esc(v.resp.nombre) : ''}" readonly>`)}${campo('Proyecto / OT', `<input value="${v ? esc(v.proyecto) : ''}" readonly>`)}
       ${campo('Fecha de devolución actual', `<input value="${v ? fF(v.fechaDev) : ''}" readonly>`)}${campo('Extensiones anteriores', `<input value="${v ? (v.extensiones || 0) : ''}" readonly>`)}${campo('Estado', `<div style="padding-top:6px">${v ? estB(estadoVale(v)) : ''}</div>`)}
       ${campo('Nueva fecha de devolución solicitada', `<input type="date" id="plNueva" ${v ? '' : 'disabled'} value="${v ? sumarDias(v.fechaDev > hoy() ? v.fechaDev : hoy(), 7) : ''}">`)}
-      ${campo('Supervisor autoriza', `<input id="plSup" autocomplete="off" ${v ? '' : 'disabled'} placeholder="Seleccione el supervisor" value="${v ? esc(v.sup) : ''}">`)}
+      ${campo('Supervisor', `<input id="plSup" autocomplete="off" ${v ? '' : 'disabled'} placeholder="Seleccione el supervisor" value="${v ? esc(v.sup) : ''}">`)}
       ${campo('Motivo', `<input id="plMot" ${v ? '' : 'disabled'} placeholder="Motivo de la prórroga o extensión">`)}
     </div>
     <div class="pie-form">
@@ -5133,11 +5154,11 @@ VISTAS.dash = p => {
   const aviso = (n, txt, dest, cls) => `<div class="aviso ${cls || ''}" onclick="ir('${dest[0]}',${dest[1] ? JSON.stringify(dest[1]).replace(/"/g, "'") : 'null'})"><div class="a-num">${n}</div><div class="a-txt">${txt}</div></div>`;
   
   const avisos = [
-    aviso(pendAprob, 'Solicitudes pendientes de aprobación', ['aprobar'], pendAprob ? '' : 'verde'),
-    aviso(venc.length, venc.length ? `Préstamos vencidos · máximo ${venc[0].dias} día(s) de atraso` : 'Préstamos vencidos', ['cVenc'], venc.length ? 'rojo' : 'verde'),
+    aviso(pendAprob, 'Solicitudes por aprobar', ['aprobar'], pendAprob ? '' : 'verde'),
+    aviso(venc.length, venc.length ? `Préstamos vencidos · máximo ${venc[0].dias} día(s) de atraso` : 'Préstamos vencidos', ['cPrest', { est: 'VENCIDO' }], venc.length ? 'rojo' : 'verde'),
     aviso(epp.length, 'EPP con reposición vencida o próxima (15 días)', ['cEpp', { f: 'ALERTA' }], epp.length ? 'naranja' : 'verde'),
     aviso(porAceptar.length, porAceptar.length ? `Transferencias por aceptar · la más próxima vence en ${cronoHTML(porAceptar[0])}` : 'Transferencias por aceptar', ['trfRec'], porAceptar.length ? 'naranja' : 'verde'),
-    aviso(envPend.length, `Transferencias enviadas pendientes · ${envRiesgo.length} vencen en menos de 2 horas`, ['trfEnv', { est: 'PENDIENTE DE RECEPCIÓN' }], envRiesgo.length ? 'rojo' : ''),
+    aviso(envPend.length, `Transferencias enviadas por aceptar · ${envRiesgo.length} vencen en menos de 2 horas`, ['trfEnv', { est: 'PENDIENTE DE RECEPCIÓN' }], envRiesgo.length ? 'rojo' : ''),
     aviso(envMal.length, 'Transferencias enviadas rechazadas o vencidas (últimos 7 días)', ['trfEnv'], envMal.length ? 'rojo' : 'verde'),
     vacios ? aviso(vacios, c === 'CENTRAL' ? 'Cilindros vacíos en Central' : 'Cilindros vacíos por transferir a Central', ['cCil'], 'naranja') : ''
   ].join('');
@@ -5214,6 +5235,11 @@ VISTAS.cCatAlm = p => {
 VISTAS.cExist = p => VISTAS.cCatAlm(p);
 
 /* =====================================================================
+   INVENTARIO EN PODER DEL PERSONAL (Toma física)
+   ===================================================================== */
+VISTAS.cInvPers = p => VISTAS.cPrest(p);
+
+/* =====================================================================
    CONSULTAS DEL ALMACÉN (sin montos)
    ===================================================================== */
 VISTAS.cExistAnterior = p => {
@@ -5227,55 +5253,253 @@ VISTAS.cExistAnterior = p => {
     + `<div class="fila-filtros">${campo('Módulo', `<select onchange="ir('cExist',{mod:this.value})"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}${buscador('gEx')}</div>`
     + grid('gEx', cols, rows, { pag: 20, onSel: r => ir('cKardex', { q: r.it.serial || r.it.cod }) }) + '<p class="ayuda-txt" style="margin-top:8px">Haga clic en un ítem para ver su kardex.</p>';
 };
-function vistaPrestamos(tit, sub, tipo, estado, id) {
-  let rows = DB.vales.filter(v => v.origen === S.ctx && (tipo ? v.tipo === tipo : (v.tipo === 'PRH' || v.tipo === 'ASI')));
-  rows = rows.map(v => ({ v, est: estadoVale(v) }));
-  if (estado === 'ABIERTOS') rows = rows.filter(r => ['VIGENTE', 'VENCIDO', 'DEVOLUCIÓN PARCIAL'].includes(r.est));
-  else if (estado) rows = rows.filter(r => r.est === estado);
-  rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha));
+function vistaPrestamos(tit, sub, p) {
+  if (typeof p === 'string') {
+    p = { tipo: arguments[2], est: arguments[3], id: arguments[4] };
+  }
+  p = p || {};
+  const id = p.id || 'cPrest';
+  const tipo = p.tipo !== undefined ? p.tipo : '';
+  const estado = p.est !== undefined ? p.est : 'ABIERTOS';
+  const resp = p.resp || '';
+  const ciFiltro = (p.ci || '').trim();
+  const alm = p.alm || (enMaestro() ? 'TODOS' : S.ctx);
+  const cat = p.cat || '';
+  const mod = p.mod || '';
+  const proy = p.proy || '';
+  const cuenta = p.cuenta || '';
+  const desde = p.desde || '';
+  const hasta = p.hasta || '';
+  const itemFiltro = (p.item || '').trim().toUpperCase();
+
+  let rows = [];
+  (DB.vales || []).forEach(v => {
+    // Filtrar por almacén / ubicación
+    if (alm && alm !== 'TODOS') {
+      if (v.origen !== alm && v.destino !== alm) return;
+    }
+    // Tipo de movimiento (PRH o ASI)
+    if (tipo) {
+      if (v.tipo !== tipo) return;
+    } else {
+      if (v.tipo !== 'PRH' && v.tipo !== 'ASI') return;
+    }
+
+    // Responsable y Cédula
+    const respNom = v.resp ? (v.resp.nombre || (typeof v.resp === 'string' ? v.resp : 'Sin asignar')) : 'Sin asignar';
+    const respCI = (v.resp && v.resp.cedula) ? v.resp.cedula : 'S/C';
+    const respCargo = (v.resp && v.resp.cargo) ? v.resp.cargo : 'Trabajador';
+    const personaDB = (DB.personal || []).find(x => (x.cedula && respCI !== 'S/C' && digitosCI(x.cedula) === digitosCI(respCI)) || normTexto(x.nombre) === normTexto(respNom));
+    const depto = personaDB ? (personaDB.departamento || personaDB.depto || personaDB.cargo || 'Operaciones') : 'Operaciones';
+    const ubicacion = v.destino ? almNombre(v.destino).replace('Almacén ', '') : almNombre(v.origen).replace('Almacén ', '');
+
+    if (resp && respNom !== resp && respCI !== resp) return;
+    if (ciFiltro) {
+      const ciNorm = ciFiltro.trim().toUpperCase();
+      const ciMatch = respCI.toUpperCase().includes(ciNorm) || respCI.replace(/\D/g, '').includes(ciNorm.replace(/\D/g, ''));
+      const nomMatch = normTexto(respNom).includes(normTexto(ciFiltro));
+      if (!ciMatch && !nomMatch) return;
+    }
+
+    // Proyecto
+    if (proy) {
+      const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
+      const matchC = (v.cuenta || '').toUpperCase() === proy.toUpperCase();
+      if (!matchP && !matchC) return;
+    }
+    // Cuenta auxiliar
+    if (cuenta) {
+      if (!(v.cuenta || '').toUpperCase().includes(cuenta.toUpperCase().trim())) return;
+    }
+    // Rango de fechas
+    const fStr = (v.fecha || '').slice(0, 10);
+    if (desde && fStr < desde) return;
+    if (hasta && fStr > hasta) return;
+
+    // Estado del vale
+    const estV = estadoVale(v);
+    if (estado === 'ABIERTOS') {
+      if (!['VIGENTE', 'VENCIDO', 'DEVOLUCIÓN PARCIAL'].includes(estV) && saldoVale(v) <= 0) return;
+    } else if (estado) {
+      if (estV !== estado) return;
+    }
+
+    // Desglose renglón por renglón (ítem por ítem)
+    const lineas = (v.lineas && v.lineas.length) ? v.lineas : [{ cod: '—', desc: v.obs || 'Sin renglones especificados', cant: 1, dev: 0 }];
+    lineas.forEach(l => {
+      const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null) || {};
+      const modLinea = l.mod || it.mod || 'HERRAMIENTA';
+      const catLinea = l.cat || it.cat || 'General';
+
+      if (mod && modLinea !== mod) return;
+      if (cat && catLinea !== cat) return;
+
+      if (itemFiltro) {
+        const cM = (l.cod || it.cod || '').toUpperCase().includes(itemFiltro);
+        const sM = (l.serial || it.serial || '').toUpperCase().includes(itemFiltro);
+        const dM = (it.desc || l.desc || '').toUpperCase().includes(itemFiltro);
+        const mM = (it.marca || l.marca || '').toUpperCase().includes(itemFiltro);
+        if (!cM && !sM && !dM && !mM) return;
+      }
+
+      const cantEntregada = Number(l.cant) || 1;
+      const cantDevuelta = Number(l.dev) || 0;
+      const saldo = l.consumo ? 0 : Math.max(0, cantEntregada - cantDevuelta);
+
+      const diasEnPoder = diasEntre(v.fecha, hoy());
+      const diasAtraso = (v.tipo === 'PRH' && v.fechaDev && v.fechaDev < hoy() && saldo > 0) ? diasEntre(v.fechaDev, hoy()) : 0;
+
+      rows.push({
+        v,
+        l,
+        it,
+        respNom,
+        respCI,
+        respCargo,
+        depto,
+        ubicacion,
+        mod: modLinea,
+        cat: catLinea,
+        cantEntregada,
+        cantDevuelta,
+        saldo,
+        diasEnPoder,
+        diasAtraso,
+        est: estV
+      });
+    });
+  });
+
+  rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha) || a.respNom.localeCompare(b.respNom));
+
   const cols = [
-    { t: 'N° de vale', v: r => r.v.num },
-    { t: 'Tipo de movimiento', v: r => `${r.v.tipo} - ${TIPOS[r.v.tipo].n}` },
+    { t: 'N° de vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
+    { t: 'Tipo', v: r => r.v.tipo === 'ASI' ? 'Asignación' : 'Préstamo', f: r => `<span class="est ${r.v.tipo === 'ASI' ? 'est-azul' : 'est-ambar'}">${r.v.tipo === 'ASI' ? 'Asignación' : 'Préstamo'}</span>` },
     { t: 'Fecha y hora', v: r => fFH(r.v.fecha), s: r => r.v.fecha },
-    { t: 'Cuenta auxiliar', v: r => r.v.cuenta || '—' },
-    { t: 'Descripción del proyecto', v: r => r.v.proyecto || '—' },
-    { t: 'Responsable', v: r => r.v.resp ? r.v.resp.nombre : '—' },
-    { t: 'Cédula', v: r => r.v.resp ? r.v.resp.cedula : '—' },
-    { t: 'Cargo', v: r => r.v.resp ? r.v.resp.cargo : '—' },
+    { t: 'Almacén / Ubicación', v: r => r.ubicacion, f: r => `<b>${esc(r.ubicacion)}</b> <small style="color:var(--texto-3)">(${almNombre(r.v.origen).replace('Almacén ', '')})</small>` },
+    { t: 'Cuenta auxiliar', v: r => r.v.cuenta || '—', f: r => r.v.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.v.cuenta)}</span>` : '—' },
+    { t: 'Proyecto', v: r => r.v.proyecto || '—', td: 'wrap' },
+    { t: 'Responsable', v: r => r.respNom, f: r => `<b>${esc(r.respNom)}</b>` },
+    { t: 'Cédula', v: r => r.respCI, f: r => `<span style="font-family:monospace;font-weight:700">${esc(r.respCI)}</span>` },
+    { t: 'Cargo', v: r => r.respCargo },
     { t: 'Supervisor', v: r => r.v.sup || '—' },
-    { t: 'Fecha de devolución', v: r => r.v.fechaDev ? fF(r.v.fechaDev) : (r.v.tipo === 'ASI' ? 'Indefinida' : '—'), s: r => r.v.fechaDev || '9999' },
-    { t: 'Días de atraso', v: r => r.v.tipo === 'PRH' && r.est === 'VENCIDO' ? diasEntre(r.v.fechaDev, hoy()) : 0, cls: 'cen', td: 'col-dan' },
+    { t: 'Código del ítem', v: r => r.l.cod || r.it.cod || '—', f: r => `<b>${esc(r.l.cod || r.it.cod || '—')}</b>` },
+    { t: 'Descripción del ítem', v: r => r.it.desc || r.l.desc || '—', td: 'wrap' },
+    { t: 'Marca / Modelo', v: r => [r.it.marca || r.l.marca, r.it.modelo || r.l.modelo].filter(Boolean).join(' / ') || '—' },
+    { t: 'Serial', v: r => r.l.serial || r.it.serial || '—', f: r => (r.l.serial || r.it.serial) ? `<span style="font-family:monospace;font-weight:700">${esc(r.l.serial || r.it.serial)}</span>` : '—' },
+    { t: 'Categoría', v: r => r.cat || '—' },
+    { t: 'Fecha devolución', v: r => r.v.fechaDev ? fF(r.v.fechaDev) : (r.v.tipo === 'ASI' ? 'Indefinida' : '—'), s: r => r.v.fechaDev || '9999' },
+    { t: 'Días de atraso', v: r => r.diasAtraso ? r.diasAtraso + ' d' : '0', cls: 'cen', f: r => r.diasAtraso > 0 ? `<span style="color:#dc2626;font-weight:800">${r.diasAtraso} d</span>` : '<span style="color:#94a3b8">0</span>' },
+    { t: 'Cant. Entregada', v: r => r.cantEntregada, cls: 'num' },
+    { t: 'Cant. Devuelta', v: r => r.cantDevuelta, cls: 'num' },
+    { t: 'Saldo en su poder hoy', v: r => r.saldo, cls: 'cen', td: 'col-prest', f: r => `<b>${r.saldo}</b>` },
     { t: 'Extensiones', v: r => r.v.extensiones || 0, cls: 'cen' },
-    { t: 'Saldo', v: r => saldoVale(r.v), cls: 'cen', td: 'col-prest' },
-    { t: 'Estado', v: r => r.est, f: r => estB(r.est) }
+    { t: 'Estado', v: r => r.est, f: r => estB(r.est) },
+    { t: 'Observaciones', v: r => r.l.obs || r.v.obs || '—', td: 'wrap' }
   ];
-  $('area').innerHTML = cab(tit, sub, botonesExport('gPr', tit + ' ' + almNombre(S.ctx)))
-    + `<div class="fila-filtros">${id === 'cAsig' ? '' : campo('Tipo', `<select onchange="ir('${id}',{tipo:this.value,est:'${estado}'})"><option value="">Préstamos y asignaciones</option>${opciones([['PRH', 'Préstamos'], ['ASI', 'Asignaciones']], tipo)}</select>`)}
-      ${campo('Estado', `<select onchange="ir('${id}',{tipo:'${tipo}',est:this.value})">${opciones([['ABIERTOS', 'Con saldo pendiente'], ['VIGENTE', 'Vigentes'], ['VENCIDO', 'Vencidos'], ['DEVOLUCIÓN PARCIAL', 'Devolución parcial'], ['CERRADO', 'Cerrados'], ['ENTREGADO', 'EPP entregado'], ['', 'Todos']], estado)}</select>`)}${buscador('gPr', 'Buscar responsable, cédula, código, proyecto…')}</div>`
-    + grid('gPr', cols, rows, { pag: 15, onSel: r => tiraPr(r.v) })
-    + `<div class="sel-strip"><span class="lbl">Vale seleccionado</span><span class="box" id="tpNum"></span><span class="box" id="tpInfo" style="flex:1"></span></div>
-    <div class="barra-btn"><button class="btn-sip" id="pVer" disabled onclick="ir('doc',{num:selDe('gPr').v.num,back:'${id}'})">Visualizar vale</button>
+
+  const listaCategoriasPrestamos = [...new Set((DB.catalogo || []).map(i => i.cat).concat(CATEGORIAS_OFICIALES).filter(Boolean))].sort();
+
+  const recargar = `ir('cPrest',{tipo:$('pTipo').value,est:$('pEst').value,alm:$('pAlm').value,ci:$('pCi').value,cat:$('pCat').value,proy:$('pProy').value,cuenta:$('pCuenta').value,desde:$('pDesde').value,hasta:$('pHasta').value})`;
+  const hayFiltros = Boolean(tipo || (estado && estado !== 'ABIERTOS') || (alm && alm !== 'TODOS' && alm !== S.ctx) || ciFiltro || cat || proy || cuenta || desde || hasta);
+
+  $('area').innerHTML = cab(tit, sub, botonesExport('gPr', tit + ' ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm))))
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('Almacén / Ubicación', `<select id="pAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes / ubicaciones</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
+        ${campo('Tipo', `<select id="pTipo" onchange="${recargar}">
+          <option value="">Todos (Préstamos y Asignaciones)</option>
+          <option value="PRH" ${tipo === 'PRH' ? 'selected' : ''}>PRH - Préstamos de herramientas</option>
+          <option value="ASI" ${tipo === 'ASI' ? 'selected' : ''}>ASI - Asignaciones a personas</option>
+        </select>`)}
+        ${campo('Estado', `<select id="pEst" onchange="${recargar}">
+          ${opciones([
+            ['ABIERTOS', 'Con saldo pendiente (Vigentes y Vencidos)'],
+            ['VIGENTE', 'Vigentes'],
+            ['VENCIDO', 'Vencidos'],
+            ['DEVOLUCIÓN PARCIAL', 'Devolución parcial'],
+            ['CERRADO', 'Cerrados'],
+            ['ENTREGADO', 'EPP entregado'],
+            ['', 'Todos los estados']
+          ], estado)}
+        </select>`)}
+        ${campo('Persona / Cédula', `<input id="pCi" value="${esc(ciFiltro || resp)}" placeholder="Cédula o nombre..." style="max-width:140px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Categoría', `<select id="pCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(listaCategoriasPrestamos, cat)}</select>`)}
+        ${campo('Proyecto', `<select id="pProy" onchange="${recargar}" style="max-width:180px">
+          <option value="">Todos los proyectos</option>
+          ${opciones(DB.proyectos.map(pr => [pr.cuenta, `${pr.cuenta} · ${(pr.nombre.length > 25 ? pr.nombre.slice(0, 25) + '…' : pr.nombre)}`]), proy)}
+        </select>`)}
+        ${campo('Cuenta aux.', `<input id="pCuenta" value="${esc(cuenta)}" placeholder="Ej. 10.01.05" style="max-width:110px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Desde', `<input type="date" id="pDesde" value="${esc(desde)}" onchange="${recargar}">`)}
+        ${campo('Hasta', `<input type="date" id="pHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
+        ${hayFiltros ? `<button class="btn btn-claro" onclick="ir('cPrest')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gPr', 'Buscar responsable, cédula, código, serial, descripción, categoría, vale…')}
+      </div>`
+    + grid('gPr', cols, rows, { pag: 25, onSel: r => tiraPr(r) })
+    + `<div class="sel-strip"><span class="lbl">Renglón seleccionado</span><span class="box" id="tpNum"></span><span class="box" id="tpInfo" style="flex:1"></span></div>
+    <div class="barra-btn">
+      <button class="btn-sip" id="pVer" disabled onclick="ir('doc',{num:selDe('gPr').v.num,back:'cPrest'})">Visualizar vale</button>
       <button class="btn-sip" id="pImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gPr').v.num)">Imprimir vale</button>
       <button class="btn-sip" id="pDev" disabled onclick="ir('dev',{vale:selDe('gPr').v.num})">Registrar devolución</button>
-      <button class="btn-sip" id="pPlz" disabled onclick="ir('plz',{vale:selDe('gPr').v.num})">Extender plazo</button></div>`;
+      <button class="btn-sip" id="pPlz" disabled onclick="ir('plz',{vale:selDe('gPr').v.num})">Extender plazo</button>
+      <button class="btn-sip" id="pKdx" disabled onclick="ir('cKardex',{q:selDe('gPr').l.serial || selDe('gPr').l.cod || selDe('gPr').it.cod})">Ver Kardex del ítem</button>
+    </div>`;
 }
-function tiraPr(v) { $('tpNum').textContent = v.num; $('tpInfo').textContent = `${v.resp ? v.resp.nombre : ''} · ${v.proyecto || ''}`; $('pVer').disabled = false; $('pImp').disabled = false; $('pDev').disabled = saldoVale(v) === 0; $('pPlz').disabled = !(v.tipo === 'PRH' && saldoVale(v) > 0); }
-VISTAS.cPrest = p => vistaPrestamos('Préstamos vigentes', 'Préstamos y asignaciones con saldo pendiente de devolución.', p ? p.tipo ?? 'PRH' : 'PRH', p ? p.est ?? 'ABIERTOS' : 'ABIERTOS', 'cPrest');
-VISTAS.cVenc = p => vistaPrestamos('Préstamos vencidos', 'Préstamos con fecha de devolución vencida y saldo pendiente.', 'PRH', p ? p.est ?? 'VENCIDO' : 'VENCIDO', 'cVenc');
-VISTAS.cAsig = p => vistaPrestamos('Asignaciones por persona', 'Herramientas asignadas y EPP entregado por trabajador.', 'ASI', p ? p.est ?? '' : '', 'cAsig');
+function tiraPr(r) {
+  if (!r) return;
+  const v = r.v;
+  $('tpNum').textContent = v.num;
+  const itTxt = `${r.respNom} (${r.respCI}) · ${r.l.cod || r.it.cod || ''} · ${r.it.desc || r.l.desc || ''}${r.l.serial ? ' (SN: ' + r.l.serial + ')' : ''} · Saldo: ${r.saldo} · Ubic: ${r.ubicacion}`;
+  $('tpInfo').textContent = itTxt;
+  $('pVer').disabled = false;
+  $('pImp').disabled = false;
+  $('pDev').disabled = r.saldo === 0;
+  $('pPlz').disabled = !(v.tipo === 'PRH' && r.saldo > 0);
+  if ($('pKdx')) $('pKdx').disabled = !(r.l.serial || r.l.cod || r.it.cod);
+}
+VISTAS.cPrest = p => vistaPrestamos('Préstamos y asignaciones', 'Control integral de préstamos vigentes, vencidos, devoluciones y asignaciones en ' + almNombre(S.ctx) + '.', p);
+VISTAS.cVenc = p => VISTAS.cPrest(Object.assign({ est: 'VENCIDO', tipo: 'PRH' }, p || {}));
+VISTAS.cAsig = p => VISTAS.cPrest(Object.assign({ tipo: 'ASI', est: '' }, p || {}));
 
 VISTAS.cIncid = p => {
-  const f = (p && p.f) || 'ABIERTAS';
-  let rows = DB.incid.filter(i => i.alm === S.ctx);
+  p = p || {};
+  const f = p.f || 'ABIERTAS';
+  const alm = p.alm || S.ctx;
+  const cat = p.cat || '';
+  let rows = DB.incid || [];
+  if (alm !== 'TODOS') rows = rows.filter(i => i.alm === alm);
   if (f === 'ABIERTAS') rows = rows.filter(i => ['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(i.estado));
+  else if (f === 'TRF') rows = rows.filter(i => i.origenTrf || i.destinoTrf);
   else if (f !== 'TODAS') rows = rows.filter(i => i.tipo === f);
+  if (cat) rows = rows.filter(r => (r.cat || (r.id && item(r.id) ? item(r.id).cat : '') || (DB.catalogo.find(i => i.cod === r.cod) || {}).cat || 'General') === cat);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
-  const cols = [{ t: 'Documento', k: 'valeRef' }, { t: 'Tipo', v: r => TIPOS[r.tipo].n }, { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha }, { t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Serial', k: 'serial' },
-    { t: 'Cant.', k: 'cant', cls: 'num' }, { t: 'Responsable', v: r => r.resp || '' }, { t: 'Mal uso', v: r => r.tipo === 'DAN' ? (r.malUso || 'NO') : '' }, { t: 'Tipo A', v: r => r.tipoA ? 'SI' : 'NO' },
-    { t: 'Detalle', v: r => r.detalle || '' }, { t: 'Estado', k: 'estado', f: r => estB(r.estado) }];
-  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja).',
-    `${botonesExport('gInc', 'Dañados y extraviados ' + almNombre(S.ctx))} <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
-    + `<div class="fila-filtros">${campo('Mostrar', `<select onchange="ir('cIncid',{f:this.value})">${opciones([['ABIERTAS', 'Casos abiertos'], ['DAN', 'Daños'], ['EXT', 'Robos / extravíos'], ['TODAS', 'Todos']], f)}</select>`)}${buscador('gInc')}</div>`
+  const esCentral = S.ctx === 'CENTRAL' || S.u.admin || enMaestro();
+  const cols = [
+    { t: 'Documento', k: 'valeRef' },
+    { t: 'Tipo', v: r => TIPOS[r.tipo].n },
+    { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
+    { t: 'Almacén / Origen', v: r => r.origenTrf ? `${almNombre(r.alm)} (desde ${almNombre(r.origenTrf)})` : (r.destinoTrf ? `${almNombre(r.alm)} (hacia ${almNombre(r.destinoTrf)})` : almNombre(r.alm)), f: r => r.origenTrf ? `<b>${esc(almNombre(r.alm))}</b> <span class="est est-ambar" style="font-size:10.5px">Desde ${esc(almNombre(r.origenTrf))}</span>` : (r.destinoTrf ? `<b>${esc(almNombre(r.alm))}</b> <span class="est est-azul" style="font-size:10.5px">→ ${esc(almNombre(r.destinoTrf))}</span>` : esc(almNombre(r.alm))) },
+    { t: 'Código', k: 'cod' },
+    { t: 'Descripción', k: 'desc' },
+    { t: 'Serial', k: 'serial' },
+    { t: 'Categoría', v: r => r.cat || (r.id && item(r.id) ? item(r.id).cat : '') || (DB.catalogo.find(i => i.cod === r.cod) || {}).cat || 'General' },
+    { t: 'Cant.', k: 'cant', cls: 'num' },
+    { t: 'Responsable', v: r => r.resp || '' },
+    { t: 'Mal uso', v: r => r.tipo === 'DAN' ? (r.malUso || 'NO') : '' },
+    { t: 'Detalle', v: r => r.detalle || '', td: 'wrap' },
+    { t: 'Estado', k: 'estado', f: r => estB(r.estado) }
+  ];
+  const listaCategoriasIncid = [...new Set((DB.catalogo || []).map(i => i.cat).concat(CATEGORIAS_OFICIALES).filter(Boolean))].sort();
+  const recarga = `ir('cIncid',{f:$('inFiltro').value,alm:$('inAlm')?$('inAlm').value:'${alm}',cat:$('inCat')?$('inCat').value:''})`;
+  const hayFiltros = Boolean((f && f !== 'ABIERTAS') || (alm && alm !== S.ctx && alm !== 'TODOS') || cat);
+  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja). Incluye ítems recibidos o enviados por transferencia.',
+    `${botonesExport('gInc', 'Dañados y extraviados ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm)))} <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('Mostrar', `<select id="inFiltro" onchange="${recarga}">${opciones([['ABIERTAS', 'Casos abiertos'], ['DAN', 'Daños directos'], ['TRF', 'Transferencias (recibidas / enviadas)'], ['EXT', 'Robos / extravíos'], ['TODAS', 'Todos los casos']], f)}</select>`)}
+        ${campo('Categoría', `<select id="inCat" onchange="${recarga}"><option value="">Todas las categorías</option>${opciones(listaCategoriasIncid, cat)}</select>`)}
+        ${esCentral ? campo('Almacén', `<select id="inAlm" onchange="${recarga}"><option value="CENTRAL" ${alm === 'CENTRAL' ? 'selected' : ''}>Almacén Central (y recibidos)</option><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.filter(a => a.c !== 'CENTRAL').map(a => [a.c, a.n]), alm)}</select>`) : ''}
+        ${hayFiltros ? `<button class="btn btn-claro" onclick="ir('cIncid')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gInc', 'Buscar código, descripción, serial, categoría, documento, responsable…')}
+      </div>`
     + grid('gInc', cols, rows, { pag: 15, onSel: r => tiraInc(r) })
     + `<div class="sel-strip"><span class="lbl">Caso seleccionado</span><span class="box" id="tiNum"></span><span class="box" id="tiInfo" style="flex:1"></span></div>
     <div class="barra-btn">
@@ -5287,7 +5511,9 @@ VISTAS.cIncid = p => {
     </div>`;
 };
 function tiraInc(r) {
-  $('tiNum').textContent = r.valeRef; $('tiInfo').textContent = `${r.cod} · ${r.desc} · ${r.estado}`;
+  $('tiNum').textContent = r.valeRef;
+  const origTxt = r.origenTrf ? ` · Recibido desde ${almNombre(r.origenTrf)}` : (r.destinoTrf ? ` · Transferido a ${almNombre(r.destinoTrf)} (${r.trfRef || ''})` : '');
+  $('tiInfo').innerHTML = `${esc(r.cod)} · ${esc(r.desc)} · ${estB(r.estado)}${origTxt}`;
   $('iRep').disabled = r.estado !== 'DAÑADO'; $('iOk').disabled = r.estado !== 'EN TALLER'; $('iHal').disabled = r.estado !== 'EN INVESTIGACIÓN';
   $('iBaja').disabled = !['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(r.estado); $('iVer').disabled = false;
 }
@@ -5295,6 +5521,135 @@ function accInc(a) {
   const r = selDe('gInc');
   const txt = { REPARABLE: 'Enviar a taller (pasa a taller)', REPARADO: 'Retorno de taller (vuelve a disponible)', RECUPERADO: 'Registrar hallazgo (vuelve a disponible)', BAJA: r.tipo === 'EXT' ? 'Cerrar investigación sin hallazgo y dar de baja' : 'Dar de baja (no reparable)' }[a];
   pedirTexto(txt, 'Nota (opcional)', v => { accionIncidencia(r.n, a, v); toast('Caso actualizado.', 'ok'); refrescar(); }, 'Confirmar');
+}
+
+function navTabsVales(activa) {
+  return `
+    <div style="display:flex;gap:8px;margin-bottom:14px;border-bottom:2px solid var(--borde);padding-bottom:10px;flex-wrap:wrap;align-items:center">
+      <button type="button" class="btn ${activa === 'resumen' ? 'btn-navy' : 'btn-claro'}" onclick="ir('cVales')" style="font-weight:800">
+        📑 1. Resumen por vale (Cabecera)
+      </button>
+      <button type="button" class="btn ${activa === 'detalle' ? 'btn-navy' : 'btn-claro'}" onclick="ir('cValesDet')" style="font-weight:800">
+        🔍 2. Detalle de vales emitidos (Ítem por ítem)
+      </button>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--texto-3)">
+        ${activa === 'resumen' ? '💡 Vista agrupada por número de vale.' : '💡 Vista desglosada renglón por renglón con código, descripción, serial y cantidad de cada ítem.'}
+      </span>
+    </div>
+  `;
+}
+
+function getValeMods(v) {
+  const mods = new Set();
+  (v.lineas || []).forEach(l => {
+    const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null);
+    if (it && it.mod) mods.add(it.mod);
+    else if (l.mod) mods.add(l.mod);
+  });
+  if (mods.size) return [...mods];
+  if (v.ref) {
+    const orig = valeDe(v.ref);
+    if (orig) {
+      (orig.lineas || []).forEach(l => {
+        const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null);
+        if (it && it.mod) mods.add(it.mod);
+      });
+    }
+  }
+  return mods.size ? [...mods] : ['HERRAMIENTA'];
+}
+
+function getValeCats(v) {
+  const cats = new Set();
+  (v.lineas || []).forEach(l => {
+    const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null);
+    if (it && it.cat) cats.add(it.cat);
+    else if (l.cat) cats.add(l.cat);
+  });
+  if (cats.size) return [...cats];
+  if (v.ref) {
+    const orig = valeDe(v.ref);
+    if (orig) {
+      (orig.lineas || []).forEach(l => {
+        const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null);
+        if (it && it.cat) cats.add(it.cat);
+      });
+    }
+  }
+  return [...cats];
+}
+
+function getStatusVale(v) {
+  const mods = getValeMods(v);
+  if (mods.includes('CILINDRO')) {
+    if (v.tipo === 'DEV') return 'DISPONIBLE';
+    if (['PRH', 'ASI'].includes(v.tipo)) {
+      return saldoVale(v) > 0 ? 'NO DISPONIBLE' : 'DISPONIBLE';
+    }
+    if (v.tipo === 'TRF') {
+      return v.estatus === 'RECIBIDA' ? 'DISPONIBLE' : 'NO DISPONIBLE';
+    }
+    if (['DAN', 'EXT'].includes(v.tipo)) return 'NO DISPONIBLE';
+    if (v.tipo === 'ENT') return 'DISPONIBLE';
+  }
+  return estadoVale(v);
+}
+
+function badgeStatus(v) {
+  const st = getStatusVale(v);
+  if (st === 'DISPONIBLE') return '<span class="est est-verde" style="font-weight:700">DISPONIBLE</span>';
+  if (st === 'NO DISPONIBLE') return '<span class="est est-rojo" style="font-weight:700">NO DISPONIBLE</span>';
+  return estB(st);
+}
+
+function chipCondicion(c) {
+  if (!c || c === '—' || c === 'N/A') return '<span style="color:var(--texto-3)">—</span>';
+  const val = String(c).trim().toUpperCase();
+  if (['ÓPTIMO', 'OPTIMO', 'BUENO', 'OPERATIVO', 'NUEVO', 'LLENO', 'DEVUELTO (BUENO)'].includes(val)) {
+    return `<span class="est est-verde" style="font-weight:700">🟢 ${esc(val)}</span>`;
+  }
+  if (['REGULAR', 'USADO', 'VACÍO', 'VACIO', 'PENDIENTE', 'POR REVISAR', 'DEV. PARCIAL'].includes(val)) {
+    return `<span class="est est-ambar" style="font-weight:700">🟡 ${esc(val)}</span>`;
+  }
+  if (['DAÑADO', 'DANADO', 'EXTRAVIADO', 'ROBADO', 'INOPERATIVO', 'DEFECTUOSO', 'BAJA', 'EN REVISIÓN'].includes(val)) {
+    return `<span class="est est-rojo" style="font-weight:700">🔴 ${esc(val)}</span>`;
+  }
+  return `<span class="est est-gris" style="font-weight:600">${esc(val)}</span>`;
+}
+
+function getCondEntrega(r) {
+  if (!r) return '—';
+  if (r.l && r.l.condEntrega) return r.l.condEntrega;
+  if (r.v && r.v.tipo === 'DAN') return 'DAÑADO';
+  if (r.v && r.v.tipo === 'EXT') return 'EXTRAVIADO';
+  if (r.v && r.v.tipo === 'DEV') return 'ÓPTIMO';
+  if (r.l && (r.l.cond || r.l.condicion)) return r.l.cond || r.l.condicion;
+  return (r.mod === 'CILINDRO' ? 'LLENO' : 'ÓPTIMO');
+}
+
+function getCondRetorno(r) {
+  if (!r) return '—';
+  if (r.v && r.v.tipo === 'DEV') {
+    return (r.l && (r.l.condRet || r.l.cond || r.l.condicion)) || 'ÓPTIMO';
+  }
+  if (r.v && (r.v.tipo === 'DAN' || r.v.tipo === 'EXT')) {
+    return r.v.tipo === 'DAN' ? 'DAÑADO' : 'EXTRAVIADO';
+  }
+  if (r.v && ['PRH', 'ASI'].includes(r.v.tipo)) {
+    if (r.l && r.l.condRet) return r.l.condRet;
+    const cantDev = Number(r.l && r.l.dev) || 0;
+    const cantTot = Number(r.l && r.l.cant) || 1;
+    if (cantDev > 0) {
+      const vDev = (DB.vales || []).find(v => v.tipo === 'DEV' && v.ref === r.v.num && (v.lineas || []).some(ld => ld.id === r.l.id || ld.cod === r.l.cod));
+      if (vDev) {
+        const ld = vDev.lineas.find(ld => ld.id === r.l.id || ld.cod === r.l.cod);
+        if (ld && (ld.condRet || ld.cond || ld.condicion)) return ld.condRet || ld.cond || ld.condicion;
+      }
+      return cantDev >= cantTot ? 'ÓPTIMO' : 'DEV. PARCIAL';
+    }
+    return 'PENDIENTE';
+  }
+  return '—';
 }
 
 VISTAS.cVales = p => {
@@ -5307,69 +5662,6 @@ VISTAS.cVales = p => {
   const vale = p.vale || '';
   const desde = p.desde || '';
   const hasta = p.hasta || '';
-
-  const getValeMods = v => {
-    const mods = new Set();
-    (v.lineas || []).forEach(l => {
-      const it = item(l.id);
-      if (it && it.mod) mods.add(it.mod);
-      else if (l.mod) mods.add(l.mod);
-    });
-    if (mods.size) return [...mods];
-    if (v.ref) {
-      const orig = valeDe(v.ref);
-      if (orig) {
-        (orig.lineas || []).forEach(l => {
-          const it = item(l.id);
-          if (it && it.mod) mods.add(it.mod);
-        });
-      }
-    }
-    return mods.size ? [...mods] : ['HERRAMIENTA'];
-  };
-
-  const getValeCats = v => {
-    const cats = new Set();
-    (v.lineas || []).forEach(l => {
-      const it = item(l.id);
-      if (it && it.cat) cats.add(it.cat);
-      else if (l.cat) cats.add(l.cat);
-    });
-    if (cats.size) return [...cats];
-    if (v.ref) {
-      const orig = valeDe(v.ref);
-      if (orig) {
-        (orig.lineas || []).forEach(l => {
-          const it = item(l.id);
-          if (it && it.cat) cats.add(it.cat);
-        });
-      }
-    }
-    return [...cats];
-  };
-
-  const getStatusVale = v => {
-    const mods = getValeMods(v);
-    if (mods.includes('CILINDRO')) {
-      if (v.tipo === 'DEV') return 'DISPONIBLE';
-      if (['PRH', 'ASI'].includes(v.tipo)) {
-        return saldoVale(v) > 0 ? 'NO DISPONIBLE' : 'DISPONIBLE';
-      }
-      if (v.tipo === 'TRF') {
-        return v.estatus === 'RECIBIDA' ? 'DISPONIBLE' : 'NO DISPONIBLE';
-      }
-      if (['DAN', 'EXT'].includes(v.tipo)) return 'NO DISPONIBLE';
-      if (v.tipo === 'ENT') return 'DISPONIBLE';
-    }
-    return estadoVale(v);
-  };
-
-  const badgeStatus = v => {
-    const st = getStatusVale(v);
-    if (st === 'DISPONIBLE') return '<span class="est est-verde" style="font-weight:700">DISPONIBLE</span>';
-    if (st === 'NO DISPONIBLE') return '<span class="est est-rojo" style="font-weight:700">NO DISPONIBLE</span>';
-    return estB(st);
-  };
 
   let rows = DB.vales.filter(v => {
     // Almacén destino (filtrar exclusivamente por el almacén destino del vale)
@@ -5414,7 +5706,7 @@ VISTAS.cVales = p => {
     { t: 'N° de Salida TIMACA', v: r => r.salidaTimaca || r.numSalida || '—' },
     { t: 'Cant. Retornada', v: r => r.tipo === 'DEV' ? (r.lineas || []).reduce((a, l) => a + (Number(l.cant) || 0), 0) : ['PRH', 'ASI'].includes(r.tipo) ? ((r.lineas || []).reduce((a, l) => a + (Number(l.dev) || 0), 0) || '—') : '—', cls: 'num' },
     { t: 'Saldo por Devolver', v: r => ['PRH', 'ASI'].includes(r.tipo) ? saldoVale(r) : '—', cls: 'num' },
-    { t: 'Condición de Retorno', v: r => { const conds = (r.lineas || []).map(l => l.condicion || l.cond || l.condRet).filter(Boolean); return conds.length ? [...new Set(conds)].join(', ') : (r.tipo === 'DEV' ? 'ÓPTIMO' : '—'); } },
+    { t: 'Condición de Retorno', v: r => { const conds = (r.lineas || []).map(l => l.condicion || l.cond || l.condRet).filter(Boolean); return conds.length ? [...new Set(conds)].join(', ') : (r.tipo === 'DEV' ? 'ÓPTIMO' : '—'); }, f: r => { const conds = (r.lineas || []).map(l => l.condicion || l.cond || l.condRet).filter(Boolean); const txt = conds.length ? [...new Set(conds)].join(', ') : (r.tipo === 'DEV' ? 'ÓPTIMO' : '—'); return chipCondicion(txt); } },
     { t: 'Días de Atraso', v: r => (r.tipo === 'PRH' && r.fechaDev && r.fechaDev < hoy() && saldoVale(r) > 0) ? diasEntre(r.fechaDev, hoy()) : 0, cls: 'num', f: r => { const d = (r.tipo === 'PRH' && r.fechaDev && r.fechaDev < hoy() && saldoVale(r) > 0) ? diasEntre(r.fechaDev, hoy()) : 0; return d > 0 ? `<span style="color:#dc2626;font-weight:700">${d} días</span>` : '<span style="color:#6b7280">0</span>'; } },
     { t: 'Status', v: r => getStatusVale(r), f: r => badgeStatus(r) },
     { t: 'Observaciones', v: r => r.obs || r.observaciones || '—', td: 'wrap' }
@@ -5423,10 +5715,11 @@ VISTAS.cVales = p => {
   const recargar = `ir('cVales',{tipo:$('vTipo').value,mod:$('vMod').value,cat:$('vCat').value,alm:$('vAlm').value,proy:$('vProy').value,vale:$('vVale').value,desde:$('vDesde').value,hasta:$('vHasta').value})`;
 
   $('area').innerHTML = cab('Vales emitidos (Trazabilidad integral)', 'Todos los vales y movimientos (Herramientas, Cilindros y EPP). Filtrado por destino, N° de vale, movimiento, módulo, categoría, proyecto y fechas.', botonesExport('gVal', 'Vales emitidos ' + (alm && alm !== 'TODOS' ? ('Destino ' + almNombre(alm)) : 'Todos los destinos')))
+    + navTabsVales('resumen')
     + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
         ${campo('N° de Vale', `<input id="vVale" value="${esc(vale)}" placeholder="Ej. PRH-000001" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Almacén destino', `<select id="vAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' || !alm ? 'selected' : ''}>Todos los destinos</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
-        ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
+        ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
         ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
         ${campo('Categoría', `<select id="vCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
         ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
@@ -5435,9 +5728,146 @@ VISTAS.cVales = p => {
         ${(tipo || mod || cat || (alm && alm !== 'TODOS') || proy || vale || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
         ${buscador('gVal', 'Buscar código, serial, cédula, responsable, vale…')}
       </div>`
-    + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; } })
-    + `<div class="barra-btn"><button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,back:'cVales'})">Visualizar</button><button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num)">Imprimir vale</button></div>`;
+    + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; $('vDet').disabled = false; } })
+    + `<div class="barra-btn">
+        <button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,back:'cVales'})">Visualizar</button>
+        <button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num)">Imprimir vale</button>
+        <button class="btn-sip" id="vDet" disabled onclick="ir('cValesDet',{vale:selDe('gVal').num})">Ver detalle de ítems</button>
+      </div>`;
 };
+
+VISTAS.cValesDet = p => {
+  p = p || {};
+  const tipo = p.tipo || '';
+  const mod = p.mod || '';
+  const cat = p.cat || '';
+  const alm = p.alm || '';
+  const proy = p.proy || '';
+  const vale = p.vale || '';
+  const itemFiltro = (p.item || '').trim().toUpperCase();
+  const desde = p.desde || '';
+  const hasta = p.hasta || '';
+
+  let rows = [];
+  (DB.vales || []).forEach(v => {
+    // Almacén destino / origen
+    if (alm && alm !== 'TODOS') {
+      if (v.destino !== alm && v.origen !== alm) return;
+    }
+    // N° de vale
+    if (vale) {
+      if (!(v.num || '').toUpperCase().includes(vale.toUpperCase().trim())) return;
+    }
+    // Tipo de movimiento
+    if (tipo && v.tipo !== tipo) return;
+    // Proyecto / cuenta
+    if (proy) {
+      const matchCta = (v.cuenta || '').toUpperCase().includes(proy.toUpperCase());
+      const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
+      if (!matchCta && !matchP) return;
+    }
+    // Fechas
+    const fStr = (v.fecha || '').slice(0, 10);
+    if (desde && fStr < desde) return;
+    if (hasta && fStr > hasta) return;
+
+    // Renglones / ítems contenidos
+    const lineas = (v.lineas && v.lineas.length) ? v.lineas : [{ cod: '—', desc: v.obs || 'Sin renglones especificados', cant: 1 }];
+    lineas.forEach(l => {
+      const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null) || {};
+      const modLinea = l.mod || it.mod || (getValeMods(v)[0] || 'HERRAMIENTA');
+      const catLinea = l.cat || it.cat || 'General';
+
+      if (mod && modLinea !== mod) return;
+      if (cat && catLinea !== cat) return;
+      if (itemFiltro) {
+        const cMatch = (l.cod || it.cod || '').toUpperCase().includes(itemFiltro);
+        const sMatch = (l.serial || it.serial || '').toUpperCase().includes(itemFiltro);
+        const dMatch = (it.desc || l.desc || '').toUpperCase().includes(itemFiltro);
+        const mMatch = (it.marca || l.marca || '').toUpperCase().includes(itemFiltro);
+        if (!cMatch && !sMatch && !dMatch && !mMatch) return;
+      }
+
+      rows.push({
+        v,
+        l,
+        it,
+        mod: modLinea,
+        cat: catLinea
+      });
+    });
+  });
+
+  rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha));
+
+  const cols = [
+    { t: 'N° de Vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
+    { t: 'Tipo de movimiento', v: r => TIPOS[r.v.tipo] ? TIPOS[r.v.tipo].n : r.v.tipo },
+    { t: 'Módulo', v: r => MODULOS[r.mod] || r.mod, f: r => `<span class="chip-mod m-${r.mod}" style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">${esc(MODULOS[r.mod] || r.mod)}</span>` },
+    { t: 'Fecha y hora', v: r => fFH(r.v.fecha), s: r => r.v.fecha },
+    { t: 'Origen', v: r => almNombre(r.v.origen).replace('Almacén ', '') },
+    { t: 'Destino', v: r => almNombre(r.v.destino).replace('Almacén ', '') },
+    { t: 'Cuenta Auxiliar', v: r => r.v.cuenta || '—', f: r => r.v.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.v.cuenta)}</span>` : '—' },
+    { t: 'Descripción del proyecto', v: r => r.v.proyecto || '—', td: 'wrap' },
+    { t: 'Código del ítem', v: r => r.l.cod || r.it.cod || '—', f: r => `<b>${esc(r.l.cod || r.it.cod || '—')}</b>` },
+    { t: 'Descripción del ítem', v: r => r.it.desc || r.l.desc || '—', td: 'wrap' },
+    { t: 'Marca / Modelo', v: r => [r.it.marca || r.l.marca, r.it.modelo || r.l.modelo].filter(Boolean).join(' / ') || '—' },
+    { t: 'Serial', v: r => r.l.serial || r.it.serial || '—', f: r => (r.l.serial || r.it.serial) ? `<span style="font-family:monospace;font-weight:700">${esc(r.l.serial || r.it.serial)}</span>` : '—' },
+    { t: 'Categoría', v: r => r.cat || (r.it && r.it.cat) || '—' },
+    { t: 'Cant.', v: r => Number(r.l.cant) || 1, cls: 'num' },
+    { t: 'UMB', v: r => r.it.umb || r.l.umb || 'UND', cls: 'cen' },
+    { t: 'Despachado por', v: r => r.v.despacha || (r.v.realizadoPor ? (r.v.realizadoPor.nombre || r.v.realizadoPor) : '—') },
+    { t: 'N° de Referencia', v: r => r.v.ref || r.v.solicitud || '—' },
+    { t: 'Responsable', v: r => r.v.resp ? (r.v.resp.nombre || r.v.resp) : '—' },
+    { t: 'Cédula', v: r => (r.v.resp && r.v.resp.cedula) ? r.v.resp.cedula : '—' },
+    { t: 'Cargo', v: r => (r.v.resp && r.v.resp.cargo) ? r.v.resp.cargo : '—' },
+    { t: 'Supervisor', v: r => r.v.sup || r.v.supervisor || '—' },
+    { t: 'N° de Salida TIMACA', v: r => r.v.salidaTimaca || r.v.numSalida || '—' },
+    { t: 'Cant. Retornada', v: r => r.v.tipo === 'DEV' ? (Number(r.l.cant) || 0) : ['PRH', 'ASI'].includes(r.v.tipo) ? (r.l.dev !== undefined ? Number(r.l.dev) : '—') : '—', cls: 'num' },
+    { t: 'Saldo por Devolver', v: r => ['PRH', 'ASI'].includes(r.v.tipo) ? Math.max(0, (Number(r.l.cant) || 1) - (Number(r.l.dev) || 0)) : '—', cls: 'num' },
+    { t: 'Condición de Entrega', v: r => getCondEntrega(r), f: r => chipCondicion(getCondEntrega(r)) },
+    { t: 'Condición de Retorno', v: r => getCondRetorno(r), f: r => chipCondicion(getCondRetorno(r)) },
+    { t: 'Días de Atraso', v: r => (r.v.tipo === 'PRH' && r.v.fechaDev && r.v.fechaDev < hoy() && saldoVale(r.v) > 0) ? diasEntre(r.v.fechaDev, hoy()) : 0, cls: 'num', f: r => { const d = (r.v.tipo === 'PRH' && r.v.fechaDev && r.v.fechaDev < hoy() && saldoVale(r.v) > 0) ? diasEntre(r.v.fechaDev, hoy()) : 0; return d > 0 ? `<span style="color:#dc2626;font-weight:700">${d} días</span>` : '<span style="color:#6b7280">0</span>'; } },
+    { t: 'Status del Vale', v: r => getStatusVale(r.v), f: r => badgeStatus(r.v) },
+    { t: 'Observaciones', v: r => r.l.obs || r.v.obs || r.v.observaciones || '—', td: 'wrap' }
+  ];
+
+  const listaCategoriasVales = [...new Set((DB.catalogo || []).map(i => i.cat).concat(CATEGORIAS_OFICIALES).filter(Boolean))].sort();
+
+  const recargar = `ir('cValesDet',{tipo:$('vdTipo').value,mod:$('vdMod').value,cat:$('vdCat').value,alm:$('vdAlm').value,proy:$('vdProy').value,vale:$('vdValeIn').value,item:$('vdItemIn').value,desde:$('vdDesde').value,hasta:$('vdHasta').value})`;
+
+  $('area').innerHTML = cab('Detalle de vales emitidos (Ítem por ítem)', 'Desglose renglón por renglón de cada vale y movimiento. Muestra código, descripción, serial, marca, cantidad, almacén origen, destino y trazabilidad completa.', botonesExport('gValDet', 'Detalle de vales emitidos ' + (alm && alm !== 'TODOS' ? ('Destino ' + almNombre(alm)) : 'Todos los destinos')))
+    + navTabsVales('detalle')
+    + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        ${campo('N° de Vale', `<input id="vdValeIn" value="${esc(vale)}" placeholder="Ej. TRF-00064" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Código / Serial / Ítem', `<input id="vdItemIn" value="${esc(itemFiltro)}" placeholder="Código, serial..." style="max-width:140px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
+        ${campo('Almacén destino', `<select id="vdAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' || !alm ? 'selected' : ''}>Todos los destinos</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
+        ${campo('Tipo de movimiento', `<select id="vdTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
+        ${campo('Módulo', `<select id="vdMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
+        ${campo('Categoría', `<select id="vdCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(listaCategoriasVales, cat)}</select>`)}
+        ${campo('Proyecto / Cuenta', `<select id="vdProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
+        ${campo('Desde', `<input type="date" id="vdDesde" value="${esc(desde)}" onchange="${recargar}">`)}
+        ${campo('Hasta', `<input type="date" id="vdHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
+        ${(tipo || mod || cat || (alm && alm !== 'TODOS') || proy || vale || itemFiltro || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cValesDet')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${buscador('gValDet', 'Buscar código, descripción, serial, vale, responsable…')}
+      </div>`
+    + grid('gValDet', cols, rows, { pag: 25, onSel: r => tiraValDet(r) })
+    + `<div class="sel-strip"><span class="lbl">Renglón seleccionado</span><span class="box" id="vdVale"></span><span class="box" id="vdItem" style="flex:1"></span></div>
+    <div class="barra-btn">
+      <button class="btn-sip" id="vdVer" disabled onclick="ir('doc',{num:selDe('gValDet').v.num,back:'cValesDet'})">Visualizar vale</button>
+      <button class="btn-sip" id="vdImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gValDet').v.num)">Imprimir vale</button>
+      <button class="btn-sip" id="vdKdx" disabled onclick="ir('cKardex',{q:selDe('gValDet').l.serial || selDe('gValDet').l.cod || selDe('gValDet').it.cod})">Ver Kardex del ítem</button>
+    </div>`;
+};
+function tiraValDet(r) {
+  $('vdVale').textContent = r.v.num;
+  const serialTxt = (r.l.serial || r.it.serial) ? ` · Serial: ${r.l.serial || r.it.serial}` : '';
+  const descTxt = r.it.desc || r.l.desc || '—';
+  $('vdItem').textContent = `${r.l.cod || r.it.cod || ''} · ${descTxt}${serialTxt} · Cant: ${r.l.cant || 1} ${r.it.umb || r.l.umb || 'UND'} · ${almNombre(r.v.origen).replace('Almacén ', '')} ➔ ${almNombre(r.v.destino).replace('Almacén ', '')}`;
+  $('vdVer').disabled = false;
+  $('vdImp').disabled = false;
+  $('vdKdx').disabled = !(r.l.cod || r.it.cod || r.l.serial);
+}
 const colsKardex = maestro => [{ t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha }, { t: 'Documento', k: 'doc' }, { t: 'Movimiento', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo }, { t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Serial', k: 'serial' },
   { t: 'Cant.', k: 'cant', cls: 'num' }, { t: 'Origen', v: r => almNombre(r.origen) }, { t: 'Destino', v: r => almNombre(r.destino) }, { t: 'Estado anterior', k: 'estAnt' }, { t: 'Estado nuevo', k: 'estNue' },
   { t: 'Responsable', k: 'resp' }, { t: 'Usuario', k: 'usr' }, { t: 'Observación', k: 'obs' }].concat(maestro ? [{ t: 'Valor USD', v: r => +(r.cant * (item(r.id).costo || 0)).toFixed(2), cls: 'num' }] : []);
@@ -5833,11 +6263,11 @@ function urgOcultar() { pendientesPorAceptar().forEach(v => S_ALERTA.ocultos.add
    ===================================================================== */
 VISTAS.aUsr = () => {
   const permTxt = u => u.admin ? 'Administrador' : ['aprobar', 'transferir', 'recibir'].map(p => u.perm[p].length ? `${{ aprobar: 'Aprueba', transferir: 'Transfiere', recibir: 'Recibe' }[p]}: ${u.perm[p].join(', ')}` : '').filter(Boolean).join(' · ');
-  const cols = [{ t: 'Usuario', k: 'usuario' }, { t: 'Nombre', k: 'nombre' }, { t: 'Cédula', k: 'cedula' }, { t: 'Cargo', k: 'cargo' }, { t: 'Almacenes', v: u => u.admin ? 'Todos' : u.almacenes.join(', ') },
+  const cols = [{ t: 'Usuario', k: 'usuario' }, { t: 'Nombre', k: 'nombre' }, { t: 'Cargo', k: 'cargo' }, { t: 'Almacenes', v: u => u.admin ? 'Todos' : u.almacenes.join(', ') },
     { t: 'Permisos', v: permTxt }, { t: 'Maestro', v: u => u.admin || u.maestro ? 'SI' : 'NO' }, { t: 'Edita costos', v: u => u.admin || u.editaCostos ? 'SI' : 'NO' }, { t: 'Estado', v: u => u.activo ? 'ACTIVO' : 'INACTIVO', f: u => estB(u.activo ? 'ACTIVO' : 'INACTIVO') }];
   $('area').innerHTML = cab('Usuarios y permisos', 'Los permisos se asignan por usuario y por almacén. Cada cambio queda registrado en la bitácora.')
-    + `<div class="fila-filtros">${buscador('gUsr')}</div>` + grid('gUsr', cols, DB.usuarios, { onSel: () => { $('uEd').disabled = false; $('uAct').disabled = false; } })
-    + `<div class="barra-btn"><button class="btn-sip" onclick="editarUsuario()">Nuevo usuario</button><button class="btn-sip" id="uEd" disabled onclick="editarUsuario(selDe('gUsr').usuario)">Editar usuario y permisos</button><button class="btn-sip" id="uAct" disabled onclick="activarUsuario()">Activar / desactivar</button></div>`;
+    + `<div class="fila-filtros">${buscador('gUsr')}</div>` + grid('gUsr', cols, DB.usuarios, { onSel: () => { $('uEd').disabled = false; $('uAct').disabled = false; if ($('uDel')) $('uDel').disabled = false; } })
+    + `<div class="barra-btn"><button class="btn-sip" onclick="editarUsuario()">Nuevo usuario</button><button class="btn-sip" id="uEd" disabled onclick="editarUsuario(selDe('gUsr').usuario)">Editar usuario y permisos</button><button class="btn-sip" id="uAct" disabled onclick="activarUsuario()">Activar / desactivar</button><button class="btn-sip btn-rojo" id="uDel" disabled onclick="eliminarUsuario()">🗑️ Eliminar usuario</button></div>`;
 };
 function editarUsuario(usr) {
   const u = usr ? userDe(usr) : { usuario: '', clave: '', nombre: '', cedula: '', cargo: '', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: [], perm: { aprobar: [], transferir: [], recibir: [] } };
@@ -5845,7 +6275,7 @@ function editarUsuario(usr) {
   const filas = DB.almacenes.map(a => `<tr><td>${esc(a.n)}</td>${chk('acc|' + a.c, u.almacenes.includes(a.c)).replace(/^/, '<td>') + '</td>'}<td>${chk('aprobar|' + a.c, u.perm.aprobar.includes(a.c))}</td><td>${chk('transferir|' + a.c, u.perm.transferir.includes(a.c))}</td><td>${chk('recibir|' + a.c, u.perm.recibir.includes(a.c))}</td></tr>`).join('');
   abrirModal(usr ? 'Editar usuario ' + usr : 'Nuevo usuario', `<div class="f3">
       ${campo('Usuario', `<input id="euU" value="${esc(u.usuario)}" ${usr ? 'readonly' : ''}>`)}${campo('Clave', `<input id="euC" type="password" placeholder="${usr ? 'Dejar vacío para no cambiar' : ''}">`)}${campo('Nombre', `<input id="euN" value="${esc(u.nombre)}">`)}
-      ${campo('Cédula', `<input id="euCe" value="${esc(u.cedula)}">`)}${campo('Cargo', `<input id="euCa" value="${esc(u.cargo)}">`)}<div></div>
+      ${campo('Cargo', `<input id="euCa" value="${esc(u.cargo)}" placeholder="Cargo del usuario">`)}
     </div>
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 12px;font-size:12.5px">
       <label><input type="checkbox" id="euAdm" ${u.admin ? 'checked' : ''}> Administrador</label>
@@ -5864,7 +6294,7 @@ function guardarUsuario(usr) {
   const antes = JSON.stringify({ admin: u.admin, maestro: u.maestro, editaCostos: u.editaCostos, almacenes: u.almacenes, perm: u.perm });
   const m = { acc: [], aprobar: [], transferir: [], recibir: [] };
   document.querySelectorAll('.pm').forEach(c => { if (c.checked) { const [k, a] = c.dataset.k.split('|'); m[k].push(a); } });
-  Object.assign(u, { nombre: $('euN').value.trim(), cedula: $('euCe').value.trim(), cargo: $('euCa').value.trim(), admin: $('euAdm').checked, maestro: $('euMae').checked, editaCostos: $('euCos').checked,
+  Object.assign(u, { nombre: $('euN').value.trim(), cargo: $('euCa').value.trim(), admin: $('euAdm').checked, maestro: $('euMae').checked, editaCostos: $('euCos').checked,
     almacenes: m.acc, perm: { aprobar: m.aprobar, transferir: m.transferir, recibir: m.recibir } });
   if ($('euC').value) u.clave = $('euC').value;
   if (nuevo) DB.usuarios.push(u);
@@ -5872,6 +6302,31 @@ function guardarUsuario(usr) {
   bit(nuevo ? 'USUARIO CREADO' : 'PERMISOS MODIFICADOS', `${usuario} · Antes: ${nuevo ? '—' : antes} · Después: ${despues}`);
   guardar(); cerrarModal(); toast('Usuario guardado.', 'ok'); refrescar();
 }
+function eliminarUsuario() {
+  const u = selDe('gUsr');
+  if (!u) return toast('Seleccione un usuario para eliminar.', 'err');
+  if (S.u && u.usuario.toLowerCase() === S.u.usuario.toLowerCase()) {
+    return toast('No puede eliminar el usuario con el que actualmente tiene la sesión iniciada.', 'err');
+  }
+  if (u.usuario.toLowerCase() === 'drivero' || u.alias === 'daniela') {
+    return toast('No se puede eliminar a la supervisora general y creadora del sistema.', 'err');
+  }
+  confirmar(`¿Está seguro de que desea eliminar permanentemente al usuario <b>${esc(u.usuario)}</b> (${esc(u.nombre)})?<br><br><small style="color:var(--rojo)">Esta acción borrará la cuenta y sus credenciales de acceso al sistema.</small>`, () => {
+    const idx = DB.usuarios.findIndex(x => x.usuario.toLowerCase() === u.usuario.toLowerCase());
+    if (idx !== -1) {
+      const eliminado = DB.usuarios.splice(idx, 1)[0];
+      DB.usuariosEliminados = DB.usuariosEliminados || [];
+      if (!DB.usuariosEliminados.includes(eliminado.usuario.toLowerCase())) {
+        DB.usuariosEliminados.push(eliminado.usuario.toLowerCase());
+      }
+      bit('USUARIO ELIMINADO', `${eliminado.usuario} (${eliminado.nombre})`);
+      guardar();
+      toast(`Usuario "${eliminado.usuario}" eliminado correctamente.`, 'ok');
+      refrescar();
+    }
+  }, 'Eliminar usuario');
+}
+
 function activarUsuario() { const u = selDe('gUsr'); if (u.usuario === S.u.usuario) return toast('No puede desactivar su propio usuario.', 'err'); u.activo = !u.activo; bit('USUARIO ' + (u.activo ? 'ACTIVADO' : 'DESACTIVADO'), u.usuario); guardar(); refrescar(); }
 
 function vistaListaMaestra(tipo) {
@@ -5955,13 +6410,31 @@ VISTAS.aPers = () => {
           </select>
         </div>
       </div>`
-    + grid('gPers', cols, rows, { pag: 25, onSel: () => { if ($('btnEdPers')) $('btnEdPers').disabled = false; if ($('btnActPers')) $('btnActPers').disabled = false; } })
+    + grid('gPers', cols, rows, { pag: 25, onSel: () => { if ($('btnEdPers')) $('btnEdPers').disabled = false; if ($('btnActPers')) $('btnActPers').disabled = false; if ($('btnDelPers')) $('btnDelPers').disabled = false; } })
     + `<div class="barra-btn">
         <button class="btn-sip" onclick="editarRegistroPersonal()">➕ Nuevo registro</button>
         <button class="btn-sip" id="btnEdPers" disabled onclick="editarRegistroPersonal(selDe('gPers'))">✏️ Editar registro</button>
         <button class="btn-sip" id="btnActPers" disabled onclick="toggleActivoPersonal(selDe('gPers'))">🔄 Activar / Desactivar</button>
+        <button class="btn-sip btn-rojo" id="btnDelPers" disabled onclick="eliminarRegistroPersonal(selDe('gPers'))">🗑️ Eliminar</button>
       </div>`;
 };
+
+function eliminarRegistroPersonal(p) {
+  if (!p) return toast('Seleccione una persona para eliminar.', 'err');
+  confirmar(`¿Está seguro de que desea eliminar permanentemente a <b>${esc(p.nombre)}</b> (${esc(p.cedula || 'S/C')}) de la lista de responsables y supervisores?<br><br><small style="color:var(--rojo)">Esta persona dejará de aparecer en las listas oficiales y en la creación de vales.</small>`, () => {
+    const idx = DB.personal.findIndex(x => (x.cedula && p.cedula && x.cedula !== 'S/C' && x.cedula === p.cedula) || normTexto(x.nombre) === normTexto(p.nombre));
+    if (idx !== -1) {
+      const eliminado = DB.personal.splice(idx, 1)[0];
+      DB.personalEliminado = DB.personalEliminado || [];
+      const claveDel = (eliminado.cedula && eliminado.cedula !== 'S/C') ? digitosCI(eliminado.cedula) : normTexto(eliminado.nombre);
+      if (!DB.personalEliminado.includes(claveDel)) DB.personalEliminado.push(claveDel);
+      bit('PERSONAL ELIMINADO', `${eliminado.nombre} (${eliminado.cedula || 'S/C'})`);
+      guardar();
+      toast(`"${p.nombre}" fue eliminado de la lista correctamente.`, 'ok');
+      ir('aPers');
+    }
+  }, 'Eliminar persona');
+}
 
 function toggleActivoPersonal(p) {
   if (!p) return;
@@ -6073,6 +6546,114 @@ function editarRegistroPersonal(r) {
       cerrarModal();
       toast('Registro de personal guardado exitosamente.', 'ok');
       ir('aPers');
+    }) }
+  ], true);
+}
+
+function abrirModalNuevoPersonalRapido(rolDefecto) {
+  const almsDef = (S.ctx && S.ctx !== 'MAESTRO') ? [S.ctx] : ['CENTRAL'];
+  const esResp = rolDefecto === 'RESPONSABLE';
+  const esSup = rolDefecto === 'SUPERVISOR';
+
+  const cuerpo = `
+    <div class="f3">
+      ${campo('Nombre completo *', `<input id="rapNom" placeholder="Ej. Juan Pérez">`)}
+      ${campo('Cédula de identidad *', `<input id="rapCed" placeholder="Ej. V-12.345.678 o S/C">`)}
+      ${campo('Cargo oficial *', `<input id="rapCargo" placeholder="Ej. Montador, Soldador, Supervisor...">`)}
+    </div>
+    <div style="margin-top:10px">
+      <label style="font-size:12px;font-weight:700;display:block;margin-bottom:6px">Rol en el sistema *</label>
+      <div style="display:flex;gap:20px;padding:8px 12px;background:var(--fondo-gris,#f8fafc);border-radius:6px;border:1px solid var(--borde)">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="rapRolResp" ${esResp ? 'checked' : ''}>
+          <span><b>Responsable custodio</b> (solicita y recibe ítems en vales)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="rapRolSup" ${esSup ? 'checked' : ''}>
+          <span><b>Supervisor</b> (autoriza vales y movimientos)</span>
+        </label>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <label style="font-size:12px;font-weight:700">Almacenes autorizados *</label>
+        <div style="font-size:11.5px">
+          <a href="#" onclick="event.preventDefault();document.querySelectorAll('.rapAlmChk').forEach(c=>c.checked=true)">Marcar todos</a> · 
+          <a href="#" onclick="event.preventDefault();document.querySelectorAll('.rapAlmChk').forEach(c=>c.checked=false)">Desmarcar todos</a>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px;background:var(--fondo-gris,#f8fafc);border-radius:6px;border:1px solid var(--borde)">
+        ${DB.almacenes.map(a => `
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+            <input type="checkbox" class="rapAlmChk" value="${a.c}" ${(almsDef.includes(a.c) || a.c === 'CENTRAL') ? 'checked' : ''}>
+            <span>${esc(a.n)}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  abrirModal('➕ Agregar nueva persona al sistema', cuerpo, [
+    { t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal },
+    { t: 'Guardar y usar', cls: 'btn-verde', fn: () => run(() => {
+      const nom = $('rapNom').value.trim();
+      let ced = $('rapCed').value.trim();
+      const cargo = $('rapCargo').value.trim();
+      const rResp = $('rapRolResp').checked;
+      const rSup = $('rapRolSup').checked;
+      const almsSel = [...document.querySelectorAll('.rapAlmChk:checked')].map(c => c.value);
+
+      if (!nom) throw new Error('Indique el nombre completo de la persona.');
+      if (!cargo) throw new Error('Indique el cargo de la persona.');
+      if (!rResp && !rSup) throw new Error('Debe marcar al menos un rol: Responsable o Supervisor.');
+      if (!almsSel.length) throw new Error('Debe seleccionar al menos un almacén.');
+
+      if (!ced) ced = 'S/C';
+      else if (!/S\/C/i.test(ced)) ced = formatCedula(ced);
+
+      if (ced !== 'S/C') {
+        const dig = digitosCI(ced);
+        if (dig.length >= 5) {
+          const dup = DB.personal.find(x => x.cedula && x.cedula !== 'S/C' && digitosCI(x.cedula) === dig);
+          if (dup) throw new Error(`Ya existe una persona registrada con la cédula ${ced}: ${dup.nombre}.`);
+        }
+      }
+
+      const tipoArr = [];
+      if (rResp) tipoArr.push('RESPONSABLE');
+      if (rSup) tipoArr.push('SUPERVISOR');
+
+      const nuevaPers = {
+        id: 'p-' + (DB.personal.length + 1),
+        nombre: nom,
+        cedula: ced,
+        cargo,
+        depto: almsSel[0] || 'CENTRAL',
+        tipo: tipoArr,
+        almacenes: almsSel,
+        modulo: 'TODOS',
+        activo: true
+      };
+
+      DB.personal.push(nuevaPers);
+      bit('PERSONAL CREADO', `${nom} (${ced})`);
+      guardar();
+      cerrarModal();
+      toast('Persona registrada exitosamente en el sistema.', 'ok');
+
+      if (rolDefecto === 'RESPONSABLE') {
+        F.resp = { nombre: nom, cedula: ced, cargo };
+        if ($('fResp')) $('fResp').value = nom;
+        if ($('fCed')) $('fCed').value = ced || 'S/C';
+        if ($('fCargo')) $('fCargo').value = cargo;
+      } else if (rolDefecto === 'SUPERVISOR') {
+        F.sup = nom;
+        if ($('fSup')) $('fSup').value = nom;
+      }
+
+      if (S.vista === 'aPers') {
+        ir('aPers');
+      }
     }) }
   ], true);
 }
@@ -6354,7 +6935,7 @@ function imprimirVale(n) {
   const der = esEnt
     ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())}</div>`
     : esTrf
-    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor autoriza:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}</div>`
+    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor:</b> ${esc(v.sup)}</div>` : ''}<div><b>Estatus de recepción:</b> ${v.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : esc(v.estatus)}</div>${v.procesadoEn ? `<div><b>Procesada por:</b> ${esc(v.procesadoPor.nombre)} · ${fFH(v.procesadoEn)}</div>` : `<div><b>Plazo para aceptar:</b> hasta ${fFH(v.vence)}</div>`}</div>`
     : `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div><div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div><div><b>Tipo A / Aprobación:</b> ${v.lineas.some(l => item(l.id).tipoA) ? 'SI · N° ' + esc(v.aprobGer || '—') : 'NO'}</div>${v.ref ? `<div><b>Vale de referencia:</b> ${esc(v.ref)}</div>` : ''}`;
 
   let extra = '';
@@ -6368,8 +6949,8 @@ function imprimirVale(n) {
 
   const firmas = esEnt ? [['Entrega', 'Firma', ''], ['Recibe (almacenista)', 'Firma y Sello', v.realizadoPor.nombre], ['Supervisor', 'Firma y Sello', '']]
     : esTrf
-    ? [['Despacha (' + almNombre(v.origen).replace('Almacén ', '') + ')', 'Firma y Sello', v.despacha || v.realizadoPor.nombre], ['Recibe (' + almNombre(v.destino).replace('Almacén ', '') + ')', 'Firma y Sello', v.estatus === 'RECIBIDA' ? v.procesadoPor.nombre : ''], ['Supervisor Autoriza', 'Firma y Sello', v.sup || '']]
-    : [['Responsable / Recibe', 'Firma y Cédula', ''], ['Almacenista / Despacha', 'Firma y Sello', ''], ['Supervisor Autoriza', 'Firma y Sello', v.aprobadoPor ? v.aprobadoPor.nombre : '']];
+    ? [['Despacha (' + almNombre(v.origen).replace('Almacén ', '') + ')', 'Firma y Sello', v.despacha || v.realizadoPor.nombre], ['Recibe (' + almNombre(v.destino).replace('Almacén ', '') + ')', 'Firma y Sello', v.estatus === 'RECIBIDA' ? v.procesadoPor.nombre : ''], ['Supervisor', 'Firma y Sello', v.sup || '']]
+    : [['Responsable / Recibe', 'Firma y Cédula', ''], ['Almacenista / Despacha', 'Firma y Sello', ''], ['Supervisor', 'Firma y Sello', v.sup || (v.aprobadoPor ? v.aprobadoPor.nombre : '')]];
 
   const totPiezasNormal = (v.lineas || []).reduce((a, l) => a + (l.cant || 1), 0);
 
