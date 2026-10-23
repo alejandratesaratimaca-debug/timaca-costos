@@ -1,9 +1,7 @@
-import React, { useState, useMemo } from 'react';
-import * as XLSX from 'xlsx';
+import React, { useState } from 'react';
 import { useCostos } from '../context/CostosContext';
-import { formatCurrency, formatNumber, formatUnitPriceRaw, formatAmountAuto } from '../utils/dateHelpers';
+import { formatCurrency } from '../utils/dateHelpers';
 import { KPIHeader } from './KPIHeader';
-import { isNormalizacion } from '../utils/normalizacionFilter';
 import { CUENTAS_CORTAS_MAP, DETALLE_SUBCONCEPTOS_CATEGORIAS, TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT } from '../data/mockCostosTimaca';
 import { 
   TrendingUp, 
@@ -12,25 +10,16 @@ import {
   FolderDown, 
   ArrowRight,
   Briefcase,
-  FileCheck2,
   FileText,
   Clock,
   Layers,
-  Search,
-  AlertTriangle,
   Info,
-  Download,
-  CheckCircle2,
   ChevronDown,
   ChevronUp,
-  Calendar,
-  X,
-  Eye,
-  Edit3,
-  ExternalLink
+  X
 } from 'lucide-react';
 import { UsuarioSistema } from '../types/usuarios';
-import { SalidaCosto, ResumenMensual } from '../types/costos';
+import { ResumenMensual } from '../types/costos';
 
 interface DashboardViewProps {
   onGoToProyectos: () => void;
@@ -43,7 +32,6 @@ interface DashboardViewProps {
   onGoToCategoria?: (categoria: string) => void;
   onOpenProyectosMatriz?: () => void;
   onSelectProyecto?: (cuentaAux: string) => void;
-  onGoToValidacion?: () => void;
   currentUser?: UsuarioSistema;
 }
 
@@ -58,11 +46,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onGoToCategoria,
   onOpenProyectosMatriz,
   onSelectProyecto,
-  onGoToValidacion,
   currentUser
 }) => {
   const {
-    salidas: rawSalidas,
     resumenSemanas,
     resumenMeses,
     resumenCategorias,
@@ -73,24 +59,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const isGerente = currentUser?.rol === 'Gerente de Proyecto';
   const cuentasAsignadas = currentUser?.cuentasAsignadas || [];
 
-  // Segregación estricta por proyecto para Gerente
-  const salidas = useMemo(() => {
-    if (isGerente && cuentasAsignadas.length > 0) {
-      return rawSalidas.filter(s => cuentasAsignadas.includes(s.cuentaAuxiliarCodigo));
-    }
-    return rawSalidas;
-  }, [rawSalidas, isGerente, cuentasAsignadas]);
-
   const [hoveredWeek, setHoveredWeek] = useState<number | null>(null);
   const [chartMode, setChartMode] = useState<'mensual' | 'semanal' | 'por-categoria'>('mensual');
   const [selectedCatFocus, setSelectedCatFocus] = useState<string>('Materiales Directos');
-  const [filtroTipoProyecto, setFiltroTipoProyecto] = useState<'todos' | 'externos'>('externos');
-  const [selectedMesFiltro, setSelectedMesFiltro] = useState<number | 'todos'>(9);
-  const [selectedCuentasFiltro, setSelectedCuentasFiltro] = useState<string[]>([]);
-  const [filasAMostrar, setFilasAMostrar] = useState<number | 'todas'>(50);
-  const [downloadExcelSuccess, setDownloadExcelSuccess] = useState<boolean>(false);
   const [selectedMesModal, setSelectedMesModal] = useState<ResumenMensual | null>(null);
-  const [salidaAuditoria, setSalidaAuditoria] = useState<SalidaCosto | null>(null);
   const [periodoDetalleCategorias, setPeriodoDetalleCategorias] = useState<'anual' | number>(9);
   const [adminBannerExpanded, setAdminBannerExpanded] = useState<boolean>(false);
 
@@ -109,180 +81,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   // Maximum weekly and monthly amount for chart scaling
   const maxWeeklyMonto = Math.max(...resumenSemanas.map((s) => s.totalMonto), 1);
   const maxMonthlyMonto = Math.max(...resumenMeses.map((m) => m.totalMonto), 1);
-
-  // Lista de todas las cuentas auxiliares disponibles para filtrar, ordenadas de mayor a menor monto
-  const cuentasDisponibles = useMemo(() => {
-    const map = new Map<string, { codigo: string; nombre: string; count: number; total: number }>();
-    salidas.filter(s => !isNormalizacion(s)).forEach(s => {
-      const cod = s.cuentaAuxiliarCodigo;
-      const nom = CUENTAS_CORTAS_MAP[cod] || s.cuentaAuxiliarNombre || s.proyecto;
-      if (!map.has(cod)) {
-        map.set(cod, { codigo: cod, nombre: nom, count: 0, total: 0 });
-      }
-      const item = map.get(cod)!;
-      item.count += 1;
-      item.total += s.montoTotal;
-    });
-    return Array.from(map.values()).sort((a, b) => b.total - a.total);
-  }, [salidas]);
-
-  const toggleCuentaFiltro = (codigo: string) => {
-    setSelectedCuentasFiltro(prev => {
-      if (prev.includes(codigo)) {
-        return prev.filter(c => c !== codigo);
-      } else {
-        return [...prev, codigo];
-      }
-    });
-  };
-
-  // Lista ordenada de salidas filtradas (por proyecto externo, por mes y por cuentas auxiliares, purificadas de normalización)
-  const salidasFiltradas = useMemo(() => {
-    let list = salidas.filter(s => !isNormalizacion(s));
-    if (filtroTipoProyecto === 'externos') {
-      list = list.filter(s => s.esProyectoExterno ?? s.cuentaAuxiliarCodigo.startsWith('TTE-C-'));
-    }
-    if (selectedMesFiltro !== 'todos') {
-      list = list.filter(s => s.mes === selectedMesFiltro);
-    }
-    if (selectedCuentasFiltro.length > 0) {
-      list = list.filter(s => selectedCuentasFiltro.includes(s.cuentaAuxiliarCodigo));
-    }
-    return list.sort((a, b) => b.fecha.localeCompare(a.fecha) || b.codigoSalida.localeCompare(a.codigoSalida));
-  }, [salidas, filtroTipoProyecto, selectedMesFiltro, selectedCuentasFiltro]);
-
-  // Total monto del mes o período y cuentas seleccionadas
-  const totalMontoMesSeleccionado = useMemo(() => {
-    return salidasFiltradas.reduce((acc, s) => acc + s.montoTotal, 0);
-  }, [salidasFiltradas]);
-
-  // Salidas que se renderizan en la tabla
-  const ultimasSalidas = useMemo(() => {
-    if (filasAMostrar === 'todas') return salidasFiltradas;
-    return salidasFiltradas.slice(0, filasAMostrar);
-  }, [salidasFiltradas, filasAMostrar]);
-
-  const totalMontoMostrado = useMemo(() => {
-    return ultimasSalidas.reduce((acc, s) => acc + s.montoTotal, 0);
-  }, [ultimasSalidas]);
-
-  // Colores oficiales distintivos de las 5 categorías
-  const getCategoryBadgeClass = (tipo: string) => {
-    switch (tipo) {
-      case 'Materiales Directos':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Servicios':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'Mano de Obra Directa':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'Horas Maquina':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'Costos Indirectos':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      default:
-        return 'bg-slate-100 text-slate-800 border-slate-200';
-    }
-  };
-
-  // Obtener la categoría macro oficial TIMACA (Materiales Directos, Servicios, Horas Maquina, etc.)
-  const getCategoriaOficial = (s: SalidaCosto): string => {
-    const tipo = (s.tipo || '').trim();
-    if (tipo === 'Materiales Directos' || tipo.toLowerCase().includes('material')) return 'Materiales Directos';
-    if (tipo.toUpperCase() === 'SERVICIOS' || tipo.toLowerCase().includes('servicio')) return 'Servicios';
-    if (tipo === 'Horas Maquina' || tipo.toLowerCase().includes('hora') || tipo.toLowerCase().includes('maquina')) return 'Horas Maquina';
-    if (tipo.includes('Mano de Obra') || tipo.includes('MOD')) return 'Mano de Obra Directa';
-    if (tipo.includes('Indirecto')) return 'Costos Indirectos';
-
-    const cat = (s.categoria || '').trim();
-    if (cat === 'Materiales Directos' || cat.toLowerCase().includes('material') || cat.toLowerCase().includes('ferreteria') || cat.toLowerCase().includes('pintura') || cat.toLowerCase().includes('acero') || cat.toLowerCase().includes('tubular') || cat.toLowerCase().includes('quimico') || cat.toLowerCase().includes('soldadura') || cat.toLowerCase().includes('herramienta') || cat.toLowerCase().includes('galvanizado') || cat.toLowerCase().includes('mecanico')) {
-      return 'Materiales Directos';
-    }
-    if (cat.toUpperCase() === 'SERVICIOS' || cat.toLowerCase().includes('servicio')) return 'Servicios';
-    if (cat === 'Horas Maquina' || cat.toLowerCase().includes('hora') || cat.toLowerCase().includes('maquina')) return 'Horas Maquina';
-    if (cat.includes('Mano de Obra') || cat.includes('MOD')) return 'Mano de Obra Directa';
-    if (cat.includes('Indirecto')) return 'Costos Indirectos';
-
-    return s.tipo || s.categoria || 'Materiales Directos';
-  };
-
-  // Tipo de material o subpartida específica (Materiales de Ferretería, Tintas y Pinturas, etc.)
-  const getTipoMaterialDisplay = (s: SalidaCosto): string => {
-    const catOficial = getCategoriaOficial(s);
-    if (catOficial === 'Materiales Directos') {
-      if (s.subcategoria && s.subcategoria !== 'Materiales Directos') return s.subcategoria;
-      if (s.categoria && s.categoria !== 'Materiales Directos') return s.categoria;
-      return 'Materiales Generales';
-    }
-    if (catOficial === 'Servicios') {
-      if (s.subcategoria && s.subcategoria !== 'SERVICIOS' && s.subcategoria !== 'Servicios') return s.subcategoria;
-      return s.itemDescripcion && s.itemDescripcion !== 'Sin descripción' ? s.itemDescripcion : 'Servicios Directos';
-    }
-    if (catOficial === 'Horas Maquina') {
-      if (s.subcategoria && s.subcategoria !== 'Horas Maquina') return s.subcategoria;
-      return s.codigoSalida ? `Equipo ${s.codigoSalida}` : 'Horas Maquina';
-    }
-    if (catOficial === 'Mano de Obra Directa') {
-      if (s.subcategoria && !s.subcategoria.includes('Mano de Obra')) return s.subcategoria;
-      return 'Nómina Operativa';
-    }
-    return s.subcategoria || s.categoria || 'General';
-  };
-
-  // Exportar salidas actuales a Excel
-  const handleExportarExcel = () => {
-    const dataExcel = salidasFiltradas.map(s => {
-      let fechaFormateada = s.fecha;
-      if (s.fecha && s.fecha.includes('-')) {
-        const parts = s.fecha.split('-');
-        if (parts.length === 3) fechaFormateada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-      }
-      return {
-        'Fecha': fechaFormateada,
-        'Cuenta Auxiliar': s.cuentaAuxiliarCodigo,
-        'Proyecto': CUENTAS_CORTAS_MAP[s.cuentaAuxiliarCodigo] || s.proyecto,
-        'Categoría': getCategoriaOficial(s),
-        'Tipo de Material': getTipoMaterialDisplay(s),
-        'Descripción del Ítem': s.itemDescripcion,
-        'Cantidad': s.cantidad,
-        'Unidad': s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida,
-        'Precio Unitario (USD)': s.montoUnitario,
-        'Monto Total (USD)': s.montoTotal,
-        'Motivo': s.motivo || s.observaciones || '-',
-        'Solicitante': s.solicitante || s.responsable || '-',
-        'Semana': s.semanaLabel || `Semana ${s.semana}`,
-        'Mes': s.mesLabel || `Mes ${s.mes}`
-      };
-    });
-
-    const ws = XLSX.utils.json_to_sheet(dataExcel);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Salidas_Costos_SIP');
-
-    ws['!cols'] = [
-      { wch: 12 },
-      { wch: 15 },
-      { wch: 28 },
-      { wch: 22 },
-      { wch: 26 },
-      { wch: 45 },
-      { wch: 12 },
-      { wch: 12 },
-      { wch: 18 },
-      { wch: 18 },
-      { wch: 35 },
-      { wch: 25 },
-      { wch: 14 },
-      { wch: 14 }
-    ];
-
-    const nombreArchivo = filtroTipoProyecto === 'externos'
-      ? `TIMACA_Salidas_SIP_Proyectos_Externos_2026.xlsx`
-      : `TIMACA_Salidas_SIP_Costos_2026.xlsx`;
-
-    XLSX.writeFile(wb, nombreArchivo);
-    setDownloadExcelSuccess(true);
-    setTimeout(() => setDownloadExcelSuccess(false), 3500);
-  };
 
   // Color mapping for categories
   const categoryColors: Record<string, string> = {
@@ -311,15 +109,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </p>
             </div>
           </div>
-          {onGoToValidacion && (
-            <button
-              onClick={onGoToValidacion}
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all whitespace-nowrap self-start md:self-auto flex items-center gap-1.5 cursor-pointer"
-            >
-              <FileCheck2 className="w-4 h-4" />
-              <span>Validar Imputaciones del Proyecto</span>
-            </button>
-          )}
         </div>
       )}
 
@@ -356,18 +145,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               >
                 <Clock className="w-3.5 h-3.5" />
                 <span>Auditar MOD Diaria</span>
-              </button>
-            )}
-
-            {/* Validación Gerencial: siempre visible (tanto comprimido como expandido) */}
-            {onGoToValidacion && (
-              <button
-                onClick={onGoToValidacion}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-amber-950 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-lg transition-colors shadow-2xs cursor-pointer"
-                title="Módulo de Validación de Imputaciones Contables por Gerentes de Proyecto"
-              >
-                <FileCheck2 className="w-3.5 h-3.5 text-amber-800" />
-                <span>Validación Gerencial</span>
               </button>
             )}
 
@@ -896,389 +673,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Recent Activity Table (Sección 5: Últimas Salidas Registradas) */}
-      <div className="bg-white rounded-2xl border border-neutral-200 shadow-xs overflow-hidden">
-        <div className="p-4 sm:p-5 border-b border-neutral-200 flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-neutral-50/50">
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <h3 className="text-base font-bold text-neutral-900 tracking-tight">
-                Últimas Salidas Registradas (Ordenadas de la más reciente a la más antigua)
-              </h3>
-              <span className="text-[11px] font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
-                {selectedMesFiltro === 'todos'
-                  ? `Vales Auditados Enero - Septiembre 2026 (${salidasFiltradas.length.toLocaleString('de-DE')} comprobantes directos)`
-                  : `Corte Contable: ${MESES_CONFIG.find(m => m.num === selectedMesFiltro)?.label} 2026 (${salidasFiltradas.length.toLocaleString('de-DE')} comprobantes)`}
-              </span>
-            </div>
-            <p className="text-xs text-neutral-500 mt-0.5">
-              {selectedMesFiltro === 'todos'
-                ? 'Auditoría integral de salidas del almacén SIP, contratos de servicios y nómina de todo el año 2026'
-                : `Auditoría comprobante por comprobante del mes de ${MESES_CONFIG.find(m => m.num === selectedMesFiltro)?.label} 2026`}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Filtro interactivo de Proyectos Externos */}
-            <div className="inline-flex p-1 bg-white rounded-xl border border-slate-300 text-xs font-semibold shadow-2xs">
-              <button
-                onClick={() => setFiltroTipoProyecto('todos')}
-                className={`px-3 py-1.5 rounded-lg transition-all text-xs ${
-                  filtroTipoProyecto === 'todos'
-                    ? 'bg-slate-900 text-white font-bold shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                }`}
-              >
-                Todos los Proyectos
-              </button>
-              <button
-                onClick={() => setFiltroTipoProyecto('externos')}
-                className={`px-3 py-1.5 rounded-lg transition-all text-xs flex items-center gap-1.5 ${
-                  filtroTipoProyecto === 'externos'
-                    ? 'bg-blue-600 text-white font-bold shadow-xs'
-                    : 'text-slate-600 hover:text-blue-700 hover:bg-slate-50'
-                }`}
-                title="Filtrar solo proyectos de clientes externos TIMACA (Cuentas Auxiliares TTE-C)"
-              >
-                <Briefcase className="w-3.5 h-3.5" />
-                <span>Solo Proyectos Externos</span>
-              </button>
-            </div>
-
-            {/* Selector de cantidad de salidas visibles sin salir de la vista */}
-            <div className="inline-flex p-1 bg-white rounded-xl border border-slate-300 text-xs font-semibold shadow-2xs">
-              {[25, 50, 100].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setFilasAMostrar(num)}
-                  className={`px-2.5 py-1.5 rounded-lg transition-all ${
-                    filasAMostrar === num 
-                      ? 'bg-blue-50 text-blue-800 font-bold border border-blue-200' 
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                  }`}
-                  title={`Mostrar ${num} salidas`}
-                >
-                  {num}
-                </button>
-              ))}
-              <button
-                onClick={() => setFilasAMostrar('todas')}
-                className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${
-                  filasAMostrar === 'todas' 
-                    ? 'bg-blue-600 text-white font-bold shadow-xs' 
-                    : 'text-slate-700 hover:text-blue-700 hover:bg-slate-50'
-                }`}
-                title="Explorar todas las salidas del mes o período en esta misma tabla sin salirte a otra vista"
-              >
-                <span>Ver Todas ({salidasFiltradas.length})</span>
-                {filasAMostrar === 'todas' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              </button>
-            </div>
-
-            {/* Botón Descargar en Excel */}
-            <button
-              onClick={handleExportarExcel}
-              className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3.5 py-2 rounded-xl transition-all shadow-2xs hover:shadow-xs"
-              title="Descargar estas salidas directamente en un archivo de Excel (.xlsx)"
-            >
-              {downloadExcelSuccess ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>¡Excel Descargado!</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4 text-emerald-600" />
-                  <span>Descargar en Excel</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Barra de Filtro Operativo por Meses y Muestra del Total */}
-        <div className="px-4 py-3 bg-slate-100/90 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5 text-blue-600" />
-              Período:
-            </span>
-            <button
-              onClick={() => setSelectedMesFiltro('todos')}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                selectedMesFiltro === 'todos'
-                  ? 'bg-blue-600 text-white shadow-2xs font-bold'
-                  : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300 shadow-2xs'
-              }`}
-            >
-              ★ Todo el Año (Ene - Sep)
-            </button>
-            {MESES_CONFIG.map((m) => (
-              <button
-                key={m.num}
-                onClick={() => setSelectedMesFiltro(m.num)}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  selectedMesFiltro === m.num
-                    ? 'bg-blue-600 text-white shadow-2xs font-bold'
-                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300 shadow-2xs'
-                }`}
-                title={`Filtrar comprobantes y salidas de ${m.label} 2026`}
-              >
-                {m.corto}
-              </button>
-            ))}
-          </div>
-
-          {/* Muestra Destacada del Total */}
-          <div className="flex items-center gap-2.5 bg-blue-50/90 border border-blue-200/90 px-3.5 py-1.5 rounded-xl shadow-2xs self-start md:self-auto">
-            <span className="text-slate-600 font-medium text-xs">
-              Total Vales y Salidas Auditadas ({selectedMesFiltro === 'todos' ? 'Año 2026' : MESES_CONFIG.find(m => m.num === selectedMesFiltro)?.label}
-              {filtroTipoProyecto === 'externos' ? ' · Solo Clientes' : ' · Directas'}
-              {selectedCuentasFiltro.length > 0 ? ` [${selectedCuentasFiltro.length} cta${selectedCuentasFiltro.length > 1 ? 's' : ''}]` : ''}):
-            </span>
-            <span className="font-mono text-sm font-extrabold text-blue-900 tabular-nums">
-              ${Math.round(totalMontoMesSeleccionado).toLocaleString('de-DE')} <span className="text-[11px] font-bold text-blue-700">USD</span>
-            </span>
-            <span className="text-[11px] text-blue-700 font-bold bg-white/95 px-2 py-0.5 rounded-md border border-blue-200/80 shadow-2xs">
-              {salidasFiltradas.length.toLocaleString('de-DE')} {salidasFiltradas.length === 1 ? 'comprobante' : 'comprobantes'}
-            </span>
-          </div>
-        </div>
-
-        {/* Barra de Filtro por Cuentas Auxiliares */}
-        <div className="px-4 py-2.5 bg-slate-50/90 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2.5 text-xs">
-          <div className="flex flex-wrap items-center gap-1.5 flex-1">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 flex items-center gap-1 shrink-0">
-              <Layers className="w-3.5 h-3.5 text-blue-600" />
-              Filtrar por Cuentas:
-            </span>
-            <button
-              onClick={() => setSelectedCuentasFiltro([])}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                selectedCuentasFiltro.length === 0
-                  ? 'bg-blue-600 text-white shadow-2xs font-bold'
-                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 shadow-2xs'
-              }`}
-            >
-              Todas las Cuentas
-            </button>
-            {[
-              { cod: 'TTE-C-0706', label: '0706 Línea 1 Pellas' },
-              { cod: 'TTE-C-0671', label: '0671 2da PMH' },
-              { cod: 'TTE-C-0668', label: '0668 Briquetas' },
-              { cod: 'TTE-C-0656', label: '0656 Bandas PMH' },
-              { cod: 'TTE-C-0669', label: '0669 Dravo' },
-              { cod: 'TTE-C-0708', label: '0708 CVG Bauxilum' }
-            ].map((p) => {
-              const isActive = selectedCuentasFiltro.includes(p.cod);
-              return (
-                <button
-                  key={p.cod}
-                  onClick={() => toggleCuentaFiltro(p.cod)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 ${
-                    isActive
-                      ? 'bg-blue-700 text-white shadow-2xs font-bold ring-2 ring-blue-400'
-                      : 'bg-white text-slate-700 hover:bg-blue-50 hover:text-blue-700 border border-slate-300 shadow-2xs'
-                  }`}
-                  title={`Filtrar por cuenta ${p.label}`}
-                >
-                  <span>{p.label}</span>
-                  {isActive && <CheckCircle2 className="w-3 h-3 text-white" />}
-                </button>
-              );
-            })}
-
-            {/* Selector Dropdown para elegir cualquier Cuenta Auxiliar del modelo */}
-            <div className="relative inline-block">
-              <select
-                value=""
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (!val) return;
-                  if (val === '__todas__') {
-                    setSelectedCuentasFiltro([]);
-                  } else if (!selectedCuentasFiltro.includes(val)) {
-                    setSelectedCuentasFiltro([...selectedCuentasFiltro, val]);
-                  }
-                }}
-                className="text-xs bg-white text-slate-700 border border-slate-300 rounded-lg px-2.5 py-1 font-medium hover:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-2xs"
-              >
-                <option value="">+ Seleccionar otra cuenta ({cuentasDisponibles.length} disponibles)...</option>
-                <option value="__todas__">Limpiar selección (Ver todas las cuentas)</option>
-                <optgroup label="Cuentas Auxiliares (Mayor a Menor Monto)">
-                  {cuentasDisponibles.map(c => (
-                    <option key={c.codigo} value={c.codigo}>
-                      {c.codigo} — {c.nombre} (${Math.round(c.total).toLocaleString('de-DE')} USD · {c.count} salidas)
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
-            </div>
-          </div>
-
-          {/* Active Chips si hay cuentas seleccionadas */}
-          {selectedCuentasFiltro.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1.5 self-start md:self-auto">
-              <span className="text-[10px] text-slate-500 font-semibold">Filtro activo ({selectedCuentasFiltro.length}):</span>
-              {selectedCuentasFiltro.map(cod => {
-                return (
-                  <span
-                    key={cod}
-                    className="inline-flex items-center gap-1 bg-blue-100 text-blue-900 border border-blue-300 text-[11px] font-bold px-2 py-0.5 rounded-md shadow-2xs"
-                  >
-                    <span>{cod}</span>
-                    <button
-                      onClick={() => toggleCuentaFiltro(cod)}
-                      className="hover:text-red-600 transition-colors p-0.5"
-                      title={`Quitar filtro ${cod}`}
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                );
-              })}
-              <button
-                onClick={() => setSelectedCuentasFiltro([])}
-                className="text-[11px] font-bold text-red-600 hover:text-red-700 hover:underline px-1"
-                title="Limpiar filtro de cuentas"
-              >
-                Limpiar
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className={`overflow-x-auto ${filasAMostrar === 'todas' || (typeof filasAMostrar === 'number' && filasAMostrar > 15) ? 'max-h-[640px] overflow-y-auto' : ''}`}>
-          <table className="w-full text-left text-xs border-collapse">
-            {/* Encabezado claro con todas las columnas auditables */}
-            <thead className="bg-slate-100/95 border-b border-slate-200 text-slate-700 font-bold uppercase text-[10px] tracking-wider whitespace-nowrap sticky top-0 z-10 shadow-2xs">
-              <tr>
-                <th className="py-3 px-3">Fecha</th>
-                <th className="py-3 px-3">Cuenta Auxiliar</th>
-                <th className="py-3 px-3 min-w-[150px]">Proyecto</th>
-                <th className="py-3 px-3 min-w-[130px]">Categoría</th>
-                <th className="py-3 px-3 min-w-[140px]">Tipo de Material</th>
-                <th className="py-3 px-4 min-w-[220px]">Descripción</th>
-                <th className="py-3 px-3 text-right">Cantidad</th>
-                <th className="py-3 px-3">Unidad</th>
-                <th className="py-3 px-3 text-right">P. Unitario (USD)</th>
-                <th className="py-3 px-3 text-right">Monto Total (USD)</th>
-                <th className="py-3 px-3 min-w-[170px]">Motivo</th>
-                <th className="py-3 px-3 min-w-[130px]">Solicitante</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100 bg-white">
-              {ultimasSalidas.map((s) => {
-                const pCorto = CUENTAS_CORTAS_MAP[s.cuentaAuxiliarCodigo] || s.proyecto;
-                
-                // Formatear fecha a DD/MM/YYYY
-                let fechaFormateada = s.fecha;
-                if (s.fecha && s.fecha.includes('-')) {
-                  const parts = s.fecha.split('-');
-                  if (parts.length === 3) {
-                    fechaFormateada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-                  }
-                }
-
-                const categoriaDisplay = getCategoriaOficial(s);
-                const subcategoriaDisplay = getTipoMaterialDisplay(s);
-                const motivoDisplay = s.motivo || s.observaciones || 'Despacho operativo';
-                const solicitanteDisplay = s.solicitante || s.responsable || 'Almacén Central SIP';
-                const cantDisplay = formatNumber(s.cantidad);
-                const unidadDisplay = s.unidadMedida === 'USE' ? 'SERV' : s.unidadMedida;
-                const pUnitVal = s.montoUnitario;
-
-                return (
-                  <tr 
-                    key={s.id} 
-                    onClick={() => setSalidaAuditoria(s)}
-                    className="hover:bg-blue-50/70 transition-colors cursor-pointer group"
-                    title="Haz clic para auditar todos los 9 datos contables de esta partida"
-                  >
-                    {/* 1. Fecha */}
-                    <td className="py-2.5 px-3 whitespace-nowrap font-mono tabular-nums text-neutral-700 text-xs font-semibold">
-                      {fechaFormateada}
-                    </td>
-
-                    {/* 2. Cuenta Auxiliar */}
-                    <td className="py-2.5 px-3 whitespace-nowrap">
-                      <span className="font-mono font-bold text-blue-700 text-xs bg-blue-50 border border-blue-200/80 px-2 py-0.5 rounded">
-                        {s.cuentaAuxiliarCodigo}
-                      </span>
-                    </td>
-
-                    {/* 3. Proyecto */}
-                    <td className="py-2.5 px-3 whitespace-nowrap font-semibold text-neutral-800 text-xs" title={pCorto}>
-                      {pCorto}
-                    </td>
-
-                    {/* 4. Categoría (Con color oficial) */}
-                    <td className="py-2.5 px-3 whitespace-nowrap">
-                      <span className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md border ${getCategoryBadgeClass(categoriaDisplay)}`}>
-                        {categoriaDisplay}
-                      </span>
-                    </td>
-
-                    {/* 5. Tipo de Material (Subcategoría contable/operativa) */}
-                    <td className="py-2.5 px-3 whitespace-nowrap font-medium text-neutral-700 text-xs">
-                      <span className="font-medium text-slate-800 bg-slate-100/80 border border-slate-200 px-2 py-0.5 rounded text-[11px]">
-                        {subcategoriaDisplay}
-                      </span>
-                    </td>
-
-                    {/* 6. Descripción */}
-                    <td className="py-2.5 px-4 font-medium text-neutral-900 text-xs" title={s.itemDescripcion}>
-                      {s.itemDescripcion}
-                    </td>
-
-                    {/* 7. Cantidad */}
-                    <td className="py-2.5 px-3 text-right whitespace-nowrap font-mono font-bold tabular-nums text-neutral-900 text-xs">
-                      {cantDisplay}
-                    </td>
-
-                    {/* 8. Unidad */}
-                    <td className="py-2.5 px-3 whitespace-nowrap text-neutral-700 text-xs font-medium">
-                      {unidadDisplay}
-                    </td>
-
-                    {/* 9. P. Unitario (USD) */}
-                    <td className="py-2.5 px-3 text-right whitespace-nowrap font-mono tabular-nums text-neutral-700 text-xs">
-                      ${formatUnitPriceRaw(pUnitVal)}
-                    </td>
-
-                    {/* 10. Monto Total (USD) */}
-                    <td className="py-2.5 px-3 text-right whitespace-nowrap font-mono font-bold tabular-nums text-neutral-900 text-xs bg-slate-50/50">
-                      ${formatAmountAuto(s.montoTotal)}
-                    </td>
-
-                    {/* 11. Motivo */}
-                    <td className="py-2.5 px-3 text-neutral-600 text-xs min-w-[180px] max-w-[340px]" title={motivoDisplay}>
-                      <span className="line-clamp-2 italic">{motivoDisplay}</span>
-                    </td>
-
-                    {/* 12. Solicitante */}
-                    <td className="py-2.5 px-3 whitespace-nowrap text-neutral-800 text-xs font-medium">
-                      {solicitanteDisplay}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            {/* Pie de tabla con totales exactos */}
-            <tfoot className="bg-slate-100 border-t-2 border-slate-300 font-bold text-xs text-neutral-900 sticky bottom-0 z-10">
-              <tr>
-                <td colSpan={9} className="py-3 px-3 uppercase tracking-wider font-extrabold text-slate-800">
-                  Total ({ultimasSalidas.length} registros mostrados):
-                </td>
-                <td className="py-3 px-3 text-right font-mono tabular-nums font-bold text-neutral-950 bg-slate-200/80 text-xs">
-                  ${Math.round(totalMontoMostrado).toLocaleString('de-DE')}
-                </td>
-                <td colSpan={2}></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
       {/* MODAL DESGLOSE MENSUAL */}
       {selectedMesModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
@@ -1360,176 +754,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* Footer Buttons */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-200">
-              <button
-                onClick={() => {
-                  setSelectedMesFiltro(selectedMesModal.mes);
-                  setSelectedMesModal(null);
-                }}
-                className="px-3.5 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-xl transition-colors"
-              >
-                Filtrar tabla inferior por este mes
-              </button>
+            <div className="flex justify-end pt-3 border-t border-slate-200">
               <button
                 onClick={() => setSelectedMesModal(null)}
-                className="px-4 py-1.5 text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* AUDIT MODAL DE SALIDA */}
-      {salidaAuditoria && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[92vh] overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-md">
-                    Comprobante {salidaAuditoria.codigoSalida}
-                  </span>
-                  <span className="text-xs text-slate-500 font-mono">
-                    {salidaAuditoria.fecha} · Mes {salidaAuditoria.mes} ({salidaAuditoria.semanaLabel || `Semana ${salidaAuditoria.semana}`})
-                  </span>
-                </div>
-                <h3 className="text-base font-extrabold text-neutral-900 mt-1.5 flex items-center gap-2">
-                  <span>Auditoría Contable y Salida SIP</span>
-                </h3>
-              </div>
-              <button
-                onClick={() => setSalidaAuditoria(null)}
-                className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
-                title="Cerrar ventana"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* 1. Cuenta Auxiliar y Proyecto */}
-            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                Cuenta Auxiliar / Proyecto
-              </span>
-              <div className="flex items-center justify-between text-xs gap-3">
-                <span className="font-mono font-bold text-blue-700 bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-md text-sm shrink-0">
-                  {salidaAuditoria.cuentaAuxiliarCodigo}
-                </span>
-                <span className="font-bold text-neutral-900 text-sm text-right">
-                  {salidaAuditoria.cuentaAuxiliarNombre || salidaAuditoria.proyecto}
-                </span>
-              </div>
-            </div>
-
-            {/* 2. Clasificación Contable: Categoría y Tipo de Material */}
-            <div className="grid grid-cols-2 gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-200 text-xs">
-              <div>
-                <span className="text-neutral-500 text-[11px] block mb-1 font-medium">Categoría:</span>
-                <span className={`inline-block text-xs font-bold px-2.5 py-1 rounded-md border ${getCategoryBadgeClass(getCategoriaOficial(salidaAuditoria))}`}>
-                  {getCategoriaOficial(salidaAuditoria)}
-                </span>
-              </div>
-              <div>
-                <span className="text-neutral-500 text-[11px] block mb-1 font-medium">Tipo de Material / Subcategoría:</span>
-                <span className="inline-block font-bold text-slate-800 bg-white border border-slate-300 px-2.5 py-1 rounded-md text-xs shadow-2xs">
-                  {getTipoMaterialDisplay(salidaAuditoria)}
-                </span>
-              </div>
-            </div>
-
-            {/* 3. Descripción del Ítem o Servicio */}
-            <div className="p-3.5 bg-blue-50/60 rounded-xl border border-blue-200 space-y-1.5">
-              <span className="text-[10px] uppercase font-bold text-blue-700 tracking-wider block">
-                Descripción del Ítem o Servicio
-              </span>
-              <p className="font-bold text-neutral-900 text-sm leading-snug">
-                {salidaAuditoria.itemDescripcion}
-              </p>
-            </div>
-
-            {/* 4. Cantidad, Precio Unitario y Precio Total */}
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-3">
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                  <span className="text-neutral-500 block text-[11px]">Cantidad</span>
-                  <span className="font-mono font-bold text-neutral-900 text-sm">
-                    {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida}
-                  </span>
-                </div>
-                <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                  <span className="text-neutral-500 block text-[11px]">Precio Unitario</span>
-                  <span className="font-mono font-semibold text-neutral-800 text-sm">
-                    ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} <span className="text-[10px] text-neutral-500">USD</span>
-                  </span>
-                </div>
-                <div className="bg-blue-50/80 p-2.5 rounded-lg border border-blue-200">
-                  <span className="text-blue-700 block text-[11px] font-semibold">Precio Total</span>
-                  <span className="font-mono font-black text-blue-900 text-sm sm:text-base">
-                    ${formatAmountAuto(salidaAuditoria.montoTotal)} <span className="text-[10px] text-blue-700">USD</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* Banner informativo si la cantidad o el costo es 0 (ej. Grúas/Equipos en Standby) */}
-              {salidaAuditoria.cantidad === 0 && (
-                <div className="p-3 bg-amber-50/90 border border-amber-300 rounded-xl space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200 text-amber-950 border border-amber-300">
-                      EQUIPO EN PLANTA SIN ACTIVIDAD OPERATIVA / STANDBY
-                    </span>
-                  </div>
-                  <p className="text-xs text-amber-900 leading-relaxed">
-                    Este registro proviene del parte diario de campo en Planta de Pellas. El equipo se reportó presente en sitio pero sin horas operativas facturables en la fecha ({salidaAuditoria.motivo || 'Sin actividad asignada'}). Costo imputado: $0 USD.
-                  </p>
-                </div>
-              )}
-
-              {/* Cálculo */}
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">
-                  Cálculo:
-                </span>
-                <span className="font-mono text-xs sm:text-sm font-semibold text-slate-800">
-                  {formatNumber(salidaAuditoria.cantidad)} {salidaAuditoria.unidadMedida === 'USE' ? 'SERV' : salidaAuditoria.unidadMedida} × ${formatUnitPriceRaw(salidaAuditoria.montoUnitario)} = ${formatAmountAuto(salidaAuditoria.montoTotal)} USD
-                </span>
-              </div>
-            </div>
-
-            {/* 5. Trazabilidad: Fecha, Solicitante, Responsable y Motivo */}
-            <div className="p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl space-y-2.5 text-xs text-neutral-800">
-              <span className="text-[10px] uppercase font-bold text-neutral-600 tracking-wider block">
-                Trazabilidad Operativa
-              </span>
-              <div className="grid grid-cols-2 gap-2.5 text-xs">
-                <div>
-                  <span className="text-neutral-500 block text-[11px]">Fecha del Despacho:</span>
-                  <span className="font-mono font-bold text-neutral-800">{salidaAuditoria.fecha}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-500 block text-[11px]">Solicitante:</span>
-                  <span className="font-bold text-neutral-900">{salidaAuditoria.solicitante || 'Residencia de Obra'}</span>
-                </div>
-                <div className="col-span-2">
-                  <span className="text-neutral-500 block text-[11px]">Responsable Almacén / Caja:</span>
-                  <span className="font-medium text-neutral-700">{salidaAuditoria.responsable || 'Almacén Central SIP'}</span>
-                </div>
-                <div className="col-span-2 pt-1 border-t border-neutral-200">
-                  <span className="text-neutral-500 block text-[11px] mb-0.5">Motivo Técnico:</span>
-                  <p className="font-medium text-neutral-800 bg-white p-2 rounded-lg border border-neutral-200 text-xs">
-                    {salidaAuditoria.motivo || salidaAuditoria.observaciones || 'Despacho operativo para orden de trabajo'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="flex justify-end pt-2 border-t border-slate-200">
-              <button
-                onClick={() => setSalidaAuditoria(null)}
-                className="px-4 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors shadow-xs"
+                className="px-4 py-1.5 text-xs font-bold text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors cursor-pointer"
               >
                 Cerrar
               </button>

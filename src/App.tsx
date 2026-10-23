@@ -23,7 +23,6 @@ import { UsuariosView } from './components/UsuariosView';
 import { ImportModal } from './components/ImportModal';
 import { SalidaFormModal } from './components/SalidaFormModal';
 import { LoginPortadaView } from './components/LoginPortadaView';
-import { ValidacionGerenteView } from './components/ValidacionGerenteView';
 import { HerramientasModuleView } from './components/herramientas/HerramientasModuleView';
 import { DotacionModuleView } from './components/dotacion/DotacionModuleView';
 import { SeguridadModuleView } from './components/seguridad/SeguridadModuleView';
@@ -428,16 +427,7 @@ function AppContent() {
                   setSelectedProyectoParaDetalle(cuentaAux);
                   setActiveTab('proyectos');
                 }}
-                onGoToValidacion={() => setActiveTab('validacion-gerente')}
                 currentUser={currentUser}
-              />
-            )}
-
-            {activeTab === 'validacion-gerente' && (
-              <ValidacionGerenteView
-                currentUser={currentUser}
-                onVolver={() => setActiveTab('dashboard')}
-                onGoToDashboard={() => setActiveTab('dashboard')}
               />
             )}
 

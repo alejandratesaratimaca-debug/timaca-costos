@@ -50,8 +50,7 @@ const TITULOS_VISTAS: Record<string, string> = {
   'internos-capex': 'Inversiones CAPEX & Obras Civiles',
   'internos-gruas': 'Flota Pesada & Grúas OPEX',
   'internos-infra': 'Mantenimiento & Taller',
-  'internos-ppt': 'Informe Gerencial PPT',
-  'validacion-gerente': 'Validación de Imputaciones (Gerentes de Proyecto)',
+  'internos-ppt': 'Informe Gerencial PPT'
 };
 
 export const Header: React.FC<HeaderProps> = ({

@@ -22,7 +22,6 @@ import {
   Award,
   Clock,
   Calendar,
-  FileCheck2,
   Users,
   Check,
   ChevronRight
@@ -58,21 +57,6 @@ const DEPARTAMENTOS_SIGMA: DepartamentoConfig[] = [
     colorText: 'text-blue-300',
     colorIcon: 'text-blue-400',
     btnGrad: 'from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700'
-  },
-  {
-    id: 'validacion-gerente',
-    nombre: 'Validación Gerencial (Sesión Gerentes)',
-    modulo: 'costos',
-    entorno: 'externos',
-    targetTab: 'validacion-gerente',
-    badge: 'Auditoría Gerentes',
-    descripcion: 'Revisión, objeción y conformación de imputaciones contables por frente de obra.',
-    icono: FileCheck2,
-    colorBg: 'bg-amber-900/30',
-    colorBorder: 'border-amber-500/60',
-    colorText: 'text-amber-300',
-    colorIcon: 'text-amber-400',
-    btnGrad: 'from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800'
   },
   {
     id: 'costos-internos',

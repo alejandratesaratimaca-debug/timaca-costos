@@ -22,8 +22,7 @@ import {
   LogOut, 
   ChevronLeft,
   Briefcase,
-  LayoutDashboard,
-  FileCheck2
+  LayoutDashboard
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -403,26 +402,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   >
                     <CalendarDays className="w-3.5 h-3.5 shrink-0" />
                     {!isCollapsed && <span>Mes a Mes</span>}
-                  </button>
-
-                  <button
-                    onClick={() => handleSelectCostosTab('validacion-gerente', 'externos')}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition-colors border ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'validacion-gerente'
-                        ? 'bg-amber-600 text-white font-bold shadow-xs border-amber-500'
-                        : 'text-amber-300 hover:text-white hover:bg-slate-700/60 border-amber-700/40'
-                    }`}
-                    title="Sesión de Gerente de Proyecto: Revisión y Validación de Imputaciones Contables"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <FileCheck2 className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-                      {!isCollapsed && <span className="font-semibold">Validación Gerencial</span>}
-                    </div>
-                    {!isCollapsed && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-950/80 text-amber-200 border border-amber-700/60 uppercase">
-                        Gerentes
-                      </span>
-                    )}
                   </button>
                 </div>
               )}
