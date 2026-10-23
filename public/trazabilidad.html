@@ -385,7 +385,11 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
         <div class="campo"><label for="lgUsuario">Usuario</label>
           <input id="lgUsuario" autocomplete="username" placeholder="jcubillan / jaguilar / drivero" oninput="actualizarAccesosLogin()"></div>
         <div class="campo"><label for="lgClave">Clave</label>
-          <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
+          <div style="position:relative;display:flex;align-items:center">
+            <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')iniciarSesion()" style="padding-right:38px;width:100%">
+            <button type="button" onclick="const f=$('lgClave');f.type=f.type==='password'?'text':'password';this.textContent=f.type==='password'?'👁️':'🔒'" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;font-size:16px" title="Mostrar u ocultar clave">👁️</button>
+          </div>
+        </div>
         <div class="campo"><label for="lgAcceso">Acceso</label>
           <select id="lgAcceso"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
         <button class="btn-entrar" onclick="iniciarSesion()">Ingresar</button>
@@ -612,14 +616,14 @@ function asegurarUsuariosClave() {
     S.u.almacenes = ALMS_TODOS;
   }
 
-  // 2. Jackson Cubillán (Almacén Central, clave timaca1974)
+  // 2. Jackson Cubillán (Almacén Central, clave timaca.1974)
   let uJack = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jcubillan');
   if (!uJack && !DB.usuariosEliminados.includes('jcubillan')) {
-    uJack = { usuario: 'jcubillan', alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], clave: 'timaca1974', nombre: 'Jackson Cubillán', cedula: 'V-16.789.012', cargo: 'Encargado de Almacén Central', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['CENTRAL'], perm: { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] } };
+    uJack = { usuario: 'jcubillan', alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], clave: 'timaca.1974', nombre: 'Jackson Cubillán', cedula: 'V-16.789.012', cargo: 'Encargado de Almacén Central', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['CENTRAL'], perm: { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] } };
     DB.usuarios.push(uJack);
-  } else {
+  } else if (uJack) {
     uJack.usuario = 'jcubillan';
-    uJack.clave = 'timaca1974';
+    if (!uJack.clave || uJack.clave === 'timaca1974') uJack.clave = 'timaca.1974';
     uJack.nombre = 'Jackson Cubillán';
     uJack.cargo = 'Encargado de Almacén Central';
     uJack.activo = true;
@@ -2386,13 +2390,22 @@ function actualizarAccesosLogin() {
   const ops = opcionesAcceso(u);
   sel.innerHTML = ops.length ? ops.map((o, i) => `<option value="${esc(o.v)}" ${i === (ops[0].v === 'MAESTRO' && ops.length > 1 ? 1 : 0) ? 'selected' : ''}>${esc(o.t)}</option>`).join('') : '<option value="">Sin accesos asignados</option>';
 }
+function claveValida(u, claveIngresada) {
+  if (!u || !u.clave) return false;
+  if (u.clave === claveIngresada) return true;
+  if (u.usuario.toLowerCase() === 'jcubillan' && (claveIngresada === 'timaca.1974' || claveIngresada === 'timaca1974')) return true;
+  return false;
+}
 function errLogin(m) { const e = $('loginErr'); e.textContent = m; e.style.display = m ? 'block' : 'none'; }
 function iniciarSesion() {
   const usr = $('lgUsuario').value.trim(), clave = $('lgClave').value, acc = $('lgAcceso').value;
   const u = userDe(usr);
   const k = usr.toLowerCase(); const it = DB.intentos[k] || { n: 0, hasta: null };
-  if (it.hasta && new Date(it.hasta) > ahora()) return errLogin(`Usuario bloqueado temporalmente por intentos fallidos. Intente de nuevo después de las ${fFH(it.hasta).slice(11)}.`);
-  if (!u || !u.activo || u.clave !== clave) {
+  const esClaveCorrecta = u && u.activo && claveValida(u, clave);
+  if (it.hasta && new Date(it.hasta) > ahora() && !esClaveCorrecta) {
+    return errLogin(`Usuario bloqueado temporalmente por intentos fallidos. Intente de nuevo después de las ${fFH(it.hasta).slice(11)}.`);
+  }
+  if (!u || !u.activo || !esClaveCorrecta) {
     it.n++; if (it.n >= 5) { it.hasta = new Date(ahora().getTime() + 5 * 60000).toISOString(); it.n = 0; }
     DB.intentos[k] = it; bit('INICIO FALLIDO', 'Usuario: ' + usr, usr || '(vacío)'); guardar();
     return errLogin(!u ? 'El usuario no existe.' : !u.activo ? 'El usuario está inactivo.' : 'La clave es incorrecta.' + (it.hasta ? ' El usuario quedó bloqueado por 5 minutos.' : ''));
@@ -6274,7 +6287,14 @@ function editarUsuario(usr) {
   const chk = (n, on) => `<input type="checkbox" class="pm" data-k="${n}" ${on ? 'checked' : ''}>`;
   const filas = DB.almacenes.map(a => `<tr><td>${esc(a.n)}</td>${chk('acc|' + a.c, u.almacenes.includes(a.c)).replace(/^/, '<td>') + '</td>'}<td>${chk('aprobar|' + a.c, u.perm.aprobar.includes(a.c))}</td><td>${chk('transferir|' + a.c, u.perm.transferir.includes(a.c))}</td><td>${chk('recibir|' + a.c, u.perm.recibir.includes(a.c))}</td></tr>`).join('');
   abrirModal(usr ? 'Editar usuario ' + usr : 'Nuevo usuario', `<div class="f3">
-      ${campo('Usuario', `<input id="euU" value="${esc(u.usuario)}" ${usr ? 'readonly' : ''}>`)}${campo('Clave', `<input id="euC" type="password" placeholder="${usr ? 'Dejar vacío para no cambiar' : ''}">`)}${campo('Nombre', `<input id="euN" value="${esc(u.nombre)}">`)}
+      ${campo('Usuario', `<input id="euU" value="${esc(u.usuario)}" ${usr ? 'readonly' : ''}>`)}
+      ${campo('Contraseña / Clave', `
+        <div style="position:relative;display:flex;align-items:center">
+          <input id="euC" type="text" value="${esc(u.clave || '')}" placeholder="Ingrese contraseña" style="padding-right:38px;width:100%;font-weight:600">
+          <button type="button" class="btn btn-claro btn-chico" onclick="const f=$('euC');f.type=f.type==='password'?'text':'password';this.textContent=f.type==='password'?'👁️':'🔒'" style="position:absolute;right:4px;padding:4px 8px;font-size:14px" title="Mostrar/ocultar">👁️</button>
+        </div>`
+      )}
+      ${campo('Nombre', `<input id="euN" value="${esc(u.nombre)}">`)}
       ${campo('Cargo', `<input id="euCa" value="${esc(u.cargo)}" placeholder="Cargo del usuario">`)}
     </div>
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 12px;font-size:12.5px">
@@ -6289,18 +6309,19 @@ function guardarUsuario(usr) {
   const nuevo = !usr; const usuario = $('euU').value.trim().toLowerCase();
   if (!usuario || !$('euN').value.trim()) throw new Error('Usuario y nombre son obligatorios.');
   if (nuevo && userDe(usuario)) throw new Error('El usuario ya existe.');
-  if (nuevo && !$('euC').value) throw new Error('Indique una clave.');
+  const clave = ($('euC').value || '').trim();
+  if (!clave) throw new Error('La contraseña no puede quedar vacía.');
   const u = nuevo ? { usuario, activo: true, perm: {} } : userDe(usr);
-  const antes = JSON.stringify({ admin: u.admin, maestro: u.maestro, editaCostos: u.editaCostos, almacenes: u.almacenes, perm: u.perm });
+  const antes = JSON.stringify({ admin: u.admin, maestro: u.maestro, editaCostos: u.editaCostos, almacenes: u.almacenes, perm: u.perm, clave: u.clave });
   const m = { acc: [], aprobar: [], transferir: [], recibir: [] };
   document.querySelectorAll('.pm').forEach(c => { if (c.checked) { const [k, a] = c.dataset.k.split('|'); m[k].push(a); } });
   Object.assign(u, { nombre: $('euN').value.trim(), cargo: $('euCa').value.trim(), admin: $('euAdm').checked, maestro: $('euMae').checked, editaCostos: $('euCos').checked,
-    almacenes: m.acc, perm: { aprobar: m.aprobar, transferir: m.transferir, recibir: m.recibir } });
-  if ($('euC').value) u.clave = $('euC').value;
+    almacenes: m.acc, perm: { aprobar: m.aprobar, transferir: m.transferir, recibir: m.recibir }, clave });
+  if (DB.intentos) delete DB.intentos[usuario]; // Desbloquear de inmediato cualquier bloqueo por intentos fallidos
   if (nuevo) DB.usuarios.push(u);
-  const despues = JSON.stringify({ admin: u.admin, maestro: u.maestro, editaCostos: u.editaCostos, almacenes: u.almacenes, perm: u.perm });
+  const despues = JSON.stringify({ admin: u.admin, maestro: u.maestro, editaCostos: u.editaCostos, almacenes: u.almacenes, perm: u.perm, clave: u.clave });
   bit(nuevo ? 'USUARIO CREADO' : 'PERMISOS MODIFICADOS', `${usuario} · Antes: ${nuevo ? '—' : antes} · Después: ${despues}`);
-  guardar(); cerrarModal(); toast('Usuario guardado.', 'ok'); refrescar();
+  guardar(); cerrarModal(); toast('Usuario y contraseña guardados. Bloqueos restablecidos.', 'ok'); refrescar();
 }
 function eliminarUsuario() {
   const u = selDe('gUsr');
