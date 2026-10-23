@@ -13,8 +13,10 @@ const MESES_ABR = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep'
 
 const CATEGORIA_COLORES: Record<string, { stroke: string; fill: string; bg: string; text: string }> = {
   'Materiales Directos': { stroke: '#2563eb', fill: '#3b82f6', bg: 'bg-blue-50', text: 'text-blue-700' },
+  'Servicios Directos': { stroke: '#f97316', fill: '#fb923c', bg: 'bg-orange-50', text: 'text-orange-700' },
   'Servicios': { stroke: '#f97316', fill: '#fb923c', bg: 'bg-orange-50', text: 'text-orange-700' },
   'Mano de Obra Directa': { stroke: '#10b981', fill: '#34d399', bg: 'bg-emerald-50', text: 'text-emerald-700' },
+  'Horas Máquina': { stroke: '#8b5cf6', fill: '#a78bfa', bg: 'bg-purple-50', text: 'text-purple-700' },
   'Horas Maquina': { stroke: '#8b5cf6', fill: '#a78bfa', bg: 'bg-purple-50', text: 'text-purple-700' },
   'Costos Indirectos': { stroke: '#f59e0b', fill: '#fbbf24', bg: 'bg-amber-50', text: 'text-amber-700' }
 };
@@ -590,7 +592,7 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
       {/* Leyenda de Categorías */}
       <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pt-1 text-xs border-t border-slate-100">
         {TABLA_PPT_DISTRIBUCION_2026.map((cat) => {
-          const cfg = CATEGORIA_COLORES[cat.categoria];
+          const cfg = CATEGORIA_COLORES[cat.categoria] || { stroke: '#2563eb', fill: '#3b82f6', bg: 'bg-blue-50', text: 'text-blue-700' };
           return (
             <button
               key={cat.categoria}
@@ -599,7 +601,7 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
               className="flex items-center gap-1.5 text-slate-700 hover:text-blue-700 transition-colors cursor-pointer group"
               title={`Clic para ver desglose de ${cat.categoria}`}
             >
-              <span className="w-2.5 h-2.5 rounded-full shrink-0 group-hover:scale-125 transition-transform" style={{ backgroundColor: cfg.stroke }} />
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 group-hover:scale-125 transition-transform" style={{ backgroundColor: cfg?.stroke || '#2563eb' }} />
               <span className="font-medium">{cat.categoria}</span>
               <span className="font-mono text-slate-400 text-[10px]">({formatCurrency(cat.total2026)})</span>
             </button>
