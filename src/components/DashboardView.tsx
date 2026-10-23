@@ -7,15 +7,10 @@ import {
   TrendingUp, 
   PieChart as PieIcon, 
   BarChart2, 
-  FolderDown, 
   ArrowRight,
   Briefcase,
-  FileText,
-  Clock,
   Layers,
   Info,
-  ChevronDown,
-  ChevronUp,
   X
 } from 'lucide-react';
 import { UsuarioSistema } from '../types/usuarios';
@@ -64,7 +59,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [selectedCatFocus, setSelectedCatFocus] = useState<string>('Materiales Directos');
   const [selectedMesModal, setSelectedMesModal] = useState<ResumenMensual | null>(null);
   const [periodoDetalleCategorias, setPeriodoDetalleCategorias] = useState<'anual' | number>(9);
-  const [adminBannerExpanded, setAdminBannerExpanded] = useState<boolean>(false);
 
   const MESES_CONFIG = [
     { num: 1, label: 'Enero', corto: 'Ene' },
@@ -111,82 +105,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
       )}
-
-      {/* Information Banner for Local Sync - Comprimido / Compacto para Presentación Ejecutiva */}
-      <div className="bg-slate-50 border border-slate-200 text-slate-800 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl shadow-2xs transition-all">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
-          {/* Lado izquierdo: Título corporativo compacto */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-700 truncate">
-              Control de Gestión & Costos Industriales TIMACA
-            </span>
-            {currentUser?.rol === 'Administrador' && (
-              <button
-                type="button"
-                onClick={() => setAdminBannerExpanded(!adminBannerExpanded)}
-                className="text-[11px] font-mono text-slate-500 hover:text-blue-700 bg-white px-2 py-0.5 rounded border border-slate-200 cursor-pointer hidden sm:flex items-center gap-1 transition-colors shadow-2xs"
-                title={adminBannerExpanded ? "Comprimir panel (ocultar MOD diaria, informe PPT y BD)" : "Expandir todas las opciones (Auditar MOD diaria, informe PPT y BD)"}
-              >
-                <span>{adminBannerExpanded ? "Comprimir" : "Más opciones"}</span>
-                {adminBannerExpanded ? <ChevronUp className="w-3 h-3 text-slate-400" /> : <ChevronDown className="w-3 h-3 text-slate-400" />}
-              </button>
-            )}
-          </div>
-
-          {/* Lado derecho: Botones de acción compactos */}
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            {/* Auditar MOD Diaria: solo visible cuando el panel está expandido */}
-            {adminBannerExpanded && onGoToManoObra && (
-              <button
-                onClick={onGoToManoObra}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-2xs cursor-pointer animate-fade-in"
-                title="Auditoría de Mano de Obra Directa por cuadrillas"
-              >
-                <Clock className="w-3.5 h-3.5" />
-                <span>Auditar MOD Diaria</span>
-              </button>
-            )}
-
-            {/* Informe Mensual PPT: solo visible cuando el panel está expandido */}
-            {adminBannerExpanded && (
-              <button
-                onClick={onGoToInforme}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors whitespace-nowrap shadow-2xs cursor-pointer animate-fade-in"
-                title="Informe Mensual y láminas ejecutivas"
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Informe Mensual PPT</span>
-              </button>
-            )}
-
-            {/* Cargar Archivos: siempre visible (tanto comprimido como expandido) */}
-            <button
-              onClick={onOpenImport}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors whitespace-nowrap shadow-2xs cursor-pointer"
-              title="Cargar archivos de datos del mes"
-            >
-              <FolderDown className="w-3.5 h-3.5 text-slate-600" />
-              <span>Cargar Archivos</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Sección expandible opcional con detalles técnicos solo si el admin lo pide */}
-        {adminBannerExpanded && currentUser?.rol === 'Administrador' && (
-          <div className="mt-2 pt-2 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs text-slate-600 animate-fade-in">
-            <p>
-              Base de datos conectada a:{' '}
-              <code className="font-mono bg-white px-2 py-0.5 rounded text-blue-900 border border-slate-300 font-bold select-all text-[11px]">
-                Modelo_Estrella_Costos_TIMACA_2026
-              </code>
-            </p>
-            <p className="text-[11px] text-slate-500">
-              Auditoría en tiempo real de salidas del SIP (Almacén), contratos y nómina.
-            </p>
-          </div>
-        )}
-      </div>
 
       {/* KPI Header */}
       <KPIHeader onOpenProyectosMatriz={onOpenProyectosMatriz} />
