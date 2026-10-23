@@ -6872,20 +6872,188 @@ function editarItem(it) {
     }) }], true);
 }
 VISTAS.aIni = () => {
-  $('area').innerHTML = cab('Carga inicial de inventario', 'Registra existencias iniciales por almacén. Cada carga genera su movimiento de inventario inicial en el kardex.')
-    + `<div class="form-reg"><div class="f3">${campo('Almacén', selAlm('iniAlm', S.ctx))}
-      <div class="campo" style="position:relative"><label>Ítem (código o descripción)</label><input id="iniIt" autocomplete="off" placeholder="Escriba para buscar"></div>
-      ${campo('Ítem seleccionado', `<input id="iniSel" readonly>`)}${campo('Cantidad', `<input id="iniCant" type="number" min="1" value="1">`)}${campo('Estado (cilindros)', `<select id="iniEst">${opciones([['0', 'Disponible / lleno'], ['1', 'Vacío']])}</select>`)}
-    </div><div class="pie-form"><div></div><div class="der"><button class="btn btn-verde" onclick="accionIni()">Registrar carga inicial</button></div></div></div>`
-    + `<div class="panel"><div class="panel-h">Cargas iniciales registradas</div><div class="panel-b">${grid('gIni', colsKardex(false), DB.movs.filter(m => m.tipo === 'INI').slice().reverse(), { pag: 15 })}</div></div>`;
-  let elegido = null;
-  bindAC('iniIt', q => { q = q.toLowerCase(); return q.length < 2 ? [] : DB.catalogo.filter(i => (i.cod + ' ' + i.desc + ' ' + i.serial).toLowerCase().includes(q)).slice(0, 20).map(i => ({ val: i, html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(i.serial || '')}</small>` })); },
-    i => { elegido = i; window.__iniItem = i; $('iniSel').value = `${i.cod} · ${i.desc}${i.serial ? ' · ' + i.serial : ''}`; $('iniIt').value = ''; if (i.serial) $('iniCant').value = 1; });
+  const esEdicion = !!window.__iniEditMov;
+  const movEdit = window.__iniEditMov;
+  const itEdit = esEdicion ? item(movEdit.id) : null;
+  if (esEdicion && itEdit) window.__iniItem = itEdit;
+
+  const btnHtml = esEdicion
+    ? `<button class="btn btn-ambar" onclick="accionIni()">💾 Guardar corrección</button> <button class="btn btn-claro" onclick="cancelarEdicionIni()">❌ Cancelar</button>`
+    : `<button class="btn btn-verde" onclick="accionIni()">➕ Registrar carga inicial</button>`;
+
+  const colsIni = [
+    { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
+    { t: 'Almacén', v: r => almNombre(r.origen) },
+    { t: 'Código', k: 'cod' },
+    { t: 'Descripción', k: 'desc' },
+    { t: 'Serial', v: r => r.serial || '-' },
+    { t: 'Cant.', k: 'cant', cls: 'num' },
+    { t: 'Estado', v: r => estB(r.estNue || 'DISPONIBLE') },
+    { t: 'Usuario', k: 'usr' },
+    { t: 'Acciones', v: r => `
+      <div style="display:flex;gap:4px">
+        <button class="btn btn-chico btn-azul" onclick="cargarParaEditarIni(${r.n})">✏️ Corregir</button>
+        <button class="btn btn-chico btn-rojo" onclick="eliminarCargaIni(${r.n})">🗑️ Revertir</button>
+      </div>`
+    }
+  ];
+
+  const cargas = DB.movs.filter(m => m.tipo === 'INI').slice().reverse();
+
+  $('area').innerHTML = cab('Carga inicial de inventario', esEdicion ? '⚠️ Modo de corrección: Ajuste los datos que requiera corregir y guarde los cambios.' : 'Registra existencias iniciales por almacén. Al registrar, el formulario se limpia automáticamente para el siguiente ítem.')
+    + `<div class="form-reg" id="formCargaIni">
+      <div class="f3">
+        ${campo('Almacén', selAlm('iniAlm', esEdicion ? movEdit.origen : S.ctx))}
+        <div class="campo" style="position:relative">
+          <label>Ítem (código o descripción)</label>
+          <input id="iniIt" autocomplete="off" placeholder="${esEdicion ? 'Ítem en corrección' : 'Escriba para buscar ítem...'}">
+        </div>
+        ${campo('Ítem seleccionado', `<input id="iniSel" readonly value="${itEdit ? esc(`${itEdit.cod} · ${itEdit.desc}${itEdit.serial ? ' · ' + itEdit.serial : ''}`) : ''}" placeholder="Haga clic en el buscador">`)}
+        ${campo('Cantidad', `<input id="iniCant" type="number" min="1" value="${esEdicion ? movEdit.cant : 1}">`)}
+        ${campo('Estado (cilindros)', `<select id="iniEst">${opciones([['0', 'Disponible / lleno'], ['1', 'Vacío']], esEdicion && (movEdit.estNue === 'VACÍO' || movEdit.estNue === 'VACIO') ? '1' : '0')}</select>`)}
+      </div>
+      <div class="pie-form">
+        <div>${esEdicion ? `<span class="est est-ambar">Editando movimiento #${movEdit.n} · ${esc(itEdit ? itEdit.cod : '')}</span>` : ''}</div>
+        <div class="der" id="iniBtnArea">${btnHtml}</div>
+      </div>
+    </div>`
+    + `<div class="panel">
+      <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Cargas iniciales registradas (${cargas.length})</span>
+        <small style="color:var(--texto-3)">Haga clic en ✏️ Corregir para arreglar cantidad o almacén</small>
+      </div>
+      <div class="panel-b">${grid('gIni', colsIni, cargas, { pag: 15, vacio: 'No hay cargas iniciales registradas aún.' })}</div>
+    </div>`;
+
+  bindAC('iniIt', q => {
+    q = q.toLowerCase();
+    return q.length < 2 ? [] : DB.catalogo.filter(i => (i.cod + ' ' + i.desc + ' ' + i.serial).toLowerCase().includes(q)).slice(0, 20).map(i => ({
+      val: i,
+      html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(i.serial || '')}</small>`
+    }));
+  }, i => {
+    window.__iniItem = i;
+    $('iniSel').value = `${i.cod} · ${i.desc}${i.serial ? ' · ' + i.serial : ''}`;
+    $('iniIt').value = '';
+    if (i.serial) $('iniCant').value = 1;
+  });
+};
+
+function cargarParaEditarIni(movNum) {
+  const m = DB.movs.find(x => x.n === movNum && x.tipo === 'INI');
+  if (!m) return toast('No se encontró el movimiento.', 'err');
+  window.__iniEditMov = m;
+  window.__iniItem = item(m.id);
+  refrescar();
+  setTimeout(() => {
+    const f = $('formCargaIni');
+    if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
 }
+
+function cancelarEdicionIni() {
+  window.__iniEditMov = null;
+  window.__iniItem = null;
+  refrescar();
+}
+
+function eliminarCargaIni(movNum) {
+  const m = DB.movs.find(x => x.n === movNum && x.tipo === 'INI');
+  if (!m) return toast('No se encontró el registro.', 'err');
+  const it = item(m.id);
+  const nombreIt = it ? `${it.cod} - ${it.desc}` : `Ítem #${m.id}`;
+  if (!confirm(`¿Desea revertir y eliminar la carga inicial de ${m.cant} unidad(es) de ${nombreIt} en ${almNombre(m.origen)}?`)) return;
+
+  run(() => {
+    const e = exi(m.origen, m.id);
+    const esVacio = m.estNue === 'VACÍO' || m.estNue === 'VACIO';
+    if (esVacio) {
+      if (e.vacio < m.cant) throw new Error(`No se puede revertir: solo quedan ${e.vacio} vacíos disponibles en el almacén.`);
+      e.vacio -= m.cant;
+    } else {
+      if (e.disp < m.cant) throw new Error(`No se puede revertir: solo quedan ${e.disp} disponibles en el almacén (las demás pueden estar prestadas o transferidas).`);
+      e.disp -= m.cant;
+    }
+    const idx = DB.movs.indexOf(m);
+    if (idx !== -1) DB.movs.splice(idx, 1);
+    bit('CARGA INICIAL REVERTIDA', `${m.origen} · ${nombreIt} x${m.cant}`);
+    guardar();
+    toast('Carga inicial revertida y eliminada del inventario.', 'ok');
+    if (window.__iniEditMov === m) {
+      window.__iniEditMov = null;
+      window.__iniItem = null;
+    }
+    refrescar();
+  });
+}
+
 function accionIni() {
-  run(() => { const it = window.__iniItem; if (!it) throw new Error('Seleccione un ítem.'); const alm = $('iniAlm').value, cant = Number($('iniCant').value);
-    if (it.serial && (cant !== 1 || DB.almacenes.some(a => DB.exi[a.c] && DB.exi[a.c][it.id] && totalExi(DB.exi[a.c][it.id]) > 0))) throw new Error('El ítem con serial ya tiene existencia o la cantidad no es 1.');
-    cargaInicial(alm, it.id, cant, $('iniEst').value === '1'); bit('CARGA INICIAL', `${alm} · ${it.cod} x${cant}`); guardar(); toast('Carga inicial registrada.', 'ok'); window.__iniItem = null; refrescar(); });
+  run(() => {
+    const it = window.__iniItem;
+    if (!it) throw new Error('Seleccione un ítem.');
+    const alm = $('iniAlm').value;
+    const cant = Number($('iniCant').value);
+    const esVacio = $('iniEst').value === '1';
+
+    if (isNaN(cant) || cant <= 0) throw new Error('La cantidad debe ser mayor a 0.');
+
+    if (window.__iniEditMov) {
+      // MODO CORRECCIÓN
+      const m = window.__iniEditMov;
+      const cantAnt = m.cant;
+      const almAnt = m.origen;
+      const eAnt = exi(almAnt, m.id);
+      const estAntVacio = m.estNue === 'VACÍO' || m.estNue === 'VACIO';
+
+      // 1. Revertir saldo anterior
+      if (estAntVacio) eAnt.vacio = Math.max(0, eAnt.vacio - cantAnt);
+      else eAnt.disp = Math.max(0, eAnt.disp - cantAnt);
+
+      // 2. Aplicar nuevo saldo
+      const eNue = exi(alm, it.id);
+      if (esVacio) eNue.vacio += cant;
+      else eNue.disp += cant;
+
+      // 3. Actualizar registro en DB.movs
+      m.id = it.id;
+      m.cod = it.cod;
+      m.desc = it.desc;
+      m.serial = it.serial || '';
+      m.cant = cant;
+      m.origen = alm;
+      m.destino = alm;
+      m.estNue = esVacio ? 'VACÍO' : 'DISPONIBLE';
+      m.obs = 'Inventario inicial (corregido)';
+
+      bit('CARGA INICIAL CORREGIDA', `${alm} · ${it.cod} x${cant} (antes ${almAnt} x${cantAnt})`);
+      guardar();
+      window.__iniEditMov = null;
+      window.__iniItem = null;
+      toast('Corrección guardada con éxito.', 'ok');
+      refrescar();
+      return;
+    }
+
+    // MODO NUEVO REGISTRO
+    if (it.serial && (cant !== 1 || DB.almacenes.some(a => DB.exi[a.c] && DB.exi[a.c][it.id] && totalExi(DB.exi[a.c][it.id]) > 0))) {
+      throw new Error('El ítem con serial ya tiene existencia registrada o la cantidad no es 1.');
+    }
+
+    cargaInicial(alm, it.id, cant, esVacio);
+    bit('CARGA INICIAL', `${alm} · ${it.cod} x${cant}`);
+    guardar();
+
+    // Limpiar formulario totalmente para el próximo registro
+    window.__iniItem = null;
+    window.__iniEditMov = null;
+    if ($('iniIt')) $('iniIt').value = '';
+    if ($('iniSel')) $('iniSel').value = '';
+    if ($('iniCant')) $('iniCant').value = '1';
+    if ($('iniEst')) $('iniEst').value = '0';
+
+    toast('Carga inicial registrada.', 'ok');
+    refrescar();
+  });
 }
 VISTAS.aConf = () => {
   $('area').innerHTML = cab('Configuración', 'Datos que aparecen en el encabezado de los vales y plazo de aceptación de transferencias.')
