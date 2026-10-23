@@ -385,10 +385,10 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
         <div class="campo"><label for="lgUsuario">Usuario</label>
           <input id="lgUsuario" autocomplete="username" placeholder="jcubillan / jaguilar / drivero" oninput="actualizarAccesosLogin()"></div>
         <div class="campo"><label for="lgClave">Clave</label>
-          <div style="position:relative;display:flex;align-items:center">
-            <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')iniciarSesion()" style="padding-right:38px;width:100%">
-            <button type="button" onclick="const f=$('lgClave');f.type=f.type==='password'?'text':'password';this.textContent=f.type==='password'?'👁️':'🔒'" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;font-size:16px" title="Mostrar u ocultar clave">👁️</button>
-          </div>
+          <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')iniciarSesion()">
+          <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#64748b;margin-top:5px;cursor:pointer;user-select:none">
+            <input type="checkbox" onchange="document.getElementById('lgClave').type=this.checked?'text':'password'" style="cursor:pointer"> Mostrar clave
+          </label>
         </div>
         <div class="campo"><label for="lgAcceso">Acceso</label>
           <select id="lgAcceso"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
@@ -6289,10 +6289,10 @@ function editarUsuario(usr) {
   abrirModal(usr ? 'Editar usuario ' + usr : 'Nuevo usuario', `<div class="f3">
       ${campo('Usuario', `<input id="euU" value="${esc(u.usuario)}" ${usr ? 'readonly' : ''}>`)}
       ${campo('Contraseña / Clave', `
-        <div style="position:relative;display:flex;align-items:center">
-          <input id="euC" type="text" value="${esc(u.clave || '')}" placeholder="Ingrese contraseña" style="padding-right:38px;width:100%;font-weight:600">
-          <button type="button" class="btn btn-claro btn-chico" onclick="const f=$('euC');f.type=f.type==='password'?'text':'password';this.textContent=f.type==='password'?'👁️':'🔒'" style="position:absolute;right:4px;padding:4px 8px;font-size:14px" title="Mostrar/ocultar">👁️</button>
-        </div>`
+        <input id="euC" type="text" value="${esc(u.clave || '')}" placeholder="Ingrese contraseña" style="font-weight:600">
+        <label style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--texto-3);margin-top:4px;cursor:pointer;user-select:none">
+          <input type="checkbox" onchange="document.getElementById('euC').type=this.checked?'password':'text'" style="cursor:pointer"> Ocultar contraseña
+        </label>`
       )}
       ${campo('Nombre', `<input id="euN" value="${esc(u.nombre)}">`)}
       ${campo('Cargo', `<input id="euCa" value="${esc(u.cargo)}" placeholder="Cargo del usuario">`)}
