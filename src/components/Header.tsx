@@ -16,7 +16,15 @@ import {
   Users,
   Clock,
   Calendar,
-  ArrowLeft
+  ArrowLeft,
+  LayoutDashboard,
+  TableProperties,
+  Briefcase,
+  Layers,
+  FileText,
+  CalendarRange,
+  CalendarDays,
+  Truck
 } from 'lucide-react';
 import { SuiteModulo } from '../types/suite';
 
@@ -41,7 +49,6 @@ const TITULOS_VISTAS: Record<string, string> = {
   'mano-obra': 'Mano de Obra Directa (MOD)',
   'categorias': 'Categorías de Gasto',
   'hoja-motivos': 'Hoja de Motivos & Solicitantes',
-  'tabla': 'Salidas de Almacén SIP',
   'informe': 'Informe Mensual',
   'semanas': 'Control Semanal',
   'meses': 'Evolución Mensual',
@@ -52,6 +59,26 @@ const TITULOS_VISTAS: Record<string, string> = {
   'internos-infra': 'Mantenimiento & Taller',
   'internos-ppt': 'Informe Gerencial PPT'
 };
+
+const MENU_EXTERNOS = [
+  { id: 'dashboard', label: 'Tablero Ejecutivo', icon: LayoutDashboard, title: 'Resumen General y Tablero Ejecutivo' },
+  { id: 'matriz-proyectos', label: 'Matriz de Proyectos', icon: TableProperties, title: 'Matriz Proyectos x Categorías' },
+  { id: 'proyectos', label: 'Cuentas Auxiliares', icon: Briefcase, title: 'Cuentas Auxiliares & Presupuestos' },
+  { id: 'mano-obra', label: 'Mano de Obra Diaria', icon: Clock, title: 'Mano de Obra Diaria (MOD Cuadrillas)' },
+  { id: 'categorias', label: 'Auditoría por Categoría', icon: Layers, title: 'Auditoría por Categoría y Partidas' },
+  { id: 'hoja-motivos', label: 'Hoja de Motivos', icon: FileText, title: 'Hoja de Motivos, Solicitantes y Precios', badge: 'Auditoría' },
+  { id: 'informe', label: 'Presentación Ejecutiva', icon: FileText, title: 'Presentación Ejecutiva PPT' },
+  { id: 'semanas', label: 'Semana a Semana', icon: CalendarRange, title: 'Evolución Semana a Semana' },
+  { id: 'meses', label: 'Mes a Mes', icon: CalendarDays, title: 'Comparativa Mes a Mes' }
+];
+
+const MENU_INTERNOS = [
+  { id: 'internos-dashboard', label: 'Tablero Interno', icon: LayoutDashboard, title: 'Dashboard General Interno' },
+  { id: 'internos-capex', label: 'Inversiones CAPEX', icon: Building2, title: 'Inversiones CAPEX & Obras Civiles' },
+  { id: 'internos-gruas', label: 'Flota Pesada & Grúas', icon: Truck, title: 'Flota Pesada & Grúas OPEX' },
+  { id: 'internos-infra', label: 'Mantenimiento & Taller', icon: Wrench, title: 'Mantenimiento & Taller' },
+  { id: 'internos-ppt', label: 'Informe Gerencial PPT', icon: FileText, title: 'Informe Gerencial PPT' }
+];
 
 export const Header: React.FC<HeaderProps> = ({
   activeTab = 'dashboard',
@@ -264,6 +291,72 @@ export const Header: React.FC<HeaderProps> = ({
 
         </div>
       </div>
+
+      {/* MENÚ HORIZONTAL DE NAVEGACIÓN */}
+      {moduloActivo === 'costos' && (
+        <div className={`border-t transition-colors ${
+          esInternos 
+            ? 'bg-slate-900/95 border-slate-700/80 shadow-inner' 
+            : 'bg-slate-50/95 border-slate-200/90 shadow-2xs'
+        }`}>
+          <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth">
+            {!esInternos ? (
+              <>
+                {MENU_EXTERNOS.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                        isActive
+                          ? 'bg-blue-600 text-white font-bold shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-300'
+                      }`}
+                      title={item.title}
+                    >
+                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : item.id === 'hoja-motivos' ? 'text-orange-500' : 'text-slate-500'}`} />
+                      <span>{item.label}</span>
+                      {item.badge && (
+                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                          isActive 
+                            ? 'bg-blue-800 text-blue-100' 
+                            : 'bg-orange-100 text-orange-800 border border-orange-200'
+                        }`}>
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </>
+            ) : (
+              <>
+                {MENU_INTERNOS.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setActiveTab(item.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                        isActive
+                          ? 'bg-sky-500 text-white font-bold shadow-xs'
+                          : 'text-slate-300 hover:text-white hover:bg-slate-800 border border-transparent hover:border-slate-700'
+                      }`}
+                      title={item.title}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };

@@ -17,7 +17,6 @@ import { CategoriaDetalleView } from './components/CategoriaDetalleView';
 import { HojaAuditoriaMotivosView } from './components/HojaAuditoriaMotivosView';
 import { MatrizProyectosCategoriasView } from './components/MatrizProyectosCategoriasView';
 import { DesglosePartidaView } from './components/DesglosePartidaView';
-import { SalidasTableView } from './components/SalidasTableView';
 import { ManoObraDiariaView } from './components/ManoObraDiariaView';
 import { UsuariosView } from './components/UsuariosView';
 import { ImportModal } from './components/ImportModal';
@@ -415,7 +414,6 @@ function AppContent() {
                 onGoToSemanas={() => setActiveTab('semanas')}
                 onGoToMeses={() => setActiveTab('meses')}
                 onGoToInforme={() => setActiveTab('informe')}
-                onGoToTabla={() => setActiveTab('tabla')}
                 onOpenImport={() => setIsImportOpen(true)}
                 onGoToManoObra={() => setActiveTab('mano-obra')}
                 onGoToCategoria={(cat) => {
@@ -497,15 +495,6 @@ function AppContent() {
                   handleCambiarEntorno('internos');
                   setActiveTab('internos-ppt');
                 }}
-              />
-            )}
-
-            {activeTab === 'tabla' && (
-              <SalidasTableView
-                onOpenNewSalida={handleOpenNewSalida}
-                onEditSalida={handleEditSalida}
-                onVolver={() => setActiveTab('dashboard')}
-                currentUser={currentUser}
               />
             )}
 

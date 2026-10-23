@@ -21,7 +21,6 @@ interface DashboardViewProps {
   onGoToSemanas: () => void;
   onGoToMeses: () => void;
   onGoToInforme: () => void;
-  onGoToTabla: () => void;
   onOpenImport: () => void;
   onGoToManoObra?: () => void;
   onGoToCategoria?: (categoria: string) => void;
@@ -35,7 +34,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onGoToSemanas,
   onGoToMeses,
   onGoToInforme,
-  onGoToTabla,
   onOpenImport,
   onGoToManoObra,
   onGoToCategoria,

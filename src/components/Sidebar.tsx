@@ -16,7 +16,6 @@ import {
   CalendarDays, 
   CalendarRange, 
   TableProperties, 
-  FileSpreadsheet, 
   Users, 
   UploadCloud, 
   LogOut, 
@@ -350,19 +349,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         Auditoría
                       </span>
                     )}
-                  </button>
-
-                  <button
-                    onClick={() => handleSelectCostosTab('tabla', 'externos')}
-                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'tabla'
-                        ? 'bg-blue-600 text-white font-bold shadow-xs'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                    }`}
-                    title="Registro de Salidas de Almacén SIP"
-                  >
-                    <FileSpreadsheet className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Salidas de Almacén SIP</span>}
                   </button>
 
                   <button
