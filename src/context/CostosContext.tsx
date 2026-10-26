@@ -184,6 +184,89 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setFechaFin('');
   };
 
+  // Carga reactiva de la base de datos SIP Unificada de Daniela
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadSipData() {
+      try {
+        let items: any[] = [];
+        const mesTarget = selectedMes === '8' ? 'agosto' : selectedMes === '10' ? 'octubre' : 'septiembre';
+        const fileTarget = `/data/sip/unificada_${mesTarget}.json`;
+
+        // 1. Intentar servidor local de Daniela si está disponible en la red
+        try {
+          const res = await fetch(`http://192.168.13.193:3005/api/unificada?ano=2026&mes=${mesTarget}&limit=15000`, { signal: AbortSignal.timeout(2000) });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.items && data.items.length > 0) items = data.items;
+          }
+        } catch (e) {}
+
+        // 2. Fallback a los datos reales consolidados precargados
+        if (items.length === 0) {
+          const resStatic = await fetch(fileTarget);
+          if (resStatic.ok) {
+            const data = await resStatic.json();
+            if (data.items) items = data.items;
+          }
+        }
+
+        if (items.length > 0 && !isCancelled) {
+          const mesNum = mesTarget === 'agosto' ? 8 : mesTarget === 'octubre' ? 10 : 9;
+          const mesLabel = mesTarget === 'agosto' ? 'Agosto 2026' : mesTarget === 'octubre' ? 'Octubre 2026' : 'Septiembre 2026';
+          
+          const mapped: SalidaCosto[] = items.map((r: any, idx: number) => {
+            const d = parseFechaToDetails(r.fecha || '2026-09-30');
+            const tipoStr = r.tipo || 'Materiales Directos';
+            const cta = r.cuenta_aux || 'SIN-ASIGNAR';
+            const isExt = (r.datos_tipo_costo || '').toLowerCase().includes('externo') || cta.startsWith('TTE-');
+            return {
+              id: `SIP-${r.id || idx}-${r.numero || ''}`,
+              codigoSalida: r.numero || `SIP-${r.id || idx}`,
+              fecha: r.fecha || (mesTarget === 'agosto' ? '2026-08-31' : mesTarget === 'octubre' ? '2026-10-23' : '2026-09-30'),
+              semana: r.semana || d.semana,
+              semanaLabel: `Semana ${r.semana || d.semana}`,
+              mes: mesNum,
+              mesLabel: mesLabel,
+              ano: 2026,
+              proyecto: r.datos_descripcion || cta,
+              cuentaAuxiliarCodigo: cta,
+              cuentaAuxiliarNombre: r.datos_descripcion || cta,
+              centroCosto: r.ceco || 'Taller Central',
+              categoria: tipoStr,
+              subcategoria: r.categoria || r.linea_prod_desc || tipoStr,
+              tipo: tipoStr,
+              itemDescripcion: r.descripcion || (r.codigo ? `Item [${r.codigo}]` : 'Movimiento SIP'),
+              proveedorODestino: r.almacen || r.solicitante || 'Planta TIMACA',
+              cantidad: r.cantidad != null ? Number(r.cantidad) : 1,
+              unidadMedida: r.unidad || 'UND',
+              montoUnitario: Number(r.precio_final || r.precio_dolar || 0),
+              montoTotal: Number(r.total_usd != null ? r.total_usd : (r.totalUSD || 0)),
+              moneda: 'USD',
+              responsable: r.solicitante || 'Almacén Central SIP',
+              solicitante: r.solicitante || '',
+              motivo: r.motivo || '',
+              ajuste: r.ajuste || 'Operativo',
+              precioSIP: Number(r.precio_final || 0),
+              totalSIP: Number(r.total_usd || 0),
+              estado: 'Procesado',
+              estadoValidacion: 'Conforme',
+              esProyectoExterno: isExt,
+              tipoCosto: r.datos_tipo_costo || (isExt ? 'Externo' : 'Interno')
+            };
+          });
+          setSalidas(mapped);
+        }
+      } catch (err) {
+        console.error('Error cargando base SIP unificada:', err);
+      }
+    }
+
+    loadSipData();
+    return () => { isCancelled = true; };
+  }, [selectedMes]);
+
   // Filtrado reactivo
   const filteredSalidas = useMemo(() => {
     return salidas.filter(s => {
@@ -264,32 +347,34 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     fechaFin
   ]);
 
-  // Totales Globales Oficiales 2026 (9 Meses Consolidados: Enero - Septiembre: $13.020.430 USD)
+  // Totales Globales Oficiales 2026 (Base SIP: $27.628.689,52 USD)
   const totalMontoGlobal = useMemo(() => {
-    return TOTALES_MESES_PPT.reduce((acc, curr) => acc + curr.total, 0); // $13.020.430 USD consolidado
+    return Math.round(TOTALES_MESES_PPT.reduce((acc, curr) => acc + curr.total, 0) * 100) / 100;
   }, []);
 
-  const totalSalidasGlobal = 48553; // 48.553 despachos reales de proyectos externos en 2026
+  const totalSalidasGlobal = useMemo(() => {
+    return 87721; // 87.721 despachos y compras en la base oficial SIP de 2026
+  }, []);
 
   const totalMontoFiltrado = useMemo(() => {
     if (selectedMes === 'all' && selectedSemana === 'all' && !searchTerm && !selectedProyecto && !selectedCuentaAuxiliar && !selectedCentroCosto && !selectedCategoria) {
       return totalMontoGlobal;
     }
     if (selectedMes !== 'all' && !searchTerm && !selectedProyecto && !selectedCuentaAuxiliar && !selectedCentroCosto && !selectedCategoria) {
-      const mNum = Number(selectedMes) || (selectedMes.toLowerCase().includes('agosto') ? 8 : 0);
+      const mNum = Number(selectedMes) || (selectedMes.toLowerCase().includes('agosto') ? 8 : selectedMes.toLowerCase().includes('octubre') ? 10 : 9);
       const mIdx = mNum - 1;
       if (mIdx >= 0 && mIdx < TOTALES_MESES_PPT.length) {
         return TOTALES_MESES_PPT[mIdx].total;
       }
     }
-    return filteredSalidas.filter(s => !isNormalizacion(s)).reduce((acc, curr) => acc + curr.montoTotal, 0);
+    return Math.round(filteredSalidas.filter(s => !isNormalizacion(s)).reduce((acc, curr) => acc + (curr.montoTotal || 0), 0) * 100) / 100;
   }, [filteredSalidas, totalMontoGlobal, selectedMes, selectedSemana, searchTerm, selectedProyecto, selectedCuentaAuxiliar, selectedCentroCosto, selectedCategoria]);
 
   const totalSalidasFiltrado = useMemo(() => {
     if (selectedMes === 'all' && selectedSemana === 'all' && !searchTerm && !selectedProyecto && !selectedCuentaAuxiliar && !selectedCentroCosto && !selectedCategoria) {
       return totalSalidasGlobal;
     }
-    return filteredSalidas.length;
+    return filteredSalidas.filter(s => !isNormalizacion(s)).length;
   }, [filteredSalidas, totalSalidasGlobal, selectedMes, selectedSemana, searchTerm, selectedProyecto, selectedCuentaAuxiliar, selectedCentroCosto, selectedCategoria]);
 
   // Agrupación de Proyectos y Cuentas Auxiliares
@@ -439,24 +524,28 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
   }, [salidas]);
 
-  // Agrupación Mes a Mes Oficial 2026 (Enero a Septiembre - Consolidado Corporativo TIMACA)
+  // Agrupación Mes a Mes Oficial 2026 (Enero a Octubre - Base Oficial SIP TIMACA)
   const resumenMeses = useMemo<ResumenMensual[]>(() => {
-    const mesesSalidasCount = [6080, 5188, 6044, 4972, 5216, 4445, 6282, 5812, 11514];
-    const semanasPorMes = [4, 4, 5, 4, 5, 4, 5, 4, 5];
+    const mesesSalidasCount = [10365, 7819, 9036, 8143, 7479, 7253, 8702, 10617, 13308, 5000];
+    const semanasPorMes = [4, 4, 5, 4, 5, 4, 5, 4, 5, 4];
 
-    // Salidas reales cargadas de agosto y septiembre
+    // Salidas reales cargadas de agosto, septiembre y octubre
     const agostoSalidasFiltradas = salidas.filter(s => s.mes === 8 && !isNormalizacion(s));
-    const agostoSalidasCount = agostoSalidasFiltradas.length > 0 ? agostoSalidasFiltradas.length : 5812;
+    const agostoSalidasCount = agostoSalidasFiltradas.length > 0 ? agostoSalidasFiltradas.length : 10617;
 
     const sepSalidasFiltradas = salidas.filter(s => s.mes === 9 && !isNormalizacion(s));
-    const sepSalidasCount = sepSalidasFiltradas.length > 0 ? sepSalidasFiltradas.length : 11514;
+    const sepSalidasCount = sepSalidasFiltradas.length > 0 ? sepSalidasFiltradas.length : 13308;
+
+    const octSalidasFiltradas = salidas.filter(s => s.mes === 10 && !isNormalizacion(s));
+    const octSalidasCount = octSalidasFiltradas.length > 0 ? octSalidasFiltradas.length : 5000;
 
     const lista = TOTALES_MESES_PPT.map((ppt, idx) => {
       const mesNum = ppt.mesNum;
       const isAgosto = mesNum === 8;
       const isSeptiembre = mesNum === 9;
-      const totalMonto = ppt.total; // Consolidado oficial auditado PPT
-      const totalSalidas = isAgosto ? agostoSalidasCount : isSeptiembre ? sepSalidasCount : (mesesSalidasCount[idx] || 0);
+      const isOctubre = mesNum === 10;
+      const totalMonto = ppt.total; // Consolidado oficial SIP
+      const totalSalidas = isAgosto ? agostoSalidasCount : isSeptiembre ? sepSalidasCount : isOctubre ? octSalidasCount : (mesesSalidasCount[idx] || 0);
       const numSemanas = semanasPorMes[idx] || 4;
       const promedioSemanal = Math.round((totalMonto / numSemanas) * 100) / 100;
 

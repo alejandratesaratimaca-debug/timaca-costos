@@ -67,7 +67,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     { num: 6, label: 'Junio', corto: 'Jun' },
     { num: 7, label: 'Julio', corto: 'Jul' },
     { num: 8, label: 'Agosto', corto: 'Ago' },
-    { num: 9, label: 'Septiembre', corto: 'Sep' }
+    { num: 9, label: 'Septiembre', corto: 'Sep' },
+    { num: 10, label: 'Octubre', corto: 'Oct' }
   ];
 
   // Maximum weekly and monthly amount for chart scaling

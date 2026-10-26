@@ -20,6 +20,8 @@ import { DesglosePartidaView } from './components/DesglosePartidaView';
 import { ManoObraDiariaView } from './components/ManoObraDiariaView';
 import { UsuariosView } from './components/UsuariosView';
 import { ImportModal } from './components/ImportModal';
+import { MasterUnificadoSipView } from './components/MasterUnificadoSipView';
+import { CatalogoPreciosView } from './components/CatalogoPreciosView';
 import { SalidaFormModal } from './components/SalidaFormModal';
 import { LoginPortadaView } from './components/LoginPortadaView';
 import { HerramientasModuleView } from './components/herramientas/HerramientasModuleView';
@@ -370,7 +372,11 @@ function AppContent() {
 
         {/* ================= MÓDULO PRINCIPAL: DEPARTAMENTO DE COSTOS ================= */}
         {moduloActivo === 'costos' && (
-          esInternos ? (
+          activeTab === 'unificada-sip' ? (
+            <MasterUnificadoSipView currentUser={currentUser} />
+          ) : activeTab === 'catalogo-precios' ? (
+            <CatalogoPreciosView currentUser={currentUser} onVolver={() => setActiveTab('unificada-sip')} />
+          ) : esInternos ? (
           <>
             {(activeTab === 'internos-dashboard' || activeTab === 'dashboard' || activeTab === 'internos-capex' || activeTab === 'internos-flota' || activeTab === 'internos-gruas' || activeTab === 'internos-mod' || activeTab === 'internos-infra') && (
               <DashboardInternosView 

@@ -1,23 +1,21 @@
 /**
- * Regla de filtro obligatoria en toda la aplicación para excluir la "Normalización"
- * (traslados patrimoniales y reclasificaciones de balance).
+ * Regla de filtro para clasificar o excluir Ajustes Históricos (Normalización y Manual).
  * 
- * Requisitos:
- * 1. Filtra y excluye todos los registros donde el campo 'Ajuste' (o 'Motivo')
- *    sea igual a 'Normalizacion' o contenga la palabra 'Normaliz'.
- * 2. Case-insensitive y sin distinción de tildes (acentos).
+ * Requisitos estrictos (confirmados por Alejandra Tesara):
+ * 1. La palabra 'NORMALIZACION' o 'MANUAL' DEBE estar en la columna 'Ajuste'.
+ * 2. NUNCA se debe evaluar el campo 'Motivo' ni 'Descripción', ya que las descripciones
+ *    de mantenimiento técnico (ej: "se normalizó la falla", "revisión manual") son
+ *    actividades operativas reales y NO ajustes de regularización patrimonial.
  */
 
 export function isNormalizacion(
   record: {
     ajuste?: string;
-    motivo?: string;
     tipoAjuste?: string;
     tipo_ajuste?: string;
     motivoAjuste?: string;
     conceptoAjuste?: string;
-    observaciones?: string;
-    itemDescripcion?: string;
+    clasificacionAjuste?: string;
   } | Record<string, any> | null | undefined
 ): boolean {
   if (!record || typeof record !== 'object') return false;
@@ -31,14 +29,11 @@ export function isNormalizacion(
       .trim();
   };
 
-  // 1. Campos específicos directos recomendados por la especificación: 'Ajuste' o 'Motivo'
+  // 1. Campos específicos directos de Ajuste (ESTRICTO: columna AJUSTE)
   const directFields = [
     (record as any).ajuste,
-    (record as any).motivo,
     (record as any).tipoAjuste,
     (record as any).tipo_ajuste,
-    (record as any).motivoAjuste,
-    (record as any).conceptoAjuste,
     (record as any).clasificacionAjuste,
   ];
 
@@ -56,11 +51,11 @@ export function isNormalizacion(
     }
   }
 
-  // 2. Búsqueda dinámica en cualquier propiedad cuyo nombre contenga 'ajuste' o 'motivo'
+  // 2. Búsqueda dinámica EXCLUSIVAMENTE en cualquier propiedad cuyo nombre sea o contenga 'ajuste' (NUNCA motivo)
   for (const [key, val] of Object.entries(record)) {
     if (typeof val === 'string' && val.trim() !== '') {
       const normKey = normalizeStr(key);
-      if (normKey === 'ajuste' || normKey === 'motivo' || normKey.includes('ajuste') || normKey.includes('motivo')) {
+      if (normKey === 'ajuste' || normKey.includes('ajuste')) {
         const normVal = normalizeStr(val);
         if (
           normVal === 'normalizacion' || 
@@ -78,7 +73,7 @@ export function isNormalizacion(
 }
 
 /**
- * Filtra un arreglo de registros excluyendo cualquier elemento identificado como Normalización
+ * Filtra un arreglo de registros excluyendo cualquier elemento identificado como Normalización o Manual
  */
 export function filterSinNormalizacion<T extends Record<string, any>>(records: T[]): T[] {
   if (!Array.isArray(records)) return [];

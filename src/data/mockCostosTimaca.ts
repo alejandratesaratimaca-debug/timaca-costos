@@ -128,56 +128,57 @@ export const DETALLE_SUBCONCEPTOS_CATEGORIAS: Record<string, {
 export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
-    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 371927, 868067],
-    total2026: 3967416,
-    variacion: '+133,4%',
-    variacionNum: 133.4,
+    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 561462.88, 823463.09, 499968.36],
+    total2026: 4612316.33,
+    variacion: '+46,7%',
+    variacionNum: 46.7,
     esPositiva: true
   },
   {
     categoria: 'Servicios Directos',
-    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 117970, 99540],
-    total2026: 2904145,
-    variacion: '-15,6%',
-    variacionNum: -15.6,
+    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 247200.63],
+    total2026: 3847303.02,
+    variacion: '-55,7%',
+    variacionNum: -55.7,
     esPositiva: false
   },
   {
     categoria: 'Mano de Obra Directa',
-    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 277936, 196665],
-    total2026: 2218229,
-    variacion: '-29,2%',
-    variacionNum: -29.2,
+    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 290728.22, 208500.75, 0],
+    total2026: 2242856.97,
+    variacion: '-28,3%',
+    variacionNum: -28.3,
     esPositiva: false
   },
   {
     categoria: 'Horas Máquina',
-    meses: [145113, 113686, 149030, 55110, 129625, 69063, 75933, 89789, 55578],
-    total2026: 882927,
-    variacion: '-38,1%',
-    variacionNum: -38.1,
+    meses: [145113, 113686, 149030, 55110, 129625, 69063, 75933, 87975.46, 53398.08, 0],
+    total2026: 878933.54,
+    variacion: '-39,3%',
+    variacionNum: -39.3,
     esPositiva: false
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 339978, 393375],
-    total2026: 2079459,
-    variacion: '+15,7%',
-    variacionNum: 15.7,
+    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 207508.00, 341374.77, 0],
+    total2026: 1894988.77,
+    variacion: '+64,5%',
+    variacionNum: 64.5,
     esPositiva: true
   }
 ];
 
 export const TOTALES_MESES_PPT = [
-  { mesNum: 1, mesNombre: 'Enero 2026', total: 1027830 },
-  { mesNum: 2, mesNombre: 'Febrero 2026', total: 1250858 },
-  { mesNum: 3, mesNombre: 'Marzo 2026', total: 1399893 },
-  { mesNum: 4, mesNombre: 'Abril 2026', total: 1009467 },
-  { mesNum: 5, mesNombre: 'Mayo 2026', total: 874248 },
-  { mesNum: 6, mesNombre: 'Junio 2026', total: 2590801 },
-  { mesNum: 7, mesNombre: 'Julio 2026', total: 1088254 },
-  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1197600 },
-  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1613225 }
+  { mesNum: 1, mesNombre: 'Enero 2026', total: 1543277.49 },
+  { mesNum: 2, mesNombre: 'Febrero 2026', total: 11248552.10 },
+  { mesNum: 3, mesNombre: 'Marzo 2026', total: 2175763.39 },
+  { mesNum: 4, mesNombre: 'Abril 2026', total: 1298976.94 },
+  { mesNum: 5, mesNombre: 'Mayo 2026', total: 1675082.63 },
+  { mesNum: 6, mesNombre: 'Junio 2026', total: 3621978.79 },
+  { mesNum: 7, mesNombre: 'Julio 2026', total: 1830010.54 },
+  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1780600.70 },
+  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1707277.95 },
+  { mesNum: 10, mesNombre: 'Octubre 2026', total: 747168.99 }
 ];
 
 // LISTADO OFICIAL DE PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.197.600 USD)

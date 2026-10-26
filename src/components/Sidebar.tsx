@@ -21,7 +21,9 @@ import {
   LogOut, 
   ChevronLeft,
   Briefcase,
-  LayoutDashboard
+  LayoutDashboard,
+  Database,
+  DollarSign
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -277,6 +279,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   >
                     <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
                     {!isCollapsed && <span>Tablero Ejecutivo</span>}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('unificada-sip', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && activeTab === 'unificada-sip'
+                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Master Unificado 35 Columnas & SIP en Vivo"
+                  >
+                    <Database className="w-3.5 h-3.5 shrink-0 text-cyan-400" />
+                    {!isCollapsed && (
+                      <div className="flex items-center justify-between flex-1">
+                        <span>Master Unificado SIP</span>
+                        <span className="text-[9px] bg-cyan-900/60 text-cyan-300 px-1.5 py-0.2 rounded font-mono font-bold">SIP</span>
+                      </div>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => handleSelectCostosTab('catalogo-precios', 'externos')}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
+                      moduloActivo === 'costos' && activeTab === 'catalogo-precios'
+                        ? 'bg-amber-600 text-white font-bold shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                    title="Catálogo & Auditoría de Precios SIP (Eliminar Desfases)"
+                  >
+                    <DollarSign className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+                    {!isCollapsed && (
+                      <div className="flex items-center justify-between flex-1">
+                        <span>Catálogo de Precios</span>
+                        <span className="text-[9px] bg-amber-900/60 text-amber-300 px-1.5 py-0.2 rounded font-mono font-bold">PRECIOS</span>
+                      </div>
+                    )}
                   </button>
 
                   <button

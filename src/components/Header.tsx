@@ -24,7 +24,8 @@ import {
   FileText,
   CalendarRange,
   CalendarDays,
-  Truck
+  Truck,
+  Database
 } from 'lucide-react';
 import { SuiteModulo } from '../types/suite';
 
@@ -44,6 +45,7 @@ interface HeaderProps {
 
 const TITULOS_VISTAS: Record<string, string> = {
   'dashboard': 'Dashboard General',
+  'unificada-sip': 'Master Unificado SIP & Reclasificaciones',
   'matriz-proyectos': 'Matriz de Costos por Proyecto',
   'proyectos': 'Cuentas Auxiliares',
   'mano-obra': 'Mano de Obra Directa (MOD)',
@@ -62,6 +64,7 @@ const TITULOS_VISTAS: Record<string, string> = {
 
 const MENU_EXTERNOS = [
   { id: 'dashboard', label: 'Tablero Ejecutivo', icon: LayoutDashboard, title: 'Resumen General y Tablero Ejecutivo' },
+  { id: 'unificada-sip', label: 'Master Unificado SIP', icon: Database, title: 'Consolidado Maestro 35 Columnas & SIP en Vivo', badge: 'SIP 2026' },
   { id: 'matriz-proyectos', label: 'Matriz de Proyectos', icon: TableProperties, title: 'Matriz Proyectos x Categorías' },
   { id: 'proyectos', label: 'Cuentas Auxiliares', icon: Briefcase, title: 'Cuentas Auxiliares & Presupuestos' },
   { id: 'mano-obra', label: 'Mano de Obra Diaria', icon: Clock, title: 'Mano de Obra Diaria (MOD Cuadrillas)' },
@@ -74,6 +77,7 @@ const MENU_EXTERNOS = [
 
 const MENU_INTERNOS = [
   { id: 'internos-dashboard', label: 'Tablero Interno', icon: LayoutDashboard, title: 'Dashboard General Interno' },
+  { id: 'unificada-sip', label: 'Master Unificado SIP', icon: Database, title: 'Consolidado Maestro 35 Columnas & SIP en Vivo', badge: 'SIP 2026' },
   { id: 'internos-capex', label: 'Inversiones CAPEX', icon: Building2, title: 'Inversiones CAPEX & Obras Civiles' },
   { id: 'internos-gruas', label: 'Flota Pesada & Grúas', icon: Truck, title: 'Flota Pesada & Grúas OPEX' },
   { id: 'internos-infra', label: 'Mantenimiento & Taller', icon: Wrench, title: 'Mantenimiento & Taller' },
