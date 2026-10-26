@@ -9,10 +9,8 @@ import {
   RefreshCw,
   Download,
   Edit3,
-  Save,
   RotateCcw,
   ShoppingBag,
-  ExternalLink,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -350,7 +348,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       } else if (costoDespachoProm === 0 && precioUltima === 0) {
         estado = 'critico';
       } else if (costoDespachoProm === 0 && precioUltima > 0) {
-        estado = 'desfase'; // Corregible por última compra
+        estado = 'desfase';
       } else if (Math.abs(varPorc) > 5) {
         estado = 'desfase';
       } else {
@@ -399,7 +397,6 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       if (a.estado === 'critico') criticos++;
       else if (a.estado === 'desfase') {
         desfasados++;
-        // Impacto monetario estimado = cantidad consumida * |costoDespacho - precioOficial|
         const diff = Math.abs(a.costoPromedioDespacho - a.precioOficial);
         impactoDesfaseUSD += diff * a.cantidadConsumida;
       } else if (a.estado === 'ajustado') ajustados++;
@@ -429,7 +426,6 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
   const articulosFiltrados = useMemo(() => {
     let list = [...catalogoArticulos];
 
-    // Filtro de texto
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase().trim();
       list = list.filter(a => 
@@ -440,17 +436,14 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       );
     }
 
-    // Filtro de Estado
     if (filtroEstado !== 'todos') {
       list = list.filter(a => a.estado === filtroEstado);
     }
 
-    // Filtro de Categoría
     if (filtroCategoria !== 'TODAS') {
       list = list.filter(a => a.categoria === filtroCategoria);
     }
 
-    // Ordenamiento
     list.sort((a, b) => {
       let valA = 0;
       let valB = 0;
@@ -506,7 +499,6 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
     setPreciosManuales(updated);
     localStorage.setItem('timaca_precios_manuales_v1', JSON.stringify(updated));
 
-    // Si el backend responde, guardar en servidor
     try {
       fetch('http://192.168.13.193:3005/api/precios-manuales', {
         method: 'POST',
@@ -548,7 +540,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
     }
   };
 
-  // 7. Revalorización Masiva Automática (Aplicar a todos los ítems desfasados)
+  // 7. Revalorización Masiva Automática
   const aplicarTodosDesfasados = () => {
     const itemsDesfase = catalogoArticulos.filter(a => a.estado === 'desfase' && a.precioUltimaCompra > 0);
     if (itemsDesfase.length === 0) {
@@ -602,35 +594,35 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-slate-900 text-slate-100">
+    <div className="flex-1 flex flex-col min-h-screen bg-slate-50 text-slate-900 font-sans">
       {/* Toast Notification */}
       {notificacion && (
-        <div className={`fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-2xl border text-sm font-semibold transition-all duration-300 animate-in fade-in slide-in-from-bottom-3 ${
+        <div className={`fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-xl border text-xs font-semibold transition-all duration-300 animate-in fade-in slide-in-from-bottom-3 ${
           notificacion.tipo === 'success' 
-            ? 'bg-emerald-950/95 border-emerald-500 text-emerald-200' 
-            : 'bg-blue-950/95 border-blue-500 text-blue-200'
+            ? 'bg-emerald-50 border-emerald-300 text-emerald-900' 
+            : 'bg-blue-50 border-blue-300 text-blue-900'
         }`}>
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
           <span>{notificacion.texto}</span>
         </div>
       )}
 
-      {/* HEADER PRINCIPAL */}
-      <div className="bg-[#112238] border-b border-slate-700/80 px-6 py-4 shadow-lg sticky top-0 z-30">
+      {/* HEADER SUPERIOR LIMPIO */}
+      <div className="bg-white border-b border-slate-200 px-6 py-4 shadow-2xs sticky top-0 z-30">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 shadow-inner">
+            <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 shadow-2xs">
               <DollarSign className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-white tracking-tight">Catálogo & Auditoría de Precios SIP</h1>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-600/60 uppercase">
+                <h1 className="text-xl font-bold text-slate-900 tracking-tight">Catálogo & Auditoría de Precios SIP</h1>
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-100 text-amber-800 border border-amber-300 uppercase">
                   Auditoría en Vivo
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Triangulación de órdenes de compra vs salidas de almacén. Control de desfases de precios y costos cero.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Triangulación de órdenes de compra vs salidas de almacén. Corrección de desfases y costos en cero sin archivos Excel.
               </p>
             </div>
           </div>
@@ -638,7 +630,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={aplicarTodosDesfasados}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white transition-all shadow-md active:scale-95"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white transition-all shadow-xs active:scale-95 cursor-pointer"
               title="Aplica la última compra a todos los ítems con desfase"
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -647,27 +639,27 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
             <button
               onClick={exportarExcel}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-2xs transition-all active:scale-95 cursor-pointer"
               title="Exportar a Excel (.xlsx)"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-400" />
+              <Download className="w-3.5 h-3.5 text-emerald-600" />
               <span>Exportar Excel</span>
             </button>
 
             <button
               onClick={fetchData}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 transition-all active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-2xs transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
               title="Recargar datos del SIP"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-cyan-600 ${loading ? 'animate-spin' : ''}`} />
               <span>{loading ? 'Sincronizando...' : 'Refrescar SIP'}</span>
             </button>
 
             {onVolver && (
               <button
                 onClick={onVolver}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700 transition-all"
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-300 transition-all cursor-pointer"
               >
                 Volver
               </button>
@@ -675,110 +667,110 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           </div>
         </div>
 
-        {/* TARJETAS DE MÉTRICAS (KPIs) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-4 pt-3 border-t border-slate-700/60">
+        {/* TARJETAS DE MÉTRICAS (KPIs EN TEMA CLARO) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-4 pt-3 border-t border-slate-200">
           {/* Total Artículos */}
           <div 
             onClick={() => setFiltroEstado('todos')}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
               filtroEstado === 'todos' 
-                ? 'bg-slate-800/90 border-blue-500 shadow-md shadow-blue-500/10' 
-                : 'bg-slate-800/40 border-slate-700/80 hover:bg-slate-800/70'
+                ? 'bg-blue-50/60 border-blue-500 shadow-xs ring-2 ring-blue-500/20' 
+                : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/60 shadow-2xs'
             }`}
           >
-            <div className="flex items-center justify-between text-slate-400 text-[11px] font-medium">
+            <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase">
               <span>Artículos en Catálogo</span>
-              <Layers className="w-4 h-4 text-blue-400" />
+              <Layers className="w-4 h-4 text-blue-600" />
             </div>
-            <div className="text-xl font-bold font-mono text-white mt-1">
+            <div className="text-2xl font-bold font-mono text-slate-900 mt-1">
               {metricas.totalArticulos.toLocaleString()}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Base activa de materiales</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">Base activa de materiales</div>
           </div>
 
           {/* Desfasados */}
           <div 
             onClick={() => setFiltroEstado('desfase')}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
               filtroEstado === 'desfase' 
-                ? 'bg-amber-950/40 border-amber-500 shadow-md shadow-amber-500/10' 
-                : 'bg-slate-800/40 border-slate-700/80 hover:bg-slate-800/70'
+                ? 'bg-amber-50/80 border-amber-500 shadow-xs ring-2 ring-amber-500/20' 
+                : 'bg-white border-slate-200 hover:border-amber-300 hover:bg-amber-50/30 shadow-2xs'
             }`}
           >
-            <div className="flex items-center justify-between text-amber-300 text-[11px] font-medium">
+            <div className="flex items-center justify-between text-amber-800 text-[11px] font-semibold uppercase">
               <span>Desfase &gt; 5%</span>
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
+              <AlertTriangle className="w-4 h-4 text-amber-600" />
             </div>
-            <div className="text-xl font-bold font-mono text-amber-400 mt-1">
+            <div className="text-2xl font-bold font-mono text-amber-700 mt-1">
               {metricas.desfasados.toLocaleString()}
             </div>
-            <div className="text-[10px] text-amber-200/70 mt-0.5">Diferencia con última OC</div>
+            <div className="text-[11px] text-amber-700/80 mt-0.5">Diferencia vs última OC</div>
           </div>
 
           {/* Costo Cero / Críticos */}
           <div 
             onClick={() => setFiltroEstado('critico')}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
               filtroEstado === 'critico' 
-                ? 'bg-rose-950/40 border-rose-500 shadow-md shadow-rose-500/10' 
-                : 'bg-slate-800/40 border-slate-700/80 hover:bg-slate-800/70'
+                ? 'bg-rose-50/80 border-rose-500 shadow-xs ring-2 ring-rose-500/20' 
+                : 'bg-white border-slate-200 hover:border-rose-300 hover:bg-rose-50/30 shadow-2xs'
             }`}
           >
-            <div className="flex items-center justify-between text-rose-300 text-[11px] font-medium">
+            <div className="flex items-center justify-between text-rose-800 text-[11px] font-semibold uppercase">
               <span>Costo $0 / Sin Compra</span>
-              <AlertCircle className="w-4 h-4 text-rose-400" />
+              <AlertCircle className="w-4 h-4 text-rose-600" />
             </div>
-            <div className="text-xl font-bold font-mono text-rose-400 mt-1">
+            <div className="text-2xl font-bold font-mono text-rose-700 mt-1">
               {metricas.criticos.toLocaleString()}
             </div>
-            <div className="text-[10px] text-rose-200/70 mt-0.5">Requieren asignación de precio</div>
+            <div className="text-[11px] text-rose-700/80 mt-0.5">Requieren asignación de precio</div>
           </div>
 
           {/* Conformes */}
           <div 
             onClick={() => setFiltroEstado('conforme')}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
               filtroEstado === 'conforme' 
-                ? 'bg-emerald-950/40 border-emerald-500 shadow-md shadow-emerald-500/10' 
-                : 'bg-slate-800/40 border-slate-700/80 hover:bg-slate-800/70'
+                ? 'bg-emerald-50/80 border-emerald-500 shadow-xs ring-2 ring-emerald-500/20' 
+                : 'bg-white border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/30 shadow-2xs'
             }`}
           >
-            <div className="flex items-center justify-between text-emerald-300 text-[11px] font-medium">
+            <div className="flex items-center justify-between text-emerald-800 text-[11px] font-semibold uppercase">
               <span>Precios Conformes</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="text-xl font-bold font-mono text-emerald-400 mt-1">
+            <div className="text-2xl font-bold font-mono text-emerald-700 mt-1">
               {metricas.conformes.toLocaleString()}
             </div>
-            <div className="text-[10px] text-emerald-200/70 mt-0.5">Variación dentro del ±5%</div>
+            <div className="text-[11px] text-emerald-700/80 mt-0.5">Variación dentro de ±5%</div>
           </div>
 
           {/* Ajustes Manuales */}
           <div 
             onClick={() => setFiltroEstado('ajustado')}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
               filtroEstado === 'ajustado' 
-                ? 'bg-blue-950/40 border-blue-500 shadow-md shadow-blue-500/10' 
-                : 'bg-slate-800/40 border-slate-700/80 hover:bg-slate-800/70'
+                ? 'bg-cyan-50/80 border-cyan-500 shadow-xs ring-2 ring-cyan-500/20' 
+                : 'bg-white border-slate-200 hover:border-cyan-300 hover:bg-cyan-50/30 shadow-2xs'
             }`}
           >
-            <div className="flex items-center justify-between text-cyan-300 text-[11px] font-medium">
+            <div className="flex items-center justify-between text-cyan-800 text-[11px] font-semibold uppercase">
               <span>Ajustes Manuales</span>
-              <ShieldCheck className="w-4 h-4 text-cyan-400" />
+              <ShieldCheck className="w-4 h-4 text-cyan-600" />
             </div>
-            <div className="text-xl font-bold font-mono text-cyan-400 mt-1">
+            <div className="text-2xl font-bold font-mono text-cyan-700 mt-1">
               {metricas.ajustados.toLocaleString()}
             </div>
-            <div className="text-[10px] text-cyan-200/70 mt-0.5">Fijados por el usuario</div>
+            <div className="text-[11px] text-cyan-700/80 mt-0.5">Precios fijados en pantalla</div>
           </div>
         </div>
       </div>
 
       {/* BARRA DE BÚSQUEDA Y CONTROLES */}
-      <div className="px-6 py-4 bg-slate-900/90 border-b border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="px-6 py-3.5 bg-white border-b border-slate-200 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Input Buscador */}
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Buscar por código (ej. AC..., RP...), descripción, proveedor u OC..."
@@ -787,12 +779,12 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full bg-slate-800/90 border border-slate-700 rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-mono"
+            className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-amber-600 focus:ring-1 focus:ring-amber-500 transition-all font-mono shadow-2xs"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs font-bold"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800 text-xs font-bold"
             >
               ×
             </button>
@@ -802,81 +794,81 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
         {/* Filtros Dropdown */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Filtro Categoría */}
-          <div className="flex items-center gap-1.5 bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs shadow-2xs">
+            <Filter className="w-3.5 h-3.5 text-slate-500" />
             <select
               value={filtroCategoria}
               onChange={(e) => {
                 setFiltroCategoria(e.target.value);
                 setCurrentPage(1);
               }}
-              className="bg-transparent text-slate-200 focus:outline-none cursor-pointer max-w-[150px] truncate"
+              className="bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer max-w-[160px] truncate"
             >
-              <option value="TODAS" className="bg-slate-800">Todas las Familias</option>
+              <option value="TODAS">Todas las Familias</option>
               {categoriasDisponibles.map(c => (
-                <option key={c} value={c} className="bg-slate-800">{c}</option>
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
 
           {/* Ordenar por */}
-          <div className="flex items-center gap-1.5 bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs">
-            <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs shadow-2xs">
+            <ArrowUpDown className="w-3.5 h-3.5 text-slate-500" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-transparent text-slate-200 focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer"
             >
-              <option value="impacto" className="bg-slate-800">Mayor Impacto Desfase</option>
-              <option value="desfase" className="bg-slate-800">Mayor % Variación</option>
-              <option value="consumo" className="bg-slate-800">Mayor Monto Consumido</option>
-              <option value="reciente" className="bg-slate-800">Última Compra Más Reciente</option>
-              <option value="codigo" className="bg-slate-800">Código A-Z</option>
+              <option value="impacto">Mayor Impacto Desfase</option>
+              <option value="desfase">Mayor % Variación</option>
+              <option value="consumo">Mayor Monto Consumido</option>
+              <option value="reciente">Última Compra Más Reciente</option>
+              <option value="codigo">Código A-Z</option>
             </select>
             <button
               onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              className="ml-1 text-slate-400 hover:text-white font-mono font-bold"
+              className="ml-1 text-slate-500 hover:text-slate-900 font-mono font-bold cursor-pointer"
               title="Cambiar orden ascendente/descendente"
             >
               {sortOrder === 'asc' ? '↑' : '↓'}
             </button>
           </div>
 
-          <div className="text-xs text-slate-400 font-mono pl-2">
-            Mostrando <span className="text-white font-bold">{articulosFiltrados.length.toLocaleString()}</span> de {catalogoArticulos.length.toLocaleString()} artículos
+          <div className="text-xs text-slate-500 font-mono pl-2">
+            Mostrando <span className="text-slate-900 font-bold">{articulosFiltrados.length.toLocaleString()}</span> de {catalogoArticulos.length.toLocaleString()} artículos
           </div>
         </div>
       </div>
 
       {/* TABLA PRINCIPAL DE PRECIOS */}
       <div className="flex-1 overflow-x-auto px-6 py-4">
-        <div className="bg-slate-800/60 border border-slate-700/80 rounded-2xl overflow-hidden shadow-2xl">
-          <table className="w-full text-left text-xs border-collapse">
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-x-auto shadow-xs">
+          <table className="w-full min-w-[1280px] text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-900/90 text-slate-300 border-b border-slate-700 font-semibold uppercase text-[11px] tracking-wider select-none">
+              <tr className="bg-slate-100/90 text-slate-700 border-b border-slate-200 font-bold uppercase text-[11px] tracking-wider select-none">
                 <th className="py-3 px-3 w-10 text-center">#</th>
-                <th className="py-3 px-3">Código</th>
-                <th className="py-3 px-4">Descripción & Categoría</th>
-                <th className="py-3 px-3 text-right">Consumo 2026</th>
-                <th className="py-3 px-3 text-right">Costo Despacho (SIP)</th>
-                <th className="py-3 px-4">Última Compra (SIP)</th>
-                <th className="py-3 px-3 text-right">Promedio OC</th>
-                <th className="py-3 px-3 text-center">Variación %</th>
-                <th className="py-3 px-4">Precio Oficial Vigente</th>
-                <th className="py-3 px-3 text-center">Acciones</th>
+                <th className="py-3 px-3 w-28">Código</th>
+                <th className="py-3 px-4">Descripción & Familia</th>
+                <th className="py-3 px-3 text-right w-28">Consumo 2026</th>
+                <th className="py-3 px-3 text-right w-28">Costo Despacho (SIP)</th>
+                <th className="py-3 px-4 w-48">Última Compra (SIP)</th>
+                <th className="py-3 px-3 text-right w-24">Promedio OC</th>
+                <th className="py-3 px-3 text-center w-28">Variación %</th>
+                <th className="py-3 px-4 w-44">Precio Oficial Vigente</th>
+                <th className="py-3 px-4 text-center w-48">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50">
+            <tbody className="divide-y divide-slate-100 text-slate-800">
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="py-12 text-center text-slate-400 font-mono">
-                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-cyan-400" />
+                  <td colSpan={10} className="py-16 text-center text-slate-500 font-mono">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-cyan-600" />
                     Cargando y triangulando precios del SIP...
                   </td>
                 </tr>
               ) : articulosPaginados.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-12 text-center text-slate-400">
+                  <td colSpan={10} className="py-16 text-center text-slate-500">
                     No se encontraron artículos con los filtros aplicados.
                   </td>
                 </tr>
@@ -891,14 +883,14 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                   return (
                     <tr 
                       key={item.codigo} 
-                      className={`hover:bg-slate-700/40 transition-colors ${
-                        isCritico ? 'bg-rose-950/10' :
-                        isDesfase ? 'bg-amber-950/10' :
-                        isAjustado ? 'bg-cyan-950/10' : ''
+                      className={`hover:bg-slate-50 transition-colors ${
+                        isCritico ? 'bg-rose-50/40' :
+                        isDesfase ? 'bg-amber-50/40' :
+                        isAjustado ? 'bg-cyan-50/30' : ''
                       }`}
                     >
                       {/* Índice */}
-                      <td className="py-2.5 px-3 text-center text-slate-500 font-mono text-[11px]">
+                      <td className="py-2.5 px-3 text-center text-slate-400 font-mono text-[11px]">
                         {globalIdx}
                       </td>
 
@@ -906,21 +898,21 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       <td className="py-2.5 px-3 font-mono font-bold whitespace-nowrap">
                         <button
                           onClick={() => setArticuloSeleccionado(item)}
-                          className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 hover:underline group"
+                          className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 hover:underline group cursor-pointer"
                           title="Ver historial de órdenes de compra"
                         >
                           <span>{item.codigo}</span>
-                          <History className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <History className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400" />
                         </button>
                       </td>
 
                       {/* Descripción */}
                       <td className="py-2.5 px-4 max-w-sm">
-                        <div className="font-medium text-slate-100 truncate" title={item.descripcion}>
+                        <div className="font-semibold text-slate-900 truncate" title={item.descripcion}>
                           {item.descripcion || 'Sin descripción'}
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-400">
-                          <span className="px-1.5 py-0.2 rounded bg-slate-700 text-slate-300 font-mono">
+                        <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
+                          <span className="px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-mono font-bold border border-slate-200">
                             {item.unidad}
                           </span>
                           <span className="truncate max-w-[200px]" title={item.categoria}>
@@ -931,10 +923,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
                       {/* Consumo */}
                       <td className="py-2.5 px-3 text-right font-mono whitespace-nowrap">
-                        <div className="font-semibold text-slate-200">
+                        <div className="font-bold text-slate-900">
                           {item.cantidadConsumida.toLocaleString()} {item.unidad}
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[10px] text-slate-500">
                           {item.totalConsumos} salidas (${item.totalMontoConsumosUSD.toLocaleString()})
                         </div>
                       </td>
@@ -942,7 +934,9 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       {/* Costo Despacho SIP */}
                       <td className="py-2.5 px-3 text-right font-mono whitespace-nowrap">
                         <span className={`font-bold ${
-                          item.costoPromedioDespacho === 0 ? 'text-rose-400 bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800/80' : 'text-slate-200'
+                          item.costoPromedioDespacho === 0 
+                            ? 'text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-300' 
+                            : 'text-slate-900'
                         }`}>
                           ${item.costoPromedioDespacho.toFixed(2)}
                         </span>
@@ -952,49 +946,49 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       <td className="py-2.5 px-4 whitespace-nowrap">
                         {item.precioUltimaCompra > 0 ? (
                           <div>
-                            <div className="font-mono font-bold text-emerald-400 flex items-center gap-1.5">
+                            <div className="font-mono font-bold text-emerald-700 flex items-center gap-1.5">
                               <span>${item.precioUltimaCompra.toFixed(2)}</span>
-                              <span className="text-[10px] text-slate-400 font-normal">
+                              <span className="text-[10px] text-slate-500 font-normal">
                                 ({item.fechaUltimaCompra})
                               </span>
                             </div>
-                            <div className="text-[10px] text-slate-400 truncate max-w-[180px]" title={`OC: ${item.ordenUltimaCompra} - ${item.proveedorUltimaCompra}`}>
-                              <span className="text-cyan-300 font-mono">{item.ordenUltimaCompra}</span> · {item.proveedorUltimaCompra}
+                            <div className="text-[10px] text-slate-500 truncate max-w-[180px]" title={`OC: ${item.ordenUltimaCompra} - ${item.proveedorUltimaCompra}`}>
+                              <span className="text-blue-700 font-mono font-semibold">{item.ordenUltimaCompra}</span> · {item.proveedorUltimaCompra}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-slate-500 font-mono text-[11px] italic">Sin compras</span>
+                          <span className="text-slate-400 font-mono text-[11px] italic">Sin compras</span>
                         )}
                       </td>
 
                       {/* Promedio Compras */}
-                      <td className="py-2.5 px-3 text-right font-mono text-slate-300 whitespace-nowrap">
+                      <td className="py-2.5 px-3 text-right font-mono text-slate-700 whitespace-nowrap">
                         {item.precioPromedioCompras > 0 ? (
-                          <span>${item.precioPromedioCompras.toFixed(2)}</span>
+                          <span className="font-semibold">${item.precioPromedioCompras.toFixed(2)}</span>
                         ) : (
-                          <span className="text-slate-600">-</span>
+                          <span className="text-slate-400">-</span>
                         )}
                       </td>
 
                       {/* Variación % */}
                       <td className="py-2.5 px-3 text-center whitespace-nowrap">
                         {item.costoPromedioDespacho === 0 && item.precioUltimaCompra === 0 ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-950 text-rose-300 border border-rose-800">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-100 text-rose-800 border border-rose-300">
                             Costo $0
                           </span>
                         ) : item.costoPromedioDespacho === 0 && item.precioUltimaCompra > 0 ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-950 text-amber-300 border border-amber-800 animate-pulse">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300">
                             Desfase $0 vs OC
                           </span>
                         ) : Math.abs(item.variacionPorcentaje) <= 5 ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                             ±{Math.abs(item.variacionPorcentaje)}% OK
                           </span>
                         ) : (
                           <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${
                             item.variacionPorcentaje > 0 
-                              ? 'bg-rose-950 text-rose-300 border-rose-800' 
-                              : 'bg-amber-950 text-amber-300 border-amber-800'
+                              ? 'bg-rose-100 text-rose-800 border-rose-300' 
+                              : 'bg-amber-100 text-amber-900 border-amber-300'
                           }`}>
                             {item.variacionPorcentaje > 0 ? '+' : ''}{item.variacionPorcentaje}%
                           </span>
@@ -1005,7 +999,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       <td className="py-2.5 px-4 whitespace-nowrap">
                         {isEditing ? (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-slate-400 font-mono">$</span>
+                            <span className="text-slate-500 font-mono font-bold">$</span>
                             <input
                               type="number"
                               step="0.01"
@@ -1013,7 +1007,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                               value={valorEdicion}
                               onChange={(e) => setValorEdicion(e.target.value)}
                               placeholder="0.00"
-                              className="w-20 bg-slate-900 border border-amber-500 rounded px-1.5 py-0.5 text-xs text-white font-mono focus:outline-none"
+                              className="w-20 bg-white border border-amber-500 rounded px-1.5 py-0.5 text-xs text-slate-900 font-mono font-bold focus:outline-none ring-1 ring-amber-400"
                             />
                             <button
                               onClick={() => {
@@ -1022,7 +1016,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                                   guardarPrecioManual(item.codigo, p, motivoEdicion || 'Ajuste manual directo');
                                 }
                               }}
-                              className="p-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white"
+                              className="p-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
                               title="Guardar"
                             >
                               <Check className="w-3 h-3" />
@@ -1032,7 +1026,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                                 setEditandoCodigo(null);
                                 setValorEdicion('');
                               }}
-                              className="p-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-300"
+                              className="p-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 cursor-pointer"
                               title="Cancelar"
                             >
                               <X className="w-3 h-3" />
@@ -1041,15 +1035,15 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                         ) : (
                           <div className="flex items-center justify-between gap-2">
                             <div>
-                              <div className="font-mono font-bold text-sm text-white flex items-center gap-1.5">
+                              <div className="font-mono font-bold text-sm text-slate-900 flex items-center gap-1.5">
                                 <span>${item.precioOficial.toFixed(2)}</span>
                                 {isAjustado && (
-                                  <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-900 text-cyan-200 border border-cyan-700 font-sans uppercase">
+                                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-100 text-cyan-800 border border-cyan-300 font-sans font-bold uppercase">
                                     Manual
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[10px] text-slate-400 font-mono">
+                              <div className="text-[10px] text-slate-500 font-mono">
                                 Fuente: {item.fuentePrecio}
                               </div>
                             </div>
@@ -1060,7 +1054,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                                 setValorEdicion(item.precioOficial.toString());
                                 setMotivoEdicion(item.motivoAjuste || '');
                               }}
-                              className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
                               title="Editar precio oficial"
                             >
                               <Edit3 className="w-3.5 h-3.5" />
@@ -1070,38 +1064,39 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       </td>
 
                       {/* Acciones */}
-                      <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-1">
+                      <td className="py-2.5 px-4 text-center whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-2">
                           {/* Botón Adoptar Última Compra */}
-                          {item.precioUltimaCompra > 0 && item.costoPromedioDespacho !== item.precioUltimaCompra && (
+                          {item.precioUltimaCompra > 0 && item.costoPromedioDespacho !== item.precioUltimaCompra && !isAjustado && (
                             <button
                               onClick={() => adoptarUltimaCompra(item)}
-                              className="px-2 py-1 rounded text-[10px] font-bold bg-amber-600/80 hover:bg-amber-500 text-white transition-all shadow-xs flex items-center gap-1"
-                              title="Fijar como precio oficial el de la última orden de compra"
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                              title="Fijar como precio oficial el de la última orden de compra registrada en SIP"
                             >
-                              <Sparkles className="w-2.5 h-2.5" />
+                              <Sparkles className="w-3.5 h-3.5" />
                               <span>Usar Última OC</span>
                             </button>
                           )}
 
-                          {/* Revertir si tiene ajuste manual */}
+                          {/* Revertir / Deshacer si tiene ajuste manual */}
                           {isAjustado && (
                             <button
                               onClick={() => revertirPrecioManual(item.codigo)}
-                              className="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-rose-950/60"
-                              title="Eliminar ajuste manual y volver a SIP"
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                              title="Deshacer ajuste manual y volver al cálculo original del SIP"
                             >
-                              <RotateCcw className="w-3 h-3" />
+                              <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
+                              <span>Deshacer Ajuste</span>
                             </button>
                           )}
 
                           {/* Historial */}
                           <button
                             onClick={() => setArticuloSeleccionado(item)}
-                            className="p-1 rounded text-slate-400 hover:text-cyan-300 hover:bg-slate-700"
-                            title="Ver historial de compras"
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-blue-700 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all cursor-pointer"
+                            title="Ver historial completo de órdenes de compra"
                           >
-                            <History className="w-3.5 h-3.5" />
+                            <History className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -1115,16 +1110,16 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
         {/* CONTROLES DE PAGINACIÓN */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between gap-4 mt-4 text-xs text-slate-400 px-2 select-none">
+          <div className="flex items-center justify-between gap-4 mt-4 text-xs text-slate-600 px-2 select-none">
             <div>
-              Página <span className="text-white font-bold">{currentPage}</span> de <span className="text-white font-bold">{totalPages}</span>
+              Página <span className="text-slate-900 font-bold">{currentPage}</span> de <span className="text-slate-900 font-bold">{totalPages}</span>
             </div>
 
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
-                className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                className="p-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs cursor-pointer"
                 title="Primera página"
               >
                 <ChevronsLeft className="w-4 h-4" />
@@ -1132,20 +1127,20 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                className="p-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs cursor-pointer"
                 title="Página anterior"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
 
-              <span className="px-3 font-mono font-bold text-white">
+              <span className="px-3 font-mono font-bold text-slate-900">
                 {currentPage}
               </span>
 
               <button
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                className="p-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs cursor-pointer"
                 title="Página siguiente"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -1153,7 +1148,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
               <button
                 onClick={() => setCurrentPage(totalPages)}
                 disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                className="p-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs cursor-pointer"
                 title="Última página"
               >
                 <ChevronsRight className="w-4 h-4" />
@@ -1163,20 +1158,20 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
         )}
       </div>
 
-      {/* MODAL: HISTORIAL DE ÓRDENES DE COMPRA (TRAZABILIDAD SIP) */}
+      {/* MODAL: HISTORIAL DE ÓRDENES DE COMPRA (TRAZABILIDAD SIP EN TEMA CLARO) */}
       {articuloSeleccionado && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
             {/* Header Modal */}
-            <div className="px-6 py-4 bg-[#112238] border-b border-slate-700 flex items-center justify-between">
+            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+                <div className="p-2 rounded-lg bg-white/10 text-cyan-300">
                   <ShoppingBag className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-base text-cyan-300">{articuloSeleccionado.codigo}</span>
-                    <span className="text-xs text-slate-400">· {articuloSeleccionado.unidad}</span>
+                    <span className="text-xs text-slate-300">· {articuloSeleccionado.unidad}</span>
                   </div>
                   <div className="text-xs text-slate-200 font-medium truncate max-w-lg">
                     {articuloSeleccionado.descripcion}
@@ -1186,43 +1181,43 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
               <button
                 onClick={() => setArticuloSeleccionado(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Resumen Superior */}
-            <div className="px-6 py-3 bg-slate-800/50 border-b border-slate-700/60 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Costo Despacho SIP:</span>
-                <span className="font-mono font-bold text-slate-100 text-sm">
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Costo Despacho SIP:</span>
+                <span className="font-mono font-bold text-slate-900 text-sm">
                   ${articuloSeleccionado.costoPromedioDespacho.toFixed(2)}
                 </span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Última Compra SIP:</span>
-                <span className="font-mono font-bold text-emerald-400 text-sm">
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Última Compra SIP:</span>
+                <span className="font-mono font-bold text-emerald-700 text-sm">
                   ${articuloSeleccionado.precioUltimaCompra.toFixed(2)}
                 </span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Promedio Compras:</span>
-                <span className="font-mono font-bold text-slate-200 text-sm">
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Promedio Compras:</span>
+                <span className="font-mono font-bold text-slate-700 text-sm">
                   ${articuloSeleccionado.precioPromedioCompras.toFixed(2)}
                 </span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Precio Oficial Vigente:</span>
-                <span className="font-mono font-bold text-amber-300 text-sm">
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Precio Oficial Vigente:</span>
+                <span className="font-mono font-bold text-amber-700 text-sm">
                   ${articuloSeleccionado.precioOficial.toFixed(2)}
                 </span>
               </div>
             </div>
 
             {/* Contenido: Tabla de Compras */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center justify-between">
+            <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
+              <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center justify-between">
                 <span>Historial de Órdenes de Compra ({articuloSeleccionado.comprasHistorial.length})</span>
                 {articuloSeleccionado.precioUltimaCompra > 0 && (
                   <button
@@ -1230,23 +1225,23 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       adoptarUltimaCompra(articuloSeleccionado);
                       setArticuloSeleccionado(null);
                     }}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs cursor-pointer shadow-xs"
                   >
-                    <Sparkles className="w-3 h-3" />
+                    <Sparkles className="w-3.5 h-3.5" />
                     <span>Fijar Última Compra (${articuloSeleccionado.precioUltimaCompra.toFixed(2)})</span>
                   </button>
                 )}
               </h3>
 
               {articuloSeleccionado.comprasHistorial.length === 0 ? (
-                <div className="py-12 text-center text-slate-500 text-xs italic">
+                <div className="py-12 text-center text-slate-500 text-xs italic bg-white rounded-xl border border-slate-200">
                   No se encontraron órdenes de compra registradas en el SIP para este código.
                 </div>
               ) : (
-                <div className="border border-slate-700 rounded-xl overflow-hidden">
+                <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="bg-slate-800 text-slate-400 text-[11px] uppercase border-b border-slate-700">
+                      <tr className="bg-slate-100 text-slate-700 text-[11px] font-bold uppercase border-b border-slate-200">
                         <th className="py-2.5 px-3">Fecha</th>
                         <th className="py-2.5 px-3">Nro. OC</th>
                         <th className="py-2.5 px-3">Proveedor</th>
@@ -1256,25 +1251,25 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                         <th className="py-2.5 px-4">Motivo / Imputación</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800 font-mono">
+                    <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
                       {articuloSeleccionado.comprasHistorial.map((c, i) => (
-                        <tr key={i} className="hover:bg-slate-800/40">
-                          <td className="py-2 px-3 text-slate-300">{c.fechaOC || c.fechaSolicitud || '-'}</td>
-                          <td className="py-2 px-3 font-bold text-cyan-400">{c.ordenCompra || c.solicitudCompra || '-'}</td>
-                          <td className="py-2 px-3 text-slate-200 font-sans truncate max-w-xs" title={c.proveedor}>
+                        <tr key={i} className="hover:bg-slate-50">
+                          <td className="py-2 px-3 text-slate-600">{c.fechaOC || c.fechaSolicitud || '-'}</td>
+                          <td className="py-2 px-3 font-bold text-blue-700">{c.ordenCompra || c.solicitudCompra || '-'}</td>
+                          <td className="py-2 px-3 text-slate-800 font-sans truncate max-w-xs" title={c.proveedor}>
                             {c.proveedor || '-'}
                           </td>
-                          <td className="py-2 px-3 text-right text-slate-300">
+                          <td className="py-2 px-3 text-right text-slate-700">
                             {(c.cantidadOC || c.cantidadRecepcionada || 1).toLocaleString()} {c.unidad || articuloSeleccionado.unidad}
                           </td>
-                          <td className="py-2 px-3 text-right font-bold text-emerald-400">
+                          <td className="py-2 px-3 text-right font-bold text-emerald-700">
                             ${(c.precioUnitario || 0).toFixed(2)}
                           </td>
-                          <td className="py-2 px-3 text-right text-slate-200">
+                          <td className="py-2 px-3 text-right text-slate-900 font-semibold">
                             ${(c.totalUSD || 0).toLocaleString()}
                           </td>
-                          <td className="py-2 px-4 text-[10px] text-slate-400 font-sans truncate max-w-xs" title={c.motivo}>
-                            <span className="text-amber-300 font-mono font-bold mr-1">{c.cuentaAuxiliar}</span>
+                          <td className="py-2 px-4 text-[10px] text-slate-600 font-sans truncate max-w-xs" title={c.motivo}>
+                            <span className="text-amber-800 font-mono font-bold mr-1">{c.cuentaAuxiliar}</span>
                             {c.motivo || '-'}
                           </td>
                         </tr>
@@ -1286,10 +1281,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
             </div>
 
             {/* Footer Modal */}
-            <div className="px-6 py-3 bg-slate-800/80 border-t border-slate-700 flex justify-end">
+            <div className="px-6 py-3 bg-white border-t border-slate-200 flex justify-end">
               <button
                 onClick={() => setArticuloSeleccionado(null)}
-                className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-white"
+                className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 cursor-pointer"
               >
                 Cerrar
               </button>
