@@ -74,6 +74,8 @@ export interface ArticuloPrecioAuditoria {
   descripcion: string;
   unidad: string;
   categoria: string;
+  esServicio: boolean;
+  precioGlobalContrato?: boolean;
   totalConsumos: number;
   cantidadConsumida: number;
   totalMontoConsumosUSD: number;
@@ -95,6 +97,38 @@ export interface ArticuloPrecioAuditoria {
   estado: 'conforme' | 'desfase' | 'critico' | 'ajustado';
 }
 
+// Helper para calcular precio unitario efectivo de una orden de compra en SIP
+export const getPrecioCompraUnitario = (c: CompraItem): { precio: number; esGlobal: boolean } => {
+  if (typeof c.precioUnitario === 'number' && c.precioUnitario > 0) {
+    return { precio: c.precioUnitario, esGlobal: false };
+  }
+  const cant = c.cantidadOC || c.cantidadRecepcionada || 1;
+  if (typeof c.totalUSD === 'number' && c.totalUSD > 0 && cant > 0) {
+    return { precio: c.totalUSD / cant, esGlobal: true };
+  }
+  return { precio: 0, esGlobal: false };
+};
+
+// Helper para calcular costo unitario efectivo de una salida/consumo en SIP
+export const getCostoConsumoUnitario = (c: ConsumoItem): number => {
+  if (typeof c.costoUnitario === 'number' && c.costoUnitario > 0) {
+    return c.costoUnitario;
+  }
+  const cant = c.cantidad || 1;
+  if (typeof c.totalUSD === 'number' && c.totalUSD > 0 && cant > 0) {
+    return c.totalUSD / cant;
+  }
+  return 0;
+};
+
+// Helper para clasificar conceptos de servicios de obra y fletes (USE / SE...)
+export const esServicioConcepto = (codigo: string, unidad?: string, categoria?: string): boolean => {
+  const cod = (codigo || '').toUpperCase().trim();
+  const uni = (unidad || '').toUpperCase().trim();
+  const cat = (categoria || '').toUpperCase().trim();
+  return cod.startsWith('SE') || uni === 'USE' || cat.includes('SERVICIO') || cat.includes('FLETE');
+};
+
 interface CatalogoPreciosViewProps {
   currentUser?: UsuarioSistema;
   onVolver?: () => void;
@@ -109,6 +143,9 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
   const [consumos, setConsumos] = useState<ConsumoItem[]>([]);
   const [preciosManuales, setPreciosManuales] = useState<Record<string, { precio: number; motivo: string; fecha: string }>>({});
   
+  // Segmentación Tipo de Insumo (Materiales vs Servicios vs Todos)
+  const [tipoInsumo, setTipoInsumo] = useState<'materiales' | 'servicios' | 'todos'>('materiales');
+
   // Filtros
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filtroEstado, setFiltroEstado] = useState<'todos' | 'critico' | 'desfase' | 'conforme' | 'ajustado'>('todos');
@@ -245,8 +282,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       art.totalConsumos += 1;
       art.cantidadConsumida += (c.cantidad || 0);
       art.totalMontoConsumosUSD += (c.totalUSD || 0);
-      if (c.costoUnitario > 0) {
-        art.costoSum += c.costoUnitario;
+      
+      const costoUnit = getCostoConsumoUnitario(c);
+      if (costoUnit > 0) {
+        art.costoSum += costoUnit;
         art.costoCount += 1;
       }
     }
@@ -285,9 +324,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
         return fb.localeCompare(fa);
       });
 
-      // Última compra válida (con precio > 0)
-      const ultimaValida = historial.find(c => c.precioUnitario > 0);
-      const precioUltima = ultimaValida ? ultimaValida.precioUnitario : 0;
+      // Última compra válida (con precio > 0 o totalUSD / cantidad > 0)
+      const ultimaValida = historial.find(c => getPrecioCompraUnitario(c).precio > 0);
+      const infoUltima = ultimaValida ? getPrecioCompraUnitario(ultimaValida) : { precio: 0, esGlobal: false };
+      const precioUltima = infoUltima.precio;
       const fechaUltima = ultimaValida ? (ultimaValida.fechaOC || ultimaValida.fechaSolicitud || '-') : '-';
       const ordenUltima = ultimaValida ? (ultimaValida.ordenCompra || ultimaValida.solicitudCompra || '-') : '-';
       const provUltima = ultimaValida ? (ultimaValida.proveedor || '-') : '-';
@@ -296,9 +336,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       let sumProd = 0;
       let sumCant = 0;
       for (const c of historial) {
-        if (c.precioUnitario > 0 && (c.cantidadOC || c.cantidadRecepcionada || 1) > 0) {
+        const { precio: pu } = getPrecioCompraUnitario(c);
+        if (pu > 0) {
           const cant = c.cantidadOC || c.cantidadRecepcionada || 1;
-          sumProd += c.precioUnitario * cant;
+          sumProd += pu * cant;
           sumCant += cant;
         }
       }
@@ -306,6 +347,9 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
       // Costo del despacho reportado por SIP
       const costoDespachoProm = art.costoCount > 0 ? (art.costoSum / art.costoCount) : 0;
+
+      // Determinar si es servicio o flete
+      const esServicio = esServicioConcepto(cod, art.unidad, art.categoria);
 
       // Verificar si hay precio manual fijado
       const ajusteManual = preciosManuales[cod];
@@ -360,6 +404,8 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
         descripcion: art.descripcion,
         unidad: art.unidad,
         categoria: art.categoria,
+        esServicio,
+        precioGlobalContrato: infoUltima.esGlobal,
         totalConsumos: art.totalConsumos,
         cantidadConsumida: Math.round(art.cantidadConsumida * 100) / 100,
         totalMontoConsumosUSD: Math.round(art.totalMontoConsumosUSD * 100) / 100,
@@ -385,7 +431,18 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
     return resultado;
   }, [compras, consumos, preciosManuales]);
 
-  // 4. Métricas / KPIs Globales
+  // Conteo de Materiales y Servicios
+  const conteoMateriales = useMemo(() => catalogoArticulos.filter(a => !a.esServicio).length, [catalogoArticulos]);
+  const conteoServicios = useMemo(() => catalogoArticulos.filter(a => a.esServicio).length, [catalogoArticulos]);
+
+  // Artículos según el tipo de insumo seleccionado
+  const articulosActivosPorTipo = useMemo(() => {
+    if (tipoInsumo === 'materiales') return catalogoArticulos.filter(a => !a.esServicio);
+    if (tipoInsumo === 'servicios') return catalogoArticulos.filter(a => a.esServicio);
+    return catalogoArticulos;
+  }, [catalogoArticulos, tipoInsumo]);
+
+  // 4. Métricas / KPIs Globales según tipo de insumo activo
   const metricas = useMemo(() => {
     let criticos = 0;
     let desfasados = 0;
@@ -393,7 +450,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
     let ajustados = 0;
     let impactoDesfaseUSD = 0;
 
-    for (const a of catalogoArticulos) {
+    for (const a of articulosActivosPorTipo) {
       if (a.estado === 'critico') criticos++;
       else if (a.estado === 'desfase') {
         desfasados++;
@@ -404,27 +461,27 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
     }
 
     return {
-      totalArticulos: catalogoArticulos.length,
+      totalArticulos: articulosActivosPorTipo.length,
       criticos,
       desfasados,
       conformes,
       ajustados,
       impactoDesfaseUSD: Math.round(impactoDesfaseUSD * 100) / 100
     };
-  }, [catalogoArticulos]);
+  }, [articulosActivosPorTipo]);
 
-  // Categorías Únicas
+  // Categorías Únicas del subconjunto activo
   const categoriasDisponibles = useMemo(() => {
     const s = new Set<string>();
-    catalogoArticulos.forEach(a => {
+    articulosActivosPorTipo.forEach(a => {
       if (a.categoria) s.add(a.categoria);
     });
     return Array.from(s).sort();
-  }, [catalogoArticulos]);
+  }, [articulosActivosPorTipo]);
 
   // 5. Filtros y Ordenamiento
   const articulosFiltrados = useMemo(() => {
-    let list = [...catalogoArticulos];
+    let list = [...articulosActivosPorTipo];
 
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase().trim();
@@ -542,9 +599,9 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
   // 7. Revalorización Masiva Automática
   const aplicarTodosDesfasados = () => {
-    const itemsDesfase = catalogoArticulos.filter(a => a.estado === 'desfase' && a.precioUltimaCompra > 0);
+    const itemsDesfase = articulosActivosPorTipo.filter(a => a.estado === 'desfase' && a.precioUltimaCompra > 0);
     if (itemsDesfase.length === 0) {
-      showFlash('No hay artículos desfasados pendientes con órdenes de compra.', 'info');
+      showFlash('No hay artículos desfasados pendientes con órdenes de compra en la vista activa.', 'info');
       return;
     }
 
@@ -569,6 +626,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
     const exportRows = articulosFiltrados.map((a, idx) => ({
       'N°': idx + 1,
       'Código': a.codigo,
+      'Tipo de Concepto': a.esServicio ? 'Servicio / Flete' : 'Material de Almacén',
       'Descripción': a.descripcion,
       'Categoría': a.categoria,
       'Unidad': a.unidad,
@@ -588,9 +646,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
     const ws = XLSX.utils.json_to_sheet(exportRows);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Catálogo de Precios SIP');
-    XLSX.writeFile(wb, `TIMACA_Catalogo_Precios_SIP_${new Date().toISOString().split('T')[0]}.xlsx`);
-    showFlash('Catálogo exportado exitosamente a Excel.');
+    const tituloSheet = tipoInsumo === 'materiales' ? 'Materiales Almacén' : tipoInsumo === 'servicios' ? 'Servicios Obra' : 'Catálogo Completo';
+    XLSX.utils.book_append_sheet(wb, ws, tituloSheet);
+    XLSX.writeFile(wb, `TIMACA_Catalogo_${tipoInsumo}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showFlash(`Catálogo de ${tipoInsumo} exportado exitosamente a Excel.`);
   };
 
   return (
@@ -667,8 +726,72 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           </div>
         </div>
 
+        {/* SELECTOR SEGMENTADO: MATERIALES vs SERVICIOS */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-200">
+          <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 shadow-2xs">
+            <button
+              onClick={() => { setTipoInsumo('materiales'); setCurrentPage(1); }}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                tipoInsumo === 'materiales'
+                  ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>📦 Materiales de Almacén</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                tipoInsumo === 'materiales' ? 'bg-blue-100 text-blue-800 font-bold' : 'bg-slate-200 text-slate-600'
+              }`}>
+                {conteoMateriales.toLocaleString()}
+              </span>
+            </button>
+
+            <button
+              onClick={() => { setTipoInsumo('servicios'); setCurrentPage(1); }}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                tipoInsumo === 'servicios'
+                  ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🚚 Servicios de Obra & Fletes (USE)</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                tipoInsumo === 'servicios' ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-200 text-slate-600'
+              }`}>
+                {conteoServicios.toLocaleString()}
+              </span>
+            </button>
+
+            <button
+              onClick={() => { setTipoInsumo('todos'); setCurrentPage(1); }}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                tipoInsumo === 'todos'
+                  ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🌐 Todos los Conceptos</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-slate-200 text-slate-600">
+                {catalogoArticulos.length.toLocaleString()}
+              </span>
+            </button>
+          </div>
+
+          {tipoInsumo === 'servicios' ? (
+            <div className="text-xs text-amber-900 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-300 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+              <span>
+                <strong>Nota SIP:</strong> Los servicios no pasan por estantes de almacén (por eso indican <code>0 USE</code> en salidas). Sus tarifas provienen directamente de las OCs y contratos.
+              </span>
+            </div>
+          ) : (
+            <div className="text-xs text-slate-500 hidden md:block">
+              {tipoInsumo === 'materiales' ? 'Mostrando ítems físicos con salidas de almacén (excluye servicios USE como en el Excel Maestro original)' : 'Visualizando todos los códigos del catálogo SIP'}
+            </div>
+          )}
+        </div>
+
         {/* TARJETAS DE MÉTRICAS (KPIs EN TEMA CLARO) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-4 pt-3 border-t border-slate-200">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-3 pt-3 border-t border-slate-100">
           {/* Total Artículos */}
           <div 
             onClick={() => setFiltroEstado('todos')}
@@ -908,8 +1031,13 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
                       {/* Descripción */}
                       <td className="py-2.5 px-4 max-w-sm">
-                        <div className="font-semibold text-slate-900 truncate" title={item.descripcion}>
-                          {item.descripcion || 'Sin descripción'}
+                        <div className="font-semibold text-slate-900 truncate flex items-center gap-2" title={item.descripcion}>
+                          <span className="truncate">{item.descripcion || 'Sin descripción'}</span>
+                          {item.esServicio && (
+                            <span className="shrink-0 px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-bold border border-amber-300 text-[9px] uppercase tracking-wider">
+                              Servicio
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
                           <span className="px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-mono font-bold border border-slate-200">
@@ -923,12 +1051,25 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
                       {/* Consumo */}
                       <td className="py-2.5 px-3 text-right font-mono whitespace-nowrap">
-                        <div className="font-bold text-slate-900">
-                          {item.cantidadConsumida.toLocaleString()} {item.unidad}
-                        </div>
-                        <div className="text-[10px] text-slate-500">
-                          {item.totalConsumos} salidas (${item.totalMontoConsumosUSD.toLocaleString()})
-                        </div>
+                        {item.esServicio && item.cantidadConsumida === 0 ? (
+                          <div>
+                            <span className="text-slate-400 font-sans text-[11px] italic" title="En SIP, los servicios no generan salidas de almacén físico. Su costo se registra contra la orden de compra.">
+                              0 USE (Sin despacho físico)
+                            </span>
+                            <div className="text-[10px] text-slate-400 font-sans">
+                              Imputación directa OC
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="font-bold text-slate-900">
+                              {item.cantidadConsumida.toLocaleString()} {item.unidad}
+                            </div>
+                            <div className="text-[10px] text-slate-500">
+                              {item.totalConsumos} salidas (${item.totalMontoConsumosUSD.toLocaleString()})
+                            </div>
+                          </div>
+                        )}
                       </td>
 
                       {/* Costo Despacho SIP */}
@@ -946,11 +1087,16 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       <td className="py-2.5 px-4 whitespace-nowrap">
                         {item.precioUltimaCompra > 0 ? (
                           <div>
-                            <div className="font-mono font-bold text-emerald-700 flex items-center gap-1.5">
+                            <div className="font-mono font-bold text-emerald-700 flex items-center gap-1.5 flex-wrap">
                               <span>${item.precioUltimaCompra.toFixed(2)}</span>
                               <span className="text-[10px] text-slate-500 font-normal">
                                 ({item.fechaUltimaCompra})
                               </span>
+                              {item.precioGlobalContrato && (
+                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-100 text-blue-800 border border-blue-200 font-sans font-bold" title="Tarifa calculada dividiendo monto total entre cantidad del contrato">
+                                  Contrato SIP
+                                </span>
+                              )}
                             </div>
                             <div className="text-[10px] text-slate-500 truncate max-w-[180px]" title={`OC: ${item.ordenUltimaCompra} - ${item.proveedorUltimaCompra}`}>
                               <span className="text-blue-700 font-mono font-semibold">{item.ordenUltimaCompra}</span> · {item.proveedorUltimaCompra}
@@ -1252,28 +1398,36 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-mono text-slate-800">
-                      {articuloSeleccionado.comprasHistorial.map((c, i) => (
-                        <tr key={i} className="hover:bg-slate-50">
-                          <td className="py-2 px-3 text-slate-600">{c.fechaOC || c.fechaSolicitud || '-'}</td>
-                          <td className="py-2 px-3 font-bold text-blue-700">{c.ordenCompra || c.solicitudCompra || '-'}</td>
-                          <td className="py-2 px-3 text-slate-800 font-sans truncate max-w-xs" title={c.proveedor}>
-                            {c.proveedor || '-'}
-                          </td>
-                          <td className="py-2 px-3 text-right text-slate-700">
-                            {(c.cantidadOC || c.cantidadRecepcionada || 1).toLocaleString()} {c.unidad || articuloSeleccionado.unidad}
-                          </td>
-                          <td className="py-2 px-3 text-right font-bold text-emerald-700">
-                            ${(c.precioUnitario || 0).toFixed(2)}
-                          </td>
-                          <td className="py-2 px-3 text-right text-slate-900 font-semibold">
-                            ${(c.totalUSD || 0).toLocaleString()}
-                          </td>
-                          <td className="py-2 px-4 text-[10px] text-slate-600 font-sans truncate max-w-xs" title={c.motivo}>
-                            <span className="text-amber-800 font-mono font-bold mr-1">{c.cuentaAuxiliar}</span>
-                            {c.motivo || '-'}
-                          </td>
-                        </tr>
-                      ))}
+                      {articuloSeleccionado.comprasHistorial.map((c, i) => {
+                        const { precio: pu, esGlobal } = getPrecioCompraUnitario(c);
+                        return (
+                          <tr key={i} className="hover:bg-slate-50">
+                            <td className="py-2 px-3 text-slate-600">{c.fechaOC || c.fechaSolicitud || '-'}</td>
+                            <td className="py-2 px-3 font-bold text-blue-700">{c.ordenCompra || c.solicitudCompra || '-'}</td>
+                            <td className="py-2 px-3 text-slate-800 font-sans truncate max-w-xs" title={c.proveedor}>
+                              {c.proveedor || '-'}
+                            </td>
+                            <td className="py-2 px-3 text-right text-slate-700">
+                              {(c.cantidadOC || c.cantidadRecepcionada || 1).toLocaleString()} {c.unidad || articuloSeleccionado.unidad}
+                            </td>
+                            <td className="py-2 px-3 text-right font-bold text-emerald-700">
+                              ${pu.toFixed(2)}
+                              {esGlobal && (
+                                <span className="block text-[9px] text-blue-600 font-sans font-normal">
+                                  (Contrato SIP)
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-2 px-3 text-right text-slate-900 font-semibold">
+                              ${(c.totalUSD || 0).toLocaleString()}
+                            </td>
+                            <td className="py-2 px-4 text-[10px] text-slate-600 font-sans truncate max-w-xs" title={c.motivo}>
+                              <span className="text-amber-800 font-mono font-bold mr-1">{c.cuentaAuxiliar}</span>
+                              {c.motivo || '-'}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
