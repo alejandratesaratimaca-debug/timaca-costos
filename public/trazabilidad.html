@@ -336,9 +336,9 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
 .vale-datos{border:1px solid #CBD5E1;border-radius:8px;display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;padding:12px 16px;font-size:11px;margin:8px 0 14px}
 .vale-datos div{padding:2px 0}
 .vale-datos b{font-weight:700}
-.vale-items{width:100%;border-collapse:collapse;font-size:11px}
-.vale-items th{color:#64748B;font-weight:600;text-align:left;padding:8px 6px;border-bottom:1px solid #CBD5E1;border-top:1px solid #CBD5E1}
-.vale-items td{padding:9px 6px;border-bottom:1px solid #E5E7EB}
+.vale-items{width:100%;border-collapse:collapse;font-size:10px}
+.vale-items th{color:#475569;font-weight:700;text-align:left;padding:6px 4px;border-bottom:1.5px solid #CBD5E1;border-top:1px solid #CBD5E1;font-size:9.5px;text-transform:uppercase}
+.vale-items td{padding:5px 4px;border-bottom:1px solid #E5E7EB;font-size:10px}
 .vale-items .c{text-align:center}
 .vale-extra{font-size:11px;margin-top:12px;border:1px dashed #CBD5E1;border-radius:6px;padding:8px 12px;line-height:1.6}
 .vale-firmas{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:70px;font-size:11px;text-align:center}
@@ -991,6 +991,7 @@ function asegurarCategoriasOficiales() {
   (DB.catalogo || []).forEach(it => { if (it.umb === 'JGO') it.umb = 'JG'; });
   (DB.movs || []).forEach(m => { if (m.umb === 'JGO') m.umb = 'JG'; });
   (DB.vales || []).forEach(v => { (v.lineas || []).forEach(l => { if (l.umb === 'JGO') l.umb = 'JG'; }); });
+  (DB.solicitudes || []).forEach(s => { (s.lineas || []).forEach(l => { if (l.umb === 'JGO') l.umb = 'JG'; }); });
   DB.catalogo.forEach(it => {
     // 1. Sanar ítems específicos de elevación, izaje, cargas y grilletes
     const descLower = (String(it.desc || '') + ' ' + String(it.cod || '') + ' ' + String(it.cat || '')).toLowerCase();
@@ -4977,7 +4978,22 @@ VISTAS.doc = p => {
         <td class="cen"><span class="est est-${l.condicion === 'ÓPTIMO' ? 'verde' : 'rojo'}">${esc(l.condicion || l.cond)}</span></td>
         <td class="cen">${l.danRef ? `<span class="est est-rojo">${esc(l.danRef)}</span> ` : ''}${l.extRef ? `<span class="est est-naranja">${esc(l.extRef)}</span>` : ''}${(!l.danRef && !l.extRef) ? '—' : ''}</td>
       </tr>`).join('')
-    : d.lineas.map(l => `<tr><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${l.cond === 'DAÑADO' ? '<span class="est est-rojo">DAÑADO</span>' : esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}</tr>`).join('');
+    : d.lineas.map(l => {
+        const it = l.id ? item(l.id) : (DB.catalogo.find(i => i.cod === l.cod) || {});
+        let u = (l.umb || it.umb || 'UND').trim().toUpperCase();
+        if (u === 'JGO') u = 'JG';
+        return `<tr>
+          <td><b>${esc(l.cod)}</b></td>
+          <td>${esc(l.desc)}</td>
+          <td class="cen"><b>${l.cant}</b></td>
+          <td class="cen"><b>${esc(u)}</b></td>
+          <td>${esc(l.marca || it.marca || '—')} / ${esc(l.modelo || it.modelo || '—')}</td>
+          <td>${esc(l.serial || it.serial || '—')}</td>
+          <td>${esc(l.cat || it.cat || '—')}</td>
+          <td>${l.cond === 'DAÑADO' ? '<span class="est est-rojo">DAÑADO</span>' : esc(l.cond || 'ÓPTIMO')}</td>
+          ${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}
+        </tr>`;
+      }).join('');
   const und = d.lineas.reduce((a, l) => a + l.cant, 0);
   const acciones = accionesDoc(d, esSol, p);
   const nota = esSol ? ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') ? motivoNoAprueba(d) : (d.estatus === 'APROBADO' || d.estatus === 'APROBADA') ? (d.vale ? `Vale ${d.vale} emitido.` : '') : '') : '';
@@ -4985,7 +5001,7 @@ VISTAS.doc = p => {
     + `<div class="franja-est ${color}" style="${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'flex-wrap:wrap' : ''}"><span>Estatus: ${estB(est)}</span><span>${franjaDer}</span>${t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? `<div class="crono-barra"><i data-ini="${d.fecha}" data-vence="${d.vence}"></i></div><span style="font-size:12px;color:var(--texto-2)">${d.destino === S.ctx ? `Si no la acepta o rechaza antes de que el reloj llegue a cero, la transferencia vencerá y el material regresará a ${esc(almNombre(d.origen))}.` : `${esc(almNombre(d.destino))} debe aceptarla antes de que el reloj llegue a cero; si no, el material regresará automáticamente a ${esc(almNombre(d.origen))}.`}</span>` : ''}</div>${nota ? `<div class="franja-est ${(d.estatus === 'APROBADO' || d.estatus === 'APROBADA') ? 'verde' : 'naranja'}"><span>ℹ️ ${esc(nota)}</span></div>` : ''}
     <div class="form-reg"><div class="f3">${c}</div>${extraTxt}${d.obs ? campo('Observación', `<input value="${esc(d.obs)}" readonly>`) : ''}
       <div class="carga"><div class="carga-h">CARGA DE MATERIAL</div>
-        <div style="overflow:auto"><table class="grid"><thead>${esDevch ? '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th class="cen">Entregado</th><th class="cen">Recibido</th><th class="cen">Diferencia</th><th class="cen">Condición</th><th class="cen">Reportes Incidentes</th></tr>' : '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th>' + (conSaldo ? '<th class="cen">Devuelto</th><th class="cen">Saldo</th>' : '') + '</tr>'}</thead><tbody>${filas}</tbody></table></div>
+        <div style="overflow:auto"><table class="grid"><thead>${esDevch ? '<tr><th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th class="cen">Entregado</th><th class="cen">Recibido</th><th class="cen">Diferencia</th><th class="cen">Condición</th><th class="cen">Reportes Incidentes</th></tr>' : '<tr><th>Código</th><th>Descripción</th><th class="cen">Cantidad</th><th class="cen">UMB</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Condición</th>' + (conSaldo ? '<th class="cen">Devuelto</th><th class="cen">Saldo</th>' : '') + '</tr>'}</thead><tbody>${filas}</tbody></table></div>
       </div>
       <div class="pie-form"><div class="totales">Total de líneas: <b>${d.lineas.length}</b> · Total de unidades: <b>${und}</b></div><div class="der">${acciones}</div></div>
     </div>
@@ -7313,9 +7329,10 @@ VISTAS.aIni = () => {
     { t: 'Almacén', v: r => almNombre(r.origen) },
     { t: 'Código', k: 'cod' },
     { t: 'Descripción', k: 'desc' },
+    { t: 'Cant.', k: 'cant', cls: 'num' },
+    { t: 'UMB', v: r => { const it = item(r.id); const u = (it && it.umb) || r.umb || 'UND'; return u === 'JGO' ? 'JG' : u; }, cls: 'cen' },
     { t: 'Categoría', v: r => { const it = item(r.id); return it ? it.cat : (r.cat || '—'); } },
     { t: 'Serial', v: r => r.serial || '-' },
-    { t: 'Cant.', k: 'cant', cls: 'num' },
     { t: 'Estado', v: r => estB(r.estNue || 'DISPONIBLE') },
     { t: 'Usuario', k: 'usr' }
   ];
@@ -7584,24 +7601,31 @@ function imprimirVale(n) {
   const tablaHtml = `<table class="vale-items">
         <thead>
           <tr>
-            <th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Condición</th><th class="c">Cantidad</th>
+            <th>Código</th><th>Descripción</th><th class="c">Cantidad</th><th class="c">UMB</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Condición</th>
           </tr>
         </thead>
         <tbody>
-          ${v.lineas.map(l => `<tr>
-            <td>${esc(l.cod)}</td>
-            <td><b>${esc(l.desc)}</b></td>
-            <td>${esc(l.marca || '—')} / ${esc(l.modelo || '—')}</td>
-            <td>${esc(l.serial || '—')}</td>
-            <td>${esc(l.cat || '—')}</td>
-            <td>${esc(l.cond || 'ÓPTIMO')}</td>
-            <td class="c"><b>${l.cant || 1}</b></td>
-          </tr>`).join('')}
+          ${v.lineas.map(l => {
+            const it = l.id ? item(l.id) : (DB.catalogo.find(i => i.cod === l.cod) || {});
+            let u = (l.umb || it.umb || 'UND').trim().toUpperCase();
+            if (u === 'JGO') u = 'JG';
+            return `<tr>
+              <td><b>${esc(l.cod)}</b></td>
+              <td>${esc(l.desc)}</td>
+              <td class="c"><b>${l.cant || 1}</b></td>
+              <td class="c"><b>${esc(u)}</b></td>
+              <td>${esc(l.marca || it.marca || '—')} / ${esc(l.modelo || it.modelo || '—')}</td>
+              <td>${esc(l.serial || it.serial || '—')}</td>
+              <td>${esc(l.cat || it.cat || '—')}</td>
+              <td>${esc(l.cond || 'ÓPTIMO')}</td>
+            </tr>`;
+          }).join('')}
         </tbody>
         <tfoot>
           <tr style="font-weight:800;background:#F8FAFC">
-            <td colspan="6" style="text-align:right">Total de piezas:</td>
+            <td colspan="2" style="text-align:right">Total de piezas:</td>
             <td class="c"><b>${totPiezasNormal}</b></td>
+            <td colspan="5"></td>
           </tr>
         </tfoot>
       </table>`;
