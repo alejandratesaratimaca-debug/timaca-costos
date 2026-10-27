@@ -203,8 +203,18 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filtroEstado, setFiltroEstado] = useState<'todos' | 'critico' | 'desfase' | 'conforme' | 'ajustado'>('todos');
   const [filtroCategoria, setFiltroCategoria] = useState<string>('TODAS');
-  const [sortBy, setSortBy] = useState<'impacto' | 'desfase' | 'consumo' | 'codigo' | 'reciente'>('impacto');
+  const [sortBy, setSortBy] = useState<'impacto' | 'desfase' | 'consumo' | 'codigo' | 'reciente' | 'precio'>('reciente');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const handleSort = (col: 'impacto' | 'desfase' | 'consumo' | 'codigo' | 'reciente' | 'precio') => {
+    if (sortBy === col) {
+      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(col);
+      setSortOrder(col === 'codigo' ? 'asc' : 'desc');
+    }
+    setCurrentPage(1);
+  };
   
   // Paginación
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -603,10 +613,15 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           valA = a.totalMontoConsumosUSD;
           valB = b.totalMontoConsumosUSD;
           break;
-        case 'reciente':
-          return sortOrder === 'asc' 
-            ? a.fechaUltimaCompra.localeCompare(b.fechaUltimaCompra)
-            : b.fechaUltimaCompra.localeCompare(a.fechaUltimaCompra);
+        case 'precio':
+          valA = a.precioOficial;
+          valB = b.precioOficial;
+          break;
+        case 'reciente': {
+          const fa = a.fechaUltimaCompra && a.fechaUltimaCompra !== '-' ? a.fechaUltimaCompra : '0000-00-00';
+          const fb = b.fechaUltimaCompra && b.fechaUltimaCompra !== '-' ? b.fechaUltimaCompra : '0000-00-00';
+          return sortOrder === 'asc' ? fa.localeCompare(fb) : fb.localeCompare(fa);
+        }
         case 'codigo':
         default:
           return sortOrder === 'asc'
@@ -1027,11 +1042,12 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
               onChange={(e) => setSortBy(e.target.value as any)}
               className="bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer"
             >
-              <option value="impacto">Mayor Impacto Desfase</option>
-              <option value="desfase">Mayor % Variación</option>
-              <option value="consumo">Mayor Monto Consumido</option>
-              <option value="reciente">Última Compra Más Reciente</option>
-              <option value="codigo">Código A-Z</option>
+              <option value="reciente">📅 Mes / Fecha Más Reciente (OC)</option>
+              <option value="precio">💲 Mayor Tarifa / Precio ($)</option>
+              <option value="impacto">💥 Mayor Impacto Desfase ($)</option>
+              <option value="consumo">📦 Mayor Monto Consumido ($)</option>
+              <option value="desfase">📊 Mayor % Desfase</option>
+              <option value="codigo">🔤 Código (A - Z)</option>
             </select>
             <button
               onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
@@ -1055,14 +1071,59 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
             <thead>
               <tr className="bg-slate-100/90 text-slate-700 border-b border-slate-200 font-bold uppercase text-[11px] tracking-wider select-none">
                 <th className="py-3 px-3 w-10 text-center">#</th>
-                <th className="py-3 px-3 w-28">Código</th>
+                <th 
+                  onClick={() => handleSort('codigo')}
+                  className="py-3 px-3 w-28 cursor-pointer hover:bg-slate-200/80 transition-colors"
+                  title="Ordenar por Código"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>Código</span>
+                    {sortBy === 'codigo' && <span className="text-blue-600 font-bold">{sortOrder === 'asc' ? '↑' : '↓'}</span>}
+                  </div>
+                </th>
                 <th className="py-3 px-4">Descripción & Familia</th>
-                <th className="py-3 px-3 text-right w-28">Consumo 2026</th>
+                <th 
+                  onClick={() => handleSort('consumo')}
+                  className="py-3 px-3 text-right w-28 cursor-pointer hover:bg-slate-200/80 transition-colors"
+                  title="Ordenar por mayor consumo ($)"
+                >
+                  <div className="flex items-center justify-end gap-1">
+                    <span>Consumo 2026</span>
+                    {sortBy === 'consumo' && <span className="text-blue-600 font-bold">{sortOrder === 'asc' ? '↑' : '↓'}</span>}
+                  </div>
+                </th>
                 <th className="py-3 px-3 text-right w-28">Costo Despacho (SIP)</th>
-                <th className="py-3 px-4 w-48">Última Compra (SIP)</th>
+                <th 
+                  onClick={() => handleSort('reciente')}
+                  className="py-3 px-4 w-48 cursor-pointer hover:bg-slate-200/80 transition-colors"
+                  title="Ordenar por Mes / Fecha de Compra"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>Última Compra (SIP)</span>
+                    {sortBy === 'reciente' && <span className="text-blue-600 font-bold">{sortOrder === 'asc' ? '↑' : '↓'}</span>}
+                  </div>
+                </th>
                 <th className="py-3 px-3 text-right w-24">Promedio OC</th>
-                <th className="py-3 px-3 text-center w-28">Variación %</th>
-                <th className="py-3 px-4 w-44">Precio Oficial Vigente</th>
+                <th 
+                  onClick={() => handleSort('desfase')}
+                  className="py-3 px-3 text-center w-28 cursor-pointer hover:bg-slate-200/80 transition-colors"
+                  title="Ordenar por % de Variación"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>Variación %</span>
+                    {sortBy === 'desfase' && <span className="text-blue-600 font-bold">{sortOrder === 'asc' ? '↑' : '↓'}</span>}
+                  </div>
+                </th>
+                <th 
+                  onClick={() => handleSort('precio')}
+                  className="py-3 px-4 w-44 cursor-pointer hover:bg-slate-200/80 transition-colors"
+                  title="Ordenar por Precio Oficial / Tarifa"
+                >
+                  <div className="flex items-center gap-1">
+                    <span>Precio Oficial Vigente</span>
+                    {sortBy === 'precio' && <span className="text-blue-600 font-bold">{sortOrder === 'asc' ? '↑' : '↓'}</span>}
+                  </div>
+                </th>
                 <th className="py-3 px-4 text-center w-48">Acciones</th>
               </tr>
             </thead>
