@@ -1,0 +1,27 @@
+let
+    Origen = Excel.Workbook(File.Contents("C:\Users\alejandratesara\Desktop\Alejandra T\Costos Alejandra\1 Informe\1 Base Central Inputs.xlsx"), null, true),
+    _2_Compras_Table = Origen{[Item="_2_Compras",Kind="Table"]}[Data],
+    #"Tipo cambiado" = Table.TransformColumnTypes(_2_Compras_Table,{{"Fecha-Sol", type date}}),
+    #"Filas filtradas" = Table.SelectRows(#"Tipo cambiado", each ([#"Estatus-SC"] <> "ANULADO") and ([#"Estatus-OC"] <> "ANULADO" and [#"Estatus-OC"] <> "RECHAZADA")),
+    #"Otras columnas quitadas" = Table.SelectColumns(#"Filas filtradas",{"Almacen", "Nro-Sol", "Fecha-Sol", "Nro-OC", "Codigo", "Categoria", "Descripcion", "Cant-OC", "Unidad", "Cuenta-Aux", "Desc-Cuenta", "Solicitado-Por", "Precio$", "Total$", "Fecha-Rec", "Motivo"}),
+    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Otras columnas quitadas",{{"Fecha-Rec", type date}}),
+    #"Columna condicional agregada" = Table.AddColumn(#"Tipo cambiado1", "Tipo", each if [Descripcion] = "SERVICIO DE IMPORTACION" then "Materiales Directos" else if [Descripcion] = "FLETE NACIONAL" then "Materiales Directos" else if [Descripcion] = "FLETE INTERNACIONAL" then "Materiales Directos" else if [Descripcion] = "FLETE LOCAL" then "Materiales Directos" else "Servicios"),
+    #"Columnas reordenadas" = Table.ReorderColumns(#"Columna condicional agregada",{"Tipo", "Almacen", "Nro-Sol", "Fecha-Sol", "Nro-OC", "Codigo", "Categoria", "Descripcion", "Cant-OC", "Unidad", "Cuenta-Aux", "Desc-Cuenta", "Solicitado-Por", "Precio$", "Total$", "Fecha-Rec", "Motivo"}),
+    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas reordenadas",{{"Total$", "Total USD"}, {"Motivo", "motivo"}, {"Nro-Sol", "Numero"}, {"Nro-OC", "Pedido"}, {"Cant-OC", "Cantidad"}, {"Solicitado-Por", "solicitante"}}),
+    
+    // SOLUCIÓN AQUÍ: Envolvemos el Distinct en un Table.Buffer para congelar la tabla limpia en memoria
+    #"Ajustes Sin Duplicados" = Table.Buffer(Table.Distinct(Ajuste_Servicios, {"Nro-OC", "Codigo", "Cant-OC"})),
+    
+    #"Consultas combinadas" = Table.NestedJoin(#"Columnas con nombre cambiado", {"Pedido", "Codigo", "Cantidad"}, #"Ajustes Sin Duplicados", {"Nro-OC", "Codigo", "Cant-OC"}, "Ajuste_Servicios", JoinKind.LeftOuter),
+    #"Se expandió Ajuste_Servicios" = Table.ExpandTableColumn(#"Consultas combinadas", "Ajuste_Servicios", {"Cuenta-Aux", "Fecha Real"}, {"Ajuste_Servicios.Cuenta-Aux", "Ajuste_Servicios.Fecha Real"}),
+    #"Columna condicional agregada1" = Table.AddColumn(#"Se expandió Ajuste_Servicios", "Cuenta AU", each if [#"Ajuste_Servicios.Cuenta-Aux"] <> null then [#"Ajuste_Servicios.Cuenta-Aux"] else [#"Cuenta-Aux"]),
+    #"Columna condicional agregada2" = Table.AddColumn(#"Columna condicional agregada1", "Fecha Real", each if [Ajuste_Servicios.Fecha Real] = null then [#"Fecha-Rec"] else [Ajuste_Servicios.Fecha Real]),
+    #"Tipo cambiado2" = Table.TransformColumnTypes(#"Columna condicional agregada2",{{"Fecha Real", type date}}),
+    #"Columnas con nombre cambiado2" = Table.RenameColumns(#"Tipo cambiado2",{{"Fecha Real", "Fecha"}}),
+    
+    #"Otras columnas quitadas1" = Table.SelectColumns(#"Columnas con nombre cambiado2",{"Tipo", "Almacen", "Numero", "Pedido", "Codigo", "Categoria", "Descripcion", "Cantidad", "Unidad", "Desc-Cuenta", "solicitante", "Precio$", "Total USD", "motivo", "Cuenta AU", "Fecha"}),
+    #"Filas filtradas1" = Table.SelectRows(#"Otras columnas quitadas1", each ([Categoria] = "SERVICIOS")),
+    #"Columnas con nombre cambiado1" = Table.RenameColumns(#"Filas filtradas1",{{"Cuenta AU", "Cuenta-Aux"}}),
+    #"Texto en mayúsculas" = Table.TransformColumns(#"Columnas con nombre cambiado1",{{"Cuenta-Aux", Text.Upper, type text}})
+in
+    #"Texto en mayúsculas"

@@ -22,7 +22,9 @@ import {
   X,
   Sparkles,
   ShieldCheck,
-  Check
+  Check,
+  FileText,
+  Eye
 } from 'lucide-react';
 import { UsuarioSistema } from '../types/usuarios';
 
@@ -85,6 +87,10 @@ export interface ArticuloPrecioAuditoria {
   fechaUltimaCompra: string;
   ordenUltimaCompra: string;
   proveedorUltimaCompra: string;
+  cuentaAuxiliarUltima?: string;
+  motivoUltima?: string;
+  solicitanteUltima?: string;
+  compradorUltima?: string;
   precioPromedioCompras: number;
   totalComprasRegistradas: number;
   comprasHistorial: CompraItem[];
@@ -378,6 +384,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       const fechaUltima = ultimaValida ? (ultimaValida.fechaOC || ultimaValida.fechaSolicitud || '-') : '-';
       const ordenUltima = ultimaValida ? (ultimaValida.ordenCompra || ultimaValida.solicitudCompra || '-') : '-';
       const provUltima = ultimaValida ? (ultimaValida.proveedor || '-') : '-';
+      const ctaAuxUltima = ultimaValida ? (ultimaValida.cuentaAuxiliar || '') : (historial[0]?.cuentaAuxiliar || '');
+      const motivoUltima = ultimaValida ? (ultimaValida.motivo || '') : (historial[0]?.motivo || '');
+      const solicitanteUltima = ultimaValida ? (ultimaValida.solicitante || '') : (historial[0]?.solicitante || '');
+      const compradorUltima = ultimaValida ? (ultimaValida.comprador || '') : (historial[0]?.comprador || '');
 
       // Promedio ponderado de compras
       let sumProd = 0;
@@ -402,53 +412,69 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       const ajusteManual = preciosManuales[cod];
       const tieneManual = !!(ajusteManual && typeof ajusteManual.precio === 'number');
 
-      // Determinar Precio Oficial y Fuente
+      // Determinar Precio Oficial, Fuente, Variación y Estado
       let precioOficial = costoDespachoProm;
       let fuente: ArticuloPrecioAuditoria['fuentePrecio'] = 'Sistema';
-
-      if (tieneManual) {
-        precioOficial = ajusteManual.precio;
-        fuente = 'Manual';
-      } else if (costoDespachoProm === 0 && precioUltima > 0) {
-        precioOficial = precioUltima;
-        fuente = 'Ultima Compra';
-      } else if (precioUltima > 0 && Math.abs(costoDespachoProm - precioUltima) / precioUltima > 0.05) {
-        precioOficial = precioUltima;
-        fuente = 'Ultima Compra';
-      } else if (costoDespachoProm > 0) {
-        precioOficial = costoDespachoProm;
-        fuente = 'Sistema';
-      } else if (precioPromedio > 0) {
-        precioOficial = precioPromedio;
-        fuente = 'Precio Promedio';
-      } else {
-        precioOficial = 0;
-        fuente = 'Critico';
-      }
-
-      // Calcular % de variación
       let varPorc = 0;
-      if (precioUltima > 0 && costoDespachoProm > 0) {
-        varPorc = Math.round(((costoDespachoProm - precioUltima) / precioUltima) * 1000) / 10;
-      }
-
-      // Clasificación de Estado
       let estado: ArticuloPrecioAuditoria['estado'] = 'conforme';
-      if (tieneManual) {
-        estado = 'ajustado';
-      } else if (costoDespachoProm === 0 && precioUltima === 0) {
-        estado = 'critico';
-      } else if (costoDespachoProm === 0 && precioUltima > 0) {
-        // Si no ha habido salidas de almacén físico (totalConsumos === 0), no hay desfase: el precio es conforme según la OC
-        if (art.totalConsumos === 0) {
+
+      if (esServicio) {
+        // SERVICIOS Y FLETES:
+        // No pasan por estantes ni tienen costo de reposición fijo. Cada OC responde a un alcance, proveedor y obra específico.
+        // Si hay una OC con precio/monto, ese es el valor oficial de referencia y se clasifica como conforme según OC.
+        if (tieneManual) {
+          precioOficial = ajusteManual.precio;
+          fuente = 'Manual';
+          estado = 'ajustado';
+        } else if (precioUltima > 0) {
+          precioOficial = precioUltima;
+          fuente = 'Ultima Compra';
+          estado = 'conforme';
+        } else if (costoDespachoProm > 0) {
+          precioOficial = costoDespachoProm;
+          fuente = 'Sistema';
           estado = 'conforme';
         } else {
+          precioOficial = 0;
+          fuente = 'Critico';
+          estado = 'critico';
+        }
+        varPorc = 0;
+      } else {
+        // MATERIALES DE ALMACÉN FÍSICO:
+        if (tieneManual) {
+          precioOficial = ajusteManual.precio;
+          fuente = 'Manual';
+          estado = 'ajustado';
+        } else if (costoDespachoProm === 0 && precioUltima > 0) {
+          precioOficial = precioUltima;
+          fuente = 'Ultima Compra';
+          estado = art.totalConsumos === 0 ? 'conforme' : 'desfase';
+        } else if (precioUltima > 0 && Math.abs(costoDespachoProm - precioUltima) / precioUltima > 0.05) {
+          precioOficial = precioUltima;
+          fuente = 'Ultima Compra';
+          estado = 'desfase';
+        } else if (costoDespachoProm > 0) {
+          precioOficial = costoDespachoProm;
+          fuente = 'Sistema';
+          estado = 'conforme';
+        } else if (precioPromedio > 0) {
+          precioOficial = precioPromedio;
+          fuente = 'Precio Promedio';
+          estado = 'conforme';
+        } else {
+          precioOficial = 0;
+          fuente = 'Critico';
+          estado = 'critico';
+        }
+
+        if (precioUltima > 0 && costoDespachoProm > 0) {
+          varPorc = Math.round(((costoDespachoProm - precioUltima) / precioUltima) * 1000) / 10;
+        }
+
+        if (!tieneManual && costoDespachoProm > 0 && precioUltima > 0 && Math.abs(varPorc) > 5) {
           estado = 'desfase';
         }
-      } else if (Math.abs(varPorc) > 5) {
-        estado = 'desfase';
-      } else {
-        estado = 'conforme';
       }
 
       resultado.push({
@@ -467,6 +493,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
         fechaUltimaCompra: fechaUltima,
         ordenUltimaCompra: ordenUltima,
         proveedorUltimaCompra: provUltima,
+        cuentaAuxiliarUltima: ctaAuxUltima,
+        motivoUltima: motivoUltima,
+        solicitanteUltima: solicitanteUltima,
+        compradorUltima: compradorUltima,
         precioPromedioCompras: Math.round(precioPromedio * 100) / 100,
         totalComprasRegistradas: historial.length,
         comprasHistorial: historial,
@@ -542,7 +572,9 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
         a.codigo.toLowerCase().includes(q) ||
         a.descripcion.toLowerCase().includes(q) ||
         a.proveedorUltimaCompra.toLowerCase().includes(q) ||
-        a.ordenUltimaCompra.toLowerCase().includes(q)
+        a.ordenUltimaCompra.toLowerCase().includes(q) ||
+        (a.cuentaAuxiliarUltima && a.cuentaAuxiliarUltima.toLowerCase().includes(q)) ||
+        (a.motivoUltima && a.motivoUltima.toLowerCase().includes(q))
       );
     }
 
@@ -830,10 +862,10 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           </div>
 
           {tipoInsumo === 'servicios' ? (
-            <div className="text-xs text-amber-900 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-300 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+            <div className="text-xs text-blue-900 bg-blue-50/90 px-3 py-2 rounded-xl border border-blue-200 flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 text-blue-600" />
               <span>
-                <strong>Nota SIP:</strong> Los servicios no pasan por estantes de almacén (por eso indican <code>0 USE</code> en salidas). Sus tarifas provienen directamente de las OCs y contratos.
+                <strong>Servicios & Fletes:</strong> Al ser contrataciones puntuales por proveedor y obra (sin inventario físico), su tarifa de costo proviene de la Orden de Compra/Contrato aprobada en SIP imputada a cada proyecto.
               </span>
             </div>
           ) : (
@@ -949,7 +981,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Buscar por código (ej. AC..., RP...), descripción, proveedor u OC..."
+            placeholder="Buscar por código, descripción, proveedor, OC, cuenta/proyecto o motivo..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -1083,7 +1115,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       </td>
 
                       {/* Descripción */}
-                      <td className="py-2.5 px-4 max-w-sm">
+                      <td className="py-2.5 px-4 max-w-md">
                         <div className="font-semibold text-slate-900 truncate flex items-center gap-2" title={item.descripcion}>
                           <span className="truncate">{item.descripcion || 'Sin descripción'}</span>
                           {item.esServicio && (
@@ -1100,6 +1132,19 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                             {item.categoria}
                           </span>
                         </div>
+                        {/* Imputación / Motivo visible */}
+                        {(item.cuentaAuxiliarUltima || item.motivoUltima) && (
+                          <div className="mt-1 flex items-start gap-1.5 text-[11px] text-slate-600 bg-slate-50 p-1.5 rounded-lg border border-slate-200" title={`Cuenta Auxiliar / Proyecto: ${item.cuentaAuxiliarUltima || 'S/N'}\nMotivo: ${item.motivoUltima || 'Sin motivo'}`}>
+                            {item.cuentaAuxiliarUltima && (
+                              <span className="shrink-0 font-mono font-bold text-amber-900 bg-amber-100/90 px-1.5 py-0.2 rounded text-[10px] border border-amber-300">
+                                {item.cuentaAuxiliarUltima}
+                              </span>
+                            )}
+                            <span className="truncate italic text-slate-700">
+                              {item.motivoUltima || 'Sin motivo registrado'}
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       {/* Consumo */}
@@ -1127,7 +1172,16 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
                       {/* Costo Despacho SIP */}
                       <td className="py-2.5 px-3 text-right font-mono whitespace-nowrap">
-                        {item.totalConsumos === 0 ? (
+                        {item.esServicio ? (
+                          <div className="text-right">
+                            <span className="text-slate-500 font-sans text-[11px] italic" title="Los servicios se imputan directamente a la obra por OC, no pasan por inventario de almacén">
+                              Imputación directa
+                            </span>
+                            <div className="text-[10px] text-slate-400 font-sans">
+                              (Sin almacén)
+                            </div>
+                          </div>
+                        ) : item.totalConsumos === 0 ? (
                           <span className="text-slate-400 font-sans text-[11px] italic" title="No registra salidas de almacén en el período">
                             - (Sin salidas)
                           </span>
@@ -1152,14 +1206,19 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                                 ({item.fechaUltimaCompra})
                               </span>
                               {item.precioGlobalContrato && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-100 text-blue-800 border border-blue-200 font-sans font-bold" title="Tarifa calculada dividiendo monto total entre cantidad del contrato">
+                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-100 text-blue-800 border border-blue-200 font-sans font-bold" title="Tarifa contractual calculada dividiendo monto total del contrato entre la cantidad">
                                   Contrato SIP
                                 </span>
                               )}
                             </div>
-                            <div className="text-[10px] text-slate-500 truncate max-w-[180px]" title={`OC: ${item.ordenUltimaCompra} - ${item.proveedorUltimaCompra}`}>
+                            <div className="text-[10px] text-slate-500 truncate max-w-[200px]" title={`OC: ${item.ordenUltimaCompra} - ${item.proveedorUltimaCompra}`}>
                               <span className="text-blue-700 font-mono font-semibold">{item.ordenUltimaCompra}</span> · {item.proveedorUltimaCompra}
                             </div>
+                            {item.cuentaAuxiliarUltima && (
+                              <div className="text-[10px] text-amber-900 font-mono font-semibold mt-0.5">
+                                Cta: {item.cuentaAuxiliarUltima}
+                              </div>
+                            )}
                           </div>
                         ) : item.ultimoRegistroCompras ? (
                           <div>
@@ -1169,6 +1228,11 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                             <div className="text-[10px] text-slate-500 mt-0.5 truncate max-w-[180px]" title={item.ultimoRegistroCompras.motivo || ''}>
                               {item.ultimoRegistroCompras.solicitante ? `Sol: ${item.ultimoRegistroCompras.solicitante}` : 'Sin OC emitida'}
                             </div>
+                            {item.cuentaAuxiliarUltima && (
+                              <div className="text-[10px] text-amber-900 font-mono font-semibold mt-0.5">
+                                Cta: {item.cuentaAuxiliarUltima}
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <span className="text-slate-400 font-mono text-[11px] italic">Sin registro en compras</span>
@@ -1186,7 +1250,27 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
                       {/* Variación % */}
                       <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                        {item.totalConsumos === 0 && item.precioUltimaCompra > 0 ? (
+                        {item.esServicio ? (
+                          item.precioUltimaCompra > 0 ? (
+                            <div>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-blue-50 text-blue-800 border border-blue-300" title="Tarifa contractual asignada según la OC y proveedor para este requerimiento">
+                                Tarifa según OC
+                              </span>
+                              <div className="text-[9px] text-slate-400 font-sans mt-0.5">
+                                Por requerimiento
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                                Costo $0
+                              </span>
+                              <div className="text-[9px] text-amber-700 font-sans mt-0.5">
+                                Sin OC en SIP
+                              </div>
+                            </div>
+                          )
+                        ) : item.totalConsumos === 0 && item.precioUltimaCompra > 0 ? (
                           <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                             Precio OC OK
                           </span>
@@ -1308,13 +1392,14 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                             </button>
                           )}
 
-                          {/* Historial */}
+                          {/* Historial / Trazabilidad */}
                           <button
                             onClick={() => setArticuloSeleccionado(item)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-blue-700 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-all cursor-pointer"
-                            title="Ver historial completo de órdenes de compra"
+                            className="px-2 py-1 rounded-lg text-slate-600 hover:text-blue-700 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 transition-all cursor-pointer flex items-center gap-1 text-[11px] font-medium"
+                            title="Ver trazabilidad de órdenes de compra, proyecto/cuenta y motivos"
                           >
-                            <History className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5 text-blue-600" />
+                            <span className="hidden xl:inline">Ver OCs</span>
                           </button>
                         </div>
                       </td>
@@ -1408,21 +1493,32 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
             {/* Resumen Superior */}
             <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Costo Despacho SIP:</span>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">
+                  {articuloSeleccionado.esServicio ? 'Tipo de Concepto:' : 'Costo Despacho SIP:'}
+                </span>
                 <span className="font-mono font-bold text-slate-900 text-sm">
-                  ${articuloSeleccionado.costoPromedioDespacho.toFixed(2)}
+                  {articuloSeleccionado.esServicio 
+                    ? 'Servicio de Obra / USE' 
+                    : `$${articuloSeleccionado.costoPromedioDespacho.toFixed(2)}`}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Última Compra SIP:</span>
-                <span className="font-mono font-bold text-emerald-700 text-sm">
-                  ${articuloSeleccionado.precioUltimaCompra.toFixed(2)}
-                </span>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Última OC / Tarifa:</span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-mono font-bold text-emerald-700 text-sm">
+                    ${articuloSeleccionado.precioUltimaCompra.toFixed(2)}
+                  </span>
+                  {articuloSeleccionado.precioGlobalContrato && (
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-100 text-blue-800 border border-blue-200 font-sans font-bold" title="Tarifa contractual calculada a partir del monto total de la OC">
+                      Contrato SIP
+                    </span>
+                  )}
+                </div>
               </div>
               <div>
-                <span className="text-slate-500 block text-[10px] uppercase font-bold">Promedio Compras:</span>
-                <span className="font-mono font-bold text-slate-700 text-sm">
-                  ${articuloSeleccionado.precioPromedioCompras.toFixed(2)}
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Proyecto / Imputación:</span>
+                <span className="font-mono font-bold text-amber-800 text-sm">
+                  {articuloSeleccionado.cuentaAuxiliarUltima || 'S/N'}
                 </span>
               </div>
               <div>
@@ -1432,6 +1528,31 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                 </span>
               </div>
             </div>
+
+            {/* Banner de Motivo / Justificación */}
+            {articuloSeleccionado.motivoUltima && (
+              <div className="px-6 py-2.5 bg-amber-50/70 border-b border-amber-200 text-xs text-amber-950 flex items-start gap-2.5">
+                <FileText className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="font-bold text-[11px] text-amber-900 uppercase tracking-wider">
+                    Motivo / Requerimiento en SIP ({articuloSeleccionado.ordenUltimaCompra}):
+                  </div>
+                  <div className="text-slate-800 text-xs mt-0.5 leading-relaxed font-sans">
+                    {articuloSeleccionado.motivoUltima}
+                  </div>
+                  {(articuloSeleccionado.solicitanteUltima || articuloSeleccionado.proveedorUltimaCompra) && (
+                    <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-3 flex-wrap">
+                      {articuloSeleccionado.solicitanteUltima && (
+                        <span>Solicitante: <strong className="text-slate-700">{articuloSeleccionado.solicitanteUltima}</strong></span>
+                      )}
+                      {articuloSeleccionado.proveedorUltimaCompra && (
+                        <span>Proveedor: <strong className="text-slate-700">{articuloSeleccionado.proveedorUltimaCompra}</strong></span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Contenido: Tabla de Compras */}
             <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
@@ -1513,9 +1634,20 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                             <td className="py-2 px-3 text-right text-slate-900 font-semibold">
                               ${(c.totalUSD || 0).toLocaleString()}
                             </td>
-                            <td className="py-2 px-4 text-[10px] text-slate-600 font-sans truncate max-w-xs" title={c.motivo}>
-                              <span className="text-amber-800 font-mono font-bold mr-1">{c.cuentaAuxiliar}</span>
-                              {c.motivo || '-'}
+                            <td className="py-2.5 px-4 text-xs font-sans max-w-sm">
+                              {c.cuentaAuxiliar && (
+                                <span className="inline-block bg-amber-100 text-amber-900 border border-amber-300 font-mono font-bold text-[10px] px-1.5 py-0.5 rounded mr-1.5 mb-1" title="Cuenta Auxiliar / Proyecto">
+                                  {c.cuentaAuxiliar}
+                                </span>
+                              )}
+                              <span className="text-slate-700 leading-snug">
+                                {c.motivo || '-'}
+                              </span>
+                              {c.solicitante && (
+                                <div className="text-[10px] text-slate-500 mt-0.5">
+                                  Sol: <span className="font-medium text-slate-600">{c.solicitante}</span>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );

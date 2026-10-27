@@ -1,0 +1,19 @@
+let
+    Origen = Excel.Workbook(File.Contents("C:\\Users\\alejandratesara\\Desktop\\Alejandra T\\Costos Alejandra\\1 Informe\\1 Base Central Inputs.xlsx"), null, true),
+    _2_Compras_Table = Origen{[Item="_2_Compras",Kind="Table"]}[Data],
+    TipoCambiado = Table.TransformColumnTypes(_2_Compras_Table,{{"Almacen", type text}, {"Nro-Sol", type text}, {"Fecha-Sol", type date}, {"Estatus-SC", type text}, {"Nro-OC", type text}, {"Estatus-OC", type text}, {"Codigo", type text}, {"Categoria", type text}, {"Descripcion", type text}, {"Cant-SC", type number}, {"Cant-OC", Int64.Type}, {"Unidad", type text}, {"Cuenta-Aux", type text}, {"Desc-Cuenta", type text}, {"Solicitado-Por", type text}, {"Precio$", type number}, {"Total$", type number}, {"Proveedor", type text}, {"Tipo-Prov", type text}, {"Recepcion", type text}, {"Fecha-Rec", type date}, {"Cant-Rec", type number}, {"Cant-PE", type number}, {"Motivo", type text}, {"Comprador", type text}}),
+    FilasFiltradas = Table.SelectRows(TipoCambiado, each [Categoria] = "SERVICIOS" and [#"Fecha-Rec"] <> null and Date.Year([#"Fecha-Rec"]) = 2026),
+    Renombrado = Table.RenameColumns(FilasFiltradas,{{"Total$", "Total USD"}, {"Motivo", "motivo"}, {"Nro-Sol", "Numero"}, {"Nro-OC", "Pedido"}, {"Cant-OC", "Cantidad"}, {"Solicitado-Por", "solicitante"}}),
+    AjustesSinDuplicados = Table.Buffer(Table.Distinct(Ajuste_Servicios, {"Nro-OC", "Codigo", "Cant-OC"})),
+    ConsultasCombinadas = Table.NestedJoin(Renombrado, {"Pedido", "Codigo", "Cantidad"}, AjustesSinDuplicados, {"Nro-OC", "Codigo", "Cant-OC"}, "Ajuste_Servicios", JoinKind.LeftOuter),
+    Expandido = Table.ExpandTableColumn(ConsultasCombinadas, "Ajuste_Servicios", {"Cuenta-Aux", "Fecha Real"}, {"Ajuste_Servicios.Cuenta-Aux", "Ajuste_Servicios.Fecha Real"}),
+    ColCtaAU = Table.AddColumn(Expandido, "Cuenta AU", each if [#"Ajuste_Servicios.Cuenta-Aux"] <> null then [#"Ajuste_Servicios.Cuenta-Aux"] else [#"Cuenta-Aux"]),
+    ColFechaReal = Table.AddColumn(ColCtaAU, "Fecha Real", each if [Ajuste_Servicios.Fecha Real] = null then [#"Fecha-Rec"] else [Ajuste_Servicios.Fecha Real]),
+    TipoCambiado2 = Table.TransformColumnTypes(ColFechaReal,{{"Fecha Real", type date}}),
+    RenombradoFecha = Table.RenameColumns(TipoCambiado2,{{"Fecha Real", "Fecha"}}),
+    SelectCols = Table.SelectColumns(RenombradoFecha,{"Almacen", "Numero", "Pedido", "Codigo", "Categoria", "Descripcion", "Cantidad", "Unidad", "solicitante", "Precio$", "Total USD", "motivo", "Cuenta AU", "Fecha"}),
+    RenombradoCta = Table.RenameColumns(SelectCols,{{"Cuenta AU", "Cuenta-Aux"}}),
+    Mayusc = Table.TransformColumns(RenombradoCta,{{"Cuenta-Aux", Text.Upper, type text}}),
+    RubroAgregado = Table.AddColumn(Mayusc, "Rubro", each "Servicios Directos", type text)
+in
+    RubroAgregado

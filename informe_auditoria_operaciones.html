@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>TIMACA - Informe Técnico de Auditoría: Operaciones y Compras (Septiembre 2026)</title>
+  <style>
+    @page {
+      size: letter portrait;
+      margin: 18mm 16mm 18mm 16mm;
+      @bottom-right {
+        content: counter(page) " de " counter(pages);
+        font-size: 8pt;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #64748b;
+      }
+    }
+    
+    body {
+      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+      font-size: 9.5pt;
+      line-height: 1.45;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+    }
+
+    .header-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      border-bottom: 2.5px solid #0b2545;
+      padding-bottom: 12px;
+    }
+
+    .header-logo {
+      width: 25%;
+      vertical-align: middle;
+    }
+
+    .header-logo h2 {
+      margin: 0;
+      font-size: 20pt;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #0b2545;
+    }
+
+    .header-logo p {
+      margin: 2px 0 0 0;
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .header-title {
+      width: 50%;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .header-title h1 {
+      margin: 0;
+      font-size: 13pt;
+      font-weight: 800;
+      color: #0b2545;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header-title p {
+      margin: 3px 0 0 0;
+      font-size: 8.5pt;
+      color: #1e40af;
+      font-weight: 700;
+    }
+
+    .header-meta {
+      width: 25%;
+      text-align: right;
+      vertical-align: middle;
+      font-size: 8pt;
+      color: #475569;
+    }
+
+    .doc-badge {
+      display: inline-block;
+      background-color: #0b2545;
+      color: #ffffff;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 7.5pt;
+      margin-bottom: 4px;
+    }
+
+    .meta-box {
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid #0b2545;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+    }
+
+    .meta-grid {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+    }
+
+    .meta-grid td {
+      padding: 3px 6px;
+      vertical-align: top;
+    }
+
+    .meta-label {
+      font-weight: 700;
+      color: #334155;
+      width: 18%;
+    }
+
+    .meta-val {
+      color: #0f172a;
+    }
+
+    h2 {
+      font-size: 11.5pt;
+      font-weight: 800;
+      color: #0b2545;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-top: 22px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    h3 {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #1e40af;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      margin: 0 0 8px 0;
+      text-align: justify;
+    }
+
+    .kpi-row {
+      display: table;
+      width: 100%;
+      margin: 15px 0;
+      table-layout: fixed;
+    }
+
+    .kpi-card {
+      display: table-cell;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 12px;
+      text-align: center;
+      margin-right: 10px;
+    }
+
+    .kpi-card:not(:last-child) {
+      border-right: 8px solid transparent;
+    }
+
+    .kpi-num {
+      font-size: 16pt;
+      font-weight: 900;
+      color: #0b2545;
+      font-family: 'Consolas', 'Courier New', monospace;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .kpi-danger .kpi-num {
+      color: #b91c1c;
+    }
+
+    .kpi-warning .kpi-num {
+      color: #d97706;
+    }
+
+    .kpi-success .kpi-num {
+      color: #047857;
+    }
+
+    .kpi-label {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #475569;
+      display: block;
+    }
+
+    .kpi-sub {
+      font-size: 7pt;
+      color: #64748b;
+      display: block;
+      margin-top: 2px;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8pt;
+      margin: 12px 0 18px 0;
+    }
+
+    table.data-table th {
+      background-color: #0b2545;
+      color: #ffffff;
+      font-weight: 700;
+      text-align: left;
+      padding: 6px 8px;
+      border: 1px solid #0b2545;
+    }
+
+    table.data-table td {
+      padding: 5px 8px;
+      border: 1px solid #cbd5e1;
+      vertical-align: middle;
+    }
+
+    table.data-table tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .font-mono { font-family: 'Consolas', monospace; }
+    .font-bold { font-weight: 700; }
+
+    .alert-box {
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin: 12px 0;
+      font-size: 8.5pt;
+    }
+
+    .alert-danger {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid #dc2626;
+      color: #991b1b;
+    }
+
+    .alert-warning {
+      background-color: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid #d97706;
+      color: #92400e;
+    }
+
+    .alert-info {
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #2563eb;
+      color: #1e40af;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .signatures {
+      width: 100%;
+      margin-top: 35px;
+      border-collapse: collapse;
+      page-break-inside: avoid;
+    }
+
+    .signatures td {
+      width: 33.33%;
+      text-align: center;
+      vertical-align: top;
+      padding: 0 15px;
+    }
+
+    .sig-line {
+      border-top: 1px solid #334155;
+      margin-top: 45px;
+      padding-top: 5px;
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .sig-cargo {
+      font-size: 7.5pt;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-danger { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+    .badge-success { background-color: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+    .badge-warning { background-color: #fef3c7; color: #92400e; border: 1px solid #fbbf24; }
+    .badge-info { background-color: #dbeafe; color: #1e40af; border: 1px solid #60a5fa; }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO OFICIAL -->
+  <table class="header-table">
+    <tr>
+      <td class="header-logo">
+        <h2>TIMACA</h2>
+        <p>C.A. Talleres Industriales<br>Metalúrgicos Altagracia</p>
+      </td>
+      <td class="header-title">
+        <h1>Informe Técnico de Auditoría</h1>
+        <p>Control Total de Costos y Gestión Operativa</p>
+      </td>
+      <td class="header-meta">
+        <span class="doc-badge">DOC-INF-CST-2026-09</span><br>
+        <strong>Corte:</strong> Septiembre 2026<br>
+        <strong>Emisión:</strong> 08/10/2026
+      </td>
+    </tr>
+  </table>
+
+  <!-- METADATOS DEL DOCUMENTO -->
+  <div class="meta-box">
+    <table class="meta-grid">
+      <tr>
+        <td class="meta-label">DESTINATARIO:</td>
+        <td class="meta-val"><strong>Departamento de Operaciones & Coordinación de Compras y Procura</strong></td>
+        <td class="meta-label">CON COPIA A:</td>
+        <td class="meta-val">Gerencia General / Gerencia de Proyectos</td>
+      </tr>
+      <tr>
+        <td class="meta-label">EMITIDO POR:</td>
+        <td class="meta-val"><strong>Ing. Alejandra Tesara</strong> — Analista de Costos y Control Total TIMACA</td>
+        <td class="meta-label">SISTEMAS AUDITADOS:</td>
+        <td class="meta-val">ERP SIP · Matriz Master Unificada · Portal de Costos</td>
+      </tr>
+      <tr>
+        <td class="meta-label">ASUNTO:</td>
+        <td class="meta-val" colspan="3"><strong>Auditoría de Omisión de Fechas en Compras y Servicios (Celdas NULL), Desfase Temporal en Registros SIP y Regularización del Cierre de Septiembre 2026</strong></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- RESUMEN EJECUTIVO / KPIS -->
+  <div class="kpi-row">
+    <div class="kpi-card kpi-danger">
+      <span class="kpi-num">94</span>
+      <span class="kpi-label">Registros Huérfanos</span>
+      <span class="kpi-sub">Celdas de fecha y mes en blanco</span>
+    </div>
+    <div class="kpi-card kpi-danger">
+      <span class="kpi-num">$150.908</span>
+      <span class="kpi-label">Monto Omitido USD</span>
+      <span class="kpi-sub">Costos reales fuera de Septiembre</span>
+    </div>
+    <div class="kpi-card kpi-warning">
+      <span class="kpi-num">10</span>
+      <span class="kpi-label">Proyectos Afectados</span>
+      <span class="kpi-sub">Pellas, PMH, Boca Grande II, etc.</span>
+    </div>
+    <div class="kpi-card kpi-success">
+      <span class="kpi-num">100%</span>
+      <span class="kpi-label">Rescatado y Regularizado</span>
+      <span class="kpi-sub">Integrado en portal de costos</span>
+    </div>
+  </div>
+
+  <!-- 1. OBJETIVO DEL INFORME -->
+  <h2>1. Objetivo y Antecedentes</h2>
+  <p>
+    El presente informe técnico tiene por objeto notificar formalmente a los departamentos de <strong>Operaciones</strong> y <strong>Compras</strong> los hallazgos críticos detectados durante la revisión del cierre de costos del mes de <strong>Septiembre 2026</strong>. 
+  </p>
+  <p>
+    La auditoría se inició tras observar que en la plataforma oficial de costos el rubro de <em>Servicios</em> para el proyecto <strong>Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706)</strong> aparecía incompleto ("mocho"), reflejando únicamente <strong>$23.157,50 USD</strong> correspondiente a una sola quincena de transporte de cuadrillas, cuando el comportamiento histórico y contractual del proyecto es estrictamente de dos quincenas (~$45.000 USD mensuales).
+  </p>
+  <p>
+    Al confrontar los registros del sistema <strong>SIP</strong> contra la base de datos maestra consolidada (<code>4 Master Unificado.xlsx</code>), se descubrió que no se trataba de un caso aislado, sino de un <strong>patrón sistemático de omisión de fechas y meses</strong> que afectó a múltiples órdenes de compras y servicios en toda la organización.
+  </p>
+
+  <!-- 2. DIAGNÓSTICO GENERAL Y CAUSA RAÍZ -->
+  <h2>2. Diagnóstico General y Causa Raíz</h2>
+  <div class="alert-box alert-danger">
+    <strong>CAUSA RAÍZ IDENTIFICADA:</strong> Al generar la exportación y actualización de la hoja <em>Unificada</em> del archivo maestro de Excel, las órdenes de compra y solicitudes emitidas durante las últimas semanas de septiembre (principalmente desde la serie <strong>SC25800</strong> hasta <strong>SC26350</strong>) fueron introducidas <strong>sin ejecutar las fórmulas ni macros que calculan las columnas "Fecha" (Columna C), "Año" (Columna AM) y "Nombre del mes" (Columna AN)</strong>.
+  </div>
+  <p>
+    Al encontrarse estas tres celdas completamente vacías (<code>NULL</code>), cualquier filtro gerencial, tabla dinámica o consulta automatizada de costos programada con la condición <code>Mes == 'septiembre'</code> o <code>Año == 2026</code> <strong>ignoró automáticamente las filas</strong>, provocando que <strong>$150.908,27 USD</strong> en costos reales de proyectos quedaran invisibles para la gerencia y para los reportes mensuales.
+  </p>
+
+  <!-- 3. CASO EMBLEMÁTICO 1: SERVICIO DE TRASLADO DE PERSONAL PELLAS -->
+  <h2>3. Caso Emblemático 1: Traslado de Personal Pellas (TTE-C-0706)</h2>
+  <p>
+    El contrato de traslado diario de cuadrillas operativas en campo con el proveedor <strong>A.T.I. TRANSVEN 01, C.A</strong> (Código de Servicio SIP: <code>SE1244</code>) opera de forma quincenal con montos entre $21.800 y $23.200 por quincena. En el SIP se evidenciaban tres movimientos en septiembre, pero en la página solo aparecía uno:
+  </p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>N° SC</th>
+        <th>N° OC</th>
+        <th>Fecha SIP</th>
+        <th class="text-right">Monto USD</th>
+        <th>Motivo Textual Registrado en SIP</th>
+        <th>Causa de la Discrepancia / Estatus Contable</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="font-mono font-bold">SC25774</td>
+        <td class="font-mono">OC22576</td>
+        <td class="text-center font-mono">15/09/2026</td>
+        <td class="text-right font-mono font-bold">$23.157,50</td>
+        <td>Traslado de personal 28-32 ptos. <strong>Fecha: 02/09/26</strong></td>
+        <td><span class="badge-pill badge-success">OK / Cargado</span> Tenía fecha 15/09/2026 y mes septiembre en Excel. 1ra Quincena Septiembre.</td>
+      </tr>
+      <tr>
+        <td class="font-mono font-bold">SC26299</td>
+        <td class="font-mono">OC23120</td>
+        <td class="text-center font-mono">26/09/2026</td>
+        <td class="text-right font-mono font-bold">$22.720,00</td>
+        <td>Traslado de personal 28-32 ptos. <strong>Fecha: 17/09/26</strong></td>
+        <td><span class="badge-pill badge-danger">OMISIÓN EXCEL</span> Fila 97655 tenía <strong>Fecha, Año y Mes NULL</strong>. Quedó huérfana. 2da Quincena Septiembre.</td>
+      </tr>
+      <tr>
+        <td class="font-mono font-bold">SC25773</td>
+        <td class="font-mono">OC22575</td>
+        <td class="text-center font-mono">15/09/2026</td>
+        <td class="text-right font-mono font-bold">$21.800,00</td>
+        <td>Traslado de personal 28-32 ptos. <strong>Fecha: 17/08/26</strong></td>
+        <td><span class="badge-pill badge-warning">DESFASE OPERACIONES</span> Prestado el 17 de agosto. Operaciones lo cargó el 15/09. Costos lo imputó a <strong>Agosto</strong> por devengado contable ($44.270 total agosto).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert-box alert-info">
+    <strong>PRINCIPIO CONTABLE DE DEVENGADO:</strong> Se ratifica ante Compras y Operaciones que la <code>SC25773</code> ($21.800) pertenece legal y contablemente a <strong>Agosto</strong> porque allí fue donde los 238 trabajadores utilizaron el servicio. Si se cargase en Septiembre por la fecha de emisión del SIP, Septiembre se inflaría artificialmente a <strong>$67.677,50 USD</strong> (tres quincenas) y Agosto quedaría subestimado con una sola quincena.
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- 4. CASO EMBLEMÁTICO 2: ALQUILER DE BAÑOS PORTÁTILES Y MAQUINARIA -->
+  <h2>4. Caso Emblemático 2: Alquiler de Baños Portátiles y Equipos</h2>
+  <p>
+    La auditoría confirmó que el problema de fechas vacías se repitió de manera exacta en el rubro de módulos sanitarios y alquileres operativos:
+  </p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Proyecto / Cuenta</th>
+        <th>N° SC</th>
+        <th>N° OC</th>
+        <th class="text-right">Monto USD</th>
+        <th>Descripción y Período Operativo</th>
+        <th>Diagnóstico de Auditoría</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Pellas L1</strong> (TTE-C-0706)</td>
+        <td class="font-mono">SC25788</td>
+        <td class="font-mono">OC22626</td>
+        <td class="text-right font-mono font-bold">$4.200,00</td>
+        <td>Alquiler 12 baños portátiles (09/09/2026 al 08/10/2026)</td>
+        <td><span class="badge-pill badge-success">OK / Procesado</span> Tenía fecha 15/09 y mes septiembre en Excel.</td>
+      </tr>
+      <tr>
+        <td><strong>Pellas L1</strong> (TTE-C-0706)</td>
+        <td class="font-mono">SC25134</td>
+        <td class="font-mono">OC21946</td>
+        <td class="text-right font-mono font-bold">$4.200,00</td>
+        <td>Regularización alquiler 12 baños portátiles (inicio 09/07/26)</td>
+        <td><span class="badge-pill badge-success">OK / Procesado</span> Tenía fecha 15/09 y mes septiembre en Excel.</td>
+      </tr>
+      <tr>
+        <td><strong>2da Línea PMH</strong> (TTE-C-0671)</td>
+        <td class="font-mono font-bold">SC25795</td>
+        <td class="font-mono">OC22626</td>
+        <td class="text-right font-mono font-bold">$2.450,00</td>
+        <td>Alquiler de baños portátiles fechas 01/09/26 al 30/09/26</td>
+        <td><span class="badge-pill badge-danger">OMISIÓN EXCEL</span> Fila 5681 con <strong>Fecha y Mes NULL</strong>. El costo de baños de PMH no salía en septiembre.</td>
+      </tr>
+      <tr>
+        <td><strong>2da Línea PMH</strong> (TTE-C-0671)</td>
+        <td class="font-mono font-bold">SC25847</td>
+        <td class="font-mono">OC22692</td>
+        <td class="text-right font-mono font-bold">$3.700,00</td>
+        <td>Alquiler de Jumbo y Cargador para acarreo a Cerro Bonito</td>
+        <td><span class="badge-pill badge-danger">OMISIÓN EXCEL</span> Filas 5684 y 5685 con <strong>Fecha y Mes NULL</strong>. Equipos fuera de septiembre.</td>
+      </tr>
+      <tr>
+        <td><strong>2da Línea PMH</strong> (TTE-C-0671)</td>
+        <td class="font-mono font-bold">SC25847</td>
+        <td class="font-mono">OC22692</td>
+        <td class="text-right font-mono font-bold">$4.000,00</td>
+        <td>Flete de acarreo de tierra a Cerro Bonito</td>
+        <td><span class="badge-pill badge-danger">OMISIÓN EXCEL</span> Fila 51335 con <strong>Fecha y Mes NULL</strong>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 5. INVENTARIO COMPLETO DE CASOS HUÉRFANOS POR PROYECTO -->
+  <h2>5. Inventario General de Compras y Servicios Huérfanos</h2>
+  <p>
+    A continuación se presenta el desglose consolidado de los <strong>94 registros rescatados</strong> ($150.908,27 USD) que no tenían fecha asignada en el archivo maestro de Operaciones:
+  </p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Proyecto / Centro de Costo</th>
+        <th class="text-center">Reg.</th>
+        <th class="text-right">Total USD</th>
+        <th>Principales Conceptos Omitidos en el Cierre</th>
+        <th>Impacto Operativo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>2da Línea PMH Palúa</strong> (TTE-C-0671)</td>
+        <td class="text-center font-bold">8</td>
+        <td class="text-right font-mono font-bold">$29.901,83</td>
+        <td>Baños portátiles ($2.450), maquinaria Cerro Bonito ($7.700), agenciamiento cable Helukabel ($9.532), fletes rieles y rodamientos ($10.220).</td>
+        <td>Costos directos de montaje e importación omitidos.</td>
+      </tr>
+      <tr>
+        <td><strong>Recuperación Línea 1 Pellas</strong> (TTE-C-0706)</td>
+        <td class="text-center font-bold">15</td>
+        <td class="text-right font-mono font-bold">$26.570,89</td>
+        <td>Transporte personal 2da quincena ($22.720), flete gandola acero Valencia ($1.610), 7 fletes aéreos eléctricos ($1.692), oxígeno, cenas y exámenes.</td>
+        <td>Distorsión quincenal de movilización y fletes.</td>
+      </tr>
+      <tr>
+        <td><strong>Mantenimiento Boca Grande II</strong> (TTE-C-0680)</td>
+        <td class="text-center font-bold">9</td>
+        <td class="text-right font-mono font-bold">$24.889,00</td>
+        <td>Alquiler embarcaciones rotación marina ($9.500), diagnóstico generador Leroy Somer Carbowell ($14.000), fletes Pickman Tucupita/Volcán ($1.300).</td>
+        <td>Costos marinos y electromecánicos mayores.</td>
+      </tr>
+      <tr>
+        <td><strong>Interconexión PMH</strong> (TTE-C-0655)</td>
+        <td class="text-center font-bold">4</td>
+        <td class="text-right font-mono font-bold">$21.183,68</td>
+        <td>Flete internacional aéreo polipasto ($10.648,68) y paneles de media tensión MV ($10.400,00). Exámenes médicos.</td>
+        <td>Fletes aéreos de compras internacionales críticas.</td>
+      </tr>
+      <tr>
+        <td><strong>Taller Central / Herramientas</strong> (EE-H-C-015)</td>
+        <td class="text-center font-bold">1</td>
+        <td class="text-right font-mono font-bold">$17.306,87</td>
+        <td>Agenciamiento aduanal importación herramientas y accesorios PO TI-A&D-001 (Factura del 07/09/2026).</td>
+        <td>Costo indirecto de taller y nacionalización.</td>
+      </tr>
+      <tr>
+        <td><strong>Gerencia General</strong> (TT-A-C-100)</td>
+        <td class="text-center font-bold">1</td>
+        <td class="text-right font-mono font-bold">$9.695,00</td>
+        <td>Honorarios profesionales de consultoría gerencial (277 horas operativas).</td>
+        <td>Servicio profesional externo sin contabilizar.</td>
+      </tr>
+      <tr>
+        <td><strong>Rehabilitación Parrilla Móvil</strong> (TTE-C-0656)</td>
+        <td class="text-center font-bold">2</td>
+        <td class="text-right font-mono font-bold">$9.324,24</td>
+        <td>Fabricación metalmecánica sistema traslación por cadena carro móvil ($8.462) e instrumentación cinta JD-1407 ($862).</td>
+        <td>Fabricación especializada de frentes de obra.</td>
+      </tr>
+      <tr>
+        <td><strong>Briquetas Fase II</strong> (TTE-C-0668)</td>
+        <td class="text-center font-bold">9</td>
+        <td class="text-right font-mono font-bold">$2.632,08</td>
+        <td>Fletes aéreos internacionales diafragmas y componentes eléctricos Thermo Fisher ($1.838), evaluaciones médicas de emergencia ($794).</td>
+        <td>Componentes de instrumentación omitidos.</td>
+      </tr>
+      <tr>
+        <td><strong>Otros Proyectos y Áreas Internas</strong></td>
+        <td class="text-center font-bold">45</td>
+        <td class="text-right font-mono font-bold">$9.404,68</td>
+        <td>Desmantelamiento cargador buque Wellman ($2.060), gammagrafía ductos caldera ($1.740), reparaciones mecánicas, recarga extintores, comidas y taxis.</td>
+        <td>Gastos de apoyo operacional y logística menor.</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr style="background-color: #e2e8f0; font-weight: 900;">
+        <td>TOTAL GENERAL REGULARIZADO</td>
+        <td class="text-center font-mono">94</td>
+        <td class="text-right font-mono">$150.908,27</td>
+        <td colspan="2">Servicios ($88.467,34 USD) + Compras/Materiales Directos ($62.440,93 USD)</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- 6. ACCIONES EJECUTADAS POR COSTOS -->
+  <h2>6. Acciones de Mitigación Ejecutadas por Costos</h2>
+  <p>
+    A fin de no paralizar la toma de decisiones gerenciales ni emitir informes con costos distorsionados, el equipo de Costos ejecutó las siguientes acciones inmediatas:
+  </p>
+  <ol>
+    <li>
+      <strong>Rescate e Inyección Integral de Datos:</strong> Se procesaron e incorporaron los <strong>94 registros huérfanos</strong> en el archivo oficial de salidas reales (<code>realSalidasSeptiembre2026.ts</code>), asignándoles su fecha real de septiembre deducida textualmente del motivo o de la fecha de radicación en SIP.
+    </li>
+    <li>
+      <strong>Conciliación de Quincenas de Pellas:</strong> El costo mensual de traslado de personal en Pellas Línea 1 quedó fijado en su valor real de <strong>$45.877,50 USD</strong> ($23.157,50 de la 1ra quincena + $22.720,00 de la 2da quincena).
+    </li>
+    <li>
+      <strong>Panel de Auditoría en la Web:</strong> Se programó un módulo visible en pantalla que advierte y explica con transparencia la diferencia entre la fecha de prestación física del servicio y la fecha de registro en el SIP.
+    </li>
+    <li>
+      <strong>Despliegue a Producción:</strong> La plataforma web se encuentra 100% actualizada y en línea en <strong>https://timaca-costos.vercel.app/</strong> con la caché institucional renovada (Storage Key: <code>V130</code>).
+    </li>
+  </ol>
+
+  <!-- 7. RECOMENDACIONES Y ACUERDOS PARA OPERACIONES Y COMPRAS -->
+  <h2>7. Protocolo y Acuerdos Exigidos a Operaciones y Compras</h2>
+  <p>
+    Para blindar los cierres futuros y evitar que la empresa presente informes de costos mutilados, se establecen los siguientes compromisos y acuerdos obligatorios:
+  </p>
+
+  <div class="alert-box alert-warning">
+    <strong>1. REGLA DE NO OMISIÓN EN ARCHIVO MAESTRO:</strong> Al exportar y consolidar la data del SIP en el archivo <code>4 Master Unificado.xlsx</code>, el personal encargado de Operaciones debe verificar que las columnas <em>Fecha</em>, <em>Año</em> y <em>Nombre del mes</em> tengan fórmulas arrastradas activas. <strong>Bajo ningún concepto se admitirá el archivo con celdas de fecha en blanco si la fila posee un monto asignado.</strong>
+  </div>
+
+  <div class="alert-box alert-warning">
+    <strong>2. CORTE QUINCENAL ESTRICTO DE SERVICIOS CONTINUOS:</strong> Para servicios de tarifa periódica o quincenal (Traslado de Personal, Baños Portátiles, Vigilancia Patrimonial y Alquiler de Equipos):
+    <ul>
+      <li>Los soportes y solicitudes de la <strong>1ra Quincena</strong> deben cargarse en el SIP a más tardar el día <strong>5 del mes</strong>.</li>
+      <li>Los soportes y solicitudes de la <strong>2da Quincena</strong> deben cargarse en el SIP a más tardar el día <strong>20 del mes</strong>.</li>
+    </ul>
+    <em>No se permitirá acumular órdenes de servicios prestados en meses anteriores para introducirlas un mes después (como ocurrió con la SC25773 de agosto cargada el 15 de septiembre).</em>
+  </div>
+
+  <div class="alert-box alert-warning">
+    <strong>3. OBLIGATORIEDAD DE LA FECHA DE SERVICIO EN EL MOTIVO:</strong> Al crear cualquier Solicitud de Compra (SC) o Pedido en el SIP, el solicitante de Operaciones debe colocar de forma explícita en las primeras líneas del motivo la fecha exacta de ejecución o vigencia (ejemplo: <em>"Servicio prestado del 01/09 al 15/09/2026"</em>).
+  </div>
+
+  <div class="alert-box alert-warning">
+    <strong>4. MESA DE CONCILIACIÓN DE CIERRE MENSUAL:</strong> Los días 28 de cada mes se realizará una breve reunión de 30 minutos entre Analista de Costos, Jefatura de Operaciones y Coordinación de Compras para revisar la lista de órdenes pendientes por facturar y compras en tránsito, evitando compras invisibles.
+  </div>
+
+  <!-- FIRMAS DE RESPONSABILIDAD -->
+  <table class="signatures">
+    <tr>
+      <td>
+        <div class="sig-line">Ing. Alejandra Tesara</div>
+        <div class="sig-cargo">Analista de Costos & Control Total<br>TIMACA</div>
+      </td>
+      <td>
+        <div class="sig-line">Gerencia de Operaciones</div>
+        <div class="sig-cargo">Operaciones de Planta & Campo<br>TIMACA</div>
+      </td>
+      <td>
+        <div class="sig-line">Coordinación de Compras & Procura</div>
+        <div class="sig-cargo">Procura, Servicios & Contratos<br>TIMACA</div>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
