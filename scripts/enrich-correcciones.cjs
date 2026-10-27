@@ -173,7 +173,7 @@ rawConsumos.forEach((r, idx) => {
     solicitante: solicitante,
     motivo: obs,
     fecha: 'Histórico 2026',
-    usuario: 'Daniela Riveros (Correcciones.xlsx)'
+    usuario: 'Histórico Costos (Correcciones.xlsx - Elizabeth)'
   });
 });
 
@@ -220,18 +220,18 @@ rawServicios.forEach((s, idx) => {
     proveedor: proveedor,
     motivo: motivo,
     fecha: 'Histórico 2026',
-    usuario: 'Daniela Riveros (Correcciones.xlsx)'
+    usuario: 'Histórico Costos (Correcciones.xlsx - Elizabeth)'
   });
 });
 
 console.log(`Total correcciones enriquecidas desde Excel: ${enrichedCorrecciones.length}`);
 
-// 7. Leer correcciones previas de drivero para preservarlas intactas
+// 7. Leer correcciones previas para preservarlas intactas
 const currentJsonPath = 'public/data/sip/reclasificaciones.json';
 let driveroEntries = [];
 if (fs.existsSync(currentJsonPath)) {
   const current = JSON.parse(fs.readFileSync(currentJsonPath, 'utf8'));
-  driveroEntries = current.filter(x => x.usuario !== 'Costos (Correcciones.xlsx)' && x.usuario !== 'Daniela Riveros (Correcciones.xlsx)');
+  driveroEntries = current.filter(x => !x.usuario?.includes('Correcciones.xlsx'));
   console.log(`Preservando ${driveroEntries.length} correcciones registradas en vivo por el usuario.`);
 }
 

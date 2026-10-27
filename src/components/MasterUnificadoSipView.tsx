@@ -2331,7 +2331,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         ))}
                       </datalist>
                       <p className="text-[10px] text-slate-500 mt-1">
-                        Puedes seleccionar una existente o escribir directamente la <strong>nueva cuenta auxiliar que creaste en SIP</strong> (el nombre del proyecto se autocompletará).
+                        Se puede seleccionar una cuenta existente o ingresar directamente la <strong>nueva cuenta auxiliar registrada en SIP</strong> (el nombre del proyecto se autocompletará).
                       </p>
                     </div>
 
@@ -3373,7 +3373,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     <span className="px-2 py-0.5 rounded text-[10px] bg-rose-200 text-rose-900 font-bold border border-rose-300">EXCLUIDO PARA EVITAR DOBLE IMPUTACIÓN</span>
                   </div>
                   <p className="text-rose-800 leading-relaxed">
-                    <strong>Confirmación de Criterio Contable:</strong> Es 100% exacto como observaste. En septiembre <strong>no existen normalizaciones</strong>; todos estos ajustes son registros históricos correspondientes a materiales de <strong>2025 o antes</strong> que fueron regularizados en el inventario entre <strong>Enero y Julio de 2026</strong> ({formatUSD(1105015.76)} en Proyectos Externos según Tabla 3 de Excel). Son materiales ya consumidos y cobrados en períodos previos, excluidos para no duplicar costos en 2026. Aquí puedes auditarlos y revisarlos uno a uno con su vale DP, fecha, código de material, motivo original y monto.
+                    <strong>Criterio Contable y de Auditoría:</strong> Regularizaciones de inventario y ajustes manuales correspondientes a ejercicios anteriores (<strong>2025 o previo</strong>) asentados contablemente entre <strong>Enero y Julio de 2026</strong> ({formatUSD(1105015.76)} en Proyectos Externos). Al tratarse de partidas consumidas e imputadas en períodos fiscales previos, se mantienen excluidas de la imputación activa de 2026 para evitar duplicidad de costos. Esta vista permite auditar y consultar el detalle individual por vale de salida (DP), fecha de registro, código de material, motivo contable y monto.
                   </p>
                 </div>
               </div>
@@ -3394,7 +3394,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         </span>
                       </div>
                       <p className="text-indigo-800 text-xs mt-1 leading-relaxed max-w-4xl">
-                        Consumos cargados tardíamente en SIP con notas de regularización (incluyendo los <strong>56 registros con código "AG" ($9.106,74)</strong> y los <strong>100 de Junio ($983,07)</strong> en la OT <strong>TTE-C-0706</strong>). Puedes filtrarlos por su mes real, auditarlos uno a uno con el botón <strong>[Pasar a Corrección]</strong>, o enviarlos en bloque a la sección de <strong>Correcciones</strong> con su mes contable asignado.
+                        Consumos cargados tardíamente en SIP con notas de regularización (incluyendo los <strong>56 registros con código "AG" ($9.106,74)</strong> y los <strong>100 de Junio ($983,07)</strong> en la OT <strong>TTE-C-0706</strong>). Permite filtrarlos por su mes real, auditarlos individualmente con el botón <strong>[Pasar a Corrección]</strong>, o transferirlos en bloque a la sección de <strong>Correcciones</strong> con su mes contable asignado.
                       </p>
                     </div>
                   </div>
@@ -5060,7 +5060,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         </div>
                         {selectedMovimiento.esReclasificado && (
                           <div className="text-[11px] text-emerald-800 font-medium mt-1 bg-emerald-50 p-1.5 rounded border border-emerald-200">
-                            ✓ Este movimiento ya fue corregido a <strong className="font-mono">{selectedMovimiento.cuentaAuxiliar}</strong>. Puedes cambiarle la cuenta nuevamente si lo deseas.
+                            ✓ Registro corregido a <strong className="font-mono">{selectedMovimiento.cuentaAuxiliar}</strong>. Permite reasignar una nueva cuenta auxiliar si es necesario.
                           </div>
                         )}
                       </div>
@@ -5184,7 +5184,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           ))}
                         </datalist>
                         <p className="text-[10px] text-slate-500 mt-1">
-                          Puedes seleccionar una cuenta existente o escribir directamente la <strong>nueva cuenta auxiliar que creaste en SIP</strong> (el nombre del proyecto se autocompletará).
+                          Se puede seleccionar una cuenta existente o ingresar directamente la <strong>nueva cuenta auxiliar registrada en SIP</strong> (el nombre del proyecto se autocompletará).
                         </p>
                       </div>
 
