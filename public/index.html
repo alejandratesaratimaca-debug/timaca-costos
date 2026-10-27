@@ -5790,9 +5790,7 @@ VISTAS.dash = p => {
   const aviso = (n, txt, dest, cls) => `<div class="aviso ${cls || ''}" onclick="ir('${dest[0]}',${dest[1] ? JSON.stringify(dest[1]).replace(/"/g, "'") : 'null'})"><div class="a-num">${n}</div><div class="a-txt">${txt}</div></div>`;
   
   const avisos = [
-    aviso(pendAprob, 'Solicitudes por aprobar', ['aprobar'], pendAprob ? '' : 'verde'),
     aviso(venc.length, venc.length ? `Préstamos vencidos · máximo ${venc[0].dias} día(s) de atraso` : 'Préstamos vencidos', ['cPrest', { est: 'VENCIDO' }], venc.length ? 'rojo' : 'verde'),
-    aviso(epp.length, 'EPP con reposición vencida o próxima (15 días)', ['cEpp', { f: 'ALERTA' }], epp.length ? 'naranja' : 'verde'),
     aviso(porAceptar.length, porAceptar.length ? `Transferencias por aceptar · la más próxima vence en ${cronoHTML(porAceptar[0])}` : 'Transferencias por aceptar', ['trfRec'], porAceptar.length ? 'naranja' : 'verde'),
     aviso(envPend.length, `Transferencias enviadas por aceptar · ${envRiesgo.length} vencen en menos de 2 horas`, ['trfEnv', { est: 'PENDIENTE DE RECEPCIÓN' }], envRiesgo.length ? 'rojo' : ''),
     aviso(envMal.length, 'Transferencias enviadas rechazadas o vencidas (últimos 7 días)', ['trfEnv'], envMal.length ? 'rojo' : 'verde'),
@@ -7900,7 +7898,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESET_ZERO_V3';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V4';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
