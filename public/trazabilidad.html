@@ -2460,7 +2460,14 @@ function opcionesAcceso(u) {
   return ops;
 }
 function actualizarAccesosLogin() {
-  const u = userDe($('lgUsuario').value.trim()); const sel = $('lgAcceso');
+  if (!DB || !Array.isArray(DB.usuarios) || !Array.isArray(DB.almacenes) || !DB.usuarios.length) {
+    if (typeof cargarDatos === 'function') cargarDatos();
+    if (typeof asegurarUsuariosClave === 'function') asegurarUsuariosClave();
+  }
+  const usrVal = $('lgUsuario') ? $('lgUsuario').value.trim() : '';
+  const u = userDe(usrVal);
+  const sel = $('lgAcceso');
+  if (!sel) return;
   if (!u || !u.activo) { sel.innerHTML = '<option value="">Escriba su usuario para ver sus accesos</option>'; return; }
   const ops = opcionesAcceso(u);
   sel.innerHTML = ops.length ? ops.map((o, i) => `<option value="${esc(o.v)}" ${i === (ops[0].v === 'MAESTRO' && ops.length > 1 ? 1 : 0) ? 'selected' : ''}>${esc(o.t)}</option>`).join('') : '<option value="">Sin accesos asignados</option>';
@@ -7631,12 +7638,31 @@ function subirANubeDebounced() {
 }
 
 function descargarDeNube(cloudDB) {
-  if (!cloudDB || !Array.isArray(cloudDB.catalogo)) return;
-  DB = cloudDB;
-  asegurarCategoriasOficiales();
+  if (!cloudDB || typeof cloudDB !== 'object') return;
+  const base = semilla();
+  DB = Object.assign({}, base, cloudDB);
+
+  // Garantizar que almacenes, usuarios, personal y proyectos oficiales NUNCA desaparezcan ni queden vacíos
+  if (!Array.isArray(DB.almacenes) || DB.almacenes.length === 0) DB.almacenes = base.almacenes;
+  if (!Array.isArray(DB.usuarios) || DB.usuarios.length === 0) DB.usuarios = base.usuarios;
+  if (!Array.isArray(DB.personal) || DB.personal.length === 0) DB.personal = base.personal;
+  if (!Array.isArray(DB.proyectos) || DB.proyectos.length === 0) DB.proyectos = base.proyectos;
+  if (!DB.exi || typeof DB.exi !== 'object') DB.exi = {};
+  if (!Array.isArray(DB.catalogo)) DB.catalogo = [];
+  if (!Array.isArray(DB.movs)) DB.movs = [];
+  if (!Array.isArray(DB.vales)) DB.vales = [];
+  if (!Array.isArray(DB.solicitudes)) DB.solicitudes = [];
+
+  asegurarProduccionLimpia();
   asegurarUsuariosClave();
+  asegurarPersonalOficial();
+  if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
+  asegurarCategoriasOficiales();
+  asegurarEstatusSolicitudes();
   guardarLocalSolo();
-  if (typeof refrescar === 'function') refrescar();
+
+  if (typeof refrescar === 'function' && typeof S !== 'undefined' && S && S.u) refrescar();
+  if (typeof actualizarAccesosLogin === 'function' && $('lgUsuario')) actualizarAccesosLogin();
   console.log(`☁️ Sincronizados ${(DB.catalogo||[]).length} ítems desde Supabase Cloud.`);
 }
 
@@ -7692,7 +7718,7 @@ function actualizarIndicadorCloud(estado) {
     btn.style.background = 'rgba(16,185,129,0.12)';
     dot.style.background = '#10b981';
     const numIt = (DB && Array.isArray(DB.catalogo)) ? DB.catalogo.length : 0;
-    txt.textContent = `☁️ Nube conectada (${numIt} ítems)`;
+    txt.textContent = '☁️ Nube conectada';
   } else if (estado === 'error') {
     btn.style.borderColor = 'rgba(239,68,68,0.4)';
     btn.style.color = '#ef4444';
