@@ -765,27 +765,47 @@ function actualizarCampanaNotif() {
   }
 }
 
+function eliminarNotificacion(id) {
+  DB.notificaciones = (DB.notificaciones || []).filter(n => n.id !== id);
+  guardar();
+  actualizarCampanaNotif();
+  abrirPanelNotificaciones();
+  toast('Notificación eliminada.', 'ok');
+}
+
+function vaciarNotificaciones() {
+  if (!confirm('¿Desea borrar todas las notificaciones del historial?')) return;
+  DB.notificaciones = [];
+  guardar();
+  actualizarCampanaNotif();
+  abrirPanelNotificaciones();
+  toast('Historial de notificaciones vaciado.', 'ok');
+}
+
 function abrirPanelNotificaciones() {
   DB.notificaciones = DB.notificaciones || [];
   const noLeidas = DB.notificaciones.filter(n => !n.leida).length;
   const perm = 'Notification' in window ? Notification.permission : 'unsupported';
 
-  let headerHtml = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--borde)">
+  let headerHtml = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--borde);flex-wrap:wrap;gap:8px">
     <div><b>Historial de Notificaciones</b> <span style="font-size:11px;color:var(--texto-3)">(${DB.notificaciones.length})</span></div>
     <div style="display:flex;gap:6px">
-      ${perm !== 'granted' ? `<button class="btn btn-navy btn-mini" onclick="solicitarPermisoNotificaciones();cerrarModal()">🔔 Activar en Windows</button>` : `<span style="font-size:11px;color:#16a34a;font-weight:700">✔ Notificaciones Windows Activadas</span>`}
+      ${DB.notificaciones.length ? `<button class="btn btn-rojo btn-mini" onclick="vaciarNotificaciones()">🗑️ Vaciar todas</button>` : ''}
       ${noLeidas > 0 ? `<button class="btn btn-claro btn-mini" onclick="marcarTodasNotifLeidas()">Marcar leídas</button>` : ''}
     </div>
   </div>`;
 
   let listaHtml = DB.notificaciones.length ? DB.notificaciones.map(n => {
     const ico = n.tipo === 'ok' ? '✅' : n.tipo === 'err' ? '❌' : n.tipo === 'trf' ? '📦' : n.tipo === 'plz' ? '⏱️' : n.tipo === 'warn' ? '⚠️' : '🔔';
-    return `<div style="padding:9px 10px;border-radius:6px;background:${n.leida ? '#f8fafc' : '#eff6ff'};border:1px solid ${n.leida ? '#e2e8f0' : '#bfdbfe'};margin-bottom:6px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-weight:800;color:var(--navy);font-size:12px">${ico} ${esc(n.titulo)}</span>
-        <span style="font-size:10.5px;color:var(--texto-3)">${fFH(n.fecha)}</span>
+    return `<div style="padding:9px 10px;border-radius:6px;background:${n.leida ? '#f8fafc' : '#eff6ff'};border:1px solid ${n.leida ? '#e2e8f0' : '#bfdbfe'};margin-bottom:6px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:800;color:var(--navy);font-size:12px">${ico} ${esc(n.titulo)}</span>
+          <span style="font-size:10.5px;color:var(--texto-3)">${fFH(n.fecha)}</span>
+        </div>
+        <div style="font-size:12px;color:var(--texto);margin-top:3px">${esc(n.cuerpo)}</div>
       </div>
-      <div style="font-size:12px;color:var(--texto);margin-top:3px">${esc(n.cuerpo)}</div>
+      <button class="btn btn-claro btn-mini" style="color:var(--rojo);padding:2px 6px" onclick="eliminarNotificacion('${n.id}')" title="Eliminar esta notificación">🗑️</button>
     </div>`;
   }).join('') : '<p class="ayuda-txt" style="text-align:center;padding:20px">No hay notificaciones recientes en el sistema.</p>';
 
@@ -1293,31 +1313,74 @@ function validarSolicitud(d, finalizar) {
   validarStock(d.origen, d.lineas);
 }
 function emitirValeDirecto(d) {
-  validarSolicitud(d, true);
-  validarStock(d.origen, d.lineas);
-
   let s = d.num ? solDe(d.num) : null;
-  const editando = !!s;
+  let v = (s && s.vale) ? valeDe(s.vale) : (d.valeId ? valeDe(d.valeId) : null);
+  const editando = !!(v || (s && s.vale));
+
+  // 1. Si estamos editando un vale existente, revertir temporalmente el inventario anterior para validar
+  if (editando && v) {
+    v.lineas.forEach(l => {
+      const e = exi(v.origen, l.id);
+      e.disp += l.cant;
+      if (v.tipo === 'ASI' && l.consumo) {
+        e.entregado = Math.max(0, (e.entregado || 0) - l.cant);
+      } else if (v.tipo === 'PRH') {
+        e.prest = Math.max(0, (e.prest || 0) - l.cant);
+      } else {
+        e.asig = Math.max(0, (e.asig || 0) - l.cant);
+      }
+    });
+  }
+
+  try {
+    validarSolicitud(d, true);
+    validarStock(d.origen, d.lineas);
+  } catch (err) {
+    if (editando && v) {
+      v.lineas.forEach(l => {
+        const e = exi(v.origen, l.id);
+        e.disp = Math.max(0, e.disp - l.cant);
+        if (v.tipo === 'ASI' && l.consumo) e.entregado = (e.entregado || 0) + l.cant;
+        else if (v.tipo === 'PRH') e.prest = (e.prest || 0) + l.cant;
+        else e.asig = (e.asig || 0) + l.cant;
+      });
+    }
+    throw err;
+  }
+
+  if (editando && v) {
+    DB.movs = DB.movs.filter(m => m.doc !== v.num);
+  }
+
   if (!s) {
     s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'FINALIZADA' };
     DB.solicitudes.push(s);
   }
+
   Object.assign(s, {
     tipo: d.tipo, origen: d.origen, destino: d.destino, resp: d.resp, sup: d.sup, proyecto: d.proyecto, cuenta: d.cuenta,
     fechaReq: d.tipo === 'PRH' ? d.fechaReq : '', fechaDev: d.tipo === 'PRH' ? d.fechaDev : '', fechaAsig: d.tipo === 'ASI' ? d.fechaAsig : '',
     obs: d.obs || '', lineas: d.lineas.map(l => Object.assign({}, l)),
     estatus: 'FINALIZADA',
-    finalizadaEn: nowISO(),
+    finalizadaEn: s.finalizadaEn || nowISO(),
     procesadoEn: nowISO(),
     procesadoPor: quien()
   });
 
   const lineas = s.lineas.map(l => Object.assign({}, l, { dev: 0 }));
-  const v = nuevoVale(s.tipo, {
-    origen: s.origen, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, obs: s.obs,
-    lineas, fechaReq: s.fechaReq, fechaDev: s.fechaDev, fechaAsig: s.fechaAsig, solicitud: s.num,
-    realizadoPor: quien(), aprobadoPor: quien()
-  });
+
+  if (editando && v) {
+    Object.assign(v, {
+      origen: s.origen, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, obs: s.obs,
+      fechaReq: s.fechaReq, fechaDev: s.fechaDev, fechaAsig: s.fechaAsig, solicitud: s.num, lineas
+    });
+  } else {
+    v = nuevoVale(s.tipo, {
+      origen: s.origen, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, obs: s.obs,
+      lineas, fechaReq: s.fechaReq, fechaDev: s.fechaDev, fechaAsig: s.fechaAsig, solicitud: s.num,
+      realizadoPor: quien(), aprobadoPor: quien()
+    });
+  }
 
   lineas.forEach(l => {
     const e = exi(s.origen, l.id);
@@ -1349,14 +1412,20 @@ function emitirValeDirecto(d) {
     });
   });
 
-  v.hist.push({ ev: 'Vale emitido directamente', fecha: nowISO(), usr: S.u.nombre, det: `Generado a partir de solicitud ${s.num}`, color: 'verde' });
+  v.hist.push({
+    ev: editando ? 'Vale modificado y corregido' : 'Vale emitido directamente',
+    fecha: nowISO(),
+    usr: S.u.nombre,
+    det: editando ? `Corrección de datos y renglones (Solicitud ${s.num})` : `Generado a partir de solicitud ${s.num}`,
+    color: editando ? 'ambar' : 'verde'
+  });
   s.vale = v.num;
   bit(editando ? 'SOLICITUD Y VALE ACTUALIZADOS' : 'SOLICITUD Y VALE EMITIDOS', `${s.num} → ${v.num}`);
   guardar();
 
   notificarSistema(
-    'Vale emitido con éxito',
-    `Se generó la solicitud ${s.num} y se emitió el vale ${v.num} (${s.tipo}) en ${almNombre(s.origen)}. Listo para imprimir y firmar.`,
+    editando ? 'Vale actualizado con éxito' : 'Vale emitido con éxito',
+    editando ? `Se actualizó el vale ${v.num} (${s.tipo}) en ${almNombre(s.origen)}.` : `Se generó la solicitud ${s.num} y se emitió el vale ${v.num} (${s.tipo}) en ${almNombre(s.origen)}. Listo para imprimir y firmar.`,
     'ok',
     { doc: v.num }
   );
@@ -2256,8 +2325,17 @@ function semilla() {
    ===================================================================== */
 const $ = id => document.getElementById(id);
 function toast(msg, tipo) {
-  const t = document.createElement('div'); t.className = 'toast ' + (tipo || ''); t.textContent = msg;
-  $('toast').appendChild(t); setTimeout(() => t.remove(), tipo === 'err' ? 6000 : 3500);
+  const c = $('toast');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = 'toast ' + (tipo || '');
+  t.style.display = 'flex';
+  t.style.alignItems = 'center';
+  t.style.justifyContent = 'space-between';
+  t.style.gap = '10px';
+  t.innerHTML = `<span style="flex:1">${msg}</span><button type="button" style="background:transparent;border:none;color:currentColor;cursor:pointer;font-size:15px;line-height:1;opacity:0.8;padding:0 4px;font-weight:900" onclick="this.closest('.toast').remove()" title="Cerrar notificación">✕</button>`;
+  c.appendChild(t);
+  setTimeout(() => { if (t && t.parentNode) t.remove(); }, tipo === 'err' ? 5000 : 3500);
 }
 function run(fn) { try { return fn(); } catch (e) { toast(e.message, 'err'); console.error(e); } }
 
@@ -4030,19 +4108,43 @@ function nuevoF(tipo, extra) {
   return Object.assign({ tipo, num: null, origen: S.ctx, destino: defDest, resp: null, sup: '', proyecto: '', cuenta: '',
     fechaReq: hoy(), fechaDev: sumarDias(hoy(), 7), fechaAsig: hoy(), obs: '', lineas: [], sel: -1, cap: null, valeRef: '', detalle: '', malUso: 'NO', dictamen: 'POR EVALUAR', hecho: null }, extra || {});
 }
+function editarSolicitudVale(param) {
+  let num = '';
+  if (typeof param === 'string') num = param;
+  else if (param && typeof param === 'object') num = param.solicitud || param.vale || param.num || '';
+  if (!num) return toast('Seleccione una solicitud o vale para editar.', 'err');
+  ir('solNueva', { num });
+}
+
 VISTAS.solNueva = p => {
   if (p && p.num) {
-    const s = solDe(p.num);
-    if (!s) return ir('sol');
-    if (s.estatus === 'APROBADO' || s.estatus === 'APROBADA') {
-      toast(`La solicitud ${s.num} ya fue APROBADA (Vale ${s.vale || ''}). Por norma de control interno, las asignaciones y préstamos aprobados no se pueden editar.`, 'err');
-      return ir('sol', { sel: s.num });
-    }
-    if (s.estatus === 'ANULADO' || s.estatus === 'ANULADA') {
+    const s = solDe(p.num) || DB.solicitudes.find(x => x.vale === p.num);
+    const v = valeDe(p.num) || (s && s.vale ? valeDe(s.vale) : null);
+    if (!s && !v) return ir('sol');
+    const base = s || v;
+    const origen = s ? s.origen : v.origen;
+
+    if (s && (s.estatus === 'ANULADO' || s.estatus === 'ANULADA')) {
       toast(`La solicitud ${s.num} está ANULADA y no se puede editar.`, 'err');
       return ir('sol', { sel: s.num });
     }
-    F = nuevoF(s.tipo, { num: s.num, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, fechaReq: s.fechaReq || hoy(), fechaDev: s.fechaDev || sumarDias(hoy(), 7), fechaAsig: s.fechaAsig || hoy(), obs: s.obs, lineas: s.lineas.map(l => Object.assign({}, l)) });
+
+    const lineasCopiadas = (s ? s.lineas : v.lineas).map(l => Object.assign({}, l));
+    F = nuevoF(base.tipo, {
+      num: s ? s.num : '',
+      valeId: v ? v.num : (s ? s.vale : ''),
+      origen: origen,
+      destino: base.destino || origen,
+      resp: base.resp,
+      sup: base.sup,
+      proyecto: base.proyecto,
+      cuenta: base.cuenta,
+      fechaReq: base.fechaReq || hoy(),
+      fechaDev: base.fechaDev || sumarDias(hoy(), 7),
+      fechaAsig: base.fechaAsig || hoy(),
+      obs: base.obs || (base.extra ? base.extra.obs : '') || '',
+      lineas: lineasCopiadas
+    });
   } else F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
   pintarSolicitud();
 };
@@ -4120,7 +4222,11 @@ function pintarFormulario() {
   if (t === 'DAN') cabecera += campo('¿Daño por mal uso o negligencia?', `<select id="fMal" ${ro}>${opciones(['NO', 'SI'], F.malUso)}</select>`)
     + campo('Dictamen', `<select id="fDict" ${ro}>${opciones([['POR EVALUAR', 'Por evaluar (queda dañado)'], ['REPARABLE', 'Reparable (pasa a taller)'], ['NO REPARABLE', 'No reparable (baja)']], F.dictamen)}</select>`) + '<div></div>';
   const det = t === 'DAN' ? campo('Descripción del daño', `<textarea id="fDet" rows="2" ${ro}>${esc(F.detalle)}</textarea>`) : t === 'EXT' ? campo('Descripción de la incidencia', `<textarea id="fDet" rows="2" ${ro}>${esc(F.detalle)}</textarea>`) : '';
-  const estadoTxt = F.hecho ? `<div class="franja-est verde"><span><b>${esc(F.hecho)}</b> registrado correctamente${t === 'TRF' ? ' · Pendiente de recepción en ' + esc(almNombre(F.destino)) : ''}.</span><span>Puede imprimir el vale o iniciar un nuevo registro.</span></div>` : '';
+  const estadoTxt = F.hecho
+    ? `<div class="franja-est verde"><span><b>${esc(F.hecho)}</b> registrado correctamente${t === 'TRF' ? ' · Pendiente de recepción en ' + esc(almNombre(F.destino)) : ''}.</span><span>Puede imprimir el vale o iniciar un nuevo registro.</span></div>`
+    : (F.valeId || F.num)
+    ? `<div class="franja-est ambar"><span>⚠️ <b>MODO EDICIÓN:</b> Modificando ${F.valeId ? 'Vale ' + esc(F.valeId) : ''} ${F.num ? '(Solicitud ' + esc(F.num) + ')' : ''}. Puede cambiar custodio, proyecto, supervisor o ajustar las herramientas cargadas.</span></div>`
+    : '';
   const permAviso = (t === 'PRH' || t === 'ASI') ? '' : '';
   $('area').innerHTML = cab(titulos[t], subt[t]) + estadoTxt + permAviso + `
     <div class="form-reg">
@@ -5018,12 +5124,13 @@ function motivoNoAprueba(s) {
 }
 function accionesDoc(d, esSol, p) {
   let h = '';
-  if (enMaestro()) return esSol ? '' : `<button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>`;
+  if (enMaestro()) return esSol ? '' : `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.solicitud || d.vale || d.num}')">✏️ Editar vale</button><button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>`;
   if (esSol) {
     if ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') && d.origen === S.ctx) {
       const ok = puede('aprobar', d.origen) && d.generadoPor.usuario !== S.u.usuario;
       h += `<button class="btn btn-rojo" ${ok ? '' : 'disabled'} onclick="accionAnular('${d.num}')">Anular solicitud</button><button class="btn btn-verde" ${ok ? '' : 'disabled'} onclick="accionAprobar('${d.num}')">Aceptar solicitud</button>`;
     }
+    h += `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.num}')">✏️ Editar solicitud / vale</button>`;
     if (d.vale && puedeImprimir()) h += `<button class="btn btn-azul" onclick="imprimirVale('${d.vale}')">🖨 Imprimir vale</button>`;
     return h;
   }
@@ -5035,9 +5142,12 @@ function accionesDoc(d, esSol, p) {
       h += `<button class="btn btn-claro" onclick="editarTransferencia('${d.num}')">✏️ Editar transferencia</button>`;
     }
   }
-  if ((d.tipo === 'PRH' || d.tipo === 'ASI') && saldoVale(d) > 0 && d.origen === S.ctx) {
-    h += `<button class="btn btn-claro" onclick="ir('dev',{vale:'${d.num}'})">Registrar devolución</button>`;
-    if (d.tipo === 'PRH') h += `<button class="btn btn-claro" onclick="ir('plz',{vale:'${d.num}'})">Extender plazo</button>`;
+  if ((d.tipo === 'PRH' || d.tipo === 'ASI') && d.origen === S.ctx) {
+    h += `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.num}')">✏️ Editar ${d.tipo === 'ASI' ? 'asignación' : 'préstamo'}</button>`;
+    if (saldoVale(d) > 0) {
+      h += `<button class="btn btn-claro" onclick="ir('dev',{vale:'${d.num}'})">Registrar devolución</button>`;
+      if (d.tipo === 'PRH') h += `<button class="btn btn-claro" onclick="ir('plz',{vale:'${d.num}'})">Extender plazo</button>`;
+    }
   }
   if (d.tipo === 'DEVCH' || d.tipo === 'PRHCH' || d.tipo === 'REACH') {
     if (d.cajaId) h += `<button class="btn btn-claro" onclick="ir('cajaFicha',{id:'${d.cajaId}'})">🧰 Ver Ficha de Caja</button>`;
@@ -5088,6 +5198,7 @@ VISTAS.sol = p => {
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
       <button class="btn-sip" onclick="ir('solNueva')">Nueva solicitud</button>
+      <button class="btn-sip btn-ambar" id="bEditar" disabled onclick="editarSolicitudVale(selDe('gSol'))">✏️ Editar solicitud / vale</button>
       <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').vale || selDe('gSol').num,back:'sol'})">Visualizar vale</button>
       <button class="btn-sip" id="bImp" disabled onclick="imprimirVale(selDe('gSol').vale || selDe('gSol').num)">🖨 Imprimir vale</button>
       <button class="btn-ayuda" onclick="ayuda('sol')">AYUDA</button>
@@ -5100,6 +5211,7 @@ function tiraSol(s) {
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
   if ($('bVer')) $('bVer').disabled = false;
+  if ($('bEditar')) $('bEditar').disabled = false;
   if ($('bImp')) $('bImp').disabled = !(s.vale || s.num);
   const info = s.vale ? `Vale oficial ${s.vale} emitido. Listo para imprimir y firmar.` : 'Solicitud registrada.';
   $('tsInfo').innerHTML = `<div class="franja-est verde" style="margin:10px 0 0"><span>✔ ${esc(info)}</span></div>`;
