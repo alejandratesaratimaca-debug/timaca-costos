@@ -88,6 +88,7 @@ export interface ArticuloPrecioAuditoria {
   precioPromedioCompras: number;
   totalComprasRegistradas: number;
   comprasHistorial: CompraItem[];
+  ultimoRegistroCompras?: CompraItem;
   precioManual?: number;
   motivoAjuste?: string;
   fechaAjuste?: string;
@@ -464,6 +465,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
         precioPromedioCompras: Math.round(precioPromedio * 100) / 100,
         totalComprasRegistradas: historial.length,
         comprasHistorial: historial,
+        ultimoRegistroCompras: historial.length > 0 ? historial[0] : undefined,
         precioManual: tieneManual ? ajusteManual.precio : undefined,
         motivoAjuste: tieneManual ? ajusteManual.motivo : undefined,
         fechaAjuste: tieneManual ? ajusteManual.fecha : undefined,
@@ -1148,8 +1150,17 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                               <span className="text-blue-700 font-mono font-semibold">{item.ordenUltimaCompra}</span> · {item.proveedorUltimaCompra}
                             </div>
                           </div>
+                        ) : item.ultimoRegistroCompras ? (
+                          <div>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                              {item.ultimoRegistroCompras.solicitudCompra || 'Solicitud'} (Sin OC en SIP)
+                            </span>
+                            <div className="text-[10px] text-slate-500 mt-0.5 truncate max-w-[180px]" title={item.ultimoRegistroCompras.motivo || ''}>
+                              {item.ultimoRegistroCompras.solicitante ? `Sol: ${item.ultimoRegistroCompras.solicitante}` : 'Sin OC emitida'}
+                            </div>
+                          </div>
                         ) : (
-                          <span className="text-slate-400 font-mono text-[11px] italic">Sin compras</span>
+                          <span className="text-slate-400 font-mono text-[11px] italic">Sin registro en compras</span>
                         )}
                       </td>
 
@@ -1425,6 +1436,18 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                 )}
               </h3>
 
+              {articuloSeleccionado.precioUltimaCompra === 0 && articuloSeleccionado.comprasHistorial.length > 0 && (
+                <div className="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block">Solicitudes de compra sin Orden de Compra (OC) valorada en SIP:</span>
+                    <span className="text-[11px] text-amber-800">
+                      Este código posee Solicitudes de Compra registradas, pero compras aún no ha cargado la Orden de Compra formal con precio en dólares en el SIP ($0.00). Si conoces la tarifa pactada o el monto del contrato, puedes asignarle su precio oficial con el botón ✏️ en la tabla.
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {articuloSeleccionado.comprasHistorial.length === 0 ? (
                 <div className="py-12 text-center text-slate-500 text-xs italic bg-white rounded-xl border border-slate-200">
                   No se encontraron órdenes de compra registradas en el SIP para este código.
@@ -1449,7 +1472,15 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                         return (
                           <tr key={i} className="hover:bg-slate-50">
                             <td className="py-2 px-3 text-slate-600">{c.fechaOC || c.fechaSolicitud || '-'}</td>
-                            <td className="py-2 px-3 font-bold text-blue-700">{c.ordenCompra || c.solicitudCompra || '-'}</td>
+                            <td className="py-2 px-3 whitespace-nowrap">
+                              {c.ordenCompra ? (
+                                <span className="font-bold text-blue-700 font-mono">{c.ordenCompra}</span>
+                              ) : (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                                  {c.solicitudCompra || 'SC'} (Sin OC)
+                                </span>
+                              )}
+                            </td>
                             <td className="py-2 px-3 text-slate-800 font-sans truncate max-w-xs" title={c.proveedor}>
                               {c.proveedor || '-'}
                             </td>
