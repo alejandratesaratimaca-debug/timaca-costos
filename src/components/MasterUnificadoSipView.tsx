@@ -268,6 +268,25 @@ export function clasificarNormalizacion(r: any): SubtipoNormalizacion | null {
   return null;
 }
 
+export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
+  if (nombreMes) {
+    const clean = nombreMes.trim();
+    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  }
+  if (!fechaStr) return 'Septiembre';
+  const parts = fechaStr.split('-');
+  if (parts.length >= 2) {
+    const m = parts[1];
+    const map: Record<string, string> = {
+      '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
+      '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
+      '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
+    };
+    if (map[m]) return map[m];
+  }
+  return 'Septiembre';
+}
+
 export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [activeTab, setActiveTab] = useState<'unificada' | 'matriz' | 'consumos' | 'compras' | 'correcciones' | 'cargas'>('unificada');
   const [status, setStatus] = useState<Status | null>(null);
@@ -471,6 +490,51 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [correccionNuevoProyecto, setCorreccionNuevoProyecto] = useState('');
   const [correccionNuevoMes, setCorreccionNuevoMes] = useState('Agosto');
   const [correccionMotivo, setCorreccionMotivo] = useState('');
+
+  // Lista unificada de todas las cuentas auxiliares y sus proyectos asociados
+  const todasLasCuentasDisponibles = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of proyectos) {
+      if (p.codigo) map.set(p.codigo.toUpperCase().trim(), p.nombre || '');
+    }
+    if (catalogFiltros?.cuentas) {
+      for (const c of catalogFiltros.cuentas) {
+        const code = (c.cuenta_aux || '').toUpperCase().trim();
+        if (code && !map.has(code)) {
+          map.set(code, c.datos_descripcion || '');
+        }
+      }
+    }
+    return Array.from(map.entries())
+      .map(([codigo, nombre]) => ({ codigo, nombre }))
+      .sort((a, b) => a.codigo.localeCompare(b.codigo));
+  }, [proyectos, catalogFiltros]);
+
+  const getDescripcionProyecto = (cuentaCode: string): string => {
+    const cClean = (cuentaCode || '').trim().toUpperCase();
+    if (!cClean) return '';
+    // 1. En proyectos
+    const foundP = proyectos.find(p => (p.codigo || '').toUpperCase().trim() === cClean);
+    if (foundP && foundP.nombre) return foundP.nombre;
+    // 2. En catalogFiltros.cuentas
+    const foundC = catalogFiltros?.cuentas?.find(c => (c.cuenta_aux || '').toUpperCase().trim() === cClean);
+    if (foundC && foundC.datos_descripcion) return foundC.datos_descripcion;
+    return '';
+  };
+
+  const handleNuevaCuentaChange = (rawVal: string) => {
+    let code = rawVal;
+    if (rawVal.includes(' - ')) {
+      code = rawVal.split(' - ')[0].trim();
+    }
+    code = code.trim().toUpperCase();
+    setCorreccionNuevaCuenta(code);
+
+    const desc = getDescripcionProyecto(code);
+    if (desc) {
+      setCorreccionNuevoProyecto(desc);
+    }
+  };
   const [candidateMovimientos, setCandidateMovimientos] = useState<any[]>([]);
   const [isSearchingMovimientos, setIsSearchingMovimientos] = useState(false);
   const [isSavingCorreccion, setIsSavingCorreccion] = useState(false);
@@ -1402,28 +1466,57 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       infoReclasificacion: item.infoReclasificacion || null
     };
 
-    const detectedMes = detectarMesRezagada(item) || 'Agosto';
-    setCorreccionNuevoMes(detectedMes);
+    const detectedMes = detectarMesRezagada(item);
+    const mesOriginal = getMesFromFecha(item.fecha, item.nombre_mes);
+    // Si el ítem tiene nota explícita de rezagada (AG, Junio, Julio), sugerimos ese mes rezagado.
+    // Si no es rezagada, respetamos su mes original (ej. Octubre, Septiembre, etc.)
+    const mesSugerido = detectedMes || mesOriginal;
+    setCorreccionNuevoMes(mesSugerido);
 
     setSelectedMovimiento(mov);
-    setCorreccionNuevaCuenta(mov.esReclasificado ? mov.cuentaAuxiliar : (mov.cuentaAuxiliar || 'TTE-C-0706'));
-    setCorreccionNuevoProyecto(mov.esReclasificado && mov.infoReclasificacion?.nuevoProyecto ? mov.infoReclasificacion.nuevoProyecto : (item.datos_descripcion || ''));
+    const targetCuenta = mov.esReclasificado ? mov.cuentaAuxiliar : (mov.cuentaAuxiliar || 'TTE-C-0706');
+    setCorreccionNuevaCuenta(targetCuenta);
+
+    if (mov.esReclasificado && mov.infoReclasificacion?.nuevoProyecto) {
+      setCorreccionNuevoProyecto(mov.infoReclasificacion.nuevoProyecto);
+    } else {
+      const autoProj = getDescripcionProyecto(targetCuenta) || item.datos_descripcion || '';
+      setCorreccionNuevoProyecto(autoProj);
+    }
+
     setCorreccionMotivo(
       mov.esReclasificado && mov.infoReclasificacion?.motivo 
         ? mov.infoReclasificacion.motivo 
-        : (item.motivo ? `Consumo rezagado perteneciente a ${detectedMes}: ${item.motivo}` : `Consumo rezagado asignado al mes de ${detectedMes}`)
+        : (detectedMes 
+            ? `Consumo rezagado perteneciente a ${detectedMes}: ${item.motivo || ''}` 
+            : (item.motivo ? `Corrección de imputación: ${item.motivo}` : `Reclasificación a cuenta ${targetCuenta}`))
     );
     setCorreccionMessage(null);
     setIsCorreccionModalOpen(true);
   };
 
   const handleSelectMovimiento = (m: any) => {
-    const detectedMes = detectarMesRezagada(m) || 'Agosto';
-    setCorreccionNuevoMes(detectedMes);
+    const detectedMes = detectarMesRezagada(m);
+    const mesOriginal = getMesFromFecha(m.fecha, m.nombre_mes);
+    const mesSugerido = detectedMes || mesOriginal;
+    setCorreccionNuevoMes(mesSugerido);
     setSelectedMovimiento(m);
-    setCorreccionNuevaCuenta(m.esReclasificado ? m.cuentaAuxiliar : (m.cuentaAuxiliar || 'TTE-C-0706'));
-    setCorreccionNuevoProyecto(m.esReclasificado && m.infoReclasificacion?.nuevoProyecto ? m.infoReclasificacion.nuevoProyecto : '');
-    setCorreccionMotivo(m.esReclasificado && m.infoReclasificacion?.motivo ? m.infoReclasificacion.motivo : `Consumo rezagado asignado a ${detectedMes}`);
+
+    const targetCuenta = m.esReclasificado ? m.cuentaAuxiliar : (m.cuentaAuxiliar || 'TTE-C-0706');
+    setCorreccionNuevaCuenta(targetCuenta);
+
+    if (m.esReclasificado && m.infoReclasificacion?.nuevoProyecto) {
+      setCorreccionNuevoProyecto(m.infoReclasificacion.nuevoProyecto);
+    } else {
+      const autoProj = getDescripcionProyecto(targetCuenta) || m.datos_descripcion || '';
+      setCorreccionNuevoProyecto(autoProj);
+    }
+
+    setCorreccionMotivo(
+      m.esReclasificado && m.infoReclasificacion?.motivo 
+        ? m.infoReclasificacion.motivo 
+        : (detectedMes ? `Consumo rezagado asignado a ${detectedMes}` : `Reclasificación a cuenta ${targetCuenta}`)
+    );
     setCorreccionMessage(null);
   };
 
@@ -1952,26 +2045,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         list="cuentas-auxiliares-modal-list"
                         placeholder="Escribe o selecciona la cuenta (ej: TTE-C-0706)..."
                         value={correccionNuevaCuenta}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setCorreccionNuevaCuenta(val);
-                          const found = proyectos.find(p => p.codigo.toUpperCase() === val.trim().toUpperCase());
-                          if (found && !correccionNuevoProyecto) {
-                            setCorreccionNuevoProyecto(found.nombre);
-                          }
-                        }}
+                        onChange={(e) => handleNuevaCuentaChange(e.target.value)}
                         autoFocus
                         className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-900 font-mono font-bold focus:outline-none focus:border-emerald-500 shadow-2xs"
                       />
                       <datalist id="cuentas-auxiliares-modal-list">
-                        {proyectos.map((p) => (
+                        {todasLasCuentasDisponibles.map((p) => (
                           <option key={p.codigo} value={p.codigo}>
                             {p.codigo} - {p.nombre}
                           </option>
                         ))}
                       </datalist>
                       <p className="text-[10px] text-slate-500 mt-1">
-                        Puedes seleccionar una existente o escribir directamente la <strong>nueva cuenta auxiliar que creaste en SIP</strong>.
+                        Puedes seleccionar una existente o escribir directamente la <strong>nueva cuenta auxiliar que creaste en SIP</strong> (el nombre del proyecto se autocompletará).
                       </p>
                     </div>
 
@@ -1982,39 +2068,52 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       </label>
                       <input
                         type="text"
-                        placeholder="Ej: Mantenimiento Mayor Planta de Pellas..."
+                        placeholder="Se autocompleta con la cuenta auxiliar..."
                         value={correccionNuevoProyecto}
                         onChange={(e) => setCorreccionNuevoProyecto(e.target.value)}
                         className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 shadow-2xs font-sans"
                       />
                     </div>
 
-                    {/* Mes Correspondiente / Período Real */}
+                    {/* Mes Correspondiente / Período (Opción desplegable) */}
                     <div>
                       <label className="block text-[11px] font-bold uppercase text-slate-700 mb-1 flex items-center justify-between">
-                        <span>Mes Correspondiente / Período Real: <span className="text-rose-600">*</span></span>
+                        <span>Mes Correspondiente / Período: <span className="text-rose-600">*</span></span>
                         <span className="text-[10px] text-indigo-700 font-semibold lowercase">
-                          (asignación contable real)
+                          (asignación contable / corte)
                         </span>
                       </label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {(['Agosto', 'Julio', 'Junio', 'Septiembre'] as const).map(mes => (
-                          <button
-                            key={mes}
-                            type="button"
-                            onClick={() => setCorreccionNuevoMes(mes)}
-                            className={`py-1.5 px-2 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                              (correccionNuevoMes || '').toLowerCase() === mes.toLowerCase()
-                                ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs ring-2 ring-indigo-200'
-                                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
-                            }`}
-                          >
-                            📅 {mes}
-                          </button>
-                        ))}
+                      <div className="relative">
+                        <select
+                          value={correccionNuevoMes}
+                          onChange={(e) => setCorreccionNuevoMes(e.target.value)}
+                          className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-emerald-500 shadow-2xs cursor-pointer"
+                        >
+                          {selectedMovimiento?.fecha && (
+                            <option value={getMesFromFecha(selectedMovimiento.fecha, (selectedMovimiento as any).nombre_mes)}>
+                              📌 Mantener mes original del documento ({getMesFromFecha(selectedMovimiento.fecha, (selectedMovimiento as any).nombre_mes)})
+                            </option>
+                          )}
+                          <optgroup label="Reasignar a Mes Específico">
+                            <option value="Agosto">📅 Agosto (Rezagada / "AG")</option>
+                            <option value="Julio">📅 Julio (Rezagada)</option>
+                            <option value="Junio">📅 Junio (Rezagada)</option>
+                            <option value="Septiembre">📅 Septiembre</option>
+                            <option value="Octubre">📅 Octubre</option>
+                            <option value="Noviembre">📅 Noviembre</option>
+                            <option value="Diciembre">📅 Diciembre</option>
+                            <option value="Enero">📅 Enero</option>
+                            <option value="Febrero">📅 Febrero</option>
+                            <option value="Marzo">📅 Marzo</option>
+                            <option value="Abril">📅 Abril</option>
+                            <option value="Mayo">📅 Mayo</option>
+                          </optgroup>
+                        </select>
                       </div>
                       <p className="text-[10px] text-slate-500 mt-1">
-                        Asigna este costo rezagado a su mes real para que no distorsione el corte contable de Septiembre.
+                        {detectarMesRezagada(selectedMovimiento) 
+                          ? `💡 Consumo rezagado detectado: "${detectarMesRezagada(selectedMovimiento)}". Puedes reasignarlo o seleccionar el mes que corresponda.`
+                          : 'Selecciona el mes contable en el que debe computarse o mantén el mes original si no es una imputación de mes.'}
                       </p>
                     </div>
 
@@ -4688,25 +4787,18 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           list="cuentas-auxiliares-list"
                           placeholder="Escribe o selecciona la cuenta (ej: TTE-C-0706)..."
                           value={correccionNuevaCuenta}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setCorreccionNuevaCuenta(val);
-                            const found = proyectos.find(p => p.codigo.toUpperCase() === val.trim().toUpperCase());
-                            if (found && !correccionNuevoProyecto) {
-                              setCorreccionNuevoProyecto(found.nombre);
-                            }
-                          }}
+                          onChange={(e) => handleNuevaCuentaChange(e.target.value)}
                           className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-900 font-mono font-bold focus:outline-none focus:border-emerald-500 shadow-2xs"
                         />
                         <datalist id="cuentas-auxiliares-list">
-                          {proyectos.map((p) => (
+                          {todasLasCuentasDisponibles.map((p) => (
                             <option key={p.codigo} value={p.codigo}>
                               {p.codigo} - {p.nombre}
                             </option>
                           ))}
                         </datalist>
                         <p className="text-[10px] text-slate-500 mt-1">
-                          Puedes seleccionar una cuenta existente o escribir directamente la <strong>nueva cuenta auxiliar que creaste en SIP</strong>.
+                          Puedes seleccionar una cuenta existente o escribir directamente la <strong>nueva cuenta auxiliar que creaste en SIP</strong> (el nombre del proyecto se autocompletará).
                         </p>
                       </div>
 
@@ -4717,39 +4809,52 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         </label>
                         <input
                           type="text"
-                          placeholder="Ej: Mantenimiento Mayor Planta de Pellas..."
+                          placeholder="Se autocompleta con la cuenta auxiliar..."
                           value={correccionNuevoProyecto}
                           onChange={(e) => setCorreccionNuevoProyecto(e.target.value)}
                           className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 shadow-2xs font-sans"
                         />
                       </div>
 
-                      {/* Mes Correspondiente / Período Real */}
+                      {/* Mes Correspondiente / Período (Opción desplegable) */}
                       <div>
                         <label className="block text-[11px] font-bold uppercase text-slate-700 mb-1 flex items-center justify-between">
-                          <span>Mes Correspondiente / Período Real: <span className="text-rose-600">*</span></span>
+                          <span>Mes Correspondiente / Período: <span className="text-rose-600">*</span></span>
                           <span className="text-[10px] text-indigo-700 font-semibold lowercase">
-                            (asignación contable real)
+                            (asignación contable / corte)
                           </span>
                         </label>
-                        <div className="grid grid-cols-4 gap-2">
-                          {(['Agosto', 'Julio', 'Junio', 'Septiembre'] as const).map(mes => (
-                            <button
-                              key={mes}
-                              type="button"
-                              onClick={() => setCorreccionNuevoMes(mes)}
-                              className={`py-1.5 px-2 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                                (correccionNuevoMes || '').toLowerCase() === mes.toLowerCase()
-                                  ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs ring-2 ring-indigo-200'
-                                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
-                              }`}
-                            >
-                              📅 {mes}
-                            </button>
-                          ))}
+                        <div className="relative">
+                          <select
+                            value={correccionNuevoMes}
+                            onChange={(e) => setCorreccionNuevoMes(e.target.value)}
+                            className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-900 font-bold focus:outline-none focus:border-emerald-500 shadow-2xs cursor-pointer"
+                          >
+                            {selectedMovimiento?.fecha && (
+                              <option value={getMesFromFecha(selectedMovimiento.fecha, (selectedMovimiento as any).nombre_mes)}>
+                                📌 Mantener mes original del documento ({getMesFromFecha(selectedMovimiento.fecha, (selectedMovimiento as any).nombre_mes)})
+                              </option>
+                            )}
+                            <optgroup label="Reasignar a Mes Específico">
+                              <option value="Agosto">📅 Agosto (Rezagada / "AG")</option>
+                              <option value="Julio">📅 Julio (Rezagada)</option>
+                              <option value="Junio">📅 Junio (Rezagada)</option>
+                              <option value="Septiembre">📅 Septiembre</option>
+                              <option value="Octubre">📅 Octubre</option>
+                              <option value="Noviembre">📅 Noviembre</option>
+                              <option value="Diciembre">📅 Diciembre</option>
+                              <option value="Enero">📅 Enero</option>
+                              <option value="Febrero">📅 Febrero</option>
+                              <option value="Marzo">📅 Marzo</option>
+                              <option value="Abril">📅 Abril</option>
+                              <option value="Mayo">📅 Mayo</option>
+                            </optgroup>
+                          </select>
                         </div>
                         <p className="text-[10px] text-slate-500 mt-1">
-                          Asigna este costo rezagado a su mes real para que no distorsione el corte contable de Septiembre.
+                          {detectarMesRezagada(selectedMovimiento) 
+                            ? `💡 Consumo rezagado detectado: "${detectarMesRezagada(selectedMovimiento)}". Puedes reasignarlo o seleccionar el mes que corresponda.`
+                            : 'Selecciona el mes contable en el que debe computarse o mantén el mes original si no es una imputación de mes.'}
                         </p>
                       </div>
 
