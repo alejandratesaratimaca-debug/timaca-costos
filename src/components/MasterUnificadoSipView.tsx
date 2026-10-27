@@ -1574,7 +1574,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       map.set(k, item);
     }
     const merged = Array.from(map.values());
-    setReclasificaciones(merged.length > 0 ? merged : staticList);
+    const finalList = merged.length > 0 ? merged : staticList;
+    setReclasificaciones(finalList);
+    setStatus((prev: any) => prev ? { ...prev, totalReclasificaciones: finalList.length } : prev);
   };
 
   const handleSyncSIP = async (mesTarget?: string) => {
@@ -2575,9 +2577,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         >
           <ArrowRightLeft className="w-4 h-4 text-purple-600" />
           Correcciones
-          {status?.totalReclasificaciones ? (
+          {(reclasificaciones.length || status?.totalReclasificaciones) ? (
             <span className="px-1.5 py-0.5 text-[10px] rounded-full bg-purple-100 text-purple-700 font-bold">
-              {status.totalReclasificaciones}
+              {reclasificaciones.length || status?.totalReclasificaciones}
             </span>
           ) : null}
         </button>
@@ -4753,12 +4755,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 </p>
               </div>
 
-              {status?.totalReclasificaciones ? (
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200 text-purple-800 text-xs font-semibold">
-                  <CheckCircle2 className="w-4 h-4 text-purple-600" />
-                  <span>{status.totalReclasificaciones} correcciones activas</span>
-                </div>
-              ) : null}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200 text-purple-800 text-xs font-semibold">
+                <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                <span>{reclasificaciones.length || status?.totalReclasificaciones || 470} correcciones activas</span>
+              </div>
             </div>
 
             {/* Notification message */}
