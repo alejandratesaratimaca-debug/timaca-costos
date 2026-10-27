@@ -311,7 +311,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIO TRASLADO DE PERSONAL, TRANSPORTE 28-32 PTOS PTO. ORDAZ/ SAN FELIX FECHA 02/09/26  - PROYECTO 1LPP",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -341,7 +341,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25774",
-      "oc": "OC22576"
+      "oc": "OC22576",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "A.T.I. TRANSVEN 01, C.A.",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 101312,
@@ -356,7 +359,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIO TRASLADO DE PERSONAL, TRANSPORTE 28-32 PTOS PTO. ORDAZ/ SAN FELIX FECHA 17/09/2026  - PROYECTO 1LPP",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -386,7 +389,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26299",
-      "oc": "OC23120"
+      "oc": "OC23120",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "A.T.I. TRANSVEN 01, C.A.",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 101457,
@@ -401,7 +407,7 @@
       "descripcion": "SERVICIOS DE IMPORTACION",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "HERNANDO LOPEZ",
       "motivo": "AGENCIAMIENTO ADUANAL OC INTERNACIONAL PO TI-A&D-001, N° DE FACTURA 008325 FECHA 07/09/26 (EQUIPOS, ACCESORIOS Y HERRAMIENTAS)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -431,7 +437,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25851",
-      "oc": "OC22699"
+      "oc": "OC22699",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "SECOAMICA AGENTES ADUANALES C.A",
+      "asignado": "HERNANDO LOPEZ"
     },
     {
       "id": 12875,
@@ -806,7 +815,7 @@
       "descripcion": "SERVICIO DE FABRICACION  METALMECANICA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "MARIO LOZADA",
       "motivo": "(REGULARIZACION) OC INTERNACIONAL CLE-YAN-010 (FABRICACION DE CORONA DE ROTACION Y PIÑON DE ATAQUE) PROYECTO 1 LINEA DE PLANTA DE PELLAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -836,7 +845,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25686",
-      "oc": "OC22641"
+      "oc": "OC22641",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "MARIO LOZADA"
     },
     {
       "id": 53798,
@@ -896,7 +908,7 @@
       "descripcion": "HONORARIOS PROFESIONALES",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Yolimar Carvajal",
       "motivo": "SERVICIOS PROFESIONALES DE CONSULTORIA , TOTAL DEL PROYECTO 277 HORAS - GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -926,7 +938,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25840",
-      "oc": "OC22666"
+      "oc": "OC22666",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EGDYMARY ZACARIAS C.",
+      "asignado": "Yolimar Carvajal"
     },
     {
       "id": 101014,
@@ -1121,7 +1136,7 @@
       "descripcion": "SERVICIO DE FABRICACION  METALMECANICA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "LEYTON RODRIGO",
       "motivo": "OC INTERNACIONAL TI-YAN-006 CONTRATACIÓN DE SERVICIO PARA LA FABRICACIÓN DEL SISTEMA DE TRASLACIÓN POR CADENA DEL CARRO MÓVIL DE CINTA TRANSPORTADORA JD-1407 CORRESPONDIENTE AL PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -1151,7 +1166,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26057",
-      "oc": "OC23166"
+      "oc": "OC23166",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "LEYTON RODRIGO"
     },
     {
       "id": 81778,
@@ -1481,7 +1499,7 @@
       "descripcion": "SERVICIO DE EVALUACION Y DIAGNOSTICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE INSPECCION Y DISGNOSTICO DE GENERADOR ELECTRICO LEROY SOMER 1250 KVA CON EL TALLER ESPECIALIZADO CARBOWELL C. A. POR UN MONTO NEGOCIADO EN $14.100 EN LUGAR DE LOS $18.200 DE LA PROPUESTA ADJUNTA, PARA CUMPLIR CON LA OC 007522-2026 CON VISCO DE BGII",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -1511,7 +1529,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26240",
-      "oc": "OC23078"
+      "oc": "OC23078",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "CARBOWELL, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 92139,
@@ -1932,7 +1953,7 @@
       "descripcion": "SERVICIO DE FABRICACION  METALMECANICA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "MARIO LOZADA",
       "motivo": "(REGULARIZACION) OC INTERNACIONAL CLE-CHA-003 (ACOPLAMIENTOS DE REJILLA, ESPACIALES, FLEXIBLES Y ELASTOMERICOS) PROYECTO 1 LINEA DE PLANTA DE PELLAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -1962,7 +1983,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25789",
-      "oc": "OC22680"
+      "oc": "OC22680",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "CHANGZHOU KOLDING INTELLIGENT EQUIPMENT CO., LTD.",
+      "asignado": "MARIO LOZADA"
     },
     {
       "id": 31268,
@@ -2112,7 +2136,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE ALQUILER DE EMBARCACIÓN PARA EL LA ROTACION DE PERSONAL MARINO EN LA E/T BOCA GRANDE II, FECHAS 12/09/26 Y 17/09/26 EMBARCACIONES  MANAMO 2 ABXI-PJ-0053 Y SULTANA DEL MANAMO ABXI-SE-0042, INVOICES  00250 Y 00251.",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -2142,7 +2166,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26243",
-      "oc": "OC23076"
+      "oc": "OC23076",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "LACOURT CA ULTRA PERFORMANCE BOAT",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 81784,
@@ -2877,7 +2904,7 @@
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "cantidad": 12,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "ALQUILER DE 12 BAÑOS PORTATILES FECHA 09/09/2026 AL 08/10/2026 - PROYECTO 1LPP",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -2907,7 +2934,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25788",
-      "oc": "OC22626"
+      "oc": "OC22626",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "ASOCIACION COOPERATIVA SERVICIOS RT GUAYANA 2009. R.L.",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 100967,
@@ -2922,7 +2952,7 @@
       "descripcion": "SERVICIO DE FABRICACION  METALMECANICA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "MARJORIET LOZADA",
       "motivo": "(REGULARIZACION) OC INTERNACIONAL CLE-MER-006 (SERVICIO DE MANTENIMIENTO Y FABRICACION PARA LIRA GUIA CABLES Y MOTORACOPLAMIENTO MAGNETICO) PROYECTO 1 LINEA DE PLANTA DE PELLAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -2952,7 +2982,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25799",
-      "oc": "OC22615"
+      "oc": "OC22615",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "MERCURIUS HANDELSGESELLSCHAFT MHB MR.",
+      "asignado": "MARJORIET LOZADA"
     },
     {
       "id": 74431,
@@ -2967,7 +3000,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "MARJORIET LOZADA",
       "motivo": "(REGULARIZACION) OC INTERNACIONAL CLE-MER-006 (SERVICIO DE MANTENIMIENTO Y FABRICACION PARA LIRA GUIA CABLES Y MOTORACOPLAMIENTO MAGNETICO) PROYECTO 1 LINEA DE PLANTA DE PELLAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -2997,7 +3030,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25799",
-      "oc": "OC22615"
+      "oc": "OC22615",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "MERCURIUS HANDELSGESELLSCHAFT MHB MR.",
+      "asignado": "MARJORIET LOZADA"
     },
     {
       "id": 101923,
@@ -3192,7 +3228,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE ALQUILER DE EMBARCACIÓN PARA EL LA ROTACION DE PERSONAL MARINO EN LA E/T BOCA GRANDE II, FECHAS 12/09/26 Y 17/09/26 EMBARCACIONES  MANAMO 2 ABXI-PJ-0053 Y SULTANA DEL MANAMO ABXI-SE-0042, INVOICES  00250 Y 00251.",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -3222,7 +3258,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26243",
-      "oc": "OC23076"
+      "oc": "OC23076",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "LACOURT CA ULTRA PERFORMANCE BOAT",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 53896,
@@ -4047,7 +4086,7 @@
       "descripcion": "TRANSPORTE MARITIMO/ FLUVIAL DE INSUMOS O MAETRIALES",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "Servicio de alquiler de Bote para el traslado de materiales y provisiones a la E/T BOCA GRANDE II Fecha: 03/09/2026-  PROYECTO BG II",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -4077,7 +4116,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25903",
-      "oc": "OC22760"
+      "oc": "OC22760",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "LACOURT CA ULTRA PERFORMANCE BOAT",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 94502,
@@ -4228,7 +4270,7 @@
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "cantidad": 5,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIO DE ALQUILER DE MAQUINA DE SOLDAR NELSON STUP WELDING CON OPERADOR POR DIA, POR 17 DIAS - PROYECTO SEGUNDA LINEA DE PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -4258,7 +4300,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25665",
-      "oc": "OC22579"
+      "oc": "OC22579",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "SUMSERVI METAL, C.A.",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 101954,
@@ -4499,7 +4544,7 @@
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "ALQUILER DE BAÑOS PORTATILES, EN FECHAS 01/09/26 AL 30/09/26 Y 01/10/2026 AL 08/10/2026 PARA PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -4529,7 +4574,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25795",
-      "oc": "OC22626"
+      "oc": "OC22626",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "ASOCIACION COOPERATIVA SERVICIOS RT GUAYANA 2009. R.L.",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 88487,
@@ -5356,7 +5404,7 @@
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIO DE ALQUILER DE EQUIPOS (JUMBO Y CARGADOR) , Y ACARREO DE TIERRA A CERRO BONITO, POR UN MONTO TOTAL DE 7700USDT- PROYECTO 2DA LINEA DE PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -5386,7 +5434,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25847",
-      "oc": "OC22692"
+      "oc": "OC22692",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "MICHEL ABOUKHALIL",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 92542,
@@ -5491,7 +5542,7 @@
       "descripcion": "SERVICIO JURIDICO, IMPOSITIVO O CONTABLE",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "PAGO DE ARANCELES INEA (DESMANTELAMIENTO CARGADOR DEL BUQUE WELLMAN) - GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -5521,7 +5572,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25948",
-      "oc": "OC22934"
+      "oc": "OC22934",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "INEA © INSTITUTO NACIONAL DE LOS ESPACIOS ACUÁTICOS",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100977,
@@ -6617,7 +6671,7 @@
       "descripcion": "SERVICIO DE GAMMAGRAFIA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIO DE EVALUACIÓN DE SOLDADURA EN LOS DUCTOS DE LA PCV-6006 SE REUBICARÁN PARA LA NUEVA CALDERA SOLICITANTE JUNIOR SAYAGO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -6647,7 +6701,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26296",
-      "oc": "OC23142"
+      "oc": "OC23142",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 139052,
@@ -7427,7 +7484,7 @@
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIO DE ALQUILER DE EQUIPOS (JUMBO Y CARGADOR) , Y ACARREO DE TIERRA A CERRO BONITO, POR UN MONTO TOTAL DE 7700USDT- PROYECTO 2DA LINEA DE PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -7457,7 +7514,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25847",
-      "oc": "OC22692"
+      "oc": "OC22692",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "MICHEL ABOUKHALIL",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 139296,
@@ -10536,7 +10596,7 @@
       "descripcion": "srevicio de fabricacion de eslingas de acero",
       "cantidad": 18,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SE TIENE EN ALMACÉN ESLINGA DE ACERO DE 5/8 \" - SE REQUIERE COLOCAR OJALES EN AMBOS EXTREMOS. \nSERIAN: 6 ESLINGAS DE ACERO DE 5/8 \" X 4 M / 6 ESLINGAS DE ACERO 5/8 \" X 2 M /  6 ESLINGAS DE ACERO DE 5/8 \" X 6 M",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -10566,7 +10626,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25965",
-      "oc": "OC22892"
+      "oc": "OC22892",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "REPRESENTACIONES FREN, C.A",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 59330,
@@ -12340,7 +12403,7 @@
       "descripcion": "SERVICIO DE FABRICACION  METALMECANICA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "MARIO LOZADA",
       "motivo": "(REGULARIZACION) OC INTERNACIONAL CLE-YAN-010 (FABRICACION DE CORONA DE ROTACION Y PIÑON DE ATAQUE) PROYECTO 1 LINEA DE PLANTA DE PELLAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -12370,7 +12433,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25686",
-      "oc": "OC22641"
+      "oc": "OC22641",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "MARIO LOZADA"
     },
     {
       "id": 19402,
@@ -12430,7 +12496,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "LEYTON RODRIGO",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-1407 - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -12460,7 +12526,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26045",
-      "oc": "OC23167"
+      "oc": "OC23167",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "LEYTON RODRIGO"
     },
     {
       "id": 92048,
@@ -13737,7 +13806,7 @@
       "descripcion": "FABRICACION DE PUERTAS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIO DE FABRICACION DE PUERTA METALICA C/ MARCO CAL18, DOS HOJAS 2,00 X 2,30 M BISAGRAS, CERRADURAS Y MANILLAS; DIMENSIONES: 2000 x 2300 mm; CON MARCO CALIBRE 18 INCLUYE: BISAGRAS, CERRADURAS; MANILLAS DE ALUMINIO. PRESENTACIÓN CON FONDO DE HERRERIA, COLOR; NEGRO PARA PROYECTO CALDERA NUEVA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -13767,7 +13836,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25749",
-      "oc": "OC22649"
+      "oc": "OC22649",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "TALLER DE HERRERIA EL ROBLE H Y, C.A.",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 109812,
@@ -14098,7 +14170,7 @@
       "descripcion": "SERVICIO REPARACION TUBERIA ESCAPE",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "CA17 -- SERVICIO DE INSTALACION DE SILENCIADOR DE ESCAPE FORD CARGO 815",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -14128,7 +14200,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26196",
-      "oc": "OC23097"
+      "oc": "OC23097",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "MULTISERVICIOS CIEZA, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 107693,
@@ -14195,7 +14270,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "ANDRES PORRAS",
       "motivo": "SERVICIO DE FABRICACION DE MATERIALES PARA ARMADO DE SISTEMA HIDRÁULICO DE GATOS DE PRESIÓN DE RODILLOS PARA BRIQUETAS FASE 2 SOLICITANTE JUNIOR SAYAGO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -14225,7 +14300,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25756",
-      "oc": "OC22995"
+      "oc": "OC22995",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "SUMINISTROS INDUSTRIALES DEL CENTRO, C.A",
+      "asignado": "ANDRES PORRAS"
     },
     {
       "id": 67464,
@@ -14645,7 +14723,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "TR01 -- SERVICIO DE REPARACION DE RADIADORES Y TANQUE DE AGUA TRACTOR CAT D6RXL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -14675,7 +14753,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26193",
-      "oc": "OC23022"
+      "oc": "OC23022",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "DDM SERVICIOS, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 67654,
@@ -15232,7 +15313,7 @@
       "descripcion": "ACTUALIZACION DE SOFTWARE",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "Carlos Moya",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "renovacion de licencias de autodesk",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -15262,7 +15343,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25727",
-      "oc": "OC22503"
+      "oc": "OC22503",
+      "comprador": "Carlos Moya",
+      "proveedor": "DHARMA CORP, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 112326,
@@ -15866,7 +15950,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA PLANTA DE BRIQUETAS (JOSEPH HAREWOOD)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -15896,7 +15980,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26020",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 20871,
@@ -15956,7 +16043,7 @@
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "ALQUILER DE BAÑOS PORTATILES, EN FECHAS 01/09/26 AL 30/09/26 Y 01/10/2026 AL 08/10/2026 PARA PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -15986,7 +16073,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25795",
-      "oc": "OC22626"
+      "oc": "OC22626",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "ASOCIACION COOPERATIVA SERVICIOS RT GUAYANA 2009. R.L.",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 31602,
@@ -17490,7 +17580,7 @@
       "descripcion": "SERVICIO MANTENIMIENTO DE EXTINTOR",
       "cantidad": 13,
       "unidad": "USE",
-      "solicitante": "JOSE AMUNDARAIN",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "recarga de extintores 11 normales, 2 de 150lb con ruedas",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -17520,7 +17610,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26084",
-      "oc": "OC22966"
+      "oc": "OC22966",
+      "comprador": "JOSE AMUNDARAIN",
+      "proveedor": "EXTINSUR, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 95468,
@@ -19067,7 +19160,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "ex01 -- servicio de fabricacion kit sellos cilindros hidraulicos boom y balde excavadora cat-320d",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -19097,7 +19190,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26185",
-      "oc": "OC23001"
+      "oc": "OC23001",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 19401,
@@ -20600,7 +20696,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "GR26 -- SERVICIO DE REPARACION DERADIADOR GRUA GROVE RT750",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -20630,7 +20726,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26134",
-      "oc": "OC22976"
+      "oc": "OC22976",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "DDM SERVICIOS, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 68193,
@@ -20645,7 +20744,7 @@
       "descripcion": "latoneria y pintura",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "VH49 -- SERVICIO DE LATONERIA Y PINTURA MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -20675,7 +20774,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25733",
-      "oc": "OC22656"
+      "oc": "OC22656",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "RENNY RAMIREZ",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 68192,
@@ -20690,7 +20792,7 @@
       "descripcion": "latoneria y pintura",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "VH50 -- SERVICIO DE LATONERIA Y PINTURA MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -20720,7 +20822,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25734",
-      "oc": "OC22656"
+      "oc": "OC22656",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "RENNY RAMIREZ",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 68191,
@@ -20735,7 +20840,7 @@
       "descripcion": "latoneria y pintura",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "VH51 -- SERVICIO DE LATONERIA Y PINTURA MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -20765,7 +20870,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25735",
-      "oc": "OC22656"
+      "oc": "OC22656",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "RENNY RAMIREZ",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 53971,
@@ -25105,7 +25213,7 @@
       "descripcion": "SERVICIO DE LAVANDERIA",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "BS14 -- SERVICIO DE LAVANDERIA DE FORROS DE ASIENTOS BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -25135,7 +25243,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25761",
-      "oc": "OC22574"
+      "oc": "OC22574",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "LA ESPUMA",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 110403,
@@ -25331,7 +25442,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "GR15 -- SERVICIO DE FABRICACION DE GUIAS DE TAPA CILINDRO HIDRAULICO TELESCOPICO GRUA GROVE AT865",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -25361,7 +25472,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25863",
-      "oc": "OC22714"
+      "oc": "OC22714",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 3415,
@@ -25917,7 +26031,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA PLANTA DE PELLAS (JESUS DEVERA)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 353,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -25947,7 +26061,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25709",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 116069,
@@ -26322,7 +26439,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA FABRICACION (EUDY MEZA)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 343,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -26352,7 +26469,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25713",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101625,
@@ -29475,7 +29595,7 @@
       "descripcion": "SERVICIO MANTENIMIENTO DE AIRE ACONDICIONADO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "VH15 -- SERVICIO DE AIRE ACONDICIONADO AMBULANCIA CHEVROLET",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -29505,7 +29625,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25962",
-      "oc": "OC23148"
+      "oc": "OC23148",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "COLD MAX, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 66848,
@@ -32267,7 +32390,7 @@
       "descripcion": "SERVICIO DE CRISTALERIA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "VH15 -- SERVICIO DE REEMPLAZO DE GOMA PARABRISAS DELANTERO AMBULANCIA CHEVROLET",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -32297,7 +32420,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25961",
-      "oc": "OC22813"
+      "oc": "OC22813",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "CRISTALERIA CAURA. C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 96381,
@@ -32724,7 +32850,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "ex01 -- servicio de fabricacion kit sellos cilindros hidraulicos boom y balde excavadora cat-320d",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -32754,7 +32880,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26185",
-      "oc": "OC23001"
+      "oc": "OC23001",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 92468,
@@ -33175,7 +33304,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "BS15 -- SERVICIO DE REPARACION DE RADIADOR BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33205,7 +33334,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25682",
-      "oc": "OC22486"
+      "oc": "OC22486",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "DDM SERVICIOS, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 95826,
@@ -33220,7 +33352,7 @@
       "descripcion": "REPARACIÓN DE CILINDROS HIDRÁULICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "EX03 -- SERVICIO DE REPARACION CILINDRO HIDRAULICO DE LA PLUMA MINIEXCAVADOR CAT 302.5",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33250,7 +33382,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25872",
-      "oc": "OC22715"
+      "oc": "OC22715",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 65411,
@@ -33265,7 +33400,7 @@
       "descripcion": "HONORARIOS PROFESIONALES",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "ASESORIAS DEL MES DE SEPTIEMBRE PROFORMA-00001050\nPROVEEDOR VENEZOLANA DE SERVICIOS E INGENIERIA \nCOSTO 260,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33295,7 +33430,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25943",
-      "oc": "OC22867"
+      "oc": "OC22867",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "VENEZOLANA DE SERVICIOS E INGENIERIA CA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 50155,
@@ -33310,7 +33448,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "GR07 -- SERVICIO DE FABRICACION KIT SELLOS CILINDROS DE DIRECCION GRUA P&H",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33340,7 +33478,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25971",
-      "oc": "OC22852"
+      "oc": "OC22852",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 50138,
@@ -33355,7 +33496,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "RE02 -- SERVICIO DE FABRICACION KIT SELLOS CILINDROS HIDRAULICOS ESTABILIZADORES RETROEXCAVADORA CASE 580M",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33385,7 +33526,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25818",
-      "oc": "OC22657"
+      "oc": "OC22657",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 115653,
@@ -33851,7 +33995,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "BS14 -- SERVICIO DE REPARACION DE RADIADOR BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33881,7 +34025,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25836",
-      "oc": "OC22674"
+      "oc": "OC22674",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "DDM SERVICIOS, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 93744,
@@ -34031,7 +34178,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "GR15 -- SERVICIO DE FABRICACION DE SELLOS CILINDRO TELESCOPICO GRUA GROVE AT865N",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -34061,7 +34208,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26139",
-      "oc": "OC22983"
+      "oc": "OC22983",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 21051,
@@ -37007,7 +37157,7 @@
       "descripcion": "VULCANIZACION BANDAS DE FRENOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "RM20 -- SERVICIO DE VULCANIZACION DE BANDAS DE FRENOS SEMIRREMOLQUE VOLQUETA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -37037,7 +37187,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26173",
-      "oc": "OC22985"
+      "oc": "OC22985",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "FREMARCA, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 118307,
@@ -37052,7 +37205,7 @@
       "descripcion": "VULCANIZACION BANDAS DE FRENOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "CH08 -- SERVICIO DE VULCANIZACION DE BANDAS DE FRENOS TRASEROS MACK GRANITE",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -37082,7 +37235,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25927",
-      "oc": "OC22985"
+      "oc": "OC22985",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "FREMARCA, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 113670,
@@ -38450,7 +38606,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 3,
       "unidad": "UND",
-      "solicitante": "LEGLANIS BRITO",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "MANTENIMIENTO CILINDROS DE OXIGENO - NOTA DE VIRVA 02204",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -38480,7 +38636,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26124",
-      "oc": "OC23173"
+      "oc": "OC23173",
+      "comprador": "LEGLANIS BRITO",
+      "proveedor": "SUMINISTROS Y TRANSPORTES VIRVA, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 22030,
@@ -39352,7 +39511,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 24,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "24 COMIDAS (CENAS) FECHA: 07/09/2026 SOLICITANTE: CRISTÓBAL MENDEZ PROYECTO: REHABILITACIÓN DE DRAVO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -39382,7 +39541,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25854",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 118232,
@@ -39802,7 +39964,7 @@
       "descripcion": "SERVICIO REPARACION GUAYA DE ACELERACION",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "MC08 -- SERVICIO DE FABRICACION GUAYA DE ACELERACION MONTACARGA CAT V300B",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -39832,7 +39994,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25725",
-      "oc": "OC22511"
+      "oc": "OC22511",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "CORPORACION UNION I, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 101140,
@@ -39847,7 +40012,7 @@
       "descripcion": "SERVICIO FABRICACION DE GUAYA AUTOMOTRIZ",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "RE02 -- SERVICIO DE REPARACION DE GUAYA DE ACELERACION TRASERA RETROEXCAVADORA CASE 580M",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -39877,7 +40042,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26198",
-      "oc": "OC23021"
+      "oc": "OC23021",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "CORPORACION UNION I, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 100232,
@@ -39892,7 +40060,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE CAMION CISTERNA PARA PROYECTO PELLAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -39922,7 +40090,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25770",
-      "oc": "OC22557"
+      "oc": "OC22557",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "HIELOS HIRACA, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 48706,
@@ -41791,7 +41962,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 21,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "21 COMIDAS (CENAS) PARA TRABAJOS PMH DRAVO FECHA 01/09/26 HORA 11:45 M PERSONA QUE RECIBE: WALDO PUGA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -41821,7 +41992,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25835",
-      "oc": "OC22668"
+      "oc": "OC22668",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 52993,
@@ -46879,7 +47053,7 @@
       "descripcion": "SERVICIO DE MANTENIMIENTO DE IMPRESORA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Carlos Moya",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "mantenimiento de impresora b405 de rrhh",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -46909,7 +47083,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25728",
-      "oc": "OC22506"
+      "oc": "OC22506",
+      "comprador": "Carlos Moya",
+      "proveedor": "MARCOS NAVEDA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 96382,
@@ -47509,7 +47686,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 21,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "21 CENAS \nFECHA: 08/09/2026 HORA 6:30 PM \nSOLICITANTE: CRISTÓBAL MENDEZ \nCVG FERROMINERA ORINOCO - PMH \nPROYECTO: REHABILITACIÓN DE DRAVO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -47539,7 +47716,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25887",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 1529,
@@ -50572,7 +50752,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION POR CONSULTA ESPECIAL FABRICACION (HILDIO FERMIN)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 170,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -50602,7 +50782,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25714",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 31219,
@@ -51296,7 +51479,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA COORDINACION DE ALMACEN (GIAN HERNANDEZ)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 165,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -51326,7 +51509,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25708",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 138843,
@@ -52379,7 +52565,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 4,
       "unidad": "UND",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIO DE FABRICACIÓN DE RESORTES PARA ACTUADORES DE VÁLVULAS MATERIALES PARA ARMADO DE VÁLVULAS DE PLANTA DEMIN PARA BRIQUETAS FASE 2 SOLICITANTE JUNIOR SAYAGO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -52409,7 +52595,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25855",
-      "oc": "OC22750"
+      "oc": "OC22750",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "SUMINISTRO  Y FABRICACION DE MATERIALES C.A",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 49752,
@@ -52424,7 +52613,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA PMH (DENINSON PINO)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 160,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -52454,7 +52643,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25711",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 7572,
@@ -53823,7 +54015,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 18,
       "unidad": "USE",
-      "solicitante": "JESSICA NAVARRO",
+      "solicitante": "Carlos Perez",
       "motivo": "inventario toma fisica almacen de pellas",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -53853,7 +54045,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25809",
-      "oc": "OC22668"
+      "oc": "OC22668",
+      "comprador": "JESSICA NAVARRO",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 30656,
@@ -84288,7 +84483,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE CAMION CISTERNA PLANTA DE PELLAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -84318,7 +84513,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26246",
-      "oc": "OC23073"
+      "oc": "OC23073",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "HIELOS HIRACA, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 99943,
@@ -89025,7 +89223,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA FABRICACION (DANIEL AZOCAR)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 135,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -89055,7 +89253,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25707",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49776,
@@ -89070,7 +89271,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION POR CONSULTA ESPECIAL BRIQUETAS (JOSEPH HAREWOOD)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 135,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -89100,7 +89301,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26026",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 19318,
@@ -92403,7 +92607,7 @@
       "descripcion": "SERVICIO FABRICACION DE GUAYA AUTOMOTRIZ",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "MC10 -- SERVICIO DE FABRICACION GUAYA DE ACELERACION MONTACARGA HELI",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -92433,7 +92637,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26261",
-      "oc": "OC23080"
+      "oc": "OC23080",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "CORPORACION UNION I, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 101098,
@@ -92448,7 +92655,7 @@
       "descripcion": "SERVICIO DE ROTULADO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "BS15 -- SERVICIO DE ROTULADO DE BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -92478,7 +92685,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25730",
-      "oc": "OC22512"
+      "oc": "OC22512",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PUBLICIDAD Y ROTULACIONES VELASQUEZ, F.P",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 95831,
@@ -92493,7 +92703,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "BS01 -- SERVICIO DE REPARACION DE RADIADOR BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -92523,7 +92733,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25899",
-      "oc": "OC22753"
+      "oc": "OC22753",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "DDM SERVICIOS, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 91210,
@@ -92855,7 +93068,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 15,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "15 COMIDAS (CENAS) DIA 11/09/2026, PROYECTO 1LPP SOLICITANTE FERNANDO PADILLA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -92885,7 +93098,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26032",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 59980,
@@ -94207,7 +94423,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 13,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "13 CENAS PARA EL DIA 16/09/26 (1/4 DE POLLO ASADO CON AREPITA Y ENSALADA RAYADA) PARA PELLAS FERROMINERA INCLUYE 3 REFRESCOS DE 1.5 LITROS, CON DELIVERY A PELLAS FERROMINERA HORA: 6:30 PM, PERSONA QUE RECIBE: FERNANDO PADILLA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -94237,7 +94453,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26278",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 46061,
@@ -97313,7 +97532,7 @@
       "descripcion": "FABRICACION DE CALCOMANIAS",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "SERVICIO DE FABRICACION DE CALCOMANIAS DE IDENTIFICACION TRASLADO GASOIL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -97343,7 +97562,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25864",
-      "oc": "OC22965"
+      "oc": "OC22965",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PUBLICIDAD Y ROTULACIONES VELASQUEZ, F.P",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 49754,
@@ -97358,7 +97580,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 8,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO PMH (NEIRIBERTH HERNANDEZ, TOMAS GARCIA, ALFREDY SULBARAN, ALNARDO PARRA, KENNI NORIEGA, ROBERT GARCIA)\nEVALUACION DE EGRESO PMH (HERNAN MARTINEZ, DANIEL GUTIERREZ)\nPROVEEDOR MEDICO EXPRESS \nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -97388,7 +97610,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26001",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 31709,
@@ -109699,7 +109924,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 12,
       "unidad": "USE",
-      "solicitante": "DANIELA RIVERO",
+      "solicitante": "Carlos Perez",
       "motivo": "comida toma fisica pellas",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -109729,7 +109954,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26060",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "DANIELA RIVERO",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 14270,
@@ -115014,7 +115242,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "GR07 -- SERVICIO DE FABRICACION DE SELLOS CILINDRO DIRECCION GRUA P&H",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -115044,7 +115272,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26140",
-      "oc": "OC22977"
+      "oc": "OC22977",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 6043,
@@ -116323,7 +116554,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 11,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "11 CENAS PARA EL DIA 15/09/26 (1/4 DE POLLO ASADO CON AREPITA Y ENSALADA RAYADA) PARA PELLAS FERROMINERA, INCLUYE 3 REFRESCOS DE 1.5 LITROS, CON DELIVERY A PELLAS FERROMINERA, HORA: 6:30 PM, PERSONA QUE RECIBE: FERNANDO PADILLA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -116353,7 +116584,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26277",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 53992,
@@ -117675,7 +117909,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 11,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "11 COMIDAS (CENAS) DIA 11/09/2026 SOLICITANTE FERNANDO PADILLA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -117705,7 +117939,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26195",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 46059,
@@ -121097,7 +121334,7 @@
       "descripcion": "SERVICIO ALINEACION AUTOMOTRIZ",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "CA04 -- SERVICIO DE ALINEACION FORD CARGO 815",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -121127,7 +121364,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25837",
-      "oc": "OC22776"
+      "oc": "OC22776",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "TRUCK TIRE CENTER MATANZAS, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 95673,
@@ -121592,7 +121832,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "RE02 -- SERVICIO DE FABRICACION KIT SELLOS BOMBA HIDRAULICA RETROEXCAVADORA CASE 580M",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -121622,7 +121862,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25819",
-      "oc": "OC22657"
+      "oc": "OC22657",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 49814,
@@ -121637,7 +121880,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 6,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO DEPARTAMENTO DE FABRICACION (YORFRAN ZAMBRANO, WILDMEN GAMBOA, HECTOR RODRIGUEZ, JOSE MEJIAS, LUIS MOROCOIMA)\nEVALUACION DE EGRESO DEPARTAMENTO DE FABRICACION (YEUNER CELIZ)\nPROVEEDOR VENEZOLANA DE SERVICIOS E INGENIERIA FACTURA-00024906\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -121667,7 +121910,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26180",
-      "oc": "OC23036"
+      "oc": "OC23036",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "VENEZOLANA DE SERVICIOS E INGENIERIA CA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49260,
@@ -124387,7 +124633,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 10,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "10 COMIDAS (CENAS) FECHA 12/09/2026 HORA 12:00 PM SOLICITANTE: FERNANDO PADILLA RECIBE EN PORTÓN PRINCIPAL DE PELLAS PROYECTO: 1LPP",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -124417,7 +124663,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26065",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100317,
@@ -124432,7 +124681,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 10,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "10 COMIDAS (ALMUERZOS) 12/09/26 INSTALACION DE CALDERA, SOLICITANTE FELIX RODRIGUEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -124462,7 +124711,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26033",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 4050,
@@ -125649,7 +125901,7 @@
       "descripcion": "sERV. ASOCIADOS A EVENTO CORPORATIVO",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "DOMAIRA RANGEL",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "1.-solicitud de refrigerios paara certificacion op montacarga\n2 kg de pasta seca variada \n03 jugos de 1 1/12lts variados \n2.-solicitud de refrigerios paara certificacion lectrura de planos\n1 1/2 kg de pasta seca variada \n02 jugos de 1 1/12lts variados \nREcibidos en taller timaca 09:00am",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -125679,7 +125931,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25877",
-      "oc": "OC22894"
+      "oc": "OC22894",
+      "comprador": "DOMAIRA RANGEL",
+      "proveedor": "CROCANTE BAKERY CAFE - BISTRO, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 88274,
@@ -127632,7 +127887,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA FABRICACION (MIGUEL PALMEZANO)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 80,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -127662,7 +127917,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25710",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49821,
@@ -127677,7 +127935,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA FABRICACION (ANTHONY MARQUEZ)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -127707,7 +127965,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26023",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49820,
@@ -127722,7 +127983,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "evaluacion de emergencia departamento de fabricacion (carlos zambrano)\nproveedor medico express\ncosto 80,00 usd",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -127752,7 +128013,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26248",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49819,
@@ -127767,7 +128031,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA DEPARTAMENTO DE FABRICACION (ALEXIS INAGA)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 80,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -127797,7 +128061,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26249",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49818,
@@ -127812,7 +128079,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EMERGENCIA DEPARTAMENTO DE FABRICACION (FABIAN CALLEJAS)\nPROVEEDOR MEDICO EXPRESS \nCOSTO 80,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -127842,7 +128109,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26253",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 44254,
@@ -128852,7 +129122,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 9,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "09 COMIDAS (CENAS) DIA 11/09/2026 PROYECTO: INSTALACION DE CALDERA- SOLICITANTE  FELIX RODRIGUEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -128882,7 +129152,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26031",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 109551,
@@ -129664,7 +129937,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 8,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "SOLICITUD DE COMIDA PARA JORNADA EXTENDIDA DE INGENIERÍA PROYECTO PATIOS HA Y HB",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -129694,7 +129967,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25914",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 59944,
@@ -129799,7 +130075,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "EX03 -- SERVICIO DE FABRICACION SELLOS PISTON CILINDRO HIDRAULICO DE PLUMA MINIEXCAVADOR CAT 302.5",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -129829,7 +130105,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25762",
-      "oc": "OC22573"
+      "oc": "OC22573",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 65657,
@@ -132057,7 +132336,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 8,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "08 COMIDAS (CENAS) FECHA 17/09/2026 SOLICITANTE: FERNANDO PADILLA RECIBE EN PORTÓN PRINCIPAL DE PELLAS PROYECTO: 1LPP",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -132087,7 +132366,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26232",
-      "oc": "OC23101"
+      "oc": "OC23101",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 101568,
@@ -133228,7 +133510,7 @@
       "descripcion": "SERVICIO VULCANIZACION",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "RE01 -- SERVICIO DE VULCANIZACION DE CAUCHO RETROEXCAVADORA CASE",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -133258,7 +133540,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25900",
-      "oc": "OC22777"
+      "oc": "OC22777",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "DENNYS LAREZ",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 100868,
@@ -133273,7 +133558,7 @@
       "descripcion": "SERVICIO DE CRISTALERIA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "EX01 -- SERVICIO DE INSTALACION DE VIDRIO INFERIOR CABINA EXCAVADORA CAT 320D",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -133303,7 +133588,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26197",
-      "oc": "OC23023"
+      "oc": "OC23023",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "ISMAEL PACHECO",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 93271,
@@ -136216,7 +136504,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 8,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "SOLICITUD DE 8 COMIDAS PARA INGENIERÍA\nPROYECTO: PATIOS HA Y HB\n* JOSELYN ALVAREZ\n* JOSHUA GUERRA\n* DANIEL RAMOS\n* MAYRA BARRIGA\n* ANDRES PEREZ\n* GABRIEL PACHECO\n* EDUYN MARUEZ\n* CARLOS GALVEZ\nFECHA: 08/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -136246,7 +136534,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25886",
-      "oc": "OC22872"
+      "oc": "OC22872",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 65604,
@@ -137889,7 +138180,7 @@
       "descripcion": "sERV. ASOCIADOS A EVENTO CORPORATIVO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "CLARITZA AGUILARTE",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "solicitud de refrigerio para curso certificacion de operadores  1 1/2 kg de pasta seca 3 jugos naranja-pera-manzana, pqt vaso pequeño #7 para servir jugo y un pqt vasos pequeño para cafe,1 kg de azucar recibir en taller timaca 9:00 am",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -137919,7 +138210,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26120",
-      "oc": "OC23111"
+      "oc": "OC23111",
+      "comprador": "CLARITZA AGUILARTE",
+      "proveedor": "CROCANTE BAKERY CAFE - BISTRO, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100177,
@@ -137934,7 +138228,7 @@
       "descripcion": "sERV. ASOCIADOS A EVENTO CORPORATIVO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "CLARITZA AGUILARTE",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "solicitud de refrigerio para certificacion lectura de planos 1 1/2 kg pasta seca variada, 03 jugos naranja -pera -manzana  recibir en timaca 9:00am",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -137964,7 +138258,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26122",
-      "oc": "OC23111"
+      "oc": "OC23111",
+      "comprador": "CLARITZA AGUILARTE",
+      "proveedor": "CROCANTE BAKERY CAFE - BISTRO, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 114383,
@@ -138974,7 +139271,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "07 COMIDAS (ALMUERZOS) DIA 12/09/2026 PROYECTO 5B SOLICITADO POR Albin cedeño",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -139004,7 +139301,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26038",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100351,
@@ -139019,7 +139319,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "07 COMIDAS (CENAS) FECHA 13/09/2026 SOLICITANTE: JESÚS BARRIOS RECIBE EN TALLER TIMACA PROYECTO: 5B PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -139049,7 +139349,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26067",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100319,
@@ -139064,7 +139367,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "07 COMIDAS (CENAS) DIA 09/09/26, TRASLADO DE CALDERA DE PLANTA DE BRIQUETAS - SOLICTADO POR EL SR EDGAR LAGOS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -139094,7 +139397,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25915",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 84739,
@@ -143613,7 +143919,7 @@
       "descripcion": "SERVICIO DE MANTENIMIENTO DE IMPRESORA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Carlos Moya",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "mantenimiento de impresora epson l3250 de pellas",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -143643,7 +143949,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26119",
-      "oc": "OC22953"
+      "oc": "OC22953",
+      "comprador": "Carlos Moya",
+      "proveedor": "CORPORACION DE TINTAS Y TONER DEL SUR, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100025,
@@ -144200,7 +144509,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION POR CONSULTA ESPECIAL FABRICACION (HILDIO FERMIN)\nPROVEEDOR MEDICO EXPRESS \nCOSTO 60,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -144230,7 +144539,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26008",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49717,
@@ -144245,7 +144557,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUCION DE INGRESO PLANTA DE PELLAS (EDUARDO AGUIRRE, ADRIANA PERDOMO)\nEVALUACION DE EGRESO (JUAN NUÑEZ, YUMAR RONDON)\nPROVEEDOR VENEZOLANA DE SERVICIOS E INGENIERIA FACTURA-00024906\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -144275,7 +144587,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26181",
-      "oc": "OC23036"
+      "oc": "OC23036",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "VENEZOLANA DE SERVICIOS E INGENIERIA CA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 48075,
@@ -146321,7 +146636,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 6,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "SOLICITUD DE COMIDA PARA INGENIERÍA DIA: 10/09/2026 PROYECTO: PATIOS HA Y HB\nEDUYN MÁRQUEZ, DANIEL RAMOS, ALEJANDRO RODRÍGUEZ, KILBER ROMERO, GABRIEL PACHECO, CARLOS GALVEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -146351,7 +146666,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25953",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 25323,
@@ -147626,7 +147944,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 6,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "06 COMIDAS (ALMUERZOS) DIA 12/09/2026 PROYECTO 5B SOLICITADO POR JESUS BARRIOS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -147656,7 +147974,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26034",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100427,
@@ -147671,7 +147992,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 6,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "06 COMIDAS (CENAS) DIA 12/09/2026 PROYECTO 5B SOLICITADO POR JESUS BARRIOS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -147701,7 +148022,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26035",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 102701,
@@ -149564,7 +149888,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 6,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "06 COMIDAS (ALMUERZOS) DIA 13/09/2026 PROYECTO 5B SOLICITADO POR JESUS BARRIOS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -149594,7 +149918,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26036",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 58050,
@@ -152006,7 +152333,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE CAMION CISTERNA PARA PROYECTO BRIQUETAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152036,7 +152363,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25769",
-      "oc": "OC22557"
+      "oc": "OC22557",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "HIELOS HIRACA, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100264,
@@ -152051,7 +152381,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE CAMION CISTERNA PLANTA DE BRIQUETAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152081,7 +152411,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26245",
-      "oc": "OC23073"
+      "oc": "OC23073",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "HIELOS HIRACA, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100230,
@@ -152096,7 +152429,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE CAMION CISTERNA PARA PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152126,7 +152459,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25768",
-      "oc": "OC22557"
+      "oc": "OC22557",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "HIELOS HIRACA, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100229,
@@ -152141,7 +152477,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE CAMION CISTERNA PARA PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152171,7 +152507,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25768",
-      "oc": "OC22557"
+      "oc": "OC22557",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "HIELOS HIRACA, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100228,
@@ -152186,7 +152525,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE CAMION CISTERNA EN PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152216,7 +152555,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26244",
-      "oc": "OC23073"
+      "oc": "OC23073",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "HIELOS HIRACA, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100227,
@@ -152231,7 +152573,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE CAMION CISTERNA EN PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152261,7 +152603,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26244",
-      "oc": "OC23073"
+      "oc": "OC23073",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "HIELOS HIRACA, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 95864,
@@ -152276,7 +152621,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "VH48 -- SERVICIO DE REPARACION DE RADIADOR MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152306,7 +152651,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25796",
-      "oc": "OC22607"
+      "oc": "OC22607",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "DDM SERVICIOS, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 91320,
@@ -157917,7 +158265,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EGRESO PMH (JOSE RODRIGUEZ, JOSUE ORTEGA)\nEVALUACION DE INGRESO PMH (JONATHAN CASTRO)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -157947,7 +158295,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25702",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49839,
@@ -157962,7 +158313,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EGRESO PLANTA DE PELLAS (RAUL CASTRO)\nEVALUACION DE INGRESO PLANTA DE PELLAS (MAYERLIMG GARCIA Y PEDRO REYES)\nPROVEEDOR MEDICO EXPRESS \nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -157992,7 +158343,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26002",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49838,
@@ -158007,7 +158361,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO EQUIPOS MOVILES (JESUS CABALLERO, ROBERT FALCON, LUIS GARCIA)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -158037,7 +158391,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26252",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 44098,
@@ -158547,7 +158904,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 5,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "Carlos Perez",
       "motivo": "SERVICIO DE CENA TALLER MTTO ECO (17/09/2026)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -158577,7 +158934,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26218",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 6790,
@@ -158863,7 +159223,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "05 COMIDAS (ALMUERZOS) DIA 19/09/2026  PERSONAL SMB , PORYECTO BGII",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -158893,7 +159253,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26301",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 79753,
@@ -164502,7 +164865,7 @@
       "descripcion": "SERVICIO TAPIZADO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "CA05 -- SERVICIO DE TAPIZADO DE VOLANTE PILOTO FORD CARGO 815",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -164532,7 +164895,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25683",
-      "oc": "OC22487"
+      "oc": "OC22487",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "HECTOR BOLIVAR",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 101300,
@@ -164547,7 +164913,7 @@
       "descripcion": "SERVICIO TAPIZADO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "CA01 -- SERVICIO DE TAPIZADO DE VOLANTE PILOTO FORD CARGO 815",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -164577,7 +164943,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25926",
-      "oc": "OC22937"
+      "oc": "OC22937",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "HECTOR BOLIVAR",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 101205,
@@ -164592,7 +164961,7 @@
       "descripcion": "SERVICIO MANTENIMIENTO DE AIRE ACONDICIONADO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "VH42 -- SERVICIO DE AIRE ACONDICIONADO MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -164622,7 +164991,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26098",
-      "oc": "OC22930"
+      "oc": "OC22930",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "COLD MAX, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 100901,
@@ -166575,7 +166947,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "04 COMIDAS POR JORNADA EXTENDIDA 15/092026 PELLAS - PARRILLA MÓVIL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -166605,7 +166977,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26123",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 133405,
@@ -168244,7 +168619,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "04 COMIDAS (CENAS) SOLICITADAS POR ALBIN CEDEÑO PROYECTO BGII",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -168274,7 +168649,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26259",
-      "oc": "OC23101"
+      "oc": "OC23101",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 20251,
@@ -169783,7 +170161,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "4 COMIDAS (CENAS) PARA JORNADA EXTENDIDA INGENIERIA FECHA 02/09/26 HORA 6:30 PM PERSONA QUE RECIBE: LEIDIMAR MALAVE",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -169813,7 +170191,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25834",
-      "oc": "OC22668"
+      "oc": "OC22668",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 94442,
@@ -183736,7 +184117,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26213",
-      "oc": "OC23101"
+      "oc": "OC23101",
+      "comprador": "Carlos Perez",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 99989,
@@ -191364,7 +191748,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI ABRAHAM HERRERA PMH MARTES 15/09 DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VICEVERSA. DEPARTAMENTO DE RRHH (SOLICITANTE: MAILITH DEVERA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191394,7 +191778,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26103",
-      "oc": "OC22946"
+      "oc": "OC22946",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101357,
@@ -191409,7 +191796,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI ABRAHAM HERRERA PMH MIÉRCOLES 16/09 DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VICEVERSA. DEPARTAMENTO DE RRHH (SOLICITANTE: MAILITH DEVERA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191439,7 +191826,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26104",
-      "oc": "OC22946"
+      "oc": "OC22946",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101356,
@@ -191454,7 +191844,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI ABRAHAM HERRERA PMH JUEVES 17/09 DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VICEVERSA. DEPARTAMENTO DE RRHH (SOLICITANTE: MAILITH DEVERA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191484,7 +191874,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26105",
-      "oc": "OC22946"
+      "oc": "OC22946",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101355,
@@ -191499,7 +191892,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI MARTES 22/09 DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VICEVERSA. DEPARTAMENTO DE RRHH (SOLICITANTE: MAILITH DEVERA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191529,7 +191922,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26270",
-      "oc": "OC23095"
+      "oc": "OC23095",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101354,
@@ -191544,7 +191940,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI MIÉRCOLES 23/09 DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VICEVERSA. DEPARTAMENTO DE RRHH (SOLICITANTE: MAILITH DEVERA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191574,7 +191970,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26271",
-      "oc": "OC23095"
+      "oc": "OC23095",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101353,
@@ -191589,7 +191988,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI JUEVES 24/09 DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VICEVERSA. DEPARTAMENTO DE RRHH (SOLICITANTE: MAILITH DEVERA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191619,7 +192018,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26272",
-      "oc": "OC23095"
+      "oc": "OC23095",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101114,
@@ -191634,7 +192036,7 @@
       "descripcion": "SERVICIO DE TAXI",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI, TRASLADO DE PERSONAL DIA MARTES  08/09/26, DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VISEVERSA. PROVEEDOR ANIBAL GARCIA- SOLCITANTE MAILITH DEVERA. \nMONTO DEL SERVICIO 30$ - DEPARTAMENTO DE RRHH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191664,7 +192066,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25802",
-      "oc": "OC22665"
+      "oc": "OC22665",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101113,
@@ -191679,7 +192084,7 @@
       "descripcion": "SERVICIO DE TAXI",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI, TRASLADO DE PERSONAL DIA MIERCOLES  09/09/26, DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VISEVERSA. PROVEEDOR ANIBAL GARCIA- SOLCITANTE MAILITH DEVERA. \nMONTO DEL SERVICIO 30$ - DEPARTAMENTO DE RRHH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191709,7 +192114,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25803",
-      "oc": "OC22665"
+      "oc": "OC22665",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101112,
@@ -191724,7 +192132,7 @@
       "descripcion": "SERVICIO DE TAXI",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI, TRASLADO DE PERSONAL DIA JUEVES 10/09/26, DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VISEVERSA. PROVEEDOR ANIBAL GARCIA- SOLCITANTE MAILITH DEVERA. \nMONTO DEL SERVICIO 30$ - DEPARTAMENTO DE RRHH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191754,7 +192162,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25804",
-      "oc": "OC22665"
+      "oc": "OC22665",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101111,
@@ -191769,7 +192180,7 @@
       "descripcion": "SERVICIO DE TAXI",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "TRASLADO DE PERSONAL ELECTRICISTA QUE SE QUEDO PARA REALIZAR PRUEBAS DE DRAVO PROYECTO REHABILITACIÓN DE DRAVO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191799,7 +192210,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25898",
-      "oc": "OC22752"
+      "oc": "OC22752",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100210,
@@ -191814,7 +192228,7 @@
       "descripcion": "SERVICIO DE AUTOLAVADO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "VH15 -- SERVICIO DE LAVADO AMBULANCIA CHEVROLET",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191844,7 +192258,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25963",
-      "oc": "OC22851"
+      "oc": "OC22851",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "LA ESPUMA",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 100016,
@@ -193666,7 +194083,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO PLANTA DE PELLAS (MARCO CORDERO)\nEVALUACION DE EGRESO PLANTA DE PELLAS (OSCAR ROMERO)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -193696,7 +194113,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25700",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49863,
@@ -193711,7 +194131,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EGRESO SERVICIOS ESPECIALIZADOS (BERNARDO GOMEZ)\nEVALUACION DE INGRESO SERVICIOS ESPECIALIZADOS (DICKSON GRANADO)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -193741,7 +194161,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25703",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49862,
@@ -193756,7 +194179,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EGRESO BCG (SAMUEL MARQUEZ)\nEVALUACION DE INGRESO BCG (RONY RENGEL)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -193786,7 +194209,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26005",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49861,
@@ -193801,7 +194227,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO FABRICACION (ANDY DELGADO)\nEVALUACION DE EGRESO FABRICACION (JESUS HERRERA)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -193831,7 +194257,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26010",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49860,
@@ -193846,7 +194275,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO COORDINACION DE ALMACEN (OLIVER GONZALEZ Y WILMER AGREDA)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -193876,7 +194305,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26017",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49606,
@@ -199445,7 +199877,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "03 COMIDAS (CENAS) 07/09/2026 PROYECTO CALDERA BRIQUETAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -199475,7 +199907,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25859",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100534,
@@ -199490,7 +199925,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "Carlos Perez",
       "motivo": "03 COMIDAS (CENAS) DIA 09/09/2026 SOLICITADO POR EL SR EDGAR LAGOS - PROYECTO 2DA LINEA PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -199520,7 +199955,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25912",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100533,
@@ -199535,7 +199973,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "Carlos Perez",
       "motivo": "SERVICIO DE CENA TALLER MTTO ECO (16/09/2026)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -199565,7 +200003,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26217",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 137027,
@@ -200210,7 +200651,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "ALEJANDRA TESARA",
+      "solicitante": "Carlos Perez",
       "motivo": "Cena personal de costos - extra tiempo",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -200240,7 +200681,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26235",
-      "oc": "OC23101"
+      "oc": "OC23101",
+      "comprador": "ALEJANDRA TESARA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 88467,
@@ -205080,7 +205524,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "DANIELA RIVERO",
+      "solicitante": "Carlos Perez",
       "motivo": "toma fisica inventario de pellas 12/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -205110,7 +205554,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25996",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "DANIELA RIVERO",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 47263,
@@ -210298,7 +210745,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25811",
-      "oc": "OC22622"
+      "oc": "OC22622",
+      "comprador": "KEYSERLING GÓMEZ",
+      "proveedor": "D&C LAGOS, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 25490,
@@ -232892,7 +233342,7 @@
       "descripcion": "FABRICACION DE SELLO AUTOMATICO PERSONALIZADO USO ADMINISTRATIVO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "Hudaimy Jaimes",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "FABRICACION DE SELLO PARA MARCAJE DE MASCARILLAS DIMENSIONES 1.5 X 1.5 CM",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -232922,7 +233372,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25754",
-      "oc": "OC22551"
+      "oc": "OC22551",
+      "comprador": "Hudaimy Jaimes",
+      "proveedor": "PUBLISELLOS ORINOCO, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 50099,
@@ -232937,7 +233390,7 @@
       "descripcion": "FABRICACION DE SELLO AUTOMATICO PERSONALIZADO USO ADMINISTRATIVO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "JOSE AMUNDARAIN",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "FABRICACION DE SELLO PARA MARCAJE DE MASCARILLAS DIMENSIONES 1.5 X 1.5 CM",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -232967,7 +233420,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26176",
-      "oc": "OC23009"
+      "oc": "OC23009",
+      "comprador": "JOSE AMUNDARAIN",
+      "proveedor": "PUBLISELLOS ORINOCO, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 48897,
@@ -235822,7 +236278,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (CENAS) PARA PERSONAL DE CALIDAD MOTIVO: INSPECCIÓN DE BASTIDORES PATIOS HA/HB ENTREGA EN TIMACA HORA 6:00 PM RECIBE: RENNY HERNANDEZ PROYECTO: PATIOS HA/HB PMH DIA: 18/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -235852,7 +236308,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26267",
-      "oc": "OC23101"
+      "oc": "OC23101",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 98793,
@@ -248474,7 +248933,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "ALMUERZO 2 1/4 DE POLLO para Noel Gonzalez y Jose Nuñez 14/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -248504,7 +248963,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26069",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 96575,
@@ -256562,7 +257024,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "ALMUERZO 1/4 DE POLLO YHOSTIN ROMERO 12/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -256592,7 +257054,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26030",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 39609,
@@ -260433,7 +260898,7 @@
       "descripcion": "SERVICIO DE ROTULADO",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "SERVICIO DE FABRICACION DE CALCOMANIA DE IDENTIFICACION EQUIPOS MOVILES",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -260463,7 +260928,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25731",
-      "oc": "OC22512"
+      "oc": "OC22512",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PUBLICIDAD Y ROTULACIONES VELASQUEZ, F.P",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 99993,
@@ -265625,7 +266093,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "evaluacion de ingreso planificacion (ramses jara)\nproveedor medico express factura-000009350\ncosto 15,00 usd",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265655,7 +266123,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25705",
-      "oc": "OC22613"
+      "oc": "OC22613",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49907,
@@ -265670,7 +266141,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO COORDINACION DE PROCURA (RODOLFO PEREDA)\nPROVEEDOR MEDICO EXPRESS \nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265700,7 +266171,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26019",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49906,
@@ -265715,7 +266189,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO ELECTRICIDAD Y AUTOMATIZACION (IVIANA CALMA)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265745,7 +266219,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26021",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49905,
@@ -265760,7 +266237,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO MANTENIMIENTO MECANICO (MELWYN MARTINEZ)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265790,7 +266267,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26022",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49904,
@@ -265805,7 +266285,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO EQUIPOS MOVILES (JORGE GONZALEZ)\nPROVEEDOR VENEZOLANA DE SERVICIOS E INGENIERIA FACTURA-00024906\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265835,7 +266315,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26182",
-      "oc": "OC23036"
+      "oc": "OC23036",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "VENEZOLANA DE SERVICIOS E INGENIERIA CA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49903,
@@ -265850,7 +266333,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EGRESO PMH (DOUGLAS HERNANDEZ)\nPROVEEDOR VENEZOLANA DE SERVICIOS E INGENIERIA FACTURA-00024906\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265880,7 +266363,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26183",
-      "oc": "OC23036"
+      "oc": "OC23036",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "VENEZOLANA DE SERVICIOS E INGENIERIA CA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49902,
@@ -265895,7 +266381,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EGRESO PLANTA DE PELLAS (CESAR BRITO)\nPROVEEDOR MEDICO EXPRESS \nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265925,7 +266411,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26250",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49901,
@@ -265940,7 +266429,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE INGRESO MANTENIMIENTO MECANICO (CRISTIAN GARCIA)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265970,7 +266459,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26251",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 49900,
@@ -265985,7 +266477,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "EVALUACION DE EGRESO BCG (MIGUEL ESPINOZA)\nPROVEEDOR MEDICO EXPRESS\nCOSTO 15,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -266015,7 +266507,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26255",
-      "oc": "OC23072"
+      "oc": "OC23072",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "MEDICO EXPRESS, C.A.",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 32732,
@@ -267832,7 +268327,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "05 COMIDAS POR JORNADA EXTENDIDA PARRILLA MOVIL PLANTA DE PELLAS 17-09-2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -267862,7 +268357,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26233",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "QUE VAINA",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 96804,
@@ -273845,7 +274343,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "01 COMIDA (CENA) FECHA 12/09/2026 SOLICITANTE: JESÚS BARRIOS RECIBE EN TALLER TIMACA PROYECTO: 5B PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -273875,7 +274373,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26064",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 71705,
@@ -274208,7 +274709,7 @@
       "descripcion": "COPIA DE LLAVE",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "JOSE AMUNDARAIN",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "COPIA DE LLAVES PORTONES PATIO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -274238,7 +274739,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25893",
-      "oc": "OC22748"
+      "oc": "OC22748",
+      "comprador": "JOSE AMUNDARAIN",
+      "proveedor": "CERRAJERIA GUAYANA. C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 26661,
@@ -280880,7 +281384,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "4 de septiembre almuerzo cuarto de polllo  instructor del ince (yhostin romero)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -280910,7 +281414,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25794",
-      "oc": "OC22668"
+      "oc": "OC22668",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 95381,
@@ -286530,7 +287037,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SERVICIO DE TAXI TIMACA- BARILOCHE 02/09/2026 8:30PM CARLOS GALVEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -286560,7 +287067,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25856",
-      "oc": "OC22758"
+      "oc": "OC22758",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "ANIBAL GARCIA",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101125,
@@ -302593,7 +303103,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "ALMUERZO 1/4 DE POLLO YHOSTIN ROMERO 19/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -302623,7 +303133,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26187",
-      "oc": "OC23114"
+      "oc": "OC23114",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 79392,
@@ -325287,7 +325800,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "01 COMIDA (ALMUERZO) FECHA 13/09/2026 HORA 12:00 PM SOLICITANTE: JESÚS BARRIOS RECIBE EN TALLER TIMACA PROYECTO: 5B PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -325317,7 +325830,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26066",
-      "oc": "OC23018"
+      "oc": "OC23018",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 81415,
@@ -356985,7 +357501,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "REEMBOLSO DE SERVICIO DE TAXI CARLOS GALVEZ TIMACA-BARILOCHE 8:30PM 17/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -357015,7 +357531,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26237",
-      "oc": "OC23074"
+      "oc": "OC23074",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "HUMBERTO AVENDANO",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 39661,
@@ -359916,7 +360435,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25777",
-      "oc": "OC22561"
+      "oc": "OC22561",
+      "comprador": "KEYSERLING GÓMEZ",
+      "proveedor": "NACIMENTA CAPS, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 100911,
@@ -359931,7 +360453,7 @@
       "descripcion": "SERVICIO DE CRISTALERIA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "GR17 -- SERVICIO DE INSTALACION DE VIDRIO MEDIDOR DE NIVEL DE ACEITE HIDRAULICO GRUA GROVE TM890",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -359961,7 +360483,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25797",
-      "oc": "OC22608"
+      "oc": "OC22608",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "VIDRIOS EXTRUCTURAS CARONI, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 96574,
@@ -360881,7 +361406,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "LEGLANIS BRITO",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SUSTITUCION DE VOLANTES DAÑADO EN CILINDROS DE OXIGENO - NOTA DE VIRVA 2087",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -360911,7 +361436,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25767",
-      "oc": "OC22637"
+      "oc": "OC22637",
+      "comprador": "LEGLANIS BRITO",
+      "proveedor": "SUMINISTROS Y TRANSPORTES VIRVA, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 73231,
@@ -404376,7 +404904,7 @@
       "descripcion": "COPIA DE LLAVE",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "02 COPIAS DE LLAVE - PROYECTO 1LPP- SOLICTADO POR FAROUK",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -404406,7 +404934,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25931",
-      "oc": "OC22803"
+      "oc": "OC22803",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "CERRAJERIA GUAYANA. C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 30377,
@@ -467620,7 +468151,7 @@
       "descripcion": "COPIA DE LLAVE",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "SOLICITUD DE COPIA DE LLAVES PARA CAMPAMENTO PARRILLA MOVIL SOLICITANTE FERNANDO PADILLA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -467650,7 +468181,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26315",
-      "oc": "OC23170"
+      "oc": "OC23170",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "CERRAJERIA GUAYANA. C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 30376,
@@ -570759,7 +571293,7 @@
       "descripcion": "SUMINISTRO Y VACIADO DE CONCRETO Y AGREGADOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "ANDRES PORRAS",
       "motivo": "ADQUISICION DE PREMEZCLADO 180KG/CM2 \nJUEVES 24/09/26 \n11,00M3 (1:30PM)\nBANCADA ELÉCTRICA \nPROYECTO: SEGUNDA LINEA DE DESPACHO INTERNACIONAL PMH\nSOLICITANTE: GONZALO GONZALEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -570789,7 +571323,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26348",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "CONSTRUCTORA CUYUNI, C.A.",
+      "asignado": "ANDRES PORRAS"
     },
     {
       "id": 102739,
@@ -570804,7 +571341,7 @@
       "descripcion": "SUMINISTRO Y VACIADO DE CONCRETO Y AGREGADOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "ANDRES PORRAS",
       "motivo": "ADQUISICION DE PREMEZCLADO 180KG/CM2 \nSÁBADO 26/09/26 \n11,00M3. (11:00PM).\nBANCADA ELÉCTRICA \nPROYECTO: SEGUNDA LINEA DE DESPACHO INTERNACIONAL PMH\nSOLICITANTE: GONZALO GONZALEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -570834,7 +571371,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26349",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "CONSTRUCTORA CUYUNI, C.A.",
+      "asignado": "ANDRES PORRAS"
     },
     {
       "id": 101464,
@@ -570849,7 +571389,7 @@
       "descripcion": "Servicios profesionales de ingenieria",
       "cantidad": 0,
       "unidad": "UND",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Leyton Rodrigo",
       "motivo": "OC INTERNACIONAL TI-YAN-006 CONTRATACIÓN DE SERVICIOS DE INGENIERÍA ESPECIALIZADA DEL FABRICANTE (YANGZHOU FUSIONBMH) PARA LA REVISIÓN, VALIDACIÓN TÉCNICA, DIMENSIONAMIENTO Y ADECUACIÓN DEL DISEÑO DE COMPONENTES PRINCIPALES (POLEAS, REDUCTORES, ACOPLAMIENTOS E INSTRUMENTACIÓN) DESTINADOS AL PROYECTO DE REHABILITACIÓN DE CINTAS TRANSPORTADORAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -570879,7 +571419,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26293",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "",
+      "asignado": "Leyton Rodrigo"
     },
     {
       "id": 101222,
@@ -570894,7 +571437,7 @@
       "descripcion": "SERVICIO MANTENIMIENTO DE EXTINTOR",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "JOSE AMUNDARAIN",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "recarga y mantenimiento de 13 extintores incluyendo un co2 con ruedas",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -570924,7 +571467,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26312",
-      "oc": ""
+      "oc": "",
+      "comprador": "JOSE AMUNDARAIN",
+      "proveedor": "EXTINSUR, C.A",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 101068,
@@ -570939,7 +571485,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "LEYTON RODRIGO",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-1603 - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -570969,7 +571515,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26048",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "LEYTON RODRIGO"
     },
     {
       "id": 101067,
@@ -570984,7 +571533,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "LEYTON RODRIGO",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-4504 - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571014,7 +571563,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26049",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "LEYTON RODRIGO"
     },
     {
       "id": 101066,
@@ -571029,7 +571581,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "LEYTON RODRIGO",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-5011C - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571059,7 +571611,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26050",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "LEYTON RODRIGO"
     },
     {
       "id": 101065,
@@ -571074,7 +571629,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "LEYTON RODRIGO",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-5011A - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571104,7 +571659,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26051",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "LEYTON RODRIGO"
     },
     {
       "id": 101064,
@@ -571119,7 +571677,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "LEYTON RODRIGO",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-5052 - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571149,7 +571707,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26052",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "LEYTON RODRIGO"
     },
     {
       "id": 101063,
@@ -571164,7 +571725,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "LEYTON RODRIGO",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-9010 - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571194,7 +571755,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26053",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "YANGZHOU FUSIONBMH ENGINEERING CO. LTD",
+      "asignado": "LEYTON RODRIGO"
     },
     {
       "id": 101062,
@@ -571209,7 +571773,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Leyton Rodrigo",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-9011 - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571239,7 +571803,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26054",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "",
+      "asignado": "Leyton Rodrigo"
     },
     {
       "id": 101061,
@@ -571254,7 +571821,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Leyton Rodrigo",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-9012 - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571284,7 +571851,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26055",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "",
+      "asignado": "Leyton Rodrigo"
     },
     {
       "id": 101060,
@@ -571299,7 +571869,7 @@
       "descripcion": "SERVICIO DE INSTALACION Y SUMINISTROS DE EQUIPOS ELECTRONICOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Leyton Rodrigo",
       "motivo": "OC INTERNACIONAL TI-YAN-006 - SUMINISTRO INSTRUMENTACIÓN CINTA JD-9010B - PROYECTO REHABILITACIÓN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571329,7 +571899,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26056",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "",
+      "asignado": "Leyton Rodrigo"
     },
     {
       "id": 100833,
@@ -571344,7 +571917,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "CARLOS PEREZ",
       "motivo": "LOGISTICA DE MOVIMIENTO DE CALDERA SOLICITANTE EDGAR LAGOS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571374,7 +571947,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26145",
-      "oc": ""
+      "oc": "",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "",
+      "asignado": "CARLOS PEREZ"
     },
     {
       "id": 100832,
@@ -571389,7 +571965,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "CARLOS PEREZ",
       "motivo": "PROYECTO 5B - REPARACIÓN DE CARRO TENSOR SOLICITANTE JONATHAN GRELA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571419,7 +571995,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26146",
-      "oc": ""
+      "oc": "",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "",
+      "asignado": "CARLOS PEREZ"
     },
     {
       "id": 100831,
@@ -571434,7 +572013,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (ALMUERZOS) CON ENTREGA EN EL ROCK&INN LUNES 21/09/2026 HORA 2:00 PM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571464,7 +572043,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26147",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100830,
@@ -571479,7 +572061,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (CENAS) CON ENTREGA EN EL ROCK&INN LUNES 21/09/2026 HORA 6:30 PM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571509,7 +572091,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26148",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100829,
@@ -571524,7 +572109,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (DESAYUNOS) CON ENTREGA EN EL ROCK&INN MARTES 22/09/2026 HORA 7:00 AM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571554,7 +572139,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26149",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "CROCANTE BAKERY CAFE - BISTRO, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100828,
@@ -571569,7 +572157,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (ALMUERZOS) CON ENTREGA EN TIMACA MARTES 22/09/2026 HORA 12:00 \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571599,7 +572187,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26150",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100827,
@@ -571614,7 +572205,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (CENAS) CON ENTREGA EN EL ROCK&INN MARTES 22/09/2026 HORA 6:30 PM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571644,7 +572235,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26151",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100826,
@@ -571659,7 +572253,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (DESAYUNOS) CON ENTREGA EN EL ROCK&INN MIERCOLES 23/09/2026 HORA 7:00 AM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571689,7 +572283,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26152",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "CROCANTE BAKERY CAFE - BISTRO, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100825,
@@ -571704,7 +572301,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (ALMUERZOS) CON ENTREGA EN TIMACA MIERCOLES 23/09/2026 HORA 12:00\nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571734,7 +572331,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26153",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100824,
@@ -571749,7 +572349,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (CENAS) CON ENTREGA EN EL ROCK&INN MIERCOLES 23/09/2026 HORA 6:30 PM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571779,7 +572379,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26154",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100823,
@@ -571794,7 +572397,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (DESAYUNOS) CON ENTREGA EN EL ROCK&INN JUEVES 24/09/2026 HORA 7:00 AM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571824,7 +572427,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26155",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "CROCANTE BAKERY CAFE - BISTRO, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100822,
@@ -571839,7 +572445,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (ALMUERZOS) CON ENTREGA EN TIMACA JUEVES 24/09/2026 HORA 12:00 \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571869,7 +572475,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26156",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100821,
@@ -571884,7 +572493,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (CENAS) CON ENTREGA EN EL ROCK&INN JUEVES 24/09/2026 HORA 6:30 PM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571914,7 +572523,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26157",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100820,
@@ -571929,7 +572541,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (DESAYUNOS) CON ENTREGA EN EL ROCK&INN VIERNES 25/09/2026 HORA 7:00 AM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571959,7 +572571,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26158",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "CROCANTE BAKERY CAFE - BISTRO, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100819,
@@ -571974,7 +572589,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (ALMUERZOS) CON ENTREGA EN TIMACA VIERNES 25/09/2026 HORA 12:00 \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572004,7 +572619,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26159",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100818,
@@ -572019,7 +572637,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (CENAS) CON ENTREGA EN EL ROCK&INN VIERNES 25/09/2026 HORA 6:30 PM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572049,7 +572667,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26160",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100817,
@@ -572064,7 +572685,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (DESAYUNOS) CON ENTREGA EN EL ROCK&INN SABADO 26/09/2026 HORA 7:00 AM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572094,7 +572715,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26162",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "CROCANTE BAKERY CAFE - BISTRO, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100816,
@@ -572109,7 +572733,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (ALMUERZOS) CON ENTREGA EN TIMACA SABADO 26/09/2026 HORA 12:00 \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572139,7 +572763,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26163",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100815,
@@ -572154,7 +572781,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "02 COMIDAS (CENAS) CON ENTREGA EN EL ROCK&INN SABADO 26/09/2026 HORA 6:30 PM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572184,7 +572811,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26164",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "SHAWARMA LOS HERMANOS",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100814,
@@ -572199,7 +572829,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "3 CENAS POR JORNADA EXTENDIDA (DARWIN QUINTANA, CARLOS GALVEZ Y KILBER ROMERO) DE INGENIERIA PROYECTO PATIO HA Y HB",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572229,7 +572859,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26309",
-      "oc": ""
+      "oc": "",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100813,
@@ -572244,7 +572877,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "Carlos Perez",
       "motivo": "SOLICITUD DE 8 COMIDA (17/09/26) PARA INGENIERIA POR JORNADA EXTENDIDAD: CARLOS GÁLVEZ, DANIEL RAMOS, KILBER ROMERO, JOSELÍN ÁLVAREZ, EDUYN MAARQUÉZ, GABRIEL PACHECO, EDUARDO SALAZAR, PROYECTO PILAS HA Y HB SOLICITANTE LEIDIMAR MALAVE",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572274,7 +572907,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26346",
-      "oc": ""
+      "oc": "",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "QUE VAINA",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100812,
@@ -572289,7 +572925,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "SOLICITUD DE 4 COMIDAS PARA INGENIERÍA PROYECTO: PATIOS HA Y HB GABRIEL PACHECO, EDUYN MÁRQUEZ, CARLOS GÁLVEZ, JOSHUA GUERRA DIA: 22/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572319,7 +572955,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26350",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100811,
@@ -572334,7 +572973,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "HERNAN GARCIA",
+      "solicitante": "Carlos Perez",
       "motivo": "01 COMIDA POR JORNADA EXTENDIDA 22/09/2026 PLANTA DE PELLAS (JOSE PALMA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572364,7 +573003,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26352",
-      "oc": ""
+      "oc": "",
+      "comprador": "HERNAN GARCIA",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A.",
+      "asignado": "Carlos Perez"
     },
     {
       "id": 100215,
@@ -572379,7 +573021,7 @@
       "descripcion": "SERVICIO DE BALANCEO ESP.",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "REPARACIÓN POLEA DESVIADORA TENSORA-SIST. CINTA TRANSPORTADORA (BGII) SERVICIO DE EMERGENCIA CON EMINCA - BALANCEO DE POLEA , EN FECHA  21 SEPTIEMBRE 2026.",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572409,7 +573051,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26347",
-      "oc": ""
+      "oc": "",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "EMINCA, INGENIERIA Y ASESORIAS, C. A.",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 100031,
@@ -579890,7 +580535,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 0,
       "unidad": "UND",
-      "solicitante": "MANUEL CHAVEZ",
+      "solicitante": "ALBERT GONZALEZ",
       "motivo": "SERVICIOS DE REBABITADO DE COJINETES PARA ELEMENTOS DE LA TURBINA GA-4101 PARA BRIQUETAS FASE 2 SOLICITANTE JUNIOR SAYAGO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -579920,7 +580565,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26239",
-      "oc": ""
+      "oc": "",
+      "comprador": "MANUEL CHAVEZ",
+      "proveedor": "",
+      "asignado": "ALBERT GONZALEZ"
     },
     {
       "id": 74313,
@@ -581245,7 +581893,7 @@
       "descripcion": "HONORARIOS PROFESIONALES",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "ASTRID SILVA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "PAGO DE HONORARIOS PROFESIONALES , POR UN MONTO DE 800$ OPERADOR DE MAQUINA NELSON STUD - PROYECTO SEGUNDA LINEA DE PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -581275,7 +581923,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25846",
-      "oc": ""
+      "oc": "",
+      "comprador": "ASTRID SILVA",
+      "proveedor": "",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 65427,
@@ -581290,7 +581941,7 @@
       "descripcion": "HONORARIOS PROFESIONALES",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "MAILITH DEVERA",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "CONSULTA DE EMERGENCIA OFTALMOLOGICA DE JESUS MERIDA /DR. CESRA PILDAIN",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -581320,7 +581971,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25895",
-      "oc": ""
+      "oc": "",
+      "comprador": "MAILITH DEVERA",
+      "proveedor": "",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 65426,
@@ -581335,7 +581989,7 @@
       "descripcion": "HONORARIOS PROFESIONALES",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "FABIOLA LOPEZ",
+      "solicitante": "KEYSERLING GÓMEZ",
       "motivo": "CONSULTA CON CARDIOLOGO DR. TURMERO DEL TRABAJADOR JOSE MENDOZA / SOLDADOR",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -581365,7 +582019,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26314",
-      "oc": ""
+      "oc": "",
+      "comprador": "FABIOLA LOPEZ",
+      "proveedor": "",
+      "asignado": "KEYSERLING GÓMEZ"
     },
     {
       "id": 65288,
@@ -582915,7 +583572,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "GR15 -- SERVICIO DE FABRICACION KIT SELLOS BOMBA HIDRAULICA GRUA GROVE AT865N",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -582945,7 +583602,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26320",
-      "oc": ""
+      "oc": "",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 50280,
@@ -582960,7 +583620,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "JORDI MEJIAS",
       "motivo": "MC06 -- SERVICIO DE FABRICACION SELLOS DE TAPA CILINDRO HIDRAULICO DIRECCION MONTACARGA HYSTER",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -582990,7 +583650,10 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC26343",
-      "oc": ""
+      "oc": "",
+      "comprador": "Wuillians Guzman",
+      "proveedor": "PROVEIND, C.A",
+      "asignado": "JORDI MEJIAS"
     },
     {
       "id": 49366,

@@ -18,13 +18,33 @@ function parseDateToIso(dStr) {
   return str;
 }
 
+function cleanPersonName(raw) {
+  if (!raw) return '';
+  let str = raw.trim();
+  str = str.split(/(?:motivo|fecha|hora|lugar|depto|departamento|tel|tlf|cedula|ci|complemento|reemplazo|anexo|nota)[:\s]/i)[0];
+  str = str.replace(/[\(\)\[\]\.,;]/g, ' ').replace(/\s+/g, ' ').trim();
+  str = str.replace(/^(?:el\s+)?sr\.?\s+/i, '');
+  return str.trim();
+}
+
 function getSolicitanteCompra(cp) {
-  if (cp.solicitante && cp.solicitante.trim()) return cp.solicitante.trim();
+  if (cp.solicitante && cp.solicitante.trim()) return cleanPersonName(cp.solicitante);
+  
   if (cp.motivo) {
     const match = cp.motivo.match(/solicit(?:ad[oa]|ante)\s*(?:por)?[:\s]+([^\n\r,–-]+)/i);
-    if (match && match[1].trim()) return match[1].trim();
+    if (match && match[1]) {
+      const cleaned = cleanPersonName(match[1]);
+      if (cleaned.length >= 3 && cleaned.length <= 40 && !/^\d+$/.test(cleaned)) {
+        return cleaned;
+      }
+    }
   }
-  return cp.comprador || cp.proveedor || 'S/D';
+
+  if (cp.asignado && cp.asignado.trim() && cp.asignado.trim().toUpperCase() !== 'PROCESO ANULADO') {
+    return cleanPersonName(cp.asignado);
+  }
+
+  return cleanPersonName(cp.comprador) || 'S/D';
 }
 
 function classifyArticle(cod, desc, catMap) {
@@ -314,7 +334,10 @@ async function runSync() {
       ano: 2026,
       nombre_mes: 'octubre',
       sc: sc,
-      oc: oc
+      oc: oc,
+      proveedor: (r.proveedor || '').trim(),
+      comprador: (r.comprador || '').trim(),
+      asignado: (r.asignado || '').trim()
     });
   }
 

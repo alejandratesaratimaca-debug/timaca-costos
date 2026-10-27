@@ -789,7 +789,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       descripcion: c.descripcion,
                       cantidad: c.cantidad || 1,
                       unidad: c.unidad || 'UND',
-                      solicitante: c.solicitante || 'ALEJANDRA TESARA',
+                      solicitante: c.solicitante || orig?.solicitante || 'S/D',
                       motivo: c.motivo || `Consumo rezagado transferido a ${c.nuevoMes}`,
                       categoria: c.categoria || 'Productos Metalicos Estructurales',
                       precio_final: c.totalUSD || 0,
@@ -1460,6 +1460,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       totalUSD: item.total_usd != null ? item.total_usd : (item.totalUSD != null ? item.totalUSD : 0),
       solicitante: item.solicitante || item.solicitanteOComprador || item.apellidos_nombres || '',
       solicitanteOComprador: item.solicitante || item.solicitanteOComprador || item.apellidos_nombres || '',
+      comprador: item.comprador || '',
+      proveedor: item.proveedor || '',
       motivo: item.motivo || '',
       categoria: item.categoria || item.linea_prod_desc || item.tipo || '',
       esReclasificado: !!(item.ajuste && String(item.ajuste).includes('CORREGIDO')) || !!item.esReclasificado,
@@ -1556,7 +1558,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         ceco: (selectedMovimiento as any).ceco || 'MON-3',
         cantidad: (selectedMovimiento as any).cantidad || 1,
         unidad: (selectedMovimiento as any).unidad || 'UND',
-        solicitante: (selectedMovimiento as any).solicitante || 'ALEJANDRA TESARA',
+        solicitante: (selectedMovimiento as any).solicitante || 'S/D',
         categoria: (selectedMovimiento as any).categoria || '',
         datos_tipo_costo: (selectedMovimiento as any).datos_tipo_costo || 'Externo'
       };
@@ -1665,6 +1667,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             nuevoProyecto: item.datos_descripcion || 'Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)',
             nuevoMes: assignedMes,
             motivo: `Consumo rezagado asignado al mes de ${assignedMes} (registrado a destiempo en SIP: ${item.motivo || ''})`,
+            solicitante: item.solicitante || 'S/D',
             fecha: new Date().toISOString(),
             usuario: currentUser?.username || 'atesara'
           });
@@ -1950,10 +1953,20 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                     {/* 2. Solicitante */}
                     <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                      <span className="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">Solicitante / Persona:</span>
+                      <span className="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">Solicitado por (SIP):</span>
                       <div className="text-xs font-bold text-slate-900">
                         {selectedMovimiento.solicitante || selectedMovimiento.solicitanteOComprador || 'S/D'}
                       </div>
+                      {(selectedMovimiento as any).comprador && (selectedMovimiento as any).comprador !== selectedMovimiento.solicitante && (
+                        <div className="text-[10px] text-slate-500 mt-1">
+                          Comprador SIP: <span className="font-semibold text-slate-700">{(selectedMovimiento as any).comprador}</span>
+                        </div>
+                      )}
+                      {(selectedMovimiento as any).proveedor && (
+                        <div className="text-[10px] text-slate-500 mt-0.5">
+                          Proveedor: <span className="font-semibold text-slate-700">{(selectedMovimiento as any).proveedor}</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* 3. Documento Oficial SIP */}
@@ -3522,7 +3535,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             {r.unidad}
                           </td>
                           <td className="py-2 px-3 text-slate-700 border-r border-slate-100 font-sans min-w-[150px] whitespace-normal break-words leading-snug" title={r.solicitante}>
-                            {r.solicitante}
+                            <div className="font-medium text-slate-800">{r.solicitante}</div>
+                            {r.proveedor && (
+                              <div className="text-[10px] text-slate-400 truncate max-w-[160px]" title={`Proveedor: ${r.proveedor}`}>
+                                🏢 {r.proveedor}
+                              </div>
+                            )}
                           </td>
                           <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans bg-amber-50/20 min-w-[280px] whitespace-normal break-words leading-snug" title={r.motivo}>
                             {r.motivo || <span className="text-slate-400 italic font-mono">-</span>}
@@ -4693,11 +4711,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       <div className="p-2.5 bg-white rounded-lg border border-rose-200 shadow-2xs">
                         <span className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1.5 mb-0.5">
                           <User className="w-3.5 h-3.5 text-blue-600" />
-                          Persona que hizo la solicitud:
+                          Solicitado por (SIP):
                         </span>
                         <div className="text-xs font-bold text-slate-900">
                           {selectedMovimiento.solicitante || selectedMovimiento.solicitanteOComprador || 'S/D'}
                         </div>
+                        {(selectedMovimiento as any).comprador && (selectedMovimiento as any).comprador !== selectedMovimiento.solicitante && (
+                          <div className="text-[10px] text-slate-500 mt-1">
+                            Comprador SIP: <span className="font-semibold text-slate-700">{(selectedMovimiento as any).comprador}</span>
+                          </div>
+                        )}
+                        {(selectedMovimiento as any).proveedor && (
+                          <div className="text-[10px] text-slate-500 mt-0.5">
+                            Proveedor: <span className="font-semibold text-slate-700">{(selectedMovimiento as any).proveedor}</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* 3. Documento Oficial SIP */}
