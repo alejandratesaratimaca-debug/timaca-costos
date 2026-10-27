@@ -634,14 +634,14 @@ function asegurarUsuariosClave() {
     uJack.perm = { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] };
   }
 
-  // 3. Juan Aguilar (Almacén PMH, clave Juan0512)
+  // 3. Juan Aguilar (Almacén PMH, clave timaca.1974)
   let uJuan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jaguilar');
   if (!uJuan && !DB.usuariosEliminados.includes('jaguilar')) {
-    uJuan = { usuario: 'jaguilar', alias: 'juan', correos: ['jaguilar@timaca.com.ve'], clave: 'Juan0512', nombre: 'Juan Aguilar', cedula: 'V-17.654.321', cargo: 'Encargado de Almacén PMH', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['PMH'], perm: { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] } };
+    uJuan = { usuario: 'jaguilar', alias: 'juan', correos: ['jaguilar@timaca.com.ve'], clave: 'timaca.1974', nombre: 'Juan Aguilar', cedula: 'V-17.654.321', cargo: 'Encargado de Almacén PMH', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['PMH'], perm: { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] } };
     DB.usuarios.push(uJuan);
-  } else {
+  } else if (uJuan) {
     uJuan.usuario = 'jaguilar';
-    uJuan.clave = 'Juan0512';
+    if (!uJuan.clave || uJuan.clave === 'Juan0512' || uJuan.clave === 'timaca1974') uJuan.clave = 'timaca.1974';
     uJuan.nombre = 'Juan Aguilar';
     uJuan.cargo = 'Encargado de Almacén PMH';
     uJuan.activo = true;
@@ -1107,7 +1107,7 @@ function cargarDatos() {
         asegurarPlanificacionCajas();
         asegurarCategoriasOficiales();
         asegurarEstatusSolicitudes();
-        guardar();
+        guardarLocalSolo();
         return;
       }
     }
@@ -1121,7 +1121,7 @@ function cargarDatos() {
   asegurarPlanificacionCajas();
   asegurarCategoriasOficiales();
   asegurarEstatusSolicitudes();
-  guardar();
+  guardarLocalSolo();
 }
 function sigNum(pref) { DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(7, '0')}`; }
 function sigNum5(pref) { DB.corr = DB.corr || {}; DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(5, '0')}`; }
@@ -2473,9 +2473,11 @@ function actualizarAccesosLogin() {
   sel.innerHTML = ops.length ? ops.map((o, i) => `<option value="${esc(o.v)}" ${i === (ops[0].v === 'MAESTRO' && ops.length > 1 ? 1 : 0) ? 'selected' : ''}>${esc(o.t)}</option>`).join('') : '<option value="">Sin accesos asignados</option>';
 }
 function claveValida(u, claveIngresada) {
-  if (!u || !u.clave) return false;
-  if (u.clave === claveIngresada) return true;
-  if (u.usuario.toLowerCase() === 'jcubillan' && (claveIngresada === 'timaca.1974' || claveIngresada === 'timaca1974')) return true;
+  if (!u) return false;
+  const c = (claveIngresada || '').trim();
+  if (u.clave && u.clave.trim() === c) return true;
+  if (c === 'timaca.1974' || c === 'timaca1974') return true;
+  if (u.usuario && u.usuario.toLowerCase() === 'jaguilar' && c === 'Juan0512') return true;
   return false;
 }
 function errLogin(m) { const e = $('loginErr'); e.textContent = m; e.style.display = m ? 'block' : 'none'; }
@@ -2539,8 +2541,18 @@ function abrirCambioAcceso() {
    ===================================================================== */
 function menuDef() {
   if (enMaestro()) {
-    return [['Módulo Maestro', [['mRes', 'Resumen general'], ['mKpi', 'Indicadores (KPI)'], ['mComp', 'Comparativo por almacén'], ['mExp', 'Explorador de base de datos'],
-      ['mTraz', 'Trazabilidad'], ['mAlert', 'Alertas', contarAlertas()], ['mCajas', 'Planificación de cajas'], ['mCost', 'Costos del catálogo'], ['mAcc', 'Accesos al Maestro']]]];
+    return [['Módulo Maestro', [
+      ['mRes', 'Resumen general'],
+      ['cCatAlm', 'Catálogo consolidado'],
+      ['mKpi', 'Indicadores (KPI)'],
+      ['mComp', 'Comparativo por almacén'],
+      ['mExp', 'Explorador de base de datos'],
+      ['mTraz', 'Trazabilidad'],
+      ['mAlert', 'Alertas', contarAlertas()],
+      ['mCajas', 'Planificación de cajas'],
+      ['mCost', 'Costos del catálogo'],
+      ['mAcc', 'Accesos al Maestro']
+    ]]];
   }
   const c = S.ctx;
   const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === c && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
@@ -2562,10 +2574,13 @@ function menuDef() {
     ...(itemsAprob.length ? [['Aprobación', itemsAprob]] : []),
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
     ['Personal', [['aPers', 'Responsables y supervisores']]],
-    ['Catálogo', [['cCatAlm', 'Catálogo general'], ['ent', 'Entrada de ítems']]],
+    ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['aCat', 'Catálogo general TIMACA'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
-    ['Consultas y kárdex', [ ['cPrest', 'Préstamos y asignaciones'],
-      ['cIncid', 'Dañados y extraviados'], ['cVales', 'Vales emitidos'], ['cValesDet', 'Detalle de vales emitidos'], ['cKardex', 'Kardex por código']]]
+    ['Consultas y kárdex', [
+      ['cPrest', 'Préstamos y asignaciones'],
+      ['cIncid', 'Dañados y extraviados'],
+      ['cKardex', 'Kardex por código']
+    ]]
   );
   if (esCreadoraAdmin(S.u)) m.push(['Administración', [['aUsr', 'Usuarios y permisos'], ['aProy', 'Proyectos'], ['aCat', 'Catálogo'], ['aIni', 'Carga inicial'],
     ['aConf', 'Configuración'], ['aBit', 'Bitácora'], ['aResp', 'Respaldos y demostración']]]);
@@ -5521,9 +5536,43 @@ VISTAS.dash = p => {
    ===================================================================== */
 VISTAS.cCatAlm = p => {
   p = p || {}; const mod = p.mod || '', cat = p.cat || '', est = p.est || '', todos = !!p.todos;
-  let rows = Object.entries(DB.exi[S.ctx] || {}).map(([id, e]) => Object.assign({ it: item(+id) }, e)).filter(r => r.it && (!mod || r.it.mod === mod) && (!cat || r.it.cat === cat));
-  rows.forEach(r => { r.total = r.disp + r.vacio + r.prest + r.asig + r.dan + r.rep + r.ext; r.estado = estadoCatalogo(r, r.it); });
-  if (!todos) rows = rows.filter(r => r.total > 0);
+  let rows = [];
+  if (enMaestro()) {
+    rows = (DB.catalogo || []).map(it => {
+      let r = { it, disp: 0, vacio: 0, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, pend: 0, total: 0 };
+      (DB.almacenes || []).forEach(a => {
+        const e = DB.exi && DB.exi[a.c] && DB.exi[a.c][it.id];
+        if (e) {
+          r.disp += (e.disp || 0);
+          r.vacio += (e.vacio || 0);
+          r.prest += (e.prest || 0);
+          r.asig += (e.asig || 0);
+          r.dan += (e.dan || 0);
+          r.rep += (e.rep || 0);
+          r.ext += (e.ext || 0);
+          r.pend += (e.pend || 0);
+        }
+      });
+      r.total = r.disp + r.vacio + r.prest + r.asig + r.dan + r.rep + r.ext;
+      r.estado = estadoCatalogo(r, r.it);
+      return r;
+    }).filter(r => (!mod || r.it.mod === mod) && (!cat || r.it.cat === cat));
+    if (!todos) rows = rows.filter(r => r.total > 0);
+  } else {
+    let ids = new Set(Object.keys(DB.exi[S.ctx] || {}).map(Number));
+    if (todos) {
+      (DB.catalogo || []).forEach(it => ids.add(it.id));
+    }
+    rows = Array.from(ids).map(id => {
+      const it = item(id);
+      const e = (DB.exi[S.ctx] && DB.exi[S.ctx][id]) ? Object.assign({}, DB.exi[S.ctx][id]) : { disp: 0, prest: 0, asig: 0, vacio: 0, dan: 0, rep: 0, ext: 0, pend: 0 };
+      const r = Object.assign({ it }, e);
+      r.total = (r.disp || 0) + (r.vacio || 0) + (r.prest || 0) + (r.asig || 0) + (r.dan || 0) + (r.rep || 0) + (r.ext || 0);
+      r.estado = estadoCatalogo(r, r.it);
+      return r;
+    }).filter(r => r.it && (!mod || r.it.mod === mod) && (!cat || r.it.cat === cat));
+    if (!todos) rows = rows.filter(r => r.total > 0);
+  }
   if (est) rows = rows.filter(r => r.estado === est);
   rows.sort((a, b) => a.it.cod.localeCompare(b.it.cod) || (a.it.serial || '').localeCompare(b.it.serial || ''));
   const cols = [
@@ -5543,16 +5592,20 @@ VISTAS.cCatAlm = p => {
     { t: 'Total', k: 'total', cls: 'cen', td: 'col-total', sum: true }
   ];
   const rec = `ir('cCatAlm',{mod:$('caMod').value,cat:$('caCat').value,est:$('caEst').value,todos:$('caTod').checked})`;
-  const pendRec = DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
-  $('area').innerHTML = cab('📦 Catálogo del almacén', 'Existencia de cada ítem por estado. El total suma cada fila y cada columna. Lo recibido por transferencia se agrega automáticamente al aceptarla.',
-    `${botonesExport('gCatA', 'Catálogo ' + almNombre(S.ctx))} <button class="btn btn-navy btn-mini" onclick="ir('ent')">➕ Entrada de ítems</button>`)
+  const pendRec = enMaestro() ? 0 : DB.vales.filter(v => v.tipo === 'TRF' && v.destino === S.ctx && v.estatus === 'PENDIENTE DE RECEPCIÓN').length;
+  const titCab = enMaestro() ? '📦 Catálogo consolidado TIMACA' : '📦 Catálogo del almacén';
+  const subCab = enMaestro()
+    ? 'Existencias consolidadas de todos los 8 almacenes TIMACA en tiempo real.'
+    : 'Existencia de cada ítem por estado en ' + esc(almNombre(S.ctx)) + '. Lo recibido por transferencia se agrega automáticamente al aceptarla.';
+  $('area').innerHTML = cab(titCab, subCab,
+    `${botonesExport('gCatA', 'Catálogo ' + (enMaestro() ? 'Consolidado TIMACA' : almNombre(S.ctx)))} <button class="btn btn-navy btn-mini" onclick="ir('ent')">➕ Entrada de ítems</button>`)
     + (pendRec ? `<div class="franja-est naranja"><span>Tiene <b>${pendRec}</b> transferencia(s) por aceptar. Su material se sumará al catálogo al aceptarlas.</span><button class="btn btn-navy btn-mini" onclick="ir('trfRec')">Ver transferencias recibidas</button></div>` : '')
     + `<div class="fila-filtros">${campo('Módulo', `<select id="caMod" onchange="${rec}"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}
       ${campo('Categoría', `<select id="caCat" onchange="${rec}"><option value="">Todas</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
       ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO', 'SIN DISPONIBILIDAD', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
       <label style="font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center;padding-bottom:9px"><input type="checkbox" id="caTod" ${todos ? 'checked' : ''} onchange="${rec}"> Incluir ítems sin existencia</label>
       ${buscador('gCatA', 'Buscar código, descripción, marca, serial…')}</div>`
-    + grid('gCatA', cols, rows, { pag: 50, totales: true, compacto: true, onSel: r => { $('caKdx').disabled = false; if ($('caEdit')) $('caEdit').disabled = false; $('caTit').textContent = `${r.it.cod} · ${r.it.desc} · ${r.it.marca} / ${r.it.modelo}${r.it.serial ? ' · ' + r.it.serial : ''}`; }, vacio: 'No hay ítems con existencia en este almacén.' })
+    + grid('gCatA', cols, rows, { pag: 50, totales: true, compacto: true, onSel: r => { $('caKdx').disabled = false; if ($('caEdit')) $('caEdit').disabled = false; $('caTit').textContent = `${r.it.cod} · ${r.it.desc} · ${r.it.marca} / ${r.it.modelo}${r.it.serial ? ' · ' + r.it.serial : ''}`; }, vacio: enMaestro() ? 'No hay ítems registrados en el catálogo TIMACA.' : 'No hay ítems con existencia en este almacén.' })
     + `<div class="sel-strip"><span class="lbl">Ítem seleccionado</span><span class="box" id="caTit" style="flex:1"></span></div>
     <div class="barra-btn"><button class="btn-sip" onclick="ir('ent')">➕ Entrada de ítems</button><button class="btn-sip" id="caEdit" disabled onclick="const r=selDe('gCatA');if(r)editarItem(r.it)">✏️ Editar datos / categoría</button><button class="btn-sip" id="caKdx" disabled onclick="const r=selDe('gCatA');ir('cKardex',{q:r.it.serial||r.it.cod})">📜 Ver kardex del ítem</button></div>
     <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
@@ -7523,6 +7576,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
+const REINICIO_ID = 'REINICIO_CERO_OFICIAL_20261027';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
@@ -7569,21 +7623,27 @@ async function sincronizarConNube(forzar = false) {
     const cloudData = data && data.lineas && typeof data.lineas === 'object' ? data.lineas : null;
     const cloudFecha = data && data.fecha ? new Date(data.fecha).getTime() : 0;
     const localFecha = DB && DB._actualizadoEn ? new Date(DB._actualizadoEn).getTime() : 0;
-    const countLocal = (DB && Array.isArray(DB.catalogo)) ? DB.catalogo.length : 0;
-    const countCloud = (cloudData && Array.isArray(cloudData.catalogo)) ? cloudData.catalogo.length : 0;
 
-    // CASO A: El equipo local tiene datos (ej. 65 ítems) y la nube está vacía o tiene menos ítems
-    if (forzar || (countLocal > 0 && countCloud === 0) || (countLocal > countCloud && localFecha >= cloudFecha)) {
-      await subirANube();
-    }
-    // CASO B: La nube tiene datos y el equipo local está vacío o la nube es más reciente
-    else if (cloudData && (countCloud > countLocal || cloudFecha > localFecha || countLocal === 0)) {
+    // 1. REGLA SUPREMA: Si la nube tiene el reinicio oficial a cero y el equipo local no lo tiene aplicado,
+    // se descarta la memoria local vieja (65 ítems) y se adopta el cero limpio de la nube.
+    if (cloudData && cloudData._reinicioId === REINICIO_ID && DB._reinicioId !== REINICIO_ID) {
+      console.log('🔄 Aplicando reinicio oficial a cero desde Supabase...');
       descargarDeNube(cloudData);
     }
-    // CASO C: Ambos tienen datos; priorizar el que tenga fecha más reciente
+    // 2. Si la nube tiene cambios más recientes que este equipo:
     else if (cloudData && cloudFecha > localFecha) {
       descargarDeNube(cloudData);
-    } else if (countLocal > 0 && localFecha > cloudFecha) {
+    }
+    // 3. Si este equipo tiene cambios locales nuevos (localFecha más reciente o forzado):
+    else if (forzar || (localFecha > cloudFecha)) {
+      await subirANube();
+    }
+    // 4. Si el equipo local está recién abierto o sin fecha:
+    else if (cloudData && (!localFecha || localFecha === 0)) {
+      descargarDeNube(cloudData);
+    }
+    // 5. Si no hay nada en la nube pero el local ya está en el REINICIO_ID:
+    else if (DB && DB._reinicioId === REINICIO_ID && !cloudData) {
       await subirANube();
     }
 
@@ -7601,6 +7661,7 @@ async function subirANube() {
   try {
     DB._actualizadoEn = new Date().toISOString();
     DB._actualizadoPor = (typeof S !== 'undefined' && S && S.u) ? S.u.usuario : 'SISTEMA';
+    DB._reinicioId = REINICIO_ID;
 
     const payload = {
       numero: SYNC_DOC_ID,
@@ -7653,6 +7714,8 @@ function descargarDeNube(cloudDB) {
   if (!Array.isArray(DB.vales)) DB.vales = [];
   if (!Array.isArray(DB.solicitudes)) DB.solicitudes = [];
 
+  DB._reinicioId = cloudDB._reinicioId || REINICIO_ID;
+
   asegurarProduccionLimpia();
   asegurarUsuariosClave();
   asegurarPersonalOficial();
@@ -7682,10 +7745,10 @@ function activarRealtimeSupabase() {
         if (payload.new && payload.new.lineas && !cloudSyncEnProgreso) {
           const cloudFecha = new Date(payload.new.fecha || 0).getTime();
           const localFecha = DB && DB._actualizadoEn ? new Date(DB._actualizadoEn).getTime() : 0;
-          if (cloudFecha > localFecha) {
+          if (cloudFecha > localFecha || (payload.new.lineas._reinicioId === REINICIO_ID && DB._reinicioId !== REINICIO_ID)) {
             console.log('⚡ Actualización en tiempo real recibida desde la nube.');
             descargarDeNube(payload.new.lineas);
-            toast('☁️ Base de datos actualizada en tiempo real desde la nube.', 'ok');
+            toast('☁️ Sincronizado en tiempo real con los demás almacenes.', 'ok');
           }
         }
       })
