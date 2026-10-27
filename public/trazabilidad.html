@@ -552,6 +552,7 @@ function asegurarStockBaseProduccion() {
 
 function asegurarProduccionLimpia() {
   if (!DB) return;
+  if (Array.isArray(DB.catalogo) && DB.catalogo.length > 0) return;
   if (DB.produccionTotalCero && DB.version >= 15) return;
 
   // Catálogo e inventario en 0 absoluto para inicio limpio oficial
@@ -1098,18 +1099,8 @@ function cargarDatos() {
       const parsed = JSON.parse(r);
       if (parsed && Array.isArray(parsed.usuarios) && parsed.usuarios.length && Array.isArray(parsed.catalogo) && Array.isArray(parsed.almacenes)) {
         DB = parsed;
-        if (DB._reinicioId !== REINICIO_ID) {
-          console.log('🧹 Reiniciando base de datos a CERO limpio (V3)...');
-          DB.catalogo = [];
-          DB.movs = [];
-          DB.vales = [];
-          DB.solicitudes = [];
-          DB.incid = [];
-          DB.corr = { PRH: 0, ASI: 0, TRF: 0, SOL: 0, ENT: 0, DEV: 0, DAN: 0, EXT: 0, PLZ: 0 };
-          DB.seq = { mov: 0, inc: 0 };
-          DB.exi = { CENTRAL: {}, PELLAS: {}, 'BOCA GRANDE': {}, PMH: {}, BRIQUETAS: {}, ECO: {}, SMB: {}, FABRICACION: {} };
+        if (!DB._reinicioId) {
           DB._reinicioId = REINICIO_ID;
-          DB._actualizadoEn = new Date().toISOString();
         }
         if (!DB.cajasTotalmenteCeroV1) {
           DB.cajasTipos = [];
@@ -4595,11 +4586,7 @@ function pintarEntrada() {
         <div class="campo" style="justify-content:flex-end;gap:8px" id="eBtnArea">
           ${esEdicion
             ? `<button class="btn btn-ambar" onclick="guardarEdicionEntrada()">💾 Guardar corrección</button> <button class="btn btn-claro" onclick="cancelarEdicionEntrada()">❌ Cancelar</button>`
-            : `<label>&nbsp;</label>
-               <div style="display:flex;gap:6px;flex-wrap:wrap">
-                 <button type="button" class="btn btn-verde" onclick="guardarEntradaDirecta()" style="font-weight:800" title="Registra y guarda el ítem en el almacén de inmediato">💾 Registrar en almacén (1 clic)</button>
-                 <button type="button" class="btn btn-claro" onclick="agregarEntrada()" title="Agrega a la lista para guardar varios ítems juntos en un solo vale">➕ Agregar a lote</button>
-               </div>`
+            : `<label>&nbsp;</label><button type="button" class="btn-salvar" onclick="agregarEntrada()">➕ Agregar ítem</button>`
           }
         </div>
       </div></div>`}
@@ -4897,9 +4884,13 @@ function pintarLineasEntrada() {
 
 function registrarEntradaUI() {
   run(() => {
+    if (!E.lineas.length && $('eCod') && $('eCod').value.trim() && $('eDesc') && $('eDesc').value.trim()) {
+      agregarEntrada();
+    }
+    if (!E.lineas.length) throw new Error('Agregue al menos un ítem a la entrada.');
     const v = registrarEntrada({ origen: S.ctx, lineas: E.lineas, obs: $('enObs') ? $('enObs').value.trim() : '' });
     E.hecho = v.num;
-    toast(`Entrada ${v.num} registrada.`, 'ok');
+    toast(`✅ Entrada ${v.num} registrada en ${almNombre(S.ctx)} con ${v.lineas.length} ítem(s).`, 'ok');
     pintarEntrada();
   });
 }
@@ -7314,7 +7305,7 @@ VISTAS.aIni = () => {
   if (esEdicion && itEdit) window.__iniItem = itEdit;
 
   const btnHtml = esEdicion
-    ? `<button class="btn btn-ambar" onclick="accionIni()">💾 Guardar corrección</button> <button class="btn btn-claro" onclick="cancelarEdicionIni()">❌ Cancelar</button>`
+    ? `<button class="btn btn-ambar" onclick="accionIni()">💾 Guardar corrección</button> <button class="btn btn-rojo" onclick="eliminarCargaIni(${movEdit.n})">🗑️ Revertir registro</button> <button class="btn btn-claro" onclick="cancelarEdicionIni()">❌ Cancelar</button>`
     : `<button class="btn btn-verde" onclick="accionIni()">➕ Registrar carga inicial</button>`;
 
   const colsIni = [
@@ -7326,13 +7317,7 @@ VISTAS.aIni = () => {
     { t: 'Serial', v: r => r.serial || '-' },
     { t: 'Cant.', k: 'cant', cls: 'num' },
     { t: 'Estado', v: r => estB(r.estNue || 'DISPONIBLE') },
-    { t: 'Usuario', k: 'usr' },
-    { t: 'Acciones', v: r => `
-      <div style="display:flex;gap:4px">
-        <button class="btn btn-chico btn-azul" onclick="event.stopPropagation();cargarParaEditarIni(${r.n})">✏️ Corregir</button>
-        <button class="btn btn-chico btn-rojo" onclick="event.stopPropagation();eliminarCargaIni(${r.n})">🗑️ Revertir</button>
-      </div>`
-    }
+    { t: 'Usuario', k: 'usr' }
   ];
 
   const cargas = DB.movs.filter(m => m.tipo === 'INI' && (enMaestro() || m.origen === S.ctx)).slice().reverse();
@@ -7358,7 +7343,7 @@ VISTAS.aIni = () => {
     + `<div class="panel">
       <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center">
         <span>Cargas iniciales registradas (${cargas.length})</span>
-        <small style="color:var(--texto-3)">Haga clic en cualquier fila o en ✏️ Corregir para arreglar cantidad, categoría o almacén</small>
+        <small style="color:var(--texto-3)">Haga clic en cualquier fila para seleccionarla y editarla</small>
       </div>
       <div class="panel-b">${grid('gIni', colsIni, cargas, { pag: 15, onSel: r => cargarParaEditarIni(r.n), vacio: 'No hay cargas iniciales registradas aún.' })}</div>
     </div>`;
