@@ -121,12 +121,58 @@ export const getCostoConsumoUnitario = (c: ConsumoItem): number => {
   return 0;
 };
 
-// Helper para clasificar conceptos de servicios de obra y fletes (USE / SE...)
+// Helper para clasificar conceptos de servicios de obra y fletes (código SE... o unidad USE)
 export const esServicioConcepto = (codigo: string, unidad?: string, categoria?: string): boolean => {
   const cod = (codigo || '').toUpperCase().trim();
   const uni = (unidad || '').toUpperCase().trim();
+
+  // En la codificación de TIMACA, los prefijos de almacén e inventario físico NUNCA son servicios:
+  // RP (Repuestos), AC (Aceros/Planchas), MA (Materiales), CO (Consumibles), 
+  // HE (Herramientas), EQ (Equipos), SI (Seguridad Ind/EPP), TM (Taller Mecánico)
+  if (
+    cod.startsWith('RP') ||
+    cod.startsWith('AC') ||
+    cod.startsWith('MA') ||
+    cod.startsWith('CO') ||
+    cod.startsWith('HE') ||
+    cod.startsWith('EQ') ||
+    cod.startsWith('SI') ||
+    cod.startsWith('TM')
+  ) {
+    return false;
+  }
+
+  // Servicios oficiales de TIMACA: el código comienza con 'SE' o la unidad es 'USE'
+  if (cod.startsWith('SE') || uni === 'USE') {
+    return true;
+  }
+
+  // Para cualquier otro código no estándar, si su categoría es explícitamente SERVICIOS y no tiene unidad física de almacén
   const cat = (categoria || '').toUpperCase().trim();
-  return cod.startsWith('SE') || uni === 'USE' || cat.includes('SERVICIO') || cat.includes('FLETE');
+  const esUnidadFisica = ['JG', 'KG', 'MTR', 'LTS', 'PZA', 'M2', 'M3', 'TON', 'PL', 'ROLLO', 'CAJA', 'SACO', 'PAR'].includes(uni);
+  return !esUnidadFisica && (cat.includes('SERVICIO') || cat.includes('FLETE'));
+};
+
+// Helper para normalizar categorías erróneas cargadas en SIP (ej. repuestos físicos con categoría SERVICIOS)
+export const normalizarCategoria = (codigo: string, categoriaOriginal?: string): string => {
+  const cod = (codigo || '').toUpperCase().trim();
+  const cat = (categoriaOriginal || '').trim();
+
+  // Si el código es RP... (Repuestos) pero en SIP fue registrado como "SERVICIOS", corregir a "Repuestos Mecánicos"
+  if (cod.startsWith('RP') && cat.toUpperCase().includes('SERVICIO')) {
+    return 'Repuestos Mecánicos';
+  }
+  // Si no tiene categoría o es genérica, inferir del prefijo estándar
+  if (!cat || cat === 'Compras Directas' || cat === 'Materiales Directos') {
+    if (cod.startsWith('RP')) return 'Repuestos Mecánicos';
+    if (cod.startsWith('AC')) return 'Materiales Acero Al Carbono';
+    if (cod.startsWith('CO')) return 'Consumibles';
+    if (cod.startsWith('HE')) return 'Herramientas';
+    if (cod.startsWith('EQ')) return 'Equipos';
+    if (cod.startsWith('SI')) return 'Seguridad Industrial';
+    if (cod.startsWith('SE')) return 'SERVICIOS';
+  }
+  return cat || 'Materiales Directos';
 };
 
 interface CatalogoPreciosViewProps {
@@ -268,7 +314,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           codigo: cod,
           descripcion: (c.descripcion || '').trim(),
           unidad: (c.unidad || 'UND').trim(),
-          categoria: (c.categoria || 'Materiales Directos').trim(),
+          categoria: normalizarCategoria(cod, c.categoria),
           totalConsumos: 0,
           cantidadConsumida: 0,
           totalMontoConsumosUSD: 0,
@@ -300,7 +346,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           codigo: cod,
           descripcion: (comp.descripcion || '').trim(),
           unidad: (comp.unidad || 'UND').trim(),
-          categoria: (comp.categoria || 'Compras Directas').trim(),
+          categoria: normalizarCategoria(cod, comp.categoria),
           totalConsumos: 0,
           cantidadConsumida: 0,
           totalMontoConsumosUSD: 0,
@@ -1054,7 +1100,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                         {item.esServicio && item.cantidadConsumida === 0 ? (
                           <div>
                             <span className="text-slate-400 font-sans text-[11px] italic" title="En SIP, los servicios no generan salidas de almacén físico. Su costo se registra contra la orden de compra.">
-                              0 USE (Sin despacho físico)
+                              0 {item.unidad || 'USE'} (Sin despacho físico)
                             </span>
                             <div className="text-[10px] text-slate-400 font-sans">
                               Imputación directa OC
