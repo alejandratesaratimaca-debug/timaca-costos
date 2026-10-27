@@ -439,7 +439,12 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       } else if (costoDespachoProm === 0 && precioUltima === 0) {
         estado = 'critico';
       } else if (costoDespachoProm === 0 && precioUltima > 0) {
-        estado = 'desfase';
+        // Si no ha habido salidas de almacén físico (totalConsumos === 0), no hay desfase: el precio es conforme según la OC
+        if (art.totalConsumos === 0) {
+          estado = 'conforme';
+        } else {
+          estado = 'desfase';
+        }
       } else if (Math.abs(varPorc) > 5) {
         estado = 'desfase';
       } else {
@@ -1122,13 +1127,19 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
                       {/* Costo Despacho SIP */}
                       <td className="py-2.5 px-3 text-right font-mono whitespace-nowrap">
-                        <span className={`font-bold ${
-                          item.costoPromedioDespacho === 0 
-                            ? 'text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-300' 
-                            : 'text-slate-900'
-                        }`}>
-                          ${item.costoPromedioDespacho.toFixed(2)}
-                        </span>
+                        {item.totalConsumos === 0 ? (
+                          <span className="text-slate-400 font-sans text-[11px] italic" title="No registra salidas de almacén en el período">
+                            - (Sin salidas)
+                          </span>
+                        ) : (
+                          <span className={`font-bold ${
+                            item.costoPromedioDespacho === 0 
+                              ? 'text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-300' 
+                              : 'text-slate-900'
+                          }`}>
+                            ${item.costoPromedioDespacho.toFixed(2)}
+                          </span>
+                        )}
                       </td>
 
                       {/* Última Compra SIP */}
@@ -1175,7 +1186,11 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
 
                       {/* Variación % */}
                       <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                        {item.costoPromedioDespacho === 0 && item.precioUltimaCompra === 0 ? (
+                        {item.totalConsumos === 0 && item.precioUltimaCompra > 0 ? (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            Precio OC OK
+                          </span>
+                        ) : item.costoPromedioDespacho === 0 && item.precioUltimaCompra === 0 ? (
                           <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-100 text-rose-800 border border-rose-300">
                             Costo $0
                           </span>
@@ -1270,7 +1285,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
                       <td className="py-2.5 px-4 text-center whitespace-nowrap">
                         <div className="flex items-center justify-center gap-2">
                           {/* Botón Adoptar Última Compra */}
-                          {item.precioUltimaCompra > 0 && item.costoPromedioDespacho !== item.precioUltimaCompra && !isAjustado && (
+                          {item.precioUltimaCompra > 0 && item.precioOficial !== item.precioUltimaCompra && !isAjustado && (
                             <button
                               onClick={() => adoptarUltimaCompra(item)}
                               className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
