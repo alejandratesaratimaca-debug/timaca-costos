@@ -2574,7 +2574,7 @@ function menuDef() {
     ...(itemsAprob.length ? [['Aprobación', itemsAprob]] : []),
     ['Transferencias', [puede('transferir', c) ? ['trfNueva', 'Nueva transferencia'] : null, ['trfRec', 'Transferencias recibidas', pendRec], ['trfEnv', 'Transferencias enviadas']].filter(Boolean)],
     ['Personal', [['aPers', 'Responsables y supervisores']]],
-    ['Catálogo', [['cCatAlm', 'Catálogo del almacén'], ['aCat', 'Catálogo general TIMACA'], ['ent', 'Entrada de ítems']]],
+    ['Catálogo', [['cCatAlm', 'Catálogo general'], ['ent', 'Entrada de ítems']]],
     ['Movimientos', [['mov', 'Registrar movimiento'], ['dev', 'Registrar devolución'], ['plz', 'Extender plazo']]],
     ['Consultas y kárdex', [
       ['cPrest', 'Préstamos y asignaciones'],
