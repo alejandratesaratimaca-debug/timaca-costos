@@ -3396,7 +3396,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         Cantidad {sortMasterBy === 'cantidad' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th className="py-2.5 px-3 border-r border-slate-200">Unidad</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[150px]">Solicitante</th>
+                      <th onClick={() => handleSortMaster('solicitante')} className="py-2.5 px-3 border-r border-slate-200 min-w-[150px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
+                        Solicitante {sortMasterBy === 'solicitante' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
+                      <th onClick={() => handleSortMaster('proveedor')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
+                        Proveedor {sortMasterBy === 'proveedor' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
                       <th className="py-2.5 px-3 border-r border-slate-200 min-w-[280px] bg-amber-50/50 text-amber-950 font-bold">Motivo</th>
                       <th className="py-2.5 px-3 border-r border-slate-200">Ajuste</th>
                       <th onClick={() => handleSortMaster('categoria')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
@@ -3534,12 +3539,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
                             {r.unidad}
                           </td>
-                          <td className="py-2 px-3 text-slate-700 border-r border-slate-100 font-sans min-w-[150px] whitespace-normal break-words leading-snug" title={r.solicitante}>
-                            <div className="font-medium text-slate-800">{r.solicitante}</div>
-                            {r.proveedor && (
-                              <div className="text-[10px] text-slate-400 truncate max-w-[160px]" title={`Proveedor: ${r.proveedor}`}>
-                                🏢 {r.proveedor}
-                              </div>
+                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[150px] whitespace-normal break-words leading-snug" title={r.solicitante}>
+                            {r.solicitante || <span className="text-slate-400 italic font-mono">-</span>}
+                          </td>
+                          <td className="py-2 px-3 text-slate-700 border-r border-slate-100 font-sans min-w-[180px] whitespace-normal break-words leading-snug" title={r.proveedor}>
+                            {r.proveedor ? (
+                              <span className="font-semibold text-slate-800">{r.proveedor}</span>
+                            ) : (
+                              <span className="text-slate-400 italic font-mono">-</span>
                             )}
                           </td>
                           <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans bg-amber-50/20 min-w-[280px] whitespace-normal break-words leading-snug" title={r.motivo}>

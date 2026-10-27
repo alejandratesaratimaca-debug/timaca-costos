@@ -311,7 +311,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ALBERT GONZALEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "SERVICIO TRASLADO DE PERSONAL, TRANSPORTE 28-32 PTOS PTO. ORDAZ/ SAN FELIX FECHA 02/09/26  - PROYECTO 1LPP",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -359,7 +359,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ALBERT GONZALEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "SERVICIO TRASLADO DE PERSONAL, TRANSPORTE 28-32 PTOS PTO. ORDAZ/ SAN FELIX FECHA 17/09/2026  - PROYECTO 1LPP",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -407,7 +407,7 @@
       "descripcion": "SERVICIOS DE IMPORTACION",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "HERNANDO LOPEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "AGENCIAMIENTO ADUANAL OC INTERNACIONAL PO TI-A&D-001, N° DE FACTURA 008325 FECHA 07/09/26 (EQUIPOS, ACCESORIOS Y HERRAMIENTAS)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -710,7 +710,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC23193",
-      "oc": "OC20476"
+      "oc": "OC20476",
+      "proveedor": "PROVEIND, C.A"
     },
     {
       "id": 112732,
@@ -908,7 +909,7 @@
       "descripcion": "HONORARIOS PROFESIONALES",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Yolimar Carvajal",
+      "solicitante": "ASTRID SILVA",
       "motivo": "SERVICIOS PROFESIONALES DE CONSULTORIA , TOTAL DEL PROYECTO 277 HORAS - GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -1076,7 +1077,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24208",
-      "oc": "OC21045"
+      "oc": "OC21045",
+      "proveedor": "HAROLD GARCIA"
     },
     {
       "id": 81128,
@@ -1394,7 +1396,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25111",
-      "oc": "OC22929"
+      "oc": "OC22929",
+      "proveedor": "GRUPO GEA, C.A"
     },
     {
       "id": 101914,
@@ -1499,7 +1502,7 @@
       "descripcion": "SERVICIO DE EVALUACION Y DIAGNOSTICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "SERVICIO DE INSPECCION Y DISGNOSTICO DE GENERADOR ELECTRICO LEROY SOMER 1250 KVA CON EL TALLER ESPECIALIZADO CARBOWELL C. A. POR UN MONTO NEGOCIADO EN $14.100 EN LUGAR DE LOS $18.200 DE LA PROPUESTA ADJUNTA, PARA CUMPLIR CON LA OC 007522-2026 CON VISCO DE BGII",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -2136,7 +2139,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "SERVICIO DE ALQUILER DE EMBARCACIÓN PARA EL LA ROTACION DE PERSONAL MARINO EN LA E/T BOCA GRANDE II, FECHAS 12/09/26 Y 17/09/26 EMBARCACIONES  MANAMO 2 ABXI-PJ-0053 Y SULTANA DEL MANAMO ABXI-SE-0042, INVOICES  00250 Y 00251.",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -2889,7 +2892,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25134",
-      "oc": "OC21946"
+      "oc": "OC21946",
+      "proveedor": "ASOCIACION COOPERATIVA SERVICIOS RT GUAYANA 2009. R.L."
     },
     {
       "id": 5780,
@@ -3228,7 +3232,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "SERVICIO DE ALQUILER DE EMBARCACIÓN PARA EL LA ROTACION DE PERSONAL MARINO EN LA E/T BOCA GRANDE II, FECHAS 12/09/26 Y 17/09/26 EMBARCACIONES  MANAMO 2 ABXI-PJ-0053 Y SULTANA DEL MANAMO ABXI-SE-0042, INVOICES  00250 Y 00251.",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -4086,7 +4090,7 @@
       "descripcion": "TRANSPORTE MARITIMO/ FLUVIAL DE INSUMOS O MAETRIALES",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "Servicio de alquiler de Bote para el traslado de materiales y provisiones a la E/T BOCA GRANDE II Fecha: 03/09/2026-  PROYECTO BG II",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -4544,7 +4548,7 @@
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "ALBERT GONZALEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "ALQUILER DE BAÑOS PORTATILES, EN FECHAS 01/09/26 AL 30/09/26 Y 01/10/2026 AL 08/10/2026 PARA PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -4848,7 +4852,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC23961",
-      "oc": "OC20918"
+      "oc": "OC20918",
+      "proveedor": "TABLEROS ELECTRICOS DEL SUR C.A"
     },
     {
       "id": 53835,
@@ -5542,7 +5547,7 @@
       "descripcion": "SERVICIO JURIDICO, IMPOSITIVO O CONTABLE",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "PAGO DE ARANCELES INEA (DESMANTELAMIENTO CARGADOR DEL BUQUE WELLMAN) - GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -5951,7 +5956,7 @@
       "descripcion": "SERVICIO DE CROMADO",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR25 -- SERVICIO DE CROMADO DE VASTAGO CILINDROS ESTABILIZADORES GRUA GROVE RT750",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -5981,7 +5986,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25350",
-      "oc": "OC22134"
+      "oc": "OC22134",
+      "proveedor": "CROMO DURO INDUSTRIAL GUAYANA"
     },
     {
       "id": 80659,
@@ -6071,7 +6077,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24405",
-      "oc": "OC21226"
+      "oc": "OC21226",
+      "proveedor": "RENNY RAMIREZ"
     },
     {
       "id": 92213,
@@ -6356,7 +6363,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR25 -- SERVICIO DE FABRICACION KIT SELLOS CILINDROS HIDRAULICOS ESTABILIZADORES GRUA GROVE RT750",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -6386,7 +6393,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25607",
-      "oc": "OC22434"
+      "oc": "OC22434",
+      "proveedor": "PROVEIND, C.A"
     },
     {
       "id": 113039,
@@ -7289,7 +7297,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25549",
-      "oc": "OC22689"
+      "oc": "OC22689",
+      "proveedor": "AGRO INDUSTRIAL F & H"
     },
     {
       "id": 53915,
@@ -7379,7 +7388,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25610",
-      "oc": "OC22403"
+      "oc": "OC22403",
+      "proveedor": "CLINICA QUIRURGICA RAZETTI, C.A"
     },
     {
       "id": 53916,
@@ -9184,7 +9194,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24420",
-      "oc": "OC21773"
+      "oc": "OC21773",
+      "proveedor": "EMINCA, INGENIERIA Y ASESORIAS, C. A."
     },
     {
       "id": 19633,
@@ -10101,7 +10112,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR15 -- SERVICIO DE FABRICACION KIT SELLOS CILINDRO HIDRAULICO TELESCOPICO GRUA GROVE AT865N",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -10131,7 +10142,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24027",
-      "oc": "OC22657"
+      "oc": "OC22657",
+      "proveedor": "PROVEIND, C.A"
     },
     {
       "id": 98795,
@@ -10596,7 +10608,7 @@
       "descripcion": "srevicio de fabricacion de eslingas de acero",
       "cantidad": 18,
       "unidad": "USE",
-      "solicitante": "ALBERT GONZALEZ",
+      "solicitante": "HUDAIMY JAIMES",
       "motivo": "SE TIENE EN ALMACÉN ESLINGA DE ACERO DE 5/8 \" - SE REQUIERE COLOCAR OJALES EN AMBOS EXTREMOS. \nSERIAN: 6 ESLINGAS DE ACERO DE 5/8 \" X 4 M / 6 ESLINGAS DE ACERO 5/8 \" X 2 M /  6 ESLINGAS DE ACERO DE 5/8 \" X 6 M",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -11321,7 +11333,7 @@
       "descripcion": "ACTUALIZACION DE SOFTWARE",
       "cantidad": 6,
       "unidad": "USE",
-      "solicitante": "Carlos Moya",
+      "solicitante": "CARLOS MOYA",
       "motivo": "licencia de autodesk para uaurios de pellas",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -11351,7 +11363,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25582",
-      "oc": "OC22354"
+      "oc": "OC22354",
+      "proveedor": "DHARMA CORP, C.A"
     },
     {
       "id": 19218,
@@ -12980,7 +12993,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24348",
-      "oc": "OC21203"
+      "oc": "OC21203",
+      "proveedor": "CTG, C.A."
     },
     {
       "id": 81691,
@@ -13806,7 +13820,7 @@
       "descripcion": "FABRICACION DE PUERTAS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "ALBERT GONZALEZ",
+      "solicitante": "MANUEL CHAVEZ",
       "motivo": "SERVICIO DE FABRICACION DE PUERTA METALICA C/ MARCO CAL18, DOS HOJAS 2,00 X 2,30 M BISAGRAS, CERRADURAS Y MANILLAS; DIMENSIONES: 2000 x 2300 mm; CON MARCO CALIBRE 18 INCLUYE: BISAGRAS, CERRADURAS; MANILLAS DE ALUMINIO. PRESENTACIÓN CON FONDO DE HERRERIA, COLOR; NEGRO PARA PROYECTO CALDERA NUEVA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -14170,7 +14184,7 @@
       "descripcion": "SERVICIO REPARACION TUBERIA ESCAPE",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "CA17 -- SERVICIO DE INSTALACION DE SILENCIADOR DE ESCAPE FORD CARGO 815",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -14270,7 +14284,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "ANDRES PORRAS",
+      "solicitante": "MANUEL CHAVEZ",
       "motivo": "SERVICIO DE FABRICACION DE MATERIALES PARA ARMADO DE SISTEMA HIDRÁULICO DE GATOS DE PRESIÓN DE RODILLOS PARA BRIQUETAS FASE 2 SOLICITANTE JUNIOR SAYAGO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -14678,7 +14692,7 @@
       "descripcion": "rEPARACION DE TARJETA ELECTRÓNICA",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR22 -- SERVICIO DE REPARACION DE DISPLAY CABINA DE GRUA LIEBHERR LTM1100",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -14708,7 +14722,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC23762",
-      "oc": "OC20596"
+      "oc": "OC20596",
+      "proveedor": "JESUS ANDRES NOGUERA CASTAÑEDA"
     },
     {
       "id": 95862,
@@ -14723,7 +14738,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "TR01 -- SERVICIO DE REPARACION DE RADIADORES Y TANQUE DE AGUA TRACTOR CAT D6RXL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -16043,7 +16058,7 @@
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "ALBERT GONZALEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "ALQUILER DE BAÑOS PORTATILES, EN FECHAS 01/09/26 AL 30/09/26 Y 01/10/2026 AL 08/10/2026 PARA PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -16769,7 +16784,7 @@
       "descripcion": "SERVICIO MaNTENIMIENTO MOTOR COMBUSTION",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH09 -- SERVICIO DE BLOQUE, CIGUEÑAL, CAMARA, PISTONES MOTOR F2 MAZDA BT50 2.2",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -16799,7 +16814,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC23073",
-      "oc": "OC20597"
+      "oc": "OC20597",
+      "proveedor": "FRESADO INDUSTRIAL Y MANTENIMIENTO MECANICO C.A"
     },
     {
       "id": 101051,
@@ -16844,7 +16860,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25195",
-      "oc": "OC22351"
+      "oc": "OC22351",
+      "proveedor": "TABLEROS ELECTRICOS DEL SUR C.A"
     },
     {
       "id": 96250,
@@ -17580,7 +17597,7 @@
       "descripcion": "SERVICIO MANTENIMIENTO DE EXTINTOR",
       "cantidad": 13,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "JOSE AMUNDARAIN",
       "motivo": "recarga de extintores 11 normales, 2 de 150lb con ruedas",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -17883,7 +17900,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25430",
-      "oc": "OC22659"
+      "oc": "OC22659",
+      "proveedor": "IMPRENTA DIGITAL COPIADOS UNIDOS, C. A."
     },
     {
       "id": 137180,
@@ -19160,7 +19178,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "ex01 -- servicio de fabricacion kit sellos cilindros hidraulicos boom y balde excavadora cat-320d",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -20696,7 +20714,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR26 -- SERVICIO DE REPARACION DERADIADOR GRUA GROVE RT750",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -24837,7 +24855,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25470",
-      "oc": "OC22505"
+      "oc": "OC22505",
+      "proveedor": "EXTINSUR, C.A"
     },
     {
       "id": 53832,
@@ -25213,7 +25232,7 @@
       "descripcion": "SERVICIO DE LAVANDERIA",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "BS14 -- SERVICIO DE LAVANDERIA DE FORROS DE ASIENTOS BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -25306,7 +25325,7 @@
       "descripcion": "servicio tecnico camara de motor equipo movil",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH48 -- SERVICIO DE CAMARA DE MOTOR 2.6 MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -25336,7 +25355,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25363",
-      "oc": "OC22231"
+      "oc": "OC22231",
+      "proveedor": "FRESADO INDUSTRIAL Y MANTENIMIENTO MECANICO C.A"
     },
     {
       "id": 93831,
@@ -25442,7 +25462,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR15 -- SERVICIO DE FABRICACION DE GUIAS DE TAPA CILINDRO HIDRAULICO TELESCOPICO GRUA GROVE AT865",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -25655,7 +25675,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24616",
-      "oc": "OC21489"
+      "oc": "OC21489",
+      "proveedor": "MULTIVOLTAJE"
     },
     {
       "id": 79064,
@@ -26622,7 +26643,7 @@
       "descripcion": "ACTUALIZACION DE SOFTWARE",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Carlos Moya",
+      "solicitante": "CARLOS MOYA",
       "motivo": "actualizacion de licencias de autodesk",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -26652,7 +26673,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC23801",
-      "oc": "OC20701"
+      "oc": "OC20701",
+      "proveedor": "DHARMA CORP, C.A"
     },
     {
       "id": 102483,
@@ -27749,7 +27771,7 @@
       "descripcion": "servicio tecnico camara de motor equipo movil",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH45 -- SERVICIO DE CAMARA DE MOTOR 2.2 MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -27779,7 +27801,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25362",
-      "oc": "OC22229"
+      "oc": "OC22229",
+      "proveedor": "FRESADO INDUSTRIAL Y MANTENIMIENTO MECANICO C.A"
     },
     {
       "id": 96263,
@@ -29220,7 +29243,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25464",
-      "oc": "OC22263"
+      "oc": "OC22263",
+      "proveedor": "LCC INGENIEROS CONSULTORES"
     },
     {
       "id": 24318,
@@ -29595,7 +29619,7 @@
       "descripcion": "SERVICIO MANTENIMIENTO DE AIRE ACONDICIONADO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH15 -- SERVICIO DE AIRE ACONDICIONADO AMBULANCIA CHEVROLET",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -31249,7 +31273,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25256",
-      "oc": "OC22308"
+      "oc": "OC22308",
+      "proveedor": "EXTINSUR, C.A"
     },
     {
       "id": 91603,
@@ -32390,7 +32415,7 @@
       "descripcion": "SERVICIO DE CRISTALERIA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH15 -- SERVICIO DE REEMPLAZO DE GOMA PARABRISAS DELANTERO AMBULANCIA CHEVROLET",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -32850,7 +32875,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "ex01 -- servicio de fabricacion kit sellos cilindros hidraulicos boom y balde excavadora cat-320d",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33304,7 +33329,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "BS15 -- SERVICIO DE REPARACION DE RADIADOR BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33352,7 +33377,7 @@
       "descripcion": "REPARACIÓN DE CILINDROS HIDRÁULICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "EX03 -- SERVICIO DE REPARACION CILINDRO HIDRAULICO DE LA PLUMA MINIEXCAVADOR CAT 302.5",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33400,7 +33425,7 @@
       "descripcion": "HONORARIOS PROFESIONALES",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "FABIOLA LOPEZ",
       "motivo": "ASESORIAS DEL MES DE SEPTIEMBRE PROFORMA-00001050\nPROVEEDOR VENEZOLANA DE SERVICIOS E INGENIERIA \nCOSTO 260,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33448,7 +33473,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 4,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR07 -- SERVICIO DE FABRICACION KIT SELLOS CILINDROS DE DIRECCION GRUA P&H",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -33800,7 +33825,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24937",
-      "oc": "OC21838"
+      "oc": "OC21838",
+      "proveedor": "EXTINSUR, C.A"
     },
     {
       "id": 133273,
@@ -33995,7 +34021,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "BS14 -- SERVICIO DE REPARACION DE RADIADOR BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -34163,7 +34189,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24520",
-      "oc": "OC21365"
+      "oc": "OC21365",
+      "proveedor": "JAIMES ZAMBRANO FRANCISCO JAVIER"
     },
     {
       "id": 50174,
@@ -34178,7 +34205,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR15 -- SERVICIO DE FABRICACION DE SELLOS CILINDRO TELESCOPICO GRUA GROVE AT865N",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -35699,7 +35726,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC22781",
-      "oc": "OC21241"
+      "oc": "OC21241",
+      "proveedor": "RAFAEL ARCANGEL GONZALEZ GUERRA"
     },
     {
       "id": 99737,
@@ -37205,7 +37233,7 @@
       "descripcion": "VULCANIZACION BANDAS DE FRENOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "CH08 -- SERVICIO DE VULCANIZACION DE BANDAS DE FRENOS TRASEROS MACK GRANITE",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -38516,7 +38544,7 @@
       "descripcion": "SERVICIO DE CRISTALERIA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR02 -- SERVICIO DE INSTALACION VIDRIO SUPERIOR DE CABINA GRUA P&H",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -38546,7 +38574,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25249",
-      "oc": "OC22108"
+      "oc": "OC22108",
+      "proveedor": "ISMAEL PACHECO"
     },
     {
       "id": 80122,
@@ -38606,7 +38635,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 3,
       "unidad": "UND",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "LEGLANIS BRITO",
       "motivo": "MANTENIMIENTO CILINDROS DE OXIGENO - NOTA DE VIRVA 02204",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -39964,7 +39993,7 @@
       "descripcion": "SERVICIO REPARACION GUAYA DE ACELERACION",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "MC08 -- SERVICIO DE FABRICACION GUAYA DE ACELERACION MONTACARGA CAT V300B",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -40012,7 +40041,7 @@
       "descripcion": "SERVICIO FABRICACION DE GUAYA AUTOMOTRIZ",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "RE02 -- SERVICIO DE REPARACION DE GUAYA DE ACELERACION TRASERA RETROEXCAVADORA CASE 580M",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -42642,7 +42671,7 @@
       "descripcion": "ACTUALIZACION DE SOFTWARE",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Carlos Moya",
+      "solicitante": "CARLOS MOYA",
       "motivo": "licencia de hikconnect",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -42672,7 +42701,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25491",
-      "oc": "OC22254"
+      "oc": "OC22254",
+      "proveedor": "SISTEMAS EXA, C.A"
     },
     {
       "id": 54459,
@@ -47053,7 +47083,7 @@
       "descripcion": "SERVICIO DE MANTENIMIENTO DE IMPRESORA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "CARLOS MOYA",
       "motivo": "mantenimiento de impresora b405 de rrhh",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -52383,7 +52413,7 @@
       "descripcion": "SERVICIO REPARACION BOMBA DE AGUA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GENERADOR CUMMINS V12-500 -- SERVICIO BOMBA DE AGUA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -52413,7 +52443,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25563",
-      "oc": "OC22333"
+      "oc": "OC22333",
+      "proveedor": "SELLOS RETENES CARONI C.A"
     },
     {
       "id": 96265,
@@ -52565,7 +52596,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 4,
       "unidad": "UND",
-      "solicitante": "ALBERT GONZALEZ",
+      "solicitante": "MANUEL CHAVEZ",
       "motivo": "SERVICIO DE FABRICACIÓN DE RESORTES PARA ACTUADORES DE VÁLVULAS MATERIALES PARA ARMADO DE VÁLVULAS DE PLANTA DEMIN PARA BRIQUETAS FASE 2 SOLICITANTE JUNIOR SAYAGO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -54015,7 +54046,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 18,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "JESSICA NAVARRO",
       "motivo": "inventario toma fisica almacen de pellas",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -86832,7 +86863,7 @@
       "descripcion": "SERVICIO MANTENIMIENTO DE AIRE ACONDICIONADO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH37 -- SERVICIO AIRE ACONDICIONADO MAZDA BT50 4X2",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -86862,7 +86893,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25394",
-      "oc": "OC22228"
+      "oc": "OC22228",
+      "proveedor": "COLD MAX, C.A"
     },
     {
       "id": 90147,
@@ -92607,7 +92639,7 @@
       "descripcion": "SERVICIO FABRICACION DE GUAYA AUTOMOTRIZ",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "MC10 -- SERVICIO DE FABRICACION GUAYA DE ACELERACION MONTACARGA HELI",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -92655,7 +92687,7 @@
       "descripcion": "SERVICIO DE ROTULADO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "BS15 -- SERVICIO DE ROTULADO DE BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -92703,7 +92735,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "BS01 -- SERVICIO DE REPARACION DE RADIADOR BUS ENCAVA ENT3300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -97532,7 +97564,7 @@
       "descripcion": "FABRICACION DE CALCOMANIAS",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "SERVICIO DE FABRICACION DE CALCOMANIAS DE IDENTIFICACION TRASLADO GASOIL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -114144,7 +114176,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25458",
-      "oc": "OC22487"
+      "oc": "OC22487",
+      "proveedor": "HECTOR BOLIVAR"
     },
     {
       "id": 100994,
@@ -115242,7 +115275,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR07 -- SERVICIO DE FABRICACION DE SELLOS CILINDRO DIRECCION GRUA P&H",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -121319,7 +121352,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25590",
-      "oc": "OC22568"
+      "oc": "OC22568",
+      "proveedor": "ENZO JOSE BRITO MARQUEZ"
     },
     {
       "id": 100198,
@@ -121334,7 +121368,7 @@
       "descripcion": "SERVICIO ALINEACION AUTOMOTRIZ",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "CA04 -- SERVICIO DE ALINEACION FORD CARGO 815",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -121880,7 +121914,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 6,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "FABIOLA LOPEZ",
       "motivo": "EVALUACION DE INGRESO DEPARTAMENTO DE FABRICACION (YORFRAN ZAMBRANO, WILDMEN GAMBOA, HECTOR RODRIGUEZ, JOSE MEJIAS, LUIS MOROCOIMA)\nEVALUACION DE EGRESO DEPARTAMENTO DE FABRICACION (YEUNER CELIZ)\nPROVEEDOR VENEZOLANA DE SERVICIOS E INGENIERIA FACTURA-00024906\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -125901,7 +125935,7 @@
       "descripcion": "sERV. ASOCIADOS A EVENTO CORPORATIVO",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "DOMAIRA RANGEL",
       "motivo": "1.-solicitud de refrigerios paara certificacion op montacarga\n2 kg de pasta seca variada \n03 jugos de 1 1/12lts variados \n2.-solicitud de refrigerios paara certificacion lectrura de planos\n1 1/2 kg de pasta seca variada \n02 jugos de 1 1/12lts variados \nREcibidos en taller timaca 09:00am",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -130075,7 +130109,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "EX03 -- SERVICIO DE FABRICACION SELLOS PISTON CILINDRO HIDRAULICO DE PLUMA MINIEXCAVADOR CAT 302.5",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -133510,7 +133544,7 @@
       "descripcion": "SERVICIO VULCANIZACION",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "RE01 -- SERVICIO DE VULCANIZACION DE CAUCHO RETROEXCAVADORA CASE",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -133558,7 +133592,7 @@
       "descripcion": "SERVICIO DE CRISTALERIA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "EX01 -- SERVICIO DE INSTALACION DE VIDRIO INFERIOR CABINA EXCAVADORA CAT 320D",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -136504,7 +136538,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 8,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "SOLICITUD DE 8 COMIDAS PARA INGENIERÍA\nPROYECTO: PATIOS HA Y HB\n* JOSELYN ALVAREZ\n* JOSHUA GUERRA\n* DANIEL RAMOS\n* MAYRA BARRIGA\n* ANDRES PEREZ\n* GABRIEL PACHECO\n* EDUYN MARUEZ\n* CARLOS GALVEZ\nFECHA: 08/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -138180,7 +138214,7 @@
       "descripcion": "sERV. ASOCIADOS A EVENTO CORPORATIVO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "CLARITZA AGUILARTE",
       "motivo": "solicitud de refrigerio para curso certificacion de operadores  1 1/2 kg de pasta seca 3 jugos naranja-pera-manzana, pqt vaso pequeño #7 para servir jugo y un pqt vasos pequeño para cafe,1 kg de azucar recibir en taller timaca 9:00 am",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -144509,7 +144543,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "FABIOLA LOPEZ",
       "motivo": "EVALUACION POR CONSULTA ESPECIAL FABRICACION (HILDIO FERMIN)\nPROVEEDOR MEDICO EXPRESS \nCOSTO 60,00 USD",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152318,7 +152352,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC23178",
-      "oc": "OC21135"
+      "oc": "OC21135",
+      "proveedor": "O.C.P. INGENIERIA, C.A."
     },
     {
       "id": 100265,
@@ -152429,7 +152464,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HUDAIMY JAIMES",
       "motivo": "SERVICIO DE CAMION CISTERNA PARA PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152477,7 +152512,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HUDAIMY JAIMES",
       "motivo": "SERVICIO DE CAMION CISTERNA PARA PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152525,7 +152560,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HUDAIMY JAIMES",
       "motivo": "SERVICIO DE CAMION CISTERNA EN PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152573,7 +152608,7 @@
       "descripcion": "SERVICIO DE CAMION CISTERNA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HUDAIMY JAIMES",
       "motivo": "SERVICIO DE CAMION CISTERNA EN PROYECTO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -152621,7 +152656,7 @@
       "descripcion": "REPARACION de RADIADOR",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH48 -- SERVICIO DE REPARACION DE RADIADOR MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -164913,7 +164948,7 @@
       "descripcion": "SERVICIO TAPIZADO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "CA01 -- SERVICIO DE TAPIZADO DE VOLANTE PILOTO FORD CARGO 815",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -164961,7 +164996,7 @@
       "descripcion": "SERVICIO MANTENIMIENTO DE AIRE ACONDICIONADO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH42 -- SERVICIO DE AIRE ACONDICIONADO MAZDA BT50",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -165009,7 +165044,7 @@
       "descripcion": "SERVICIO DE CRISTALERIA",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "EX03 -- SERVICIO DE INSTALACION VIDRIO TECHO MINIEXCAVADOR CAT-302.5",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -165039,7 +165074,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25564",
-      "oc": "OC22368"
+      "oc": "OC22368",
+      "proveedor": "ISMAEL PACHECO"
     },
     {
       "id": 99983,
@@ -179283,7 +179319,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24577",
-      "oc": "OC21528"
+      "oc": "OC21528",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A."
     },
     {
       "id": 70326,
@@ -184087,7 +184124,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "CARLOS PEREZ",
       "motivo": "CENAS 16/09/2026 JORNADA EXTENDIDA COORDINACION DE COMPRAS: albert gonzalez, jordi mejia, andres porras",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191643,7 +191680,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC24997",
-      "oc": "OC21787"
+      "oc": "OC21787",
+      "proveedor": "ANIBAL GARCIA"
     },
     {
       "id": 101360,
@@ -191748,7 +191786,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "SERVICIO DE TAXI ABRAHAM HERRERA PMH MARTES 15/09 DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VICEVERSA. DEPARTAMENTO DE RRHH (SOLICITANTE: MAILITH DEVERA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -191892,7 +191930,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "SERVICIO DE TAXI MARTES 22/09 DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VICEVERSA. DEPARTAMENTO DE RRHH (SOLICITANTE: MAILITH DEVERA)",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -192036,7 +192074,7 @@
       "descripcion": "SERVICIO DE TAXI",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "SERVICIO DE TAXI, TRASLADO DE PERSONAL DIA MARTES  08/09/26, DESDE 25 DE MARZO (SAN FELIX) HACIA UNARE (FRAGACHAN) Y VISEVERSA. PROVEEDOR ANIBAL GARCIA- SOLCITANTE MAILITH DEVERA. \nMONTO DEL SERVICIO 30$ - DEPARTAMENTO DE RRHH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -192180,7 +192218,7 @@
       "descripcion": "SERVICIO DE TAXI",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "MANUEL CHAVEZ",
       "motivo": "TRASLADO DE PERSONAL ELECTRICISTA QUE SE QUEDO PARA REALIZAR PRUEBAS DE DRAVO PROYECTO REHABILITACIÓN DE DRAVO PMH",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -192228,7 +192266,7 @@
       "descripcion": "SERVICIO DE AUTOLAVADO",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH15 -- SERVICIO DE LAVADO AMBULANCIA CHEVROLET",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -194083,7 +194121,7 @@
       "descripcion": "EXAMENES MEDICOS",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "FABIOLA LOPEZ",
       "motivo": "EVALUACION DE INGRESO PLANTA DE PELLAS (MARCO CORDERO)\nEVALUACION DE EGRESO PLANTA DE PELLAS (OSCAR ROMERO)\nPROVEEDOR MEDICO EXPRESS FACTURA-000009350\nCOSTO 15,00 USD C/U",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -199877,7 +199915,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 3,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "ASTRID SILVA",
       "motivo": "03 COMIDAS (CENAS) 07/09/2026 PROYECTO CALDERA BRIQUETAS",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -221042,7 +221080,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25460",
-      "oc": "OC22422"
+      "oc": "OC22422",
+      "proveedor": "EL GRAN CACIQUE RESTAURANT, C.A."
     },
     {
       "id": 85944,
@@ -233342,7 +233381,7 @@
       "descripcion": "FABRICACION DE SELLO AUTOMATICO PERSONALIZADO USO ADMINISTRATIVO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HUDAIMY JAIMES",
       "motivo": "FABRICACION DE SELLO PARA MARCAJE DE MASCARILLAS DIMENSIONES 1.5 X 1.5 CM",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -233390,7 +233429,7 @@
       "descripcion": "FABRICACION DE SELLO AUTOMATICO PERSONALIZADO USO ADMINISTRATIVO",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "JOSE AMUNDARAIN",
       "motivo": "FABRICACION DE SELLO PARA MARCAJE DE MASCARILLAS DIMENSIONES 1.5 X 1.5 CM",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -248933,7 +248972,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "FABIOLA LOPEZ",
       "motivo": "ALMUERZO 2 1/4 DE POLLO para Noel Gonzalez y Jose Nuñez 14/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265913,7 +265952,7 @@
       "descripcion": "MANTENIMIENTO DE INYECTORES",
       "cantidad": 4,
       "unidad": "UND",
-      "solicitante": "Wuillians Guzman",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "VH16 -- SERVICIO DE INYECTORES MITSUBISHI PANEL L300",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -265943,7 +265982,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25490",
-      "oc": "OC22279"
+      "oc": "OC22279",
+      "proveedor": "SUMENPI, C.A"
     },
     {
       "id": 73637,
@@ -274709,7 +274749,7 @@
       "descripcion": "COPIA DE LLAVE",
       "cantidad": 7,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "JOSE AMUNDARAIN",
       "motivo": "COPIA DE LLAVES PORTONES PATIO",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -287037,7 +287077,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "SERVICIO DE TAXI TIMACA- BARILOCHE 02/09/2026 8:30PM CARLOS GALVEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -287115,7 +287155,8 @@
       "ano": 2026,
       "nombre_mes": "septiembre",
       "sc": "SC25168",
-      "oc": "OC22023"
+      "oc": "OC22023",
+      "proveedor": "ANIBAL GARCIA"
     },
     {
       "id": 100007,
@@ -357501,7 +357542,7 @@
       "descripcion": "SERVICIO TRASLADO DE PERSONAL",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "REEMBOLSO DE SERVICIO DE TAXI CARLOS GALVEZ TIMACA-BARILOCHE 8:30PM 17/09/2026",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -360453,7 +360494,7 @@
       "descripcion": "SERVICIO DE CRISTALERIA",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR17 -- SERVICIO DE INSTALACION DE VIDRIO MEDIDOR DE NIVEL DE ACEITE HIDRAULICO GRUA GROVE TM890",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -361406,7 +361447,7 @@
       "descripcion": "MANTENIMIENTO DE EQUIPOS EXTERNOS",
       "cantidad": 1,
       "unidad": "UND",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "LEGLANIS BRITO",
       "motivo": "SUSTITUCION DE VOLANTES DAÑADO EN CILINDROS DE OXIGENO - NOTA DE VIRVA 2087",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -404904,7 +404945,7 @@
       "descripcion": "COPIA DE LLAVE",
       "cantidad": 2,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "ASTRID SILVA",
       "motivo": "02 COPIAS DE LLAVE - PROYECTO 1LPP- SOLICTADO POR FAROUK",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -468151,7 +468192,7 @@
       "descripcion": "COPIA DE LLAVE",
       "cantidad": 1,
       "unidad": "USE",
-      "solicitante": "KEYSERLING GÓMEZ",
+      "solicitante": "MANUEL CHAVEZ",
       "motivo": "SOLICITUD DE COPIA DE LLAVES PARA CAMPAMENTO PARRILLA MOVIL SOLICITANTE FERNANDO PADILLA",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571293,7 +571334,7 @@
       "descripcion": "SUMINISTRO Y VACIADO DE CONCRETO Y AGREGADOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "ANDRES PORRAS",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "ADQUISICION DE PREMEZCLADO 180KG/CM2 \nJUEVES 24/09/26 \n11,00M3 (1:30PM)\nBANCADA ELÉCTRICA \nPROYECTO: SEGUNDA LINEA DE DESPACHO INTERNACIONAL PMH\nSOLICITANTE: GONZALO GONZALEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -571341,7 +571382,7 @@
       "descripcion": "SUMINISTRO Y VACIADO DE CONCRETO Y AGREGADOS",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "ANDRES PORRAS",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "ADQUISICION DE PREMEZCLADO 180KG/CM2 \nSÁBADO 26/09/26 \n11,00M3. (11:00PM).\nBANCADA ELÉCTRICA \nPROYECTO: SEGUNDA LINEA DE DESPACHO INTERNACIONAL PMH\nSOLICITANTE: GONZALO GONZALEZ",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572109,7 +572150,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "02 COMIDAS (DESAYUNOS) CON ENTREGA EN EL ROCK&INN MARTES 22/09/2026 HORA 7:00 AM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572733,7 +572774,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "02 COMIDAS (ALMUERZOS) CON ENTREGA EN TIMACA SABADO 26/09/2026 HORA 12:00 \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572781,7 +572822,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "HERNAN GARCIA",
       "motivo": "02 COMIDAS (CENAS) CON ENTREGA EN EL ROCK&INN SABADO 26/09/2026 HORA 6:30 PM \nMOTIVO: LOGÍSTICA DE PERSONAL QUE VIENE A LA CREACIÓN DE ÁREA DE SELECCIÓN Y RECLUTAMIENTO\nC. AUX: GERENCIA GENERAL",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -572877,7 +572918,7 @@
       "descripcion": "SERVICIO DE COMIDA",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "Carlos Perez",
+      "solicitante": "MANUEL CHAVEZ",
       "motivo": "SOLICITUD DE 8 COMIDA (17/09/26) PARA INGENIERIA POR JORNADA EXTENDIDAD: CARLOS GÁLVEZ, DANIEL RAMOS, KILBER ROMERO, JOSELÍN ÁLVAREZ, EDUYN MAARQUÉZ, GABRIEL PACHECO, EDUARDO SALAZAR, PROYECTO PILAS HA Y HB SOLICITANTE LEIDIMAR MALAVE",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -583572,7 +583613,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "GR15 -- SERVICIO DE FABRICACION KIT SELLOS BOMBA HIDRAULICA GRUA GROVE AT865N",
       "ajuste": "",
       "categoria": "SERVICIOS",
@@ -583620,7 +583661,7 @@
       "descripcion": "FABRICACION SELLO HIDRAULICO",
       "cantidad": 0,
       "unidad": "USE",
-      "solicitante": "JORDI MEJIAS",
+      "solicitante": "WUILLIANS GUZMAN",
       "motivo": "MC06 -- SERVICIO DE FABRICACION SELLOS DE TAPA CILINDRO HIDRAULICO DIRECCION MONTACARGA HYSTER",
       "ajuste": "",
       "categoria": "SERVICIOS",

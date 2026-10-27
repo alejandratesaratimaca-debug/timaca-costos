@@ -110,6 +110,14 @@ async function runSync() {
   const rawCompras = await sipClient.getCompras(inicio, hasta);
   console.log(`[SIP] Compras obtenidas: ${rawCompras.length}`);
 
+  const rawServicios = await sipClient.getServicios(inicio, hasta);
+  console.log(`[SIP] Servicios Ejecutados obtenidos: ${rawServicios.length}`);
+  const servExecMap = new Map();
+  for (const s of rawServicios) {
+    if (s.numero) servExecMap.set(s.numero.trim().toUpperCase(), s);
+    if (s.OC) servExecMap.set(s.OC.trim().toUpperCase(), s);
+  }
+
   // 2. Load Proyectos
   const proyectosPath = path.join(__dirname, '../public/data/sip/proyectos.json');
   let proyectos = [];
@@ -291,6 +299,10 @@ async function runSync() {
 
     const fechaMov = r.fecha ? parseDateToIso(r.fecha) : parseDateToIso(r.fechaS || '2026-10-01');
 
+    const execMatch = (sc ? servExecMap.get(sc.toUpperCase()) : null) || (oc ? servExecMap.get(oc.toUpperCase()) : null);
+    const solReal = execMatch?.solicitado?.trim() || getSolicitanteCompra(r);
+    const provReal = execMatch?.proveedor?.trim() || (r.proveedor || '').trim();
+
     itemsServicios.push({
       id: seqId,
       tipo: 'Servicios',
@@ -299,12 +311,13 @@ async function runSync() {
       numero: sc || oc,
       pedido: oc || sc,
       cuenta_aux: ctaAux,
-      ceco: '',
+      ceco: (execMatch?.ceco || '').trim(),
       codigo: cod,
       descripcion: (r.descripcion || '').trim(),
       cantidad: effectiveCant,
       unidad: (r.unidad || 'USE').trim(),
-      solicitante: getSolicitanteCompra(r),
+      solicitante: solReal,
+      proveedor: provReal,
       motivo: (r.motivo || '').trim(),
       ajuste: ajuste,
       categoria: 'SERVICIOS',

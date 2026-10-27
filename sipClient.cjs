@@ -116,8 +116,21 @@ async function getCompras(inicio = '01/10/2026', hasta = '31/10/2026') {
   return Array.isArray(data) ? data : [];
 }
 
+async function getServicios(inicio = '01/10/2026', hasta = '31/10/2026') {
+  await login();
+  console.log(`[SIP] Obteniendo servicios ejecutados del ${inicio} al ${hasta}...`);
+  const payload = {
+    fi: inicio,
+    ff: hasta,
+    descripcion: '%'
+  };
+  const data = await requestSip('/servicios/ServiciosSer.aspx/GetConsServicios', payload);
+  return Array.isArray(data) ? data : [];
+}
+
 module.exports = {
   login,
   getConsumos,
-  getCompras
+  getCompras,
+  getServicios
 };
