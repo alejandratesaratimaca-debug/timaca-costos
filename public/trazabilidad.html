@@ -970,31 +970,88 @@ function asegurarPlanificacionCajas() {
 function asegurarCategoriasOficiales() {
   if (!DB || !Array.isArray(DB.catalogo)) return;
   DB.catalogo.forEach(it => {
+    // 1. Sanar ítems específicos de elevación, izaje, cargas y grilletes
+    const descLower = (String(it.desc || '') + ' ' + String(it.cod || '') + ' ' + String(it.cat || '')).toLowerCase();
+    const isIzaje = descLower.includes('grillete') || descLower.includes('eslinga') || descLower.includes('tecle') ||
+                    descLower.includes('estrob') || descLower.includes('cancamo') || descLower.includes('cáncamo') ||
+                    descLower.includes('polipasto') || descLower.includes('faja de izaje') || descLower.includes('elevaci') ||
+                    descLower.includes('izaje') || descLower.includes('señorita');
+
+    if (isIzaje) {
+      it.cat = 'Equipos y accesorios para elevación y cargas';
+      it.mod = 'HERRAMIENTA';
+      return;
+    }
+
+    // 2. Si ya tiene una categoría oficial válida, respetarla 100% y alinear el módulo
+    if (CATEGORIAS_OFICIALES.includes(it.cat)) {
+      if (it.cat === 'Cilindros y gases') it.mod = 'CILINDRO';
+      else if (it.cat === 'EPP') it.mod = 'EPP';
+      else it.mod = 'HERRAMIENTA';
+      return;
+    }
+
+    // 3. Para textos antiguos / categorías no normalizadas, inferir con cuidado
     const c = String(it.cat || '').toLowerCase().trim();
     if (it.mod === 'EPP' || c.includes('epp') || c.includes('protecci') || c.includes('calzado') || c.includes('cabeza') || c.includes('auditiva') || c.includes('respiratoria')) {
       it.cat = 'EPP';
-    } else if (it.mod === 'CILINDRO' || c.includes('oxígeno') || c.includes('oxigeno') || c.includes('acetileno') || c.includes('argón') || c.includes('argon') || c.includes('co2') || c.includes('gas') || c.includes('cilindro')) {
-      it.cat = 'Cilindros y gases';
-    } else if (c.includes('izaj') || c.includes('elevaci') || c.includes('carga') || c.includes('señorita') || c.includes('eslinga') || c.includes('tecle')) {
+      it.mod = 'EPP';
+    } else if (c.includes('izaj') || c.includes('elevaci') || c.includes('carga') || c.includes('señorita') || c.includes('eslinga') || c.includes('tecle') || c.includes('grillete')) {
       it.cat = 'Equipos y accesorios para elevación y cargas';
+      it.mod = 'HERRAMIENTA';
     } else if (c.includes('solda') || c.includes('oxicorte') || c.includes('escoria') || c.includes('inverter') || c.includes('antorcha')) {
       it.cat = 'Equipos y accesorios para soldadura y oxicorte';
+      it.mod = 'HERRAMIENTA';
+    } else if (it.mod === 'CILINDRO' || descLower.includes('oxígeno') || descLower.includes('oxigeno') || descLower.includes('acetileno') || descLower.includes('argón') || descLower.includes('argon') || descLower.includes('co2') || descLower.includes('cilindro') || /\b(gas|gases)\b/i.test(descLower)) {
+      it.cat = 'Cilindros y gases';
+      it.mod = 'CILINDRO';
     } else if (c.includes('medici') || c.includes('medición') || c.includes('vernier') || c.includes('micrómetro') || c.includes('calibrador') || c.includes('multímetro') || c.includes('nivel') || c.includes('cinta')) {
       it.cat = 'Equipos e instrumentos de medición';
+      it.mod = 'HERRAMIENTA';
     } else if (c.includes('neumátic') || c.includes('hidráulic') || c.includes('neumatic') || c.includes('hidraulic')) {
       it.cat = 'Herramientas neumáticas e hidráulicas';
+      it.mod = 'HERRAMIENTA';
     } else if (c.includes('fabricaci') || c.includes('biseladora') || c.includes('pantógrafo')) {
       it.cat = 'Herramientas de fabricación';
+      it.mod = 'HERRAMIENTA';
     } else if (c.includes('mayor') || c.includes('torno') || c.includes('fresadora') || c.includes('prensa') || c.includes('roscadora')) {
       it.cat = 'Herramientas mayores';
+      it.mod = 'HERRAMIENTA';
     } else if (c.includes('eléctric') || c.includes('electric') || c.includes('esmeril') || c.includes('taladro')) {
       it.cat = 'Herramientas eléctricas';
+      it.mod = 'HERRAMIENTA';
     } else if (c.includes('llave') || c.includes('alicate') || c.includes('destornillador') || c.includes('golpe') || c.includes('corte') || c.includes('martillo') || c.includes('manual') || c.includes('general')) {
       it.cat = 'Herramientas manuales';
-    } else if (!CATEGORIAS_OFICIALES.includes(it.cat)) {
+      it.mod = 'HERRAMIENTA';
+    } else {
       it.cat = 'Herramientas manuales';
+      it.mod = 'HERRAMIENTA';
     }
   });
+
+  // Sincronizar movimientos históricos y líneas con las categorías y módulos actualizados
+  if (Array.isArray(DB.movs)) {
+    DB.movs.forEach(m => {
+      const it = DB.catalogo.find(x => x.id === m.id);
+      if (it) {
+        m.mod = it.mod;
+        if (m.cat) m.cat = it.cat;
+      }
+    });
+  }
+  if (Array.isArray(DB.vales)) {
+    DB.vales.forEach(v => {
+      if (Array.isArray(v.lineas)) {
+        v.lineas.forEach(l => {
+          const it = DB.catalogo.find(x => x.id === l.id);
+          if (it) {
+            l.mod = it.mod;
+            l.cat = it.cat;
+          }
+        });
+      }
+    });
+  }
 }
 
 function tipoCajaDe(id) { return (DB.cajasTipos || []).find(c => c.id === id); }
@@ -1773,6 +1830,10 @@ function registrarEntrada(d) {
     if (!it) {
       it = { id: Math.max(0, ...DB.catalogo.map(x => x.id)) + 1, cod: l.cod, desc: l.desc, mod: l.mod, cat: l.cat, marca: l.marca, modelo: l.modelo, serial: l.serial || '', umb: l.umb, costo: 0, tipoA: false, talla: l.talla || '', vida: Number(l.vida) || 0, activo: true };
       DB.catalogo.push(it);
+    } else {
+      if (l.cat) it.cat = l.cat;
+      if (l.mod) it.mod = l.mod;
+      if (l.desc) it.desc = l.desc;
     }
     const e = exi(d.origen, it.id);
     if (l.mod === 'CILINDRO' && l.cond === 'VACÍO') e.vacio += l.cant; else e.disp += l.cant;
@@ -4442,47 +4503,128 @@ function bindResponsableProyecto() {
    ===================================================================== */
 let E = null;
 VISTAS.ent = () => {
-  E = { lineas: [], sel: -1, hecho: null, base: null };
+  E = { lineas: [], sel: -1, editIdx: -1, hecho: null, base: null };
   pintarEntrada();
 };
+
 function pintarEntrada() {
   const bloq = !!E.hecho, ro = bloq ? 'disabled' : '';
   const umbs = [...new Set(DB.catalogo.map(i => i.umb))].sort();
-  $('area').innerHTML = cab('➕ Entrada de ítems al catálogo', 'Registre herramientas, cilindros o EPP que ingresan al almacén. Si el código ya existe se suma la cantidad; si es nuevo, se crea en el catálogo. Lo recibido por transferencia entra solo al aceptarla.')
+  const esEdicion = E && E.editIdx >= 0;
+  const linEd = esEdicion ? E.lineas[E.editIdx] : null;
+
+  $('area').innerHTML = cab('➕ Entrada de ítems al catálogo', 'Registre herramientas, cilindros o EPP que ingresan al almacén. Si el código ya existe se suma la cantidad; si es nuevo, se crea en el catálogo. Cada vez que inserte un registro, los cuadros se limpian automáticamente para el siguiente.')
     + (E.hecho ? `<div class="franja-est verde"><span>Entrada <b>${E.hecho}</b> registrada. Los ítems ya aparecen en el catálogo de ${esc(almNombre(S.ctx))}.</span><span><button class="btn btn-claro btn-mini" onclick="ir('cCatAlm')">Ver catálogo</button></span></div>` : '')
     + `<div class="form-reg"><div class="f3">
       ${campo('Almacén', `<input value="${esc(almNombre(S.ctx))}" readonly>`)}${campo('Fecha', `<input value="${fF(nowISO())}" readonly>`)}${campo('Registrado por', `<input value="${esc(S.u.nombre)}" readonly>`)}
       ${campo('Observación', `<input id="enObs" ${ro} placeholder="Opcional">`)}
     </div>
-    <div class="carga"><div class="carga-h">ÍTEM A INGRESAR</div>
+    <div class="carga" id="cargaEntrada">
+      <div class="carga-h" id="eCargaH" style="${esEdicion ? 'background:var(--ambar-bg,#fef3c7);color:var(--ambar,#b45309)' : ''}">${esEdicion ? `⚠️ MODO CORRECCIÓN: Editando línea #${E.editIdx + 1} (${esc(linEd.cod)})` : 'ÍTEM A INGRESAR'}</div>
       ${bloq ? '' : `<div style="padding:12px;border-bottom:1px solid var(--borde)"><div class="f3" style="grid-template-columns:repeat(6,1fr)">
         <div class="campo" style="position:relative"><label>Código</label><input id="eCod" autocomplete="off" placeholder="Nuevo o existente"></div>
         <div class="campo" style="grid-column:span 2"><label>Descripción</label><input id="eDesc"></div>
-        ${campo('Módulo', `<select id="eMod" onchange="condEntrada()">${opciones(Object.entries(MODULOS))}</select>`)}
-        ${campo('Categoría', `<select id="eCat">${opciones(CATEGORIAS_OFICIALES, 'Herramientas manuales')}</select>`)}${campo('Unidad', `<select id="eUmb">${opciones(UMBS_OFICIALES, 'UND')}</select>`)}
-        ${campo('Marca', `<input id="eMarca" placeholder="Ej. STANLEY">`)}${campo('Modelo', `<input id="eModelo">`)}${campo('Serial (ítem único)', `<input id="eSerial" placeholder="Opcional">`)}
-        ${campo('Condición', `<select id="eCond"></select>`)}${campo('Cantidad', `<input id="eCant" type="number" min="1" value="1" style="text-align:center;font-weight:800">`)}
-        <div class="campo" style="justify-content:flex-end"><label>&nbsp;</label><button class="btn-salvar" onclick="agregarEntrada()">Agregar ítem</button></div>
+        ${campo('Módulo', `<select id="eMod" onchange="cambioModEntrada()">${opciones(Object.entries(MODULOS))}</select>`)}
+        ${campo('Categoría', `<select id="eCat" onchange="cambioCatEntrada()">${opciones(CATEGORIAS_OFICIALES, 'Herramientas manuales')}</select>`)}
+        ${campo('Unidad', `<select id="eUmb">${opciones(UMBS_OFICIALES, 'UND')}</select>`)}
+        ${campo('Marca', `<input id="eMarca" placeholder="Ej. STANLEY">`)}
+        ${campo('Modelo', `<input id="eModelo">`)}
+        ${campo('Serial (ítem único)', `<input id="eSerial" placeholder="Opcional">`)}
+        ${campo('Condición', `<select id="eCond"></select>`)}
+        ${campo('Cantidad', `<input id="eCant" type="number" min="1" value="1" style="text-align:center;font-weight:800">`)}
+        <div class="campo" style="justify-content:flex-end;gap:6px" id="eBtnArea">
+          ${esEdicion
+            ? `<button class="btn btn-ambar" onclick="guardarEdicionEntrada()">💾 Guardar corrección</button> <button class="btn btn-claro" onclick="cancelarEdicionEntrada()">❌ Cancelar</button>`
+            : `<label>&nbsp;</label><button class="btn-salvar" onclick="agregarEntrada()">➕ Agregar ítem</button>`
+          }
+        </div>
       </div></div>`}
       <div id="eLineas"></div></div>
     <div class="pie-form"><div class="totales" id="eTot"></div><div class="der">
       ${bloq ? `<button class="btn btn-claro" onclick="ir('ent')">Nueva entrada</button>` : `<button class="btn btn-claro" onclick="ir('cCatAlm')">Cancelar</button><button class="btn btn-verde" onclick="registrarEntradaUI()">✔ Registrar entrada</button>`}
       <button class="btn btn-azul" ${bloq ? '' : 'disabled'} onclick="imprimirVale('${E.hecho || ''}')">🖨 Imprimir vale</button>
     </div></div></div>`;
+
   if (!bloq) {
     condEntrada();
-    bindAC('eCod', q => { q = q.trim().toLowerCase(); if (q.length < 2) return []; const g = {}; DB.catalogo.filter(i => (i.cod + ' ' + i.desc).toLowerCase().includes(q)).forEach(i => g[i.cod] = g[i.cod] || i); return Object.values(g).slice(0, 15).map(i => ({ val: i, html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(MODULOS[i.mod])} · ${esc(i.cat)} · código existente</small>` })); },
-      i => { E.base = i; $('eCod').value = i.cod; $('eDesc').value = i.desc; $('eMod').value = i.mod; $('eCat').value = i.cat;
-        if ($('eUmb')) {
-          if (!UMBS_OFICIALES.includes(i.umb)) $('eUmb').innerHTML = opciones(UMBS_OFICIALES.concat([i.umb]), i.umb);
-          else $('eUmb').value = i.umb;
-        }
-        ['eDesc', 'eMod', 'eCat', 'eUmb'].forEach(x => $(x).disabled = true); condEntrada(); $('eMarca').focus(); });
-    $('eCod').addEventListener('input', () => { if (E.base) { E.base = null; ['eDesc', 'eMod', 'eCat', 'eUmb'].forEach(x => $(x).disabled = false); } });
+    bindAC('eCod', q => {
+      q = q.trim().toLowerCase();
+      if (q.length < 2) return [];
+      const g = {};
+      DB.catalogo.filter(i => (i.cod + ' ' + i.desc).toLowerCase().includes(q)).forEach(i => g[i.cod] = g[i.cod] || i);
+      return Object.values(g).slice(0, 15).map(i => ({
+        val: i,
+        html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(MODULOS[i.mod])} · ${esc(i.cat)} · código existente</small>`
+      }));
+    }, i => {
+      E.base = i;
+      $('eCod').value = i.cod;
+      $('eDesc').value = i.desc;
+      $('eMod').value = i.mod;
+      $('eCat').value = i.cat;
+      if ($('eUmb')) {
+        if (!UMBS_OFICIALES.includes(i.umb)) $('eUmb').innerHTML = opciones(UMBS_OFICIALES.concat([i.umb]), i.umb);
+        else $('eUmb').value = i.umb;
+      }
+      condEntrada();
+      $('eMarca').focus();
+    });
+
+    $('eCod').addEventListener('input', () => {
+      if (E.base) E.base = null;
+    });
   }
+
+  if (esEdicion && linEd) {
+    $('eCod').value = linEd.cod;
+    $('eDesc').value = linEd.desc;
+    $('eMod').value = linEd.mod;
+    $('eCat').value = linEd.cat;
+    $('eUmb').value = linEd.umb;
+    $('eMarca').value = linEd.marca;
+    $('eModelo').value = linEd.modelo === '—' ? '' : linEd.modelo;
+    $('eSerial').value = linEd.serial || '';
+    condEntrada();
+    $('eCond').value = linEd.cond;
+    $('eCant').value = linEd.cant;
+  }
+
   pintarLineasEntrada();
 }
-function condEntrada() { if ($('eCond')) $('eCond').innerHTML = opciones($('eMod').value === 'CILINDRO' ? ['LLENO', 'VACÍO'] : ['NUEVO', 'ÓPTIMO']); }
+
+function condEntrada() {
+  if ($('eCond')) {
+    const esCil = $('eMod') && $('eMod').value === 'CILINDRO';
+    $('eCond').innerHTML = opciones(esCil ? ['LLENO', 'VACÍO'] : ['NUEVO', 'ÓPTIMO']);
+  }
+}
+
+function cambioCatEntrada() {
+  const cat = $('eCat').value;
+  if (cat === 'Cilindros y gases') {
+    $('eMod').value = 'CILINDRO';
+  } else if (cat === 'EPP') {
+    $('eMod').value = 'EPP';
+  } else {
+    $('eMod').value = 'HERRAMIENTA';
+  }
+  condEntrada();
+}
+
+function cambioModEntrada() {
+  const mod = $('eMod').value;
+  if (mod === 'CILINDRO') {
+    $('eCat').value = 'Cilindros y gases';
+  } else if (mod === 'EPP') {
+    $('eCat').value = 'EPP';
+  } else {
+    if ($('eCat').value === 'Cilindros y gases' || $('eCat').value === 'EPP') {
+      $('eCat').value = 'Herramientas manuales';
+    }
+  }
+  condEntrada();
+}
+
 function agregarEntrada() {
   run(() => {
     const cod = $('eCod').value.trim().toUpperCase(), desc = $('eDesc').value.trim(), serial = $('eSerial').value.trim().toUpperCase(), cant = Number($('eCant').value);
@@ -4497,25 +4639,174 @@ function agregarEntrada() {
       if (E.lineas.some(l => l.serial === serial)) throw new Error('Ese serial ya está en la entrada.');
     }
     const base = E.base || existente;
-    const l = { cod, desc: base ? base.desc : desc, mod: base ? base.mod : $('eMod').value, cat: base ? base.cat : ($('eCat').value.trim() || 'General'), umb: base ? base.umb : ($('eUmb').value.trim() || 'UND'),
-      marca: $('eMarca').value.trim().toUpperCase() || 'GENÉRICA', modelo: $('eModelo').value.trim() || '—', serial, cond: $('eCond').value, cant };
-    const dup = E.lineas.find(x => !serial && x.cod === l.cod && x.marca === l.marca && x.modelo === l.modelo && x.cond === l.cond);
+    const l = {
+      cod,
+      desc: desc || (base ? base.desc : ''),
+      mod: $('eMod').value,
+      cat: $('eCat').value.trim() || 'Herramientas manuales',
+      umb: $('eUmb').value.trim() || 'UND',
+      marca: $('eMarca').value.trim().toUpperCase() || 'GENÉRICA',
+      modelo: $('eModelo').value.trim() || '—',
+      serial,
+      cond: $('eCond').value,
+      cant
+    };
+    const dup = E.lineas.find(x => !serial && x.cod === l.cod && x.marca === l.marca && x.modelo === l.modelo && x.cond === l.cond && x.cat === l.cat);
     if (dup) dup.cant += cant; else E.lineas.push(l);
-    ['eSerial', 'eModelo'].forEach(x => $(x).value = ''); $('eCant').value = 1;
-    pintarLineasEntrada(); $('eSerial').focus();
+
+    limpiarFormularioEntrada();
+    pintarLineasEntrada();
+    toast('Ítem agregado a la entrada.', 'ok');
   });
 }
+
+function cargarParaEditarEntrada(i) {
+  if (E.hecho) return;
+  const l = E.lineas[i];
+  if (!l) return;
+  E.editIdx = i;
+  E.sel = i;
+
+  $('eCod').value = l.cod;
+  $('eDesc').value = l.desc;
+  $('eMod').value = l.mod;
+  $('eCat').value = l.cat;
+  $('eUmb').value = l.umb;
+  $('eMarca').value = l.marca;
+  $('eModelo').value = l.modelo === '—' ? '' : l.modelo;
+  $('eSerial').value = l.serial || '';
+  condEntrada();
+  $('eCond').value = l.cond;
+  $('eCant').value = l.cant;
+
+  const h = $('eCargaH');
+  if (h) {
+    h.textContent = `⚠️ MODO CORRECCIÓN: Editando línea #${i + 1} (${l.cod})`;
+    h.style.background = 'var(--ambar-bg, #fef3c7)';
+    h.style.color = 'var(--ambar, #b45309)';
+  }
+
+  const btnArea = $('eBtnArea');
+  if (btnArea) {
+    btnArea.innerHTML = `<button class="btn btn-ambar" onclick="guardarEdicionEntrada()">💾 Guardar corrección</button> <button class="btn btn-claro" onclick="cancelarEdicionEntrada()">❌ Cancelar</button>`;
+  }
+
+  pintarLineasEntrada();
+
+  const c = $('cargaEntrada');
+  if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function guardarEdicionEntrada() {
+  run(() => {
+    if (E.editIdx < 0 || !E.lineas[E.editIdx]) throw new Error('No hay línea seleccionada para editar.');
+    const cod = $('eCod').value.trim().toUpperCase(), desc = $('eDesc').value.trim(), serial = $('eSerial').value.trim().toUpperCase(), cant = Number($('eCant').value);
+    if (!cod || !desc) throw new Error('Código y descripción son obligatorios.');
+    if (!Number.isInteger(cant) || cant <= 0) throw new Error('La cantidad debe ser un número entero mayor que cero.');
+
+    if (serial) {
+      if (cant !== 1) throw new Error('Un ítem con serial único solo admite cantidad 1.');
+      const it = DB.catalogo.find(i => (i.serial || '').toUpperCase() === serial);
+      if (it && DB.almacenes.some(a => DB.exi[a.c] && DB.exi[a.c][it.id] && totalExi(DB.exi[a.c][it.id]) > 0)) throw new Error(`El serial ${serial} ya existe con existencia en el sistema.`);
+      if (E.lineas.some((l, idx) => idx !== E.editIdx && l.serial === serial)) throw new Error('Ese serial ya está en otra línea de la entrada.');
+    }
+
+    E.lineas[E.editIdx] = {
+      cod,
+      desc,
+      mod: $('eMod').value,
+      cat: $('eCat').value.trim() || 'Herramientas manuales',
+      umb: $('eUmb').value.trim() || 'UND',
+      marca: $('eMarca').value.trim().toUpperCase() || 'GENÉRICA',
+      modelo: $('eModelo').value.trim() || '—',
+      serial,
+      cond: $('eCond').value,
+      cant
+    };
+
+    limpiarFormularioEntrada();
+    pintarLineasEntrada();
+    toast('Corrección guardada con éxito.', 'ok');
+  });
+}
+
+function cancelarEdicionEntrada() {
+  limpiarFormularioEntrada();
+  pintarLineasEntrada();
+}
+
+function eliminarLineaEntrada(i) {
+  if (E.hecho) return;
+  E.lineas.splice(i, 1);
+  if (E.editIdx === i) limpiarFormularioEntrada();
+  else if (E.editIdx > i) E.editIdx--;
+  pintarLineasEntrada();
+  toast('Línea eliminada.', 'info');
+}
+
+function limpiarFormularioEntrada() {
+  E.editIdx = -1;
+  E.sel = -1;
+  E.base = null;
+
+  ['eCod', 'eDesc', 'eMarca', 'eModelo', 'eSerial'].forEach(x => { if ($(x)) $(x).value = ''; });
+  if ($('eCant')) $('eCant').value = '1';
+  if ($('eMod')) $('eMod').value = 'HERRAMIENTA';
+  if ($('eCat')) $('eCat').value = 'Herramientas manuales';
+  if ($('eUmb')) $('eUmb').value = 'UND';
+  condEntrada();
+
+  const h = $('eCargaH');
+  if (h) {
+    h.textContent = 'ÍTEM A INGRESAR';
+    h.style.background = '';
+    h.style.color = '';
+  }
+
+  const btnArea = $('eBtnArea');
+  if (btnArea) {
+    btnArea.innerHTML = `<label>&nbsp;</label><button class="btn-salvar" onclick="agregarEntrada()">➕ Agregar ítem</button>`;
+  }
+
+  if ($('eCod')) $('eCod').focus();
+}
+
 function pintarLineasEntrada() {
   const bloq = !!E.hecho;
-  $('eLineas').innerHTML = `<div style="overflow:auto"><table class="grid"><thead><tr><th>Código</th><th>Descripción</th><th>Módulo</th><th>Categoría</th><th>Unidad</th><th>Marca / Modelo</th><th>Serial</th><th>Condición</th><th class="cen">Cantidad</th><th class="cen">Acción</th></tr></thead><tbody>
-    ${E.lineas.length ? E.lineas.map((l, i) => `<tr class="${E.sel === i ? 'sel' : ''}" onclick="${bloq ? '' : `E.sel=${i};pintarLineasEntrada()`}"><td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${chipMod(l.mod)}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cond)}</td><td class="cen"><b>${l.cant}</b></td>
-      <td class="cen">${bloq ? '' : `<button class="btn btn-rojo btn-mini" ${E.sel === i ? '' : 'disabled'} onclick="event.stopPropagation();E.lineas.splice(${i},1);E.sel=-1;pintarLineasEntrada()">Eliminar</button>`}</td></tr>`).join('')
-      : `<tr><td class="grid-vacio" colspan="10">Agregue los ítems que ingresan al almacén.</td></tr>`}</tbody></table></div>`;
-  $('eTot').innerHTML = `Total de líneas: <b>${E.lineas.length}</b> · Total de unidades: <b>${E.lineas.reduce((a, l) => a + l.cant, 0)}</b>${E.lineas.length && !bloq ? ' · Seleccione una línea para eliminarla' : ''}`;
+  $('eLineas').innerHTML = `<div style="overflow:auto"><table class="grid"><thead><tr>
+    <th>Código</th><th>Descripción</th><th>Módulo</th><th>Categoría</th><th>Unidad</th><th>Marca / Modelo</th><th>Serial</th><th>Condición</th><th class="cen">Cantidad</th><th class="cen">Acciones</th>
+  </tr></thead><tbody>
+    ${E.lineas.length ? E.lineas.map((l, i) => `
+      <tr class="${E.sel === i ? 'sel' : ''}" style="cursor:${bloq ? 'default' : 'pointer'}" onclick="${bloq ? '' : `cargarParaEditarEntrada(${i})`}">
+        <td><b>${esc(l.cod)}</b></td>
+        <td>${esc(l.desc)}</td>
+        <td>${chipMod(l.mod)}</td>
+        <td>${esc(l.cat)}</td>
+        <td>${esc(l.umb)}</td>
+        <td>${esc(l.marca)} / ${esc(l.modelo)}</td>
+        <td>${esc(l.serial || '—')}</td>
+        <td>${esc(l.cond)}</td>
+        <td class="cen"><b>${l.cant}</b></td>
+        <td class="cen" style="white-space:nowrap">
+          ${bloq ? '' : `
+            <button class="btn btn-chico btn-azul" onclick="event.stopPropagation();cargarParaEditarEntrada(${i})" title="Editar campos de esta línea">✏️ Corregir</button>
+            <button class="btn btn-chico btn-rojo" onclick="event.stopPropagation();eliminarLineaEntrada(${i})" title="Eliminar línea">🗑️</button>
+          `}
+        </td>
+      </tr>`).join('')
+      : `<tr><td class="grid-vacio" colspan="10">Agregue los ítems que ingresan al almacén.</td></tr>`}
+  </tbody></table></div>`;
+
+  $('eTot').innerHTML = `Total de líneas: <b>${E.lineas.length}</b> · Total de unidades: <b>${E.lineas.reduce((a, l) => a + l.cant, 0)}</b>${E.lineas.length && !bloq ? ' · Haga clic en cualquier registro para editarlo o corregirlo' : ''}`;
 }
+
 function registrarEntradaUI() {
-  run(() => { const v = registrarEntrada({ origen: S.ctx, lineas: E.lineas, obs: $('enObs') ? $('enObs').value.trim() : '' });
-    E.hecho = v.num; toast(`Entrada ${v.num} registrada.`, 'ok'); pintarEntrada(); });
+  run(() => {
+    const v = registrarEntrada({ origen: S.ctx, lineas: E.lineas, obs: $('enObs') ? $('enObs').value.trim() : '' });
+    E.hecho = v.num;
+    toast(`Entrada ${v.num} registrada.`, 'ok');
+    pintarEntrada();
+  });
 }
 
 /* =====================================================================
@@ -5236,9 +5527,9 @@ VISTAS.cCatAlm = p => {
       ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO', 'SIN DISPONIBILIDAD', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
       <label style="font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center;padding-bottom:9px"><input type="checkbox" id="caTod" ${todos ? 'checked' : ''} onchange="${rec}"> Incluir ítems sin existencia</label>
       ${buscador('gCatA', 'Buscar código, descripción, marca, serial…')}</div>`
-    + grid('gCatA', cols, rows, { pag: 50, totales: true, compacto: true, onSel: r => { $('caKdx').disabled = false; $('caTit').textContent = `${r.it.cod} · ${r.it.desc} · ${r.it.marca} / ${r.it.modelo}${r.it.serial ? ' · ' + r.it.serial : ''}`; }, vacio: 'No hay ítems con existencia en este almacén.' })
+    + grid('gCatA', cols, rows, { pag: 50, totales: true, compacto: true, onSel: r => { $('caKdx').disabled = false; if ($('caEdit')) $('caEdit').disabled = false; $('caTit').textContent = `${r.it.cod} · ${r.it.desc} · ${r.it.marca} / ${r.it.modelo}${r.it.serial ? ' · ' + r.it.serial : ''}`; }, vacio: 'No hay ítems con existencia en este almacén.' })
     + `<div class="sel-strip"><span class="lbl">Ítem seleccionado</span><span class="box" id="caTit" style="flex:1"></span></div>
-    <div class="barra-btn"><button class="btn-sip" onclick="ir('ent')">➕ Entrada de ítems</button><button class="btn-sip" id="caKdx" disabled onclick="const r=selDe('gCatA');ir('cKardex',{q:r.it.serial||r.it.cod})">📜 Ver kardex del ítem</button></div>
+    <div class="barra-btn"><button class="btn-sip" onclick="ir('ent')">➕ Entrada de ítems</button><button class="btn-sip" id="caEdit" disabled onclick="const r=selDe('gCatA');if(r)editarItem(r.it)">✏️ Editar datos / categoría</button><button class="btn-sip" id="caKdx" disabled onclick="const r=selDe('gCatA');ir('cKardex',{q:r.it.serial||r.it.cod})">📜 Ver kardex del ítem</button></div>
     <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
 };
 VISTAS.cExist = p => VISTAS.cCatAlm(p);
@@ -6898,21 +7189,22 @@ VISTAS.aIni = () => {
     { t: 'Almacén', v: r => almNombre(r.origen) },
     { t: 'Código', k: 'cod' },
     { t: 'Descripción', k: 'desc' },
+    { t: 'Categoría', v: r => { const it = item(r.id); return it ? it.cat : (r.cat || '—'); } },
     { t: 'Serial', v: r => r.serial || '-' },
     { t: 'Cant.', k: 'cant', cls: 'num' },
     { t: 'Estado', v: r => estB(r.estNue || 'DISPONIBLE') },
     { t: 'Usuario', k: 'usr' },
     { t: 'Acciones', v: r => `
       <div style="display:flex;gap:4px">
-        <button class="btn btn-chico btn-azul" onclick="cargarParaEditarIni(${r.n})">✏️ Corregir</button>
-        <button class="btn btn-chico btn-rojo" onclick="eliminarCargaIni(${r.n})">🗑️ Revertir</button>
+        <button class="btn btn-chico btn-azul" onclick="event.stopPropagation();cargarParaEditarIni(${r.n})">✏️ Corregir</button>
+        <button class="btn btn-chico btn-rojo" onclick="event.stopPropagation();eliminarCargaIni(${r.n})">🗑️ Revertir</button>
       </div>`
     }
   ];
 
   const cargas = DB.movs.filter(m => m.tipo === 'INI').slice().reverse();
 
-  $('area').innerHTML = cab('Carga inicial de inventario', esEdicion ? '⚠️ Modo de corrección: Ajuste los datos que requiera corregir y guarde los cambios.' : 'Registra existencias iniciales por almacén. Al registrar, el formulario se limpia automáticamente para el siguiente ítem.')
+  $('area').innerHTML = cab('Carga inicial de inventario', esEdicion ? '⚠️ Modo de corrección: Ajuste cantidad, categoría o almacén y guarde los cambios.' : 'Registra existencias iniciales por almacén. Al registrar, el formulario se limpia automáticamente para el siguiente ítem.')
     + `<div class="form-reg" id="formCargaIni">
       <div class="f3">
         ${campo('Almacén', selAlm('iniAlm', esEdicion ? movEdit.origen : S.ctx))}
@@ -6921,8 +7213,9 @@ VISTAS.aIni = () => {
           <input id="iniIt" autocomplete="off" placeholder="${esEdicion ? 'Ítem en corrección' : 'Escriba para buscar ítem...'}">
         </div>
         ${campo('Ítem seleccionado', `<input id="iniSel" readonly value="${itEdit ? esc(`${itEdit.cod} · ${itEdit.desc}${itEdit.serial ? ' · ' + itEdit.serial : ''}`) : ''}" placeholder="Haga clic en el buscador">`)}
+        ${campo('Categoría', `<select id="iniCat">${opciones(CATEGORIAS_OFICIALES, itEdit ? (itEdit.cat || 'Herramientas manuales') : 'Herramientas manuales')}</select>`)}
         ${campo('Cantidad', `<input id="iniCant" type="number" min="1" value="${esEdicion ? movEdit.cant : 1}">`)}
-        ${campo('Estado (cilindros)', `<select id="iniEst">${opciones([['0', 'Disponible / lleno'], ['1', 'Vacío']], esEdicion && (movEdit.estNue === 'VACÍO' || movEdit.estNue === 'VACIO') ? '1' : '0')}</select>`)}
+        ${campo('Condición', `<select id="iniEst">${opciones([['0', 'Disponible / Bueno'], ['1', 'Vacío (solo cilindros)']], esEdicion && (movEdit.estNue === 'VACÍO' || movEdit.estNue === 'VACIO') ? '1' : '0')}</select>`)}
       </div>
       <div class="pie-form">
         <div>${esEdicion ? `<span class="est est-ambar">Editando movimiento #${movEdit.n} · ${esc(itEdit ? itEdit.cod : '')}</span>` : ''}</div>
@@ -6932,21 +7225,22 @@ VISTAS.aIni = () => {
     + `<div class="panel">
       <div class="panel-h" style="display:flex;justify-content:space-between;align-items:center">
         <span>Cargas iniciales registradas (${cargas.length})</span>
-        <small style="color:var(--texto-3)">Haga clic en ✏️ Corregir para arreglar cantidad o almacén</small>
+        <small style="color:var(--texto-3)">Haga clic en cualquier fila o en ✏️ Corregir para arreglar cantidad, categoría o almacén</small>
       </div>
-      <div class="panel-b">${grid('gIni', colsIni, cargas, { pag: 15, vacio: 'No hay cargas iniciales registradas aún.' })}</div>
+      <div class="panel-b">${grid('gIni', colsIni, cargas, { pag: 15, onSel: r => cargarParaEditarIni(r.n), vacio: 'No hay cargas iniciales registradas aún.' })}</div>
     </div>`;
 
   bindAC('iniIt', q => {
     q = q.toLowerCase();
-    return q.length < 2 ? [] : DB.catalogo.filter(i => (i.cod + ' ' + i.desc + ' ' + i.serial).toLowerCase().includes(q)).slice(0, 20).map(i => ({
+    return q.length < 2 ? [] : DB.catalogo.filter(i => (i.cod + ' ' + i.desc + ' ' + (i.serial || '')).toLowerCase().includes(q)).slice(0, 20).map(i => ({
       val: i,
-      html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(i.serial || '')}</small>`
+      html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(i.cat || '')}${i.serial ? ' · ' + esc(i.serial) : ''}</small>`
     }));
   }, i => {
     window.__iniItem = i;
     $('iniSel').value = `${i.cod} · ${i.desc}${i.serial ? ' · ' + i.serial : ''}`;
     $('iniIt').value = '';
+    if ($('iniCat')) $('iniCat').value = i.cat || 'Herramientas manuales';
     if (i.serial) $('iniCant').value = 1;
   });
 };
@@ -7006,8 +7300,15 @@ function accionIni() {
     const alm = $('iniAlm').value;
     const cant = Number($('iniCant').value);
     const esVacio = $('iniEst').value === '1';
+    const catSel = $('iniCat') ? $('iniCat').value.trim() : (it.cat || 'Herramientas manuales');
 
     if (isNaN(cant) || cant <= 0) throw new Error('La cantidad debe ser mayor a 0.');
+
+    // Si se cambió la categoría en el selector, actualizarla en el catálogo
+    if (catSel && it.cat !== catSel) {
+      it.cat = catSel;
+      it.mod = (catSel === 'Cilindros y gases' ? 'CILINDRO' : (catSel === 'EPP' ? 'EPP' : 'HERRAMIENTA'));
+    }
 
     if (window.__iniEditMov) {
       // MODO CORRECCIÓN
@@ -7030,6 +7331,8 @@ function accionIni() {
       m.id = it.id;
       m.cod = it.cod;
       m.desc = it.desc;
+      m.cat = it.cat;
+      m.mod = it.mod;
       m.serial = it.serial || '';
       m.cant = cant;
       m.origen = alm;
@@ -7062,6 +7365,7 @@ function accionIni() {
     if ($('iniSel')) $('iniSel').value = '';
     if ($('iniCant')) $('iniCant').value = '1';
     if ($('iniEst')) $('iniEst').value = '0';
+    if ($('iniCat')) $('iniCat').value = 'Herramientas manuales';
 
     toast('Carga inicial registrada.', 'ok');
     refrescar();
