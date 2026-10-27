@@ -35,7 +35,8 @@ import {
   ArrowRight,
   ArrowRightLeft,
   RotateCcw,
-  CheckCircle
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 
@@ -192,14 +193,153 @@ export function isAjusteNormalizacionOManual(r: any): boolean {
   return a.includes('NORMALIZ') || a.includes('MANUAL');
 }
 
+export interface DesfaseFechaInfo {
+  tieneDesfase: boolean;
+  tipo: 'mes_diferente' | 'fecha_corta' | 'nombre_mes' | 'codigo_ag';
+  fechaTexto: string;
+  mesDetectado?: 'Junio' | 'Julio' | 'Agosto' | 'Mayo' | 'Octubre' | string;
+  mesNumero?: number;
+  motivoSnippet?: string;
+  detalle: string;
+}
+
+export const getRowKey = (r: any): string => {
+  if (!r) return '';
+  return r.id != null ? String(r.id) : (r.numero ? `${r.numero}-${r.codigo || ''}` : `${r.dp || r.sc || ''}-${r.codigo || ''}`);
+};
+
+export const isRowDescartada = (r: any, descartadasList: string[]): boolean => {
+  if (!r || !descartadasList || descartadasList.length === 0) return false;
+  const set = new Set(descartadasList.map(String));
+  if (r.id != null && set.has(String(r.id))) return true;
+  if (r.numero && r.codigo && set.has(`${r.numero}-${r.codigo}`)) return true;
+  if (r.numero && set.has(String(r.numero))) return true;
+  if (r.dp && set.has(String(r.dp))) return true;
+  if (r.sc && set.has(String(r.sc))) return true;
+  return false;
+};
+
+export function detectarDesfaseFechaMotivo(r: any): DesfaseFechaInfo | null {
+  if (!r || !r.motivo) return null;
+  const m = String(r.motivo).toUpperCase();
+  const f = r.fecha || '';
+  const [fy, fm, fd] = f ? f.split('-').map(Number) : [2026, 9, 1];
+  const monthNames = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+  // 1. Fecha explícita completa DD/MM/YYYY o DD-MM-YYYY
+  const matchFull = m.match(/(?:FECHA\s*:?\s*|DEL\s+|AL\s+|^|\s)([0-2]?[1-9]|[12]0|3[01])[\/\-\.](0?[1-9]|1[0-2])[\/\-\.](202\d|2\d)\b/i);
+  if (matchFull) {
+    let day = parseInt(matchFull[1], 10);
+    let month = parseInt(matchFull[2], 10);
+    let year = parseInt(matchFull[3], 10);
+    if (year < 100) year += 2000;
+
+    if (fm && month !== fm) {
+      const mesName = monthNames[month] || `Mes ${month}`;
+      return {
+        tieneDesfase: true,
+        tipo: 'mes_diferente',
+        fechaTexto: `${day < 10 ? '0' + day : day}/${month < 10 ? '0' + month : month}/${year}`,
+        mesDetectado: mesName,
+        mesNumero: month,
+        motivoSnippet: matchFull[0].trim(),
+        detalle: `Motivo indica fecha ${day}/${month}/${year} (${mesName}), que no corresponde a la fecha de la solicitud/PA (${f})`
+      };
+    }
+  }
+
+  // 2. Fecha corta DD/MM al inicio o con palabra clave FECHA / DEL / AL
+  const matchShort = m.match(/(?:^|\bFECHA\s*:?\s*|\bDEL\s+|\bAL\s+)([0-2]?[1-9]|[12]0|3[01])[\/\-](0?[1-9]|1[0-2])\b/i);
+  if (matchShort) {
+    let day = parseInt(matchShort[1], 10);
+    let month = parseInt(matchShort[2], 10);
+    if (fm && month !== fm) {
+      const mesName = monthNames[month] || `Mes ${month}`;
+      return {
+        tieneDesfase: true,
+        tipo: 'fecha_corta',
+        fechaTexto: `${day < 10 ? '0' + day : day}/${month < 10 ? '0' + month : month}`,
+        mesDetectado: mesName,
+        mesNumero: month,
+        motivoSnippet: matchShort[0].trim(),
+        detalle: `Motivo indica ${day}/${month} (${mesName}), que no corresponde a la fecha de la solicitud/PA (${f})`
+      };
+    }
+  }
+
+  // 3. Meses por nombre explícito
+  if (m.includes('JUNIO') && !m.includes('JUNIOR')) {
+    if (fm !== 6) {
+      return {
+        tieneDesfase: true,
+        tipo: 'nombre_mes',
+        fechaTexto: 'Junio',
+        mesDetectado: 'Junio',
+        mesNumero: 6,
+        detalle: `Motivo menciona Junio pero la fecha de PA/solicitud es ${f}`
+      };
+    }
+  }
+
+  if (m.includes('JULIO')) {
+    const isName = /JULIO\s+(VARGAS|ROMERO|ALVAREZ|CESAR|MORENO|GIL|ZAPATA|RODRIGUEZ|HERNANDEZ|CARGAS|TUERCA|MARTINEZ)/.test(m);
+    if (!isName && fm !== 7) {
+      return {
+        tieneDesfase: true,
+        tipo: 'nombre_mes',
+        fechaTexto: 'Julio',
+        mesDetectado: 'Julio',
+        mesNumero: 7,
+        detalle: `Motivo menciona Julio pero la fecha de PA/solicitud es ${f}`
+      };
+    }
+  }
+
+  if (m.includes('AGOSTO')) {
+    if (fm !== 8) {
+      return {
+        tieneDesfase: true,
+        tipo: 'nombre_mes',
+        fechaTexto: 'Agosto',
+        mesDetectado: 'Agosto',
+        mesNumero: 8,
+        detalle: `Motivo menciona Agosto pero la fecha de PA/solicitud es ${f}`
+      };
+    }
+  }
+
+  // 4. Código abreviado AG (Agosto)
+  if (/\bAG\b/.test(m) || m.includes(' AG ') || m.endsWith(' AG') || m.includes(' AG-') || m.includes('-AG-') || m.includes(' AG/')) {
+    if (fm !== 8) {
+      return {
+        tieneDesfase: true,
+        tipo: 'codigo_ag',
+        fechaTexto: 'AG (Agosto)',
+        mesDetectado: 'Agosto',
+        mesNumero: 8,
+        detalle: `Motivo contiene código de regularización AG (Agosto) pero la fecha es ${f}`
+      };
+    }
+  }
+
+  return null;
+}
+
 export function detectarMesRezagada(r: any): 'Junio' | 'Julio' | 'Agosto' | null {
   if (!r) return null;
+  const desfase = detectarDesfaseFechaMotivo(r);
+  if (desfase && desfase.mesDetectado) {
+    const md = desfase.mesDetectado.toLowerCase();
+    if (md.includes('junio')) return 'Junio';
+    if (md.includes('julio')) return 'Julio';
+    if (md.includes('agosto')) return 'Agosto';
+  }
+
   const m = (r.motivo || '').toUpperCase();
-  
   // 1. Junio
   if (m.includes('JUNIO') && !m.includes('JUNIOR')) return 'Junio';
   
-  // 2. Julio (excluyendo nombres propios de trabajadores como Julio Vargas, Julio Romero, etc.)
+  // 2. Julio (excluyendo nombres propios de trabajadores)
   if (
     m.includes('JULIO') && 
     !m.includes('JULIO VARGAS') && 
@@ -218,7 +358,7 @@ export function detectarMesRezagada(r: any): 'Junio' | 'Julio' | 'Agosto' | null
     return 'Julio';
   }
 
-  // 3. Agosto (menciones explícitas, abreviatura AG de almacén al final o con delimitador, o fechas 15-31 ago)
+  // 3. Agosto
   if (
     m.includes('AGOSTO') ||
     /\bAG\b/.test(m) || 
@@ -248,18 +388,22 @@ export function detectarMesRezagada(r: any): 'Junio' | 'Julio' | 'Agosto' | null
   return null;
 }
 
-export function isRezagadaDestiempo(r: any): boolean {
+export function isRezagadaDestiempo(r: any, descartadasList?: string[]): boolean {
   if (!r) return false;
-  return detectarMesRezagada(r) !== null;
+  if (descartadasList && isRowDescartada(r, descartadasList)) return false;
+  return detectarMesRezagada(r) !== null || detectarDesfaseFechaMotivo(r) !== null;
 }
 
-export function clasificarNormalizacion(r: any): SubtipoNormalizacion | null {
+export function clasificarNormalizacion(r: any, descartadasList?: string[]): SubtipoNormalizacion | null {
   if (!r) return null;
+  if (descartadasList && isRowDescartada(r, descartadasList)) {
+    return null;
+  }
   // Si pertenece a la base histórica de Enero a Julio 2026, son ajustes contables viejos
   if (r.nombre_mes && ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio'].includes(r.nombre_mes.toLowerCase())) {
     return 'vieja_historica';
   }
-  if (isRezagadaDestiempo(r)) {
+  if (isRezagadaDestiempo(r, descartadasList)) {
     return 'rezagada';
   }
   if (isAjusteNormalizacionOManual(r)) {
@@ -339,7 +483,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     'operativos' | 'todos' | 'rezagadas' | 'ajustes_historicos' | 'viejas_historicas' | 'operativas_campo' | 'todas_normalizaciones'
   >('operativos');
   const [filterRezagadaSubmes, setFilterRezagadaSubmes] = useState<'todos' | 'agosto' | 'junio' | 'julio'>('todos');
-  const [filterEstadoRezagada, setFilterEstadoRezagada] = useState<'pendientes' | 'corregidos' | 'todos'>('pendientes');
+  const [filterEstadoRezagada, setFilterEstadoRezagada] = useState<'pendientes' | 'corregidos' | 'descartadas' | 'todos'>('pendientes');
+  const [rezagadasDescartadas, setRezagadasDescartadas] = useState<string[]>(() => {
+    try {
+      const s = typeof window !== 'undefined' ? localStorage.getItem('timaca_rezagadas_descartadas') : null;
+      return s ? JSON.parse(s) : [];
+    } catch { return []; }
+  });
   const [inputProyecto, setInputProyecto] = useState<string>('');
   const [showProjectSuggestions, setShowProjectSuggestions] = useState<boolean>(false);
   const [searchMaster, setSearchMaster] = useState<string>('');
@@ -366,6 +516,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     norm_rezagadas_count?: number;
     rezagadas_pendientes_count?: number;
     rezagadas_corregidas_count?: number;
+    rezagadas_descartadas_count?: number;
     rezagadas_agosto_count?: number;
     rezagadas_agosto_total?: number;
     rezagadas_agosto_pendientes_count?: number;
@@ -840,11 +991,16 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           let rezagadasJulioUSD = 0;
           let rezagadasJulioPendientesCount = 0;
           let rezagadasJulioCorregidasCount = 0;
+          let rezagadasDescartadasCount = 0;
           let normViejasUSD = 0;
           let normViejasCount = 0;
 
           for (const r of items) {
-            const subtipo = clasificarNormalizacion(r);
+            const isDesc = isRowDescartada(r, rezagadasDescartadas);
+            if (isDesc) {
+              rezagadasDescartadasCount++;
+            }
+            const subtipo = clasificarNormalizacion(r, rezagadasDescartadas);
             if (subtipo) {
               const val = Number(r.total_usd) || 0;
               totalNormCount++;
@@ -896,18 +1052,22 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             // Categoría para revisar uno a uno todos los ajustes (NORMALIZACION y MANUAL generados en 2025 o antes)
             items = items.filter(r => isAjusteNormalizacionOManual(r));
           } else if (filterNormalizacion === 'rezagadas') {
-            items = items.filter(r => clasificarNormalizacion(r) === 'rezagada');
-            if (filterRezagadaSubmes !== 'todos') {
-              items = items.filter(r => {
-                const m = detectarMesRezagada(r);
-                return m && m.toLowerCase() === filterRezagadaSubmes.toLowerCase();
-              });
-            }
-            // FILTRO DE ESTADO DE AUDITORÍA (PENDIENTES vs YA CORREGIDOS vs TODOS)
-            if (filterEstadoRezagada === 'pendientes') {
-              items = items.filter(r => !r.esReclasificado && !(r.ajuste || '').toUpperCase().includes('CORREGIDO'));
-            } else if (filterEstadoRezagada === 'corregidos') {
-              items = items.filter(r => r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+            if (filterEstadoRezagada === 'descartadas') {
+              items = items.filter(r => isRowDescartada(r, rezagadasDescartadas));
+            } else {
+              items = items.filter(r => !isRowDescartada(r, rezagadasDescartadas) && (clasificarNormalizacion(r, rezagadasDescartadas) === 'rezagada'));
+              if (filterRezagadaSubmes !== 'todos') {
+                items = items.filter(r => {
+                  const m = detectarMesRezagada(r);
+                  return m && m.toLowerCase() === filterRezagadaSubmes.toLowerCase();
+                });
+              }
+              // FILTRO DE ESTADO DE AUDITORÍA (PENDIENTES vs YA CORREGIDOS vs TODOS)
+              if (filterEstadoRezagada === 'pendientes') {
+                items = items.filter(r => !r.esReclasificado && !(r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+              } else if (filterEstadoRezagada === 'corregidos') {
+                items = items.filter(r => r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+              }
             }
           }
 
@@ -1024,6 +1184,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             norm_rezagadas_count: normRezagadasCount,
             rezagadas_pendientes_count: rezagadasPendientesCount,
             rezagadas_corregidas_count: rezagadasCorregidasCount,
+            rezagadas_descartadas_count: rezagadasDescartadasCount,
             rezagadas_agosto_count: rezagadasAgostoCount,
             rezagadas_agosto_total: rezagadasAgostoUSD,
             rezagadas_agosto_pendientes_count: rezagadasAgostoPendientesCount,
@@ -1152,17 +1313,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       } else if (filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas' || filterNormalizacion === 'todas_normalizaciones') {
         rows = rows.filter((r: any) => isAjusteNormalizacionOManual(r));
       } else if (filterNormalizacion === 'rezagadas') {
-        rows = rows.filter((r: any) => clasificarNormalizacion(r) === 'rezagada');
-        if (filterRezagadaSubmes !== 'todos') {
-          rows = rows.filter((r: any) => {
-            const m = detectarMesRezagada(r);
-            return m && m.toLowerCase() === filterRezagadaSubmes.toLowerCase();
-          });
-        }
-        if (filterEstadoRezagada === 'pendientes') {
-          rows = rows.filter((r: any) => !r.esReclasificado && !(r.ajuste || '').toUpperCase().includes('CORREGIDO'));
-        } else if (filterEstadoRezagada === 'corregidos') {
-          rows = rows.filter((r: any) => r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+        if (filterEstadoRezagada === 'descartadas') {
+          rows = rows.filter((r: any) => isRowDescartada(r, rezagadasDescartadas));
+        } else {
+          rows = rows.filter((r: any) => !isRowDescartada(r, rezagadasDescartadas) && (clasificarNormalizacion(r, rezagadasDescartadas) === 'rezagada'));
+          if (filterRezagadaSubmes !== 'todos') {
+            rows = rows.filter((r: any) => {
+              const m = detectarMesRezagada(r);
+              return m && m.toLowerCase() === filterRezagadaSubmes.toLowerCase();
+            });
+          }
+          if (filterEstadoRezagada === 'pendientes') {
+            rows = rows.filter((r: any) => !r.esReclasificado && !(r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+          } else if (filterEstadoRezagada === 'corregidos') {
+            rows = rows.filter((r: any) => r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+          }
         }
       }
 
@@ -1175,26 +1340,30 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         return;
       }
 
-      // Map to exact 35 columns matching Daniela's official specification
-      const excelData = rows.map((r: MasterRow) => ({
-        'Tipo': r.tipo,
-        'Almacen': r.almacen,
-        'Fecha': r.fecha,
-        'Numero': r.numero, // Despacho DP
-        'Pedido': r.pedido, // Pedido PA
-        'Cuenta-Aux': r.cuenta_aux,
-        'Ceco': r.ceco,
-        'Codigo': r.codigo,
-        'Descripcion': r.descripcion,
-        'Cantidad': r.cantidad,
-        'Unidad': r.unidad,
-        'solicitante': r.solicitante,
-        'motivo': r.motivo,
-        'Ajuste': r.ajuste,
-        'Categoria': r.categoria,
-        'Precio Final': r.precio_final,
-        'Total USD': r.total_usd,
-        'Precio$': r.precio_dolar || r.precio_final,
+      // Map to exact columns matching Daniela's official specification
+      const excelData = rows.map((r: MasterRow) => {
+        const desfase = detectarDesfaseFechaMotivo(r);
+        return {
+          'Tipo': r.tipo,
+          'Almacen': r.almacen,
+          'Fecha': r.fecha,
+          'Numero': r.numero, // Despacho DP
+          'Pedido': r.pedido, // Pedido PA
+          'Cuenta-Aux': r.cuenta_aux,
+          'Ceco': r.ceco,
+          'Codigo': r.codigo,
+          'Descripcion': r.descripcion,
+          'Cantidad': r.cantidad,
+          'Unidad': r.unidad,
+          'solicitante': r.solicitante,
+          'Proveedor': r.proveedor || '',
+          'motivo': r.motivo,
+          'Pendientes por Revisar / Corregir': desfase ? desfase.detalle : (r.esReclasificado ? `Corregido a ${r.nombre_mes || 'otro mes'}` : ''),
+          'Ajuste': r.ajuste,
+          'Categoria': r.categoria,
+          'Precio Final': r.precio_final,
+          'Total USD': r.total_usd,
+          'Precio$': r.precio_dolar || r.precio_final,
         'Semana': r.semana,
         'Fecha Hasta': r.fecha_hasta,
         'Cargo': r.cargo,
@@ -1210,7 +1379,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         'Datos.Zona': r.datos_zona,
         'Año': r.ano,
         'Nombre del mes': r.nombre_mes
-      }));
+      };
+    });
 
       const ws = XLSX.utils.json_to_sheet(excelData);
       const wb = XLSX.utils.book_new();
@@ -1732,6 +1902,42 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     fetchCompras();
     fetchReclasificaciones();
     fetchMasterData();
+  };
+
+  const handleDescartarRezagada = (r: any) => {
+    const doc = r.numero || r.dp || r.sc || 'este movimiento';
+    if (!window.confirm(`¿Deseas sacar el movimiento [${doc}] de las rezagadas y confirmarlo como movimiento válido de Septiembre?`)) {
+      return;
+    }
+    const key = getRowKey(r);
+    const newItems = [key, r.id != null ? String(r.id) : null, r.numero ? String(r.numero) : null].filter(Boolean) as string[];
+    const updated = Array.from(new Set([...rezagadasDescartadas, ...newItems]));
+    setRezagadasDescartadas(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('timaca_rezagadas_descartadas', JSON.stringify(updated));
+    }
+    setGlobalToast({
+      type: 'success',
+      message: `✓ Movimiento [${doc}] retirado de rezagadas. Se mantendrá como movimiento normal de Septiembre.`
+    });
+    setTimeout(() => setGlobalToast(null), 4000);
+    setTimeout(() => fetchMasterData(), 50);
+  };
+
+  const handleRestaurarRezagada = (r: any) => {
+    const doc = r.numero || r.dp || r.sc || 'este movimiento';
+    const key = getRowKey(r);
+    const updated = rezagadasDescartadas.filter(k => k !== key && k !== String(r.id) && k !== String(r.numero));
+    setRezagadasDescartadas(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('timaca_rezagadas_descartadas', JSON.stringify(updated));
+    }
+    setGlobalToast({
+      type: 'info',
+      message: `✓ Movimiento [${doc}] reincorporado a la lista de rezagadas.`
+    });
+    setTimeout(() => setGlobalToast(null), 4000);
+    setTimeout(() => fetchMasterData(), 50);
   };
 
   // Filtered consumos & compras for monitoring tabs (ordenados de mayor a menor)
@@ -3252,6 +3458,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       })
                     </button>
                     <button
+                      onClick={() => { setFilterEstadoRezagada('descartadas'); setPageMaster(1); }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        filterEstadoRezagada === 'descartadas'
+                          ? 'bg-rose-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:bg-slate-100'
+                      }`}
+                      title="Mostrar los registros que sacaste de rezagadas para confirmarlos como movimientos normales de Septiembre"
+                    >
+                      🚫 Sacadas / No Rezagadas ({masterTotales.rezagadas_descartadas_count || 0})
+                    </button>
+                    <button
                       onClick={() => { setFilterEstadoRezagada('todos'); setPageMaster(1); }}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         filterEstadoRezagada === 'todos'
@@ -3409,6 +3626,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         Proveedor {sortMasterBy === 'proveedor' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th className="py-2.5 px-3 border-r border-slate-200 min-w-[280px] bg-amber-50/50 text-amber-950 font-bold">Motivo</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[260px] bg-indigo-50/80 text-indigo-950 font-bold text-center select-none" title="Columna de auditoría: identifica consumos o solicitudes donde la fecha del motivo no corresponde con la fecha del documento">
+                        Pendientes por Revisar / Corregir
+                      </th>
                       <th className="py-2.5 px-3 border-r border-slate-200">Ajuste</th>
                       <th onClick={() => handleSortMaster('categoria')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Categoría {sortMasterBy === 'categoria' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
@@ -3558,6 +3778,73 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans bg-amber-50/20 min-w-[280px] whitespace-normal break-words leading-snug" title={r.motivo}>
                             {r.motivo || <span className="text-slate-400 italic font-mono">-</span>}
                           </td>
+                          {/* COLUMNA: PENDIENTES POR REVISAR / CORREGIR */}
+                          <td className="py-2 px-3 border-r border-slate-100 min-w-[260px] whitespace-normal text-left">
+                            {(() => {
+                              const desfase = detectarDesfaseFechaMotivo(r);
+                              const isDescartada = isRowDescartada(r, rezagadasDescartadas);
+                              const isCorregido = !!(r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+
+                              if (isCorregido) {
+                                return (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-2xs">
+                                    ✓ Corregido {r.nombre_mes && r.nombre_mes.toLowerCase() !== 'septiembre' ? `→ ${r.nombre_mes.toUpperCase()}` : ''}
+                                  </span>
+                                );
+                              }
+
+                              if (isDescartada) {
+                                return (
+                                  <div className="flex items-center justify-between gap-1.5 bg-slate-50 border border-slate-200 p-1.5 rounded-lg shadow-2xs">
+                                    <span className="text-[10px] font-semibold text-slate-700">
+                                      ✓ Sacada (Mov. Septiembre)
+                                    </span>
+                                    <button
+                                      onClick={() => handleRestaurarRezagada(r)}
+                                      className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-white hover:bg-slate-100 text-indigo-700 border border-indigo-200 shadow-2xs transition-colors cursor-pointer"
+                                      title="Reincorporar a rezagadas"
+                                    >
+                                      Reincorporar
+                                    </button>
+                                  </div>
+                                );
+                              }
+
+                              if (desfase || subtipoNorm === 'rezagada') {
+                                const fechaTexto = desfase?.fechaTexto || detectarMesRezagada(r) || 'Mes anterior';
+                                const mesSug = desfase?.mesDetectado || detectarMesRezagada(r) || 'Agosto';
+                                return (
+                                  <div className="flex flex-col gap-1.5 bg-amber-50/70 p-2 rounded-xl border border-amber-300 shadow-2xs">
+                                    <div className="flex items-center gap-1.5 text-amber-950 text-[10px] font-bold leading-tight">
+                                      <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                      <span title={desfase?.detalle || `Motivo desfasado (${fechaTexto}) vs fecha doc (${r.fecha})`}>
+                                        Fecha en Motivo: <strong className="underline text-amber-900">{fechaTexto}</strong>
+                                        <span className="text-slate-500 font-normal ml-1">(Doc: {r.fecha})</span>
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                      <button
+                                        onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
+                                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition-colors cursor-pointer"
+                                        title={`Pasar a corrección e imputar a ${mesSug}`}
+                                      >
+                                        <Edit3 className="w-2.5 h-2.5" /> Corregir ({mesSug})
+                                      </button>
+                                      <button
+                                        onClick={() => handleDescartarRezagada(r)}
+                                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold bg-white hover:bg-rose-50 text-rose-700 hover:text-rose-800 border border-rose-300 shadow-2xs transition-colors cursor-pointer"
+                                        title="Sacar de rezagadas: confirmar que pertenece a Septiembre y no debe reclasificarse"
+                                      >
+                                        <XCircle className="w-2.5 h-2.5" /> Sacar
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              return <span className="text-slate-400 text-[10px] italic">-</span>;
+                            })()}
+                          </td>
                           <td className="py-2 px-3 border-r border-slate-100">
                             {(() => {
                               if (subtipoNorm === 'rezagada') {
@@ -3567,13 +3854,22 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-900 border border-indigo-300 shadow-2xs">
                                       ⏳ REZAGADA {detected ? `(${detected.toUpperCase()})` : ''}
                                     </span>
-                                    <button
-                                      onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
-                                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition-colors cursor-pointer"
-                                      title="Consumo de meses anteriores (Jun/Jul/Ago): Pasar a corrección"
-                                    >
-                                      <Edit3 className="w-2.5 h-2.5" /> Pasar a Corrección
-                                    </button>
+                                    <div className="flex items-center gap-1">
+                                      <button
+                                        onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
+                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition-colors cursor-pointer"
+                                        title="Consumo de meses anteriores (Jun/Jul/Ago): Pasar a corrección"
+                                      >
+                                        <Edit3 className="w-2.5 h-2.5" /> Pasar a Corrección
+                                      </button>
+                                      <button
+                                        onClick={() => handleDescartarRezagada(r)}
+                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 shadow-2xs transition-colors cursor-pointer"
+                                        title="Sacar de rezagadas"
+                                      >
+                                        <XCircle className="w-2.5 h-2.5" /> Sacar
+                                      </button>
+                                    </div>
                                   </div>
                                 );
                               }
