@@ -6,6 +6,7 @@
 <title>TIMACA · Sistema de Trazabilidad</title>
 <!-- Librería para exportar a Excel (si no hay internet, el sistema exporta en CSV, que también abre en Excel) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --navy:#020C54; --navy-h:#0C1B7A;
@@ -406,6 +407,10 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
     </div>
     <div class="tb-der">
       <span class="tb-bienv">Bienvenido, <b id="tbUsuario"></b> <span id="tbRol"></span></span>
+      <span id="btnCloudSync" onclick="forzarSincronizacionNube()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);user-select:none" title="Estado de la base de datos central en la nube. Haga clic para sincronizar ahora">
+        <span id="dotCloud" style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span>
+        <span id="txtCloud">☁️ Nube conectada</span>
+      </span>
       <button class="btn-tb" id="btnNotif" onclick="abrirPanelNotificaciones()" style="position:relative;background:#0f172a;border-color:#334155;cursor:pointer" title="Notificaciones del Sistema">
         🔔 <span id="badgeNotif" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px;font-weight:900">0</span>
       </button>
@@ -799,7 +804,20 @@ function marcarTodasNotifLeidas() {
   abrirPanelNotificaciones();
 }
 
-function guardar() { try { localStorage.setItem(LS_KEY, JSON.stringify(DB)); } catch (e) { /* sin almacenamiento disponible */ } }
+function guardarLocalSolo() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(DB)); } catch (e) { }
+}
+
+function guardar() {
+  try {
+    DB._actualizadoEn = new Date().toISOString();
+    DB._actualizadoPor = (typeof S !== 'undefined' && S && S.u) ? S.u.usuario : 'SISTEMA';
+    localStorage.setItem(LS_KEY, JSON.stringify(DB));
+  } catch (e) { /* sin almacenamiento disponible */ }
+  if (typeof subirANubeDebounced === 'function') {
+    subirANubeDebounced();
+  }
+}
 
 function limpiarModuloCajasViejo() {
   if (!DB) return;
@@ -7491,6 +7509,212 @@ function ayuda(k) {
 /* =====================================================================
    INICIO
    ===================================================================== */
+
+/* =====================================================================
+   SINCRONIZACIÓN EN TIEMPO REAL CON LA NUBE (SUPABASE POSTGRESQL)
+   ===================================================================== */
+const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
+const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
+
+let supabaseClient = null;
+let cloudSyncEnProgreso = false;
+let cloudDebounceTimer = null;
+let cloudSuscripcionActiva = false;
+
+function iniciarSupabaseCloud() {
+  try {
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      console.log('✅ Conexión con Supabase Cloud inicializada.');
+      actualizarIndicadorCloud('sincronizando');
+      sincronizarConNube();
+      activarRealtimeSupabase();
+    } else {
+      console.warn('Librería de Supabase no cargada, usando modo local.');
+      actualizarIndicadorCloud('local');
+    }
+  } catch (e) {
+    console.warn('Error al iniciar Supabase:', e);
+    actualizarIndicadorCloud('error');
+  }
+}
+
+async function sincronizarConNube(forzar = false) {
+  if (!supabaseClient || cloudSyncEnProgreso) return;
+  cloudSyncEnProgreso = true;
+  actualizarIndicadorCloud('sincronizando');
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('herramientas_vales')
+      .select('fecha, lineas, observaciones')
+      .eq('numero', SYNC_DOC_ID)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Error consultando Supabase:', error);
+      actualizarIndicadorCloud('error');
+      cloudSyncEnProgreso = false;
+      return;
+    }
+
+    const cloudData = data && data.lineas && typeof data.lineas === 'object' ? data.lineas : null;
+    const cloudFecha = data && data.fecha ? new Date(data.fecha).getTime() : 0;
+    const localFecha = DB && DB._actualizadoEn ? new Date(DB._actualizadoEn).getTime() : 0;
+    const countLocal = (DB && Array.isArray(DB.catalogo)) ? DB.catalogo.length : 0;
+    const countCloud = (cloudData && Array.isArray(cloudData.catalogo)) ? cloudData.catalogo.length : 0;
+
+    // CASO A: El equipo local tiene datos (ej. 65 ítems) y la nube está vacía o tiene menos ítems
+    if (forzar || (countLocal > 0 && countCloud === 0) || (countLocal > countCloud && localFecha >= cloudFecha)) {
+      await subirANube();
+    }
+    // CASO B: La nube tiene datos y el equipo local está vacío o la nube es más reciente
+    else if (cloudData && (countCloud > countLocal || cloudFecha > localFecha || countLocal === 0)) {
+      descargarDeNube(cloudData);
+    }
+    // CASO C: Ambos tienen datos; priorizar el que tenga fecha más reciente
+    else if (cloudData && cloudFecha > localFecha) {
+      descargarDeNube(cloudData);
+    } else if (countLocal > 0 && localFecha > cloudFecha) {
+      await subirANube();
+    }
+
+    actualizarIndicadorCloud('ok');
+  } catch (err) {
+    console.error('Error en sincronización con la nube:', err);
+    actualizarIndicadorCloud('error');
+  } finally {
+    cloudSyncEnProgreso = false;
+  }
+}
+
+async function subirANube() {
+  if (!supabaseClient || !DB) return;
+  try {
+    DB._actualizadoEn = new Date().toISOString();
+    DB._actualizadoPor = (typeof S !== 'undefined' && S && S.u) ? S.u.usuario : 'SISTEMA';
+
+    const payload = {
+      numero: SYNC_DOC_ID,
+      tipo: 'SYNC',
+      fecha: DB._actualizadoEn,
+      origen: (typeof S !== 'undefined' && S && S.ctx) ? S.ctx : 'CENTRAL',
+      destino: (typeof S !== 'undefined' && S && S.ctx) ? S.ctx : 'CENTRAL',
+      estatus: 'ACTIVO',
+      observaciones: `Sincronizado por ${DB._actualizadoPor} (${(DB.catalogo||[]).length} ítems)`,
+      lineas: DB
+    };
+
+    const { error } = await supabaseClient
+      .from('herramientas_vales')
+      .upsert([payload], { onConflict: 'numero' });
+
+    if (error) {
+      console.warn('Error subiendo a Supabase:', error);
+      actualizarIndicadorCloud('error');
+    } else {
+      console.log(`☁️ Subida completada: ${(DB.catalogo||[]).length} ítems en Supabase Cloud.`);
+      actualizarIndicadorCloud('ok');
+    }
+  } catch (e) {
+    console.warn('Excepción al subir a la nube:', e);
+    actualizarIndicadorCloud('error');
+  }
+}
+
+function subirANubeDebounced() {
+  if (cloudDebounceTimer) clearTimeout(cloudDebounceTimer);
+  cloudDebounceTimer = setTimeout(() => {
+    subirANube();
+  }, 1200);
+}
+
+function descargarDeNube(cloudDB) {
+  if (!cloudDB || !Array.isArray(cloudDB.catalogo)) return;
+  DB = cloudDB;
+  asegurarCategoriasOficiales();
+  asegurarUsuariosClave();
+  guardarLocalSolo();
+  if (typeof refrescar === 'function') refrescar();
+  console.log(`☁️ Sincronizados ${(DB.catalogo||[]).length} ítems desde Supabase Cloud.`);
+}
+
+function activarRealtimeSupabase() {
+  if (!supabaseClient || cloudSuscripcionActiva) return;
+  cloudSuscripcionActiva = true;
+
+  try {
+    supabaseClient
+      .channel('cambios-trazabilidad-timaca')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'herramientas_vales',
+        filter: `numero=eq.${SYNC_DOC_ID}`
+      }, payload => {
+        if (payload.new && payload.new.lineas && !cloudSyncEnProgreso) {
+          const cloudFecha = new Date(payload.new.fecha || 0).getTime();
+          const localFecha = DB && DB._actualizadoEn ? new Date(DB._actualizadoEn).getTime() : 0;
+          if (cloudFecha > localFecha) {
+            console.log('⚡ Actualización en tiempo real recibida desde la nube.');
+            descargarDeNube(payload.new.lineas);
+            toast('☁️ Base de datos actualizada en tiempo real desde la nube.', 'ok');
+          }
+        }
+      })
+      .subscribe();
+  } catch (e) {
+    console.warn('Realtime subscription error:', e);
+  }
+
+  // Sondeo de respaldo cada 15 segundos para asegurar que todos los equipos vean los cambios
+  setInterval(() => {
+    if (!cloudSyncEnProgreso) sincronizarConNube();
+  }, 15000);
+}
+
+function actualizarIndicadorCloud(estado) {
+  const btn = $('btnCloudSync');
+  const dot = $('dotCloud');
+  const txt = $('txtCloud');
+  if (!btn || !dot || !txt) return;
+
+  if (estado === 'sincronizando') {
+    btn.style.borderColor = 'rgba(59,130,246,0.4)';
+    btn.style.color = '#2563eb';
+    btn.style.background = 'rgba(59,130,246,0.12)';
+    dot.style.background = '#2563eb';
+    txt.textContent = '🔄 Sincronizando...';
+  } else if (estado === 'ok') {
+    btn.style.borderColor = 'rgba(16,185,129,0.3)';
+    btn.style.color = '#10b981';
+    btn.style.background = 'rgba(16,185,129,0.12)';
+    dot.style.background = '#10b981';
+    const numIt = (DB && Array.isArray(DB.catalogo)) ? DB.catalogo.length : 0;
+    txt.textContent = `☁️ Nube conectada (${numIt} ítems)`;
+  } else if (estado === 'error') {
+    btn.style.borderColor = 'rgba(239,68,68,0.4)';
+    btn.style.color = '#ef4444';
+    btn.style.background = 'rgba(239,68,68,0.12)';
+    dot.style.background = '#ef4444';
+    txt.textContent = '⚠️ Sin conexión a la nube';
+  } else {
+    btn.style.borderColor = 'rgba(100,116,139,0.3)';
+    btn.style.color = '#64748b';
+    btn.style.background = 'rgba(100,116,139,0.1)';
+    dot.style.background = '#64748b';
+    txt.textContent = 'Modo local (offline)';
+  }
+}
+
+async function forzarSincronizacionNube() {
+  toast('Sincronizando con la nube de TIMACA...', 'info');
+  await sincronizarConNube(true);
+  if (typeof refrescar === 'function') refrescar();
+  toast('Sincronización completada.', 'ok');
+}
+
 function iniciar() {
   try {
     document.querySelectorAll('img[data-logo]').forEach(i => {
@@ -7499,6 +7723,7 @@ function iniciar() {
     });
   } catch (e) { }
   try { cargarDatos(); } catch (e) { console.error('Error cargarDatos:', e); }
+  try { iniciarSupabaseCloud(); } catch (e) { console.error('Error iniciarSupabaseCloud:', e); }
   try { procesarVencimientos(); } catch (e) { console.error('Error procesarVencimientos:', e); }
   try { pintarUsuariosDemo(); } catch (e) { console.error('Error pintarUsuariosDemo:', e); }
   try { actualizarCampanaNotif(); } catch (e) { }
