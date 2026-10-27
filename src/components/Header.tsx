@@ -45,15 +45,15 @@ interface HeaderProps {
 }
 
 const TITULOS_VISTAS: Record<string, string> = {
-  'dashboard': 'Dashboard General',
+  'dashboard': 'Tablero Ejecutivo',
   'unificada-sip': 'Master Unificado SIP & Reclasificaciones',
   'catalogo-precios': 'Catálogo & Auditoría de Precios SIP',
   'matriz-proyectos': 'Matriz de Costos por Proyecto',
-  'proyectos': 'Cuentas Auxiliares',
+  'proyectos': 'Proyectos & Categorías',
   'mano-obra': 'Mano de Obra Directa (MOD)',
   'categorias': 'Categorías de Gasto',
   'hoja-motivos': 'Hoja de Motivos & Solicitantes',
-  'informe': 'Informe Mensual',
+  'informe': 'Presentación & Precios',
   'semanas': 'Control Semanal',
   'meses': 'Evolución Mensual',
   'usuarios': 'Usuarios & Permisos',
@@ -65,14 +65,11 @@ const TITULOS_VISTAS: Record<string, string> = {
 };
 
 const MENU_EXTERNOS = [
-  { id: 'dashboard', label: 'Tablero Ejecutivo', icon: LayoutDashboard, title: 'Resumen General y Tablero Ejecutivo' },
+  { id: 'dashboard', label: 'Tablero Ejecutivo', icon: LayoutDashboard, title: 'Resumen General, Evolución Mes a Mes y Control Semanal' },
   { id: 'unificada-sip', label: 'Master Unificado SIP', icon: Database, title: 'Consolidado Maestro 35 Columnas & SIP en Vivo', badge: 'SIP 2026' },
-  { id: 'catalogo-precios', label: 'Catálogo de Precios', icon: DollarSign, title: 'Catálogo & Auditoría de Precios SIP (OC vs Despachos)', badge: 'Precios' },
-  { id: 'matriz-proyectos', label: 'Matriz de Proyectos', icon: TableProperties, title: 'Matriz Proyectos x Categorías' },
-  { id: 'proyectos', label: 'Cuentas Auxiliares', icon: Briefcase, title: 'Cuentas Auxiliares & Presupuestos' },
-  { id: 'mano-obra', label: 'Mano de Obra Diaria', icon: Clock, title: 'Mano de Obra Diaria (MOD Cuadrillas)' },
-  { id: 'categorias', label: 'Auditoría por Categoría', icon: Layers, title: 'Auditoría por Categoría y Partidas' },
-  { id: 'informe', label: 'Presentación Ejecutiva', icon: FileText, title: 'Presentación Ejecutiva PPT' }
+  { id: 'proyectos', label: 'Proyectos & Categorías', icon: Briefcase, title: 'Cuentas Auxiliares, Matriz de Proyectos y Auditoría por Categoría' },
+  { id: 'mano-obra', label: 'Mano de Obra (MOD)', icon: Clock, title: 'Mano de Obra Directa, Devengo 30/31 Días y Carga RRHH' },
+  { id: 'informe', label: 'Presentación & Precios', icon: FileText, title: 'Presentación Ejecutiva PPT y Catálogo de Precios SIP' }
 ];
 
 const MENU_INTERNOS = [
@@ -309,7 +306,10 @@ export const Header: React.FC<HeaderProps> = ({
               <>
                 {MENU_EXTERNOS.map((item) => {
                   const Icon = item.icon;
-                  const isActive = activeTab === item.id;
+                  const isActive = activeTab === item.id || 
+                    (item.id === 'dashboard' && (activeTab === 'semanas' || activeTab === 'meses')) ||
+                    (item.id === 'proyectos' && (activeTab === 'matriz-proyectos' || activeTab === 'categorias' || activeTab === 'desglose-partida')) ||
+                    (item.id === 'informe' && activeTab === 'catalogo-precios');
                   return (
                     <button
                       key={item.id}

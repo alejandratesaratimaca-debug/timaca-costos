@@ -34,7 +34,20 @@ import { VersionUpdateNotifier } from './components/VersionUpdateNotifier';
 import { SalidaCosto } from './types/costos';
 import { UsuarioSistema, USUARIOS_INICIALES_TIMACA } from './types/usuarios';
 import { SuiteModulo } from './types/suite';
-import { FolderCheck, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { 
+  FolderCheck, 
+  ArrowLeft, 
+  AlertTriangle,
+  LayoutDashboard,
+  CalendarDays,
+  CalendarRange,
+  Briefcase,
+  TableProperties,
+  Layers,
+  FileText,
+  DollarSign,
+  Clock
+} from 'lucide-react';
 import { restaurarSesion, cerrarSesion } from './lib/auth';
 
 const AUTH_STATE_STORAGE_KEY = 'TIMACA_AUTH_STATE_ACTIVE_V1';
@@ -89,6 +102,28 @@ function AppContent() {
     }
   };
 
+  // Subtabs para vistas agrupadas en Costos Externos
+  const [dashboardSubTab, setDashboardSubTab] = useState<'resumen' | 'meses' | 'semanas'>(() => {
+    const saved = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+    if (saved === 'semanas') return 'semanas';
+    if (saved === 'meses') return 'meses';
+    return 'resumen';
+  });
+
+  const [proyectosSubTab, setProyectosSubTab] = useState<'cuentas' | 'matriz' | 'categorias' | 'desglose'>(() => {
+    const saved = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+    if (saved === 'matriz-proyectos') return 'matriz';
+    if (saved === 'categorias') return 'categorias';
+    if (saved === 'desglose-partida') return 'desglose';
+    return 'cuentas';
+  });
+
+  const [informeSubTab, setInformeSubTab] = useState<'ppt' | 'catalogo'>(() => {
+    const saved = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+    if (saved === 'catalogo-precios') return 'catalogo';
+    return 'ppt';
+  });
+
   const [activeTab, setActiveTabState] = useState<string>(() => {
     const saved = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
     const savedEntorno = localStorage.getItem(ENTORNO_STORAGE_KEY);
@@ -96,12 +131,41 @@ function AppContent() {
       return saved && saved.startsWith('internos-') ? saved : 'internos-dashboard';
     }
     if (saved === 'hoja-motivos') return 'unificada-sip';
+    if (saved === 'semanas' || saved === 'meses') return 'dashboard';
+    if (saved === 'matriz-proyectos' || saved === 'categorias' || saved === 'desglose-partida') return 'proyectos';
+    if (saved === 'catalogo-precios') return 'informe';
     return saved || 'dashboard';
   });
 
   const setActiveTab = (tab: string) => {
-    localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, tab);
-    setActiveTabState(tab);
+    if (tab === 'semanas') {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, 'dashboard');
+      setActiveTabState('dashboard');
+      setDashboardSubTab('semanas');
+    } else if (tab === 'meses') {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, 'dashboard');
+      setActiveTabState('dashboard');
+      setDashboardSubTab('meses');
+    } else if (tab === 'matriz-proyectos') {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, 'proyectos');
+      setActiveTabState('proyectos');
+      setProyectosSubTab('matriz');
+    } else if (tab === 'categorias') {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, 'proyectos');
+      setActiveTabState('proyectos');
+      setProyectosSubTab('categorias');
+    } else if (tab === 'desglose-partida') {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, 'proyectos');
+      setActiveTabState('proyectos');
+      setProyectosSubTab('desglose');
+    } else if (tab === 'catalogo-precios') {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, 'informe');
+      setActiveTabState('informe');
+      setInformeSubTab('catalogo');
+    } else {
+      localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, tab);
+      setActiveTabState(tab);
+    }
   };
 
   const [selectedCategoriaParaDetalle, setSelectedCategoriaParaDetalleState] = useState<string>(() => {
@@ -412,86 +476,282 @@ function AppContent() {
             )}
           </>
         ) : (
-          /* ================= SECCIÓN PROYECTOS EXTERNOS ================= */
+          /* ================= SECCIÓN PROYECTOS EXTERNOS (5 MÓDULOS CONSOLIDADOS) ================= */
           <>
+            {/* 1. MÓDULO TABLERO EJECUTIVO (Resumen, Meses, Semanas) */}
             {activeTab === 'dashboard' && (
-              <DashboardView
-                onGoToProyectos={() => setActiveTab('proyectos')}
-                onGoToSemanas={() => setActiveTab('semanas')}
-                onGoToMeses={() => setActiveTab('meses')}
-                onGoToInforme={() => setActiveTab('informe')}
-                onOpenImport={() => setIsImportOpen(true)}
-                onGoToManoObra={() => setActiveTab('mano-obra')}
-                onGoToCategoria={(cat) => {
-                  setSelectedCategoriaParaDetalle(cat);
-                  setActiveTab('categorias');
-                }}
-                onOpenProyectosMatriz={() => setActiveTab('matriz-proyectos')}
-                onSelectProyecto={(cuentaAux) => {
-                  setSelectedProyectoParaDetalle(cuentaAux);
-                  setActiveTab('proyectos');
-                }}
-                currentUser={currentUser}
-              />
+              <div className="space-y-4">
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-1.5 overflow-x-auto">
+                    <button
+                      onClick={() => setDashboardSubTab('resumen')}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        dashboardSubTab === 'resumen'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <LayoutDashboard className="w-3.5 h-3.5" />
+                      <span>Resumen General</span>
+                    </button>
+                    <button
+                      onClick={() => setDashboardSubTab('meses')}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        dashboardSubTab === 'meses'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <CalendarDays className="w-3.5 h-3.5" />
+                      <span>Evolución Mes a Mes</span>
+                    </button>
+                    <button
+                      onClick={() => setDashboardSubTab('semanas')}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        dashboardSubTab === 'semanas'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <CalendarRange className="w-3.5 h-3.5" />
+                      <span>Control Semana a Semana</span>
+                    </button>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-mono pr-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Consolidado Obras 2026</span>
+                  </div>
+                </div>
+
+                {dashboardSubTab === 'resumen' && (
+                  <DashboardView
+                    onGoToProyectos={() => {
+                      setProyectosSubTab('cuentas');
+                      setActiveTab('proyectos');
+                    }}
+                    onGoToSemanas={() => setDashboardSubTab('semanas')}
+                    onGoToMeses={() => setDashboardSubTab('meses')}
+                    onGoToInforme={() => {
+                      setInformeSubTab('ppt');
+                      setActiveTab('informe');
+                    }}
+                    onOpenImport={() => setIsImportOpen(true)}
+                    onGoToManoObra={() => setActiveTab('mano-obra')}
+                    onGoToCategoria={(cat) => {
+                      setSelectedCategoriaParaDetalle(cat);
+                      setProyectosSubTab('categorias');
+                      setActiveTab('proyectos');
+                    }}
+                    onOpenProyectosMatriz={() => {
+                      setProyectosSubTab('matriz');
+                      setActiveTab('proyectos');
+                    }}
+                    onSelectProyecto={(cuentaAux) => {
+                      setSelectedProyectoParaDetalle(cuentaAux);
+                      setProyectosSubTab('cuentas');
+                      setActiveTab('proyectos');
+                    }}
+                    currentUser={currentUser}
+                  />
+                )}
+
+                {dashboardSubTab === 'meses' && (
+                  <MesMesView onVolver={() => setDashboardSubTab('resumen')} />
+                )}
+
+                {dashboardSubTab === 'semanas' && (
+                  <SemanaSemanaView onVolver={() => setDashboardSubTab('resumen')} />
+                )}
+              </div>
             )}
 
+            {/* 2. MÓDULO PROYECTOS & CATEGORÍAS (Cuentas, Matriz, Categorías, Desglose) */}
+            {activeTab === 'proyectos' && (
+              <div className="space-y-4">
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-1.5 overflow-x-auto">
+                    <button
+                      onClick={() => setProyectosSubTab('cuentas')}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        proyectosSubTab === 'cuentas'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Briefcase className="w-3.5 h-3.5" />
+                      <span>Cuentas Auxiliares & Presupuestos</span>
+                    </button>
+                    <button
+                      onClick={() => setProyectosSubTab('matriz')}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        proyectosSubTab === 'matriz'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <TableProperties className="w-3.5 h-3.5" />
+                      <span>Matriz Proyectos × Categorías</span>
+                    </button>
+                    <button
+                      onClick={() => setProyectosSubTab('categorias')}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        proyectosSubTab === 'categorias' || proyectosSubTab === 'desglose'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Auditoría por Categoría</span>
+                    </button>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-mono pr-2">
+                    <span>4 Proyectos Principales + Varios</span>
+                  </div>
+                </div>
+
+                {proyectosSubTab === 'cuentas' && (
+                  <ProyectosView 
+                    initialCuentaCodigo={selectedProyectoParaDetalle}
+                    onVolver={() => setActiveTab('dashboard')} 
+                  />
+                )}
+
+                {proyectosSubTab === 'matriz' && (
+                  <MatrizProyectosCategoriasView
+                    initialPeriodo="anual"
+                    initialVista="mensual"
+                    onVolver={() => setProyectosSubTab('cuentas')}
+                    onSelectProyecto={(cuentaAux) => {
+                      setSelectedProyectoParaDetalle(cuentaAux);
+                      setProyectosSubTab('cuentas');
+                    }}
+                    onSelectCategoria={(cat) => {
+                      setSelectedCategoriaParaDetalle(cat);
+                      setProyectosSubTab('categorias');
+                    }}
+                  />
+                )}
+
+                {proyectosSubTab === 'categorias' && (
+                  <CategoriaDetalleView 
+                    initialCategoria={selectedCategoriaParaDetalle}
+                    onVolver={() => setProyectosSubTab('cuentas')}
+                    onOpenDesglosePartida={(concepto, categoria, proyectoCodigo, mesNum) => {
+                      setSelectedPartidaDetalle({ concepto, categoria, proyectoCodigo, mesNum });
+                      setProyectosSubTab('desglose');
+                    }}
+                  />
+                )}
+
+                {proyectosSubTab === 'desglose' && (
+                  <DesglosePartidaView
+                    concepto={selectedPartidaDetalle?.concepto || 'Planchas estructurales ASTM A36 / Hardox 400'}
+                    categoria={selectedPartidaDetalle?.categoria || 'Materiales Directos'}
+                    proyectoCodigo={selectedPartidaDetalle?.proyectoCodigo || 'TODOS'}
+                    mesNum={selectedPartidaDetalle?.mesNum}
+                    onVolver={() => setProyectosSubTab('categorias')}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* 3. MÓDULO MANO DE OBRA (MOD) */}
+            {activeTab === 'mano-obra' && (
+              <ManoObraDiariaView onVolver={() => setActiveTab('dashboard')} />
+            )}
+
+            {/* 4. MÓDULO PRESENTACIÓN & PRECIOS (PPT, Catálogo de Precios SIP) */}
+            {activeTab === 'informe' && (
+              <div className="space-y-4">
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-1.5 overflow-x-auto">
+                    <button
+                      onClick={() => setInformeSubTab('ppt')}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        informeSubTab === 'ppt'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Presentación Ejecutiva PPT</span>
+                    </button>
+                    <button
+                      onClick={() => setInformeSubTab('catalogo')}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        informeSubTab === 'catalogo'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <DollarSign className="w-3.5 h-3.5" />
+                      <span>Catálogo de Precios SIP</span>
+                    </button>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-mono pr-2">
+                    <span>Auditoría & Conciliación</span>
+                  </div>
+                </div>
+
+                {informeSubTab === 'ppt' && (
+                  <InformeMensualView 
+                    onVolver={() => setActiveTab('dashboard')} 
+                    onSwitchToInternos={() => {
+                      handleCambiarEntorno('internos');
+                      setActiveTab('internos-ppt');
+                    }}
+                  />
+                )}
+
+                {informeSubTab === 'catalogo' && (
+                  <CatalogoPreciosView 
+                    currentUser={currentUser} 
+                    onVolver={() => setInformeSubTab('ppt')} 
+                  />
+                )}
+              </div>
+            )}
+
+            {/* Fallbacks para compatibilidad con rutas o llamadas heredadas */}
+            {activeTab === 'semanas' && (
+              <SemanaSemanaView onVolver={() => setActiveTab('dashboard')} />
+            )}
+            {activeTab === 'meses' && (
+              <MesMesView onVolver={() => setActiveTab('dashboard')} />
+            )}
             {activeTab === 'matriz-proyectos' && (
               <MatrizProyectosCategoriasView
                 initialPeriodo="anual"
                 initialVista="mensual"
-                onVolver={() => setActiveTab('dashboard')}
+                onVolver={() => setActiveTab('proyectos')}
                 onSelectProyecto={(cuentaAux) => {
                   setSelectedProyectoParaDetalle(cuentaAux);
                   setActiveTab('proyectos');
                 }}
                 onSelectCategoria={(cat) => {
                   setSelectedCategoriaParaDetalle(cat);
-                  setActiveTab('categorias');
+                  setActiveTab('proyectos');
                 }}
               />
             )}
-
             {activeTab === 'categorias' && (
               <CategoriaDetalleView 
                 initialCategoria={selectedCategoriaParaDetalle}
-                onVolver={() => setActiveTab('dashboard')}
+                onVolver={() => setActiveTab('proyectos')}
                 onOpenDesglosePartida={(concepto, categoria, proyectoCodigo, mesNum) => {
                   setSelectedPartidaDetalle({ concepto, categoria, proyectoCodigo, mesNum });
-                  setActiveTab('desglose-partida');
+                  setActiveTab('proyectos');
+                  setProyectosSubTab('desglose');
                 }}
               />
             )}
-
             {activeTab === 'desglose-partida' && (
               <DesglosePartidaView
                 concepto={selectedPartidaDetalle?.concepto || 'Planchas estructurales ASTM A36 / Hardox 400'}
                 categoria={selectedPartidaDetalle?.categoria || 'Materiales Directos'}
                 proyectoCodigo={selectedPartidaDetalle?.proyectoCodigo || 'TODOS'}
                 mesNum={selectedPartidaDetalle?.mesNum}
-                onVolver={() => setActiveTab('categorias')}
-              />
-            )}
-
-            {activeTab === 'proyectos' && (
-              <ProyectosView 
-                initialCuentaCodigo={selectedProyectoParaDetalle}
-                onVolver={() => setActiveTab('dashboard')} 
-              />
-            )}
-
-            {activeTab === 'mano-obra' && <ManoObraDiariaView onVolver={() => setActiveTab('dashboard')} />}
-
-            {activeTab === 'semanas' && <SemanaSemanaView onVolver={() => setActiveTab('dashboard')} />}
-
-            {activeTab === 'meses' && <MesMesView onVolver={() => setActiveTab('dashboard')} />}
-
-            {activeTab === 'informe' && (
-              <InformeMensualView 
-                onVolver={() => setActiveTab('dashboard')} 
-                onSwitchToInternos={() => {
-                  handleCambiarEntorno('internos');
-                  setActiveTab('internos-ppt');
-                }}
+                onVolver={() => setActiveTab('proyectos')}
               />
             )}
 

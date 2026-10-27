@@ -271,11 +271,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     onClick={() => handleSelectCostosTab('dashboard', 'externos')}
                     className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'dashboard'
+                      moduloActivo === 'costos' && !esInternos && (activeTab === 'dashboard' || activeTab === 'semanas' || activeTab === 'meses')
                         ? 'bg-blue-600 text-white font-bold shadow-xs'
                         : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                     }`}
-                    title="Resumen General y Tablero Ejecutivo"
+                    title="Resumen General, Evolución Mes a Mes y Control Semanal"
                   >
                     <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
                     {!isCollapsed && <span>Tablero Ejecutivo</span>}
@@ -300,47 +300,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </button>
 
                   <button
-                    onClick={() => handleSelectCostosTab('catalogo-precios', 'externos')}
-                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && activeTab === 'catalogo-precios'
-                        ? 'bg-amber-600 text-white font-bold shadow-xs'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                    }`}
-                    title="Catálogo & Auditoría de Precios SIP (Eliminar Desfases)"
-                  >
-                    <DollarSign className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-                    {!isCollapsed && (
-                      <div className="flex items-center justify-between flex-1">
-                        <span>Catálogo de Precios</span>
-                        <span className="text-[9px] bg-amber-900/60 text-amber-300 px-1.5 py-0.2 rounded font-mono font-bold">PRECIOS</span>
-                      </div>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={() => handleSelectCostosTab('matriz-proyectos', 'externos')}
-                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'matriz-proyectos'
-                        ? 'bg-blue-600 text-white font-bold shadow-xs'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                    }`}
-                    title="Matriz Proyectos x Categorías"
-                  >
-                    <TableProperties className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Matriz de Proyectos</span>}
-                  </button>
-
-                  <button
                     onClick={() => handleSelectCostosTab('proyectos', 'externos')}
                     className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'proyectos'
+                      moduloActivo === 'costos' && !esInternos && (activeTab === 'proyectos' || activeTab === 'matriz-proyectos' || activeTab === 'categorias' || activeTab === 'desglose-partida')
                         ? 'bg-blue-600 text-white font-bold shadow-xs'
                         : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                     }`}
-                    title="Cuentas Auxiliares & Presupuestos"
+                    title="Cuentas Auxiliares, Matriz de Proyectos y Auditoría por Categoría"
                   >
-                    <Briefcase className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Cuentas Auxiliares</span>}
+                    <Briefcase className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
+                    {!isCollapsed && <span>Proyectos & Categorías</span>}
                   </button>
 
                   <button
@@ -350,62 +319,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         ? 'bg-blue-600 text-white font-bold shadow-xs'
                         : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                     }`}
-                    title="Mano de Obra Diaria (MOD Cuadrillas)"
+                    title="Mano de Obra Directa (MOD), Devengo 30/31 Días y Cargas RRHH"
                   >
-                    <Clock className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Mano de Obra Diaria</span>}
-                  </button>
-
-                  <button
-                    onClick={() => handleSelectCostosTab('categorias', 'externos')}
-                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'categorias'
-                        ? 'bg-blue-600 text-white font-bold shadow-xs'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                    }`}
-                    title="Auditoría por Categoría y Partidas"
-                  >
-                    <Layers className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Auditoría por Categoría</span>}
+                    <Clock className="w-3.5 h-3.5 shrink-0 text-blue-300" />
+                    {!isCollapsed && <span>Mano de Obra (MOD)</span>}
                   </button>
 
                   <button
                     onClick={() => handleSelectCostosTab('informe', 'externos')}
                     className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'informe'
+                      moduloActivo === 'costos' && !esInternos && (activeTab === 'informe' || activeTab === 'catalogo-precios')
                         ? 'bg-blue-600 text-white font-bold shadow-xs'
                         : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                     }`}
-                    title="Presentación Ejecutiva"
+                    title="Presentación Ejecutiva PPT y Catálogo de Precios SIP"
                   >
-                    <FileText className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Presentación Ejecutiva</span>}
-                  </button>
-
-                  <button
-                    onClick={() => handleSelectCostosTab('semanas', 'externos')}
-                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'semanas'
-                        ? 'bg-blue-600 text-white font-bold shadow-xs'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                    }`}
-                    title="Evolución Semana a Semana"
-                  >
-                    <CalendarRange className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Semana a Semana</span>}
-                  </button>
-
-                  <button
-                    onClick={() => handleSelectCostosTab('meses', 'externos')}
-                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left transition-colors ${
-                      moduloActivo === 'costos' && !esInternos && activeTab === 'meses'
-                        ? 'bg-blue-600 text-white font-bold shadow-xs'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                    }`}
-                    title="Comparativa Mes a Mes"
-                  >
-                    <CalendarDays className="w-3.5 h-3.5 shrink-0" />
-                    {!isCollapsed && <span>Mes a Mes</span>}
+                    <FileText className="w-3.5 h-3.5 shrink-0 text-amber-300" />
+                    {!isCollapsed && <span>Presentación & Precios</span>}
                   </button>
                 </div>
               )}
