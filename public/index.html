@@ -4145,6 +4145,7 @@ VISTAS.solNueva = p => {
       obs: base.obs || (base.extra ? base.extra.obs : '') || '',
       lineas: lineasCopiadas
     });
+    F.lineasOriginales = lineasCopiadas.map(l => Object.assign({}, l));
   } else F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
   pintarSolicitud();
 };
@@ -4396,7 +4397,16 @@ function alCambiarSerial() {
   actualizarDispCaptura();
   setTimeout(() => { $('cCant').focus(); $('cCant').select(); }, 0);
 }
-function actualizarDispCaptura() { if (F.cap) $('cDisp').value = dispCaptura(F.cap, $('cCond').value); }
+function actualizarDispCaptura() {
+  if (!F.cap) return;
+  const cond = $('cCond') ? $('cCond').value : 'ÓPTIMO';
+  let d = dispCaptura(F.cap, cond);
+  const editIdx = (typeof F.editandoLineaIdx === 'number' && F.editandoLineaIdx >= 0) ? F.editandoLineaIdx : -1;
+  if (editIdx >= 0 && F.lineas[editIdx] && (F.lineas[editIdx].id === F.cap.id || F.lineas[editIdx].cod === F.cap.cod)) {
+    d += Number(F.lineas[editIdx].cant) || 1;
+  }
+  if ($('cDisp')) $('cDisp').value = d;
+}
 function limpiarCaptura(mantenerCod) {
   F.cap = null; F.grp = null; F.editandoLineaIdx = -1; F.sel = -1;
   ['cDesc', 'cCat', 'cUmb', 'cDisp'].forEach(i => $(i).value = '');
@@ -4435,22 +4445,28 @@ function cargarParaEditarLineaSol(i) {
   if ($('cCat')) $('cCat').value = l.cat || it.cat || '';
   if ($('cUmb')) $('cUmb').value = l.umb || it.umb || 'UND';
 
-  // Opciones de marca y modelo desde catálogo corporativo
+  // Marca / modelo
+  const marcaMod = `${l.marca || it.marca || '—'} / ${l.modelo || it.modelo || '—'}`;
   const vars = DB.catalogo.filter(x => x.cod === l.cod);
-  const marcasList = [...new Set(vars.length ? vars.map(x => `${x.marca || '—'} / ${x.modelo || '—'}`) : [`${l.marca || '—'} / ${l.modelo || '—'}`])];
+  const marcasList = [...new Set(vars.map(x => `${x.marca || '—'} / ${x.modelo || '—'}`).concat([marcaMod]))];
   if ($('cMarca')) {
     $('cMarca').innerHTML = marcasList.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
-    $('cMarca').value = `${l.marca || it.marca || '—'} / ${l.modelo || it.modelo || '—'}`;
+    $('cMarca').value = marcaMod;
     $('cMarca').disabled = marcasList.length <= 1;
   }
 
-  // Opciones de serial
+  // Serial
+  const serialVal = l.serial || it.serial || '';
   if ($('cSerial')) {
-    const curMarca = $('cMarca') ? $('cMarca').value : '';
+    const curMarca = $('cMarca') ? $('cMarca').value : marcaMod;
     const varsMarca = vars.filter(x => `${x.marca || '—'} / ${x.modelo || '—'}` === curMarca);
-    const serialList = varsMarca.length ? varsMarca : [it];
+    let serialList = varsMarca.map(x => ({ id: x.id, serial: x.serial }));
+    if (serialVal && !serialList.some(x => x.serial === serialVal)) {
+      serialList.unshift({ id: it.id || l.id, serial: serialVal });
+    }
+    if (!serialList.length) serialList = [{ id: it.id || l.id, serial: serialVal }];
     $('cSerial').innerHTML = serialList.map(x => `<option value="${x.id}">${esc(x.serial || 'Sin serial')}</option>`).join('');
-    $('cSerial').value = it.id;
+    $('cSerial').value = it.id || l.id;
     $('cSerial').disabled = serialList.length <= 1 && !serialList.some(x => x.serial);
   }
 
@@ -4464,8 +4480,11 @@ function cargarParaEditarLineaSol(i) {
     $('cCond').value = l.cond || 'ÓPTIMO';
   }
 
-  // Stock disp y Cantidad
-  if ($('cDisp')) $('cDisp').value = dispCaptura(it, l.cond || 'ÓPTIMO');
+  // Stock disponible: la cantidad actual de la línea ya está reservada en este vale/solicitud
+  const dispBase = dispCaptura(it, l.cond || 'ÓPTIMO');
+  const dispTotal = dispBase + (Number(l.cant) || 1);
+  if ($('cDisp')) $('cDisp').value = dispTotal;
+
   if ($('cCant')) {
     $('cCant').value = l.cant;
     $('cCant').readOnly = !!(it.serial || l.serial);
@@ -4473,8 +4492,8 @@ function cargarParaEditarLineaSol(i) {
 
   if ($('btnSalvarCaptura')) $('btnSalvarCaptura').textContent = '💾 Actualizar ítem';
   pintarLineas();
-  toast(`Línea #${i + 1} (${l.cod}) cargada en los campos para editar.`, 'ok');
-  setTimeout(() => { const el = $('cCant'); if (el) { el.focus(); el.select(); } }, 50);
+  toast(`Editando línea #${i + 1} (${l.cod}). Puede cambiar la condición en el selector o directamente en la tabla.`, 'ok');
+  setTimeout(() => { const el = $('cCond'); if (el) el.focus(); }, 50);
 }
 
 function salvarLinea(confirmado) {
@@ -4482,9 +4501,13 @@ function salvarLinea(confirmado) {
   const cond = $('cCond').value; const cant = Number($('cCant').value);
   if (!Number.isInteger(cant) || cant <= 0) return toast('La cantidad debe ser un número entero mayor que cero.', 'err');
   if (it.serial && cant !== 1) return toast('Los ítems con serial único solo permiten cantidad 1.', 'err');
-  const disp = dispCaptura(it, cond);
   const est = estDe(it, cond);
   const editIdx = (typeof F.editandoLineaIdx === 'number' && F.editandoLineaIdx >= 0) ? F.editandoLineaIdx : -1;
+  const lineaEditando = editIdx >= 0 ? F.lineas[editIdx] : null;
+  let disp = dispCaptura(it, cond);
+  if (lineaEditando && (lineaEditando.id === it.id || lineaEditando.cod === it.cod)) {
+    disp += Number(lineaEditando.cant) || 1;
+  }
   const existente = F.lineas.find((l, idx) => l.id === it.id && l.est === est && idx !== editIdx);
   if (cant > disp) return toast(`La cantidad supera el stock disponible (${disp}).`, 'err');
   if (cond === 'DAÑADO' && F.tipo !== 'DAN' && !confirmado) return confirmar(`Va a agregar <b>${esc(it.cod)} · ${esc(it.desc)}</b> con condición <b>DAÑADO</b>. ¿Desea continuar?`, () => salvarLinea(true), 'Agregar línea');
@@ -4525,6 +4548,16 @@ function cambiarCantLinea(i, val) {
   l.cant = c;
   pintarTotales();
 }
+function cambiarCondLinea(i, cond) {
+  if (F.hecho || F.valeRef) return;
+  const l = F.lineas[i];
+  if (!l) return;
+  l.cond = cond;
+  l.est = estDe(l.id ? item(l.id) : l, cond);
+  pintarTotales();
+  toast(`Condición de ${l.cod} actualizada a ${cond}.`, 'ok');
+}
+
 function pintarLineas() {
   const conRef = !!F.valeRef, bloqueado = !!F.hecho;
   let filas;
@@ -4534,7 +4567,12 @@ function pintarLineas() {
       <td class="cen">${l.saldo}</td><td class="cen"><input type="number" min="0" max="${l.saldo}" value="${l.cant}" ${bloqueado ? 'disabled' : ''} style="width:70px;padding:4px;text-align:center" onchange="F.lineas[${i}].cant=Math.max(0,Math.min(${l.saldo},Number(this.value)||0));this.value=F.lineas[${i}].cant;pintarTotales()"></td><td colspan="2"></td></tr>`
     : `<tr class="${F.sel === i ? 'sel' : ''}" style="cursor:${bloqueado ? 'default' : 'pointer'}" onclick="${bloqueado ? '' : `cargarParaEditarLineaSol(${i})`}" title="${bloqueado ? '' : 'Haga clic para editar esta línea'}">
       <td><b>${esc(l.cod)}</b></td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td>
-      <td>${esc(l.cond)}</td>
+      <td class="cen" onclick="event.stopPropagation()">
+        ${bloqueado
+          ? esc(l.cond)
+          : `<select style="padding:2px 4px;font-size:11px;font-weight:700;border-radius:4px" onchange="cambiarCondLinea(${i}, this.value)" title="Cambiar condición de este ítem">${opciones((l.mod === 'CILINDRO' ? ['LLENO', 'VACÍO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']), l.cond)}</select>`
+        }
+      </td>
       <td class="cen" onclick="event.stopPropagation()">${bloqueado || l.serial ? `<b>${l.cant}</b>` : `<input type="number" min="1" max="${dispItem(F.origen, l.id, l.est) + (F.lineasOriginales ? ((F.lineasOriginales.find(x => x.id === l.id && x.est === l.est) || {}).cant || l.cant) : l.cant)}" value="${l.cant}" style="width:60px;padding:3px;text-align:center;font-weight:700" onchange="cambiarCantLinea(${i}, this.value)">`}</td>
       <td class="cen">${bloqueado ? '' : `<button class="btn btn-rojo btn-mini" title="Eliminar ítem" onclick="event.stopPropagation();eliminarLinea(${i})">🗑️</button>`}</td></tr>`).join('');
   const th = conRef ? '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Unidad</th><th class="cen">Saldo</th><th class="cen">Cantidad</th><th colspan="2"></th>'
