@@ -4366,7 +4366,10 @@ function elegirGrupo(cod, idPreferido) {
 }
 function alCambiarMarca(idPreferido) {
   const m = $('cMarca').value;
-  const vars = itemsBuscables().filter(it => it.cod === F.grp && `${it.marca} / ${it.modelo}` === m);
+  let vars = itemsBuscables().filter(it => it.cod === F.grp && `${it.marca || '—'} / ${it.modelo || '—'}` === m);
+  if (!vars.length) {
+    vars = DB.catalogo.filter(it => it.cod === F.grp && `${it.marca || '—'} / ${it.modelo || '—'}` === m);
+  }
   $('cSerial').innerHTML = vars.map(it => `<option value="${it.id}">${esc(it.serial || 'Sin serial')}${it.serial ? '' : ` (${dispTotalItem(it)} disp.)`}</option>`).join('');
   $('cSerial').disabled = vars.length <= 1 && !vars.some(it => it.serial);
   if (idPreferido) $('cSerial').value = idPreferido;
@@ -4408,14 +4411,69 @@ function cargarParaEditarLineaSol(i) {
   if (F.hecho || F.valeRef) return;
   const l = F.lineas[i];
   if (!l) return;
+
   F.sel = i;
   F.editandoLineaIdx = i;
-  elegirGrupo(l.cod, l.id);
-  if ($('cCond')) $('cCond').value = l.cond || 'ÓPTIMO';
-  if ($('cCant')) $('cCant').value = l.cant;
+
+  const it = (l.id ? item(l.id) : null) || DB.catalogo.find(x => x.cod === l.cod) || {
+    id: l.id || 0,
+    cod: l.cod,
+    desc: l.desc,
+    cat: l.cat || 'Herramientas manuales',
+    mod: l.mod || 'HERRAMIENTA',
+    marca: l.marca || '—',
+    modelo: l.modelo || '—',
+    serial: l.serial || '',
+    umb: l.umb || 'UND'
+  };
+
+  F.cap = it;
+  F.grp = l.cod;
+
+  if ($('cCod')) $('cCod').value = l.cod;
+  if ($('cDesc')) $('cDesc').value = l.desc;
+  if ($('cCat')) $('cCat').value = l.cat || it.cat || '';
+  if ($('cUmb')) $('cUmb').value = l.umb || it.umb || 'UND';
+
+  // Opciones de marca y modelo desde catálogo corporativo
+  const vars = DB.catalogo.filter(x => x.cod === l.cod);
+  const marcasList = [...new Set(vars.length ? vars.map(x => `${x.marca || '—'} / ${x.modelo || '—'}`) : [`${l.marca || '—'} / ${l.modelo || '—'}`])];
+  if ($('cMarca')) {
+    $('cMarca').innerHTML = marcasList.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+    $('cMarca').value = `${l.marca || it.marca || '—'} / ${l.modelo || it.modelo || '—'}`;
+    $('cMarca').disabled = marcasList.length <= 1;
+  }
+
+  // Opciones de serial
+  if ($('cSerial')) {
+    const curMarca = $('cMarca') ? $('cMarca').value : '';
+    const varsMarca = vars.filter(x => `${x.marca || '—'} / ${x.modelo || '—'}` === curMarca);
+    const serialList = varsMarca.length ? varsMarca : [it];
+    $('cSerial').innerHTML = serialList.map(x => `<option value="${x.id}">${esc(x.serial || 'Sin serial')}</option>`).join('');
+    $('cSerial').value = it.id;
+    $('cSerial').disabled = serialList.length <= 1 && !serialList.some(x => x.serial);
+  }
+
+  // Condición
+  if ($('cCond')) {
+    if (it.mod === 'CILINDRO') {
+      $('cCond').innerHTML = opciones(['LLENO', 'VACÍO', 'DAÑADO'], l.cond || 'LLENO');
+    } else {
+      $('cCond').innerHTML = opciones(it.mod === 'EPP' ? ['NUEVO', 'ÓPTIMO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO'], l.cond || 'ÓPTIMO');
+    }
+    $('cCond').value = l.cond || 'ÓPTIMO';
+  }
+
+  // Stock disp y Cantidad
+  if ($('cDisp')) $('cDisp').value = dispCaptura(it, l.cond || 'ÓPTIMO');
+  if ($('cCant')) {
+    $('cCant').value = l.cant;
+    $('cCant').readOnly = !!(it.serial || l.serial);
+  }
+
   if ($('btnSalvarCaptura')) $('btnSalvarCaptura').textContent = '💾 Actualizar ítem';
   pintarLineas();
-  toast(`Modo edición: Editando línea #${i + 1} (${l.cod}). Ajuste los valores y presione Salvar o Enter.`, 'ok');
+  toast(`Línea #${i + 1} (${l.cod}) cargada en los campos para editar.`, 'ok');
   setTimeout(() => { const el = $('cCant'); if (el) { el.focus(); el.select(); } }, 50);
 }
 
