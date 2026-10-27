@@ -72,7 +72,6 @@ const MENU_EXTERNOS = [
   { id: 'proyectos', label: 'Cuentas Auxiliares', icon: Briefcase, title: 'Cuentas Auxiliares & Presupuestos' },
   { id: 'mano-obra', label: 'Mano de Obra Diaria', icon: Clock, title: 'Mano de Obra Diaria (MOD Cuadrillas)' },
   { id: 'categorias', label: 'Auditoría por Categoría', icon: Layers, title: 'Auditoría por Categoría y Partidas' },
-  { id: 'hoja-motivos', label: 'Hoja de Motivos', icon: FileText, title: 'Hoja de Motivos, Solicitantes y Precios', badge: 'Auditoría' },
   { id: 'informe', label: 'Presentación Ejecutiva', icon: FileText, title: 'Presentación Ejecutiva PPT' },
   { id: 'semanas', label: 'Semana a Semana', icon: CalendarRange, title: 'Evolución Semana a Semana' },
   { id: 'meses', label: 'Mes a Mes', icon: CalendarDays, title: 'Comparativa Mes a Mes' }

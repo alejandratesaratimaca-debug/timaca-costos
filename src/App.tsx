@@ -14,7 +14,6 @@ import { SemanaSemanaView } from './components/SemanaSemanaView';
 import { MesMesView } from './components/MesMesView';
 import { InformeMensualView } from './components/InformeMensualView';
 import { CategoriaDetalleView } from './components/CategoriaDetalleView';
-import { HojaAuditoriaMotivosView } from './components/HojaAuditoriaMotivosView';
 import { MatrizProyectosCategoriasView } from './components/MatrizProyectosCategoriasView';
 import { DesglosePartidaView } from './components/DesglosePartidaView';
 import { ManoObraDiariaView } from './components/ManoObraDiariaView';
@@ -96,6 +95,7 @@ function AppContent() {
     if (savedEntorno === 'internos') {
       return saved && saved.startsWith('internos-') ? saved : 'internos-dashboard';
     }
+    if (saved === 'hoja-motivos') return 'unificada-sip';
     return saved || 'dashboard';
   });
 
@@ -455,19 +455,10 @@ function AppContent() {
               <CategoriaDetalleView 
                 initialCategoria={selectedCategoriaParaDetalle}
                 onVolver={() => setActiveTab('dashboard')}
-                onGoToHojaMotivos={() => setActiveTab('hoja-motivos')}
                 onOpenDesglosePartida={(concepto, categoria, proyectoCodigo, mesNum) => {
                   setSelectedPartidaDetalle({ concepto, categoria, proyectoCodigo, mesNum });
                   setActiveTab('desglose-partida');
                 }}
-              />
-            )}
-
-            {activeTab === 'hoja-motivos' && (
-              <HojaAuditoriaMotivosView
-                initialCategoria={selectedCategoriaParaDetalle}
-                onVolver={() => setActiveTab('dashboard')}
-                currentUser={currentUser}
               />
             )}
 
