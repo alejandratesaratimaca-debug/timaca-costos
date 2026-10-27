@@ -186,6 +186,39 @@ const MESES_LIST = [
 
 export type SubtipoNormalizacion = 'rezagada' | 'vieja_historica';
 
+export const formatFechaDDMMAAAA = (fechaStr?: string | null): string => {
+  if (!fechaStr) return '-';
+  const clean = String(fechaStr).trim();
+  if (!clean || clean === '-') return '-';
+
+  // Already in DD/MM/YYYY or DD/MM/YY
+  if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(clean)) {
+    return clean;
+  }
+
+  // YYYY-MM-DD or YYYY/MM/DD
+  const isoMatch = clean.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})(?:[T\s].*)?$/);
+  if (isoMatch) {
+    const y = isoMatch[1];
+    const m = isoMatch[2].padStart(2, '0');
+    const d = isoMatch[3].padStart(2, '0');
+    return `${d}/${m}/${y}`;
+  }
+
+  // Fallback Date parse
+  const dObj = new Date(clean);
+  if (!isNaN(dObj.getTime()) && clean.length >= 8) {
+    const d = String(dObj.getDate()).padStart(2, '0');
+    const m = String(dObj.getMonth() + 1).padStart(2, '0');
+    const y = dObj.getFullYear();
+    if (y >= 2000 && y <= 2100) {
+      return `${d}/${m}/${y}`;
+    }
+  }
+
+  return clean;
+};
+
 export function isAjusteNormalizacionOManual(r: any): boolean {
   if (!r) return false;
   const a = (r.ajuste || '').toUpperCase().trim();
@@ -789,8 +822,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       } catch (e) {}
     }
     if (st) {
-      // Garantizar que siempre refleje al menos las 447 correcciones (433 históricas de Correcciones.xlsx + recientes)
-      st.totalReclasificaciones = Math.max(st.totalReclasificaciones || 0, 447);
+      // Garantizar que siempre refleje al menos las 470 correcciones (456 de Correcciones.xlsx + recientes)
+      st.totalReclasificaciones = Math.max(st.totalReclasificaciones || 0, 470);
       setStatus(st);
     }
   };
@@ -859,13 +892,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             }
           }
 
-          // Combinar correcciones locales de localStorage para reflejarlas en vivo
+          // Combinar correcciones de reclasificaciones.json y locales de localStorage para reflejarlas en vivo
           try {
+            let baseList: any[] = [];
+            try {
+              const resBase = await fetch('/data/sip/reclasificaciones.json');
+              if (resBase.ok) baseList = await resBase.json();
+            } catch (e) {}
+
             const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
-            if (localStr) {
-              const localList = JSON.parse(localStr);
+            const localList = localStr ? JSON.parse(localStr) : [];
+            const combinedList = [...baseList, ...localList];
+
+            if (combinedList.length > 0) {
               const corrMap = new Map<string, any>();
-              for (const c of localList) {
+              for (const c of combinedList) {
                 const k1 = c.recordId;
                 const k2 = `${c.documento}-${c.codigo}`;
                 if (k1) corrMap.set(String(k1), c);
@@ -895,7 +936,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               // 2. Si se selecciona un mes específico (ej. Agosto, Junio, Julio):
               // Trasladar a este mes los registros corregidos que fueron asignados a él desde otro mes
               if (selectedMes !== 'todos' && !isVerAjustesHistoricos) {
-                const matchingTransfers = localList.filter((c: any) => 
+                const matchingTransfers = combinedList.filter((c: any) => 
                   (c.nuevoMes || '').toLowerCase() === selectedMes.toLowerCase()
                 );
 
@@ -2016,6 +2057,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           (r.nuevoProyecto && r.nuevoProyecto.toLowerCase().includes(q)) ||
           (r.nuevoMes && r.nuevoMes.toLowerCase().includes(q)) ||
           (r.motivo && r.motivo.toLowerCase().includes(q)) ||
+          (r.solicitante && r.solicitante.toLowerCase().includes(q)) ||
+          (r.proveedor && r.proveedor.toLowerCase().includes(q)) ||
           (r.usuario && r.usuario.toLowerCase().includes(q));
         if (!match) return false;
       }
@@ -2023,12 +2066,18 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     });
   }, [reclasificaciones, searchHistorialCorrecciones, filtroTipoHistorial]);
 
-  const formatFechaHistorial = (f: any) => {
-    if (!f) return '-';
-    if (typeof f === 'string' && (f.includes('Histórico') || f.length <= 4)) return f;
-    const d = new Date(f);
-    if (!isNaN(d.getTime())) return d.toLocaleString();
-    return String(f);
+  const formatFechaHistorial = (item: any) => {
+    if (!item) return '-';
+    if (typeof item === 'object') {
+      if (item.fechaMovimiento) return formatFechaDDMMAAAA(item.fechaMovimiento);
+      const f = item.fecha;
+      if (!f) return '-';
+      if (typeof f === 'string' && (f.includes('Histórico') || f.length <= 4)) return f;
+      return formatFechaDDMMAAAA(f);
+    }
+    const f = String(item);
+    if (f.includes('Histórico') || f.length <= 4) return f;
+    return formatFechaDDMMAAAA(f);
   };
 
   const formatUSD = (val: number) => {
@@ -2188,7 +2237,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         {selectedMovimiento.tipo === 'consumo' 
                           ? `Despacho (DP): ${selectedMovimiento.dp || selectedMovimiento.numero || '-'}  •  Pedido (PA): ${selectedMovimiento.pa || selectedMovimiento.pedido || '-'}`
                           : `Solicitud / Orden: ${selectedMovimiento.sc || selectedMovimiento.numero || '-'}  •  OC: ${selectedMovimiento.oc || '-'}`}
-                        <span className="text-slate-400 font-normal ml-2">({selectedMovimiento.fecha})</span>
+                        <span className="text-slate-400 font-normal ml-2">({formatFechaDDMMAAAA(selectedMovimiento.fecha)})</span>
                       </div>
                     </div>
 
@@ -3687,8 +3736,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
                             {r.almacen}
                           </td>
-                          <td className="py-2 px-3 text-slate-600 border-r border-slate-100">
-                            {r.fecha}
+                          <td className="py-2 px-3 text-slate-700 font-mono border-r border-slate-100 whitespace-nowrap">
+                            {formatFechaDDMMAAAA(r.fecha)}
                           </td>
                           <td className="py-2 px-3 text-blue-600 font-bold border-r border-slate-100">
                             <div className="flex items-center gap-1 flex-wrap">
@@ -3817,9 +3866,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                   <div className="flex flex-col gap-1.5 bg-amber-50/70 p-2 rounded-xl border border-amber-300 shadow-2xs">
                                     <div className="flex items-center gap-1.5 text-amber-950 text-[10px] font-bold leading-tight">
                                       <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                                      <span title={desfase?.detalle || `Motivo desfasado (${fechaTexto}) vs fecha doc (${r.fecha})`}>
+                                      <span title={desfase?.detalle || `Motivo desfasado (${fechaTexto}) vs fecha doc (${formatFechaDDMMAAAA(r.fecha)})`}>
                                         Fecha en Motivo: <strong className="underline text-amber-900">{fechaTexto}</strong>
-                                        <span className="text-slate-500 font-normal ml-1">(Doc: {r.fecha})</span>
+                                        <span className="text-slate-500 font-normal ml-1">(Doc: {formatFechaDDMMAAAA(r.fecha)})</span>
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -3921,8 +3970,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         <td className="py-2 px-3 text-center text-slate-500 border-r border-slate-100">
                           {r.semana}
                         </td>
-                        <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
-                          {r.fecha_hasta}
+                        <td className="py-2 px-3 text-slate-500 font-mono border-r border-slate-100 whitespace-nowrap">
+                          {formatFechaDDMMAAAA(r.fecha_hasta)}
                         </td>
                         <td className="py-2 px-3 text-slate-600 border-r border-slate-100 font-sans">
                           {r.cargo}
@@ -4319,8 +4368,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           <td className="py-2 px-3 font-mono text-slate-700 border-r border-slate-100">
                             {c.pedido || '-'}
                           </td>
-                          <td className="py-2 px-3 text-slate-600 font-mono text-[11px] border-r border-slate-100">
-                            {c.fecha}
+                          <td className="py-2 px-3 text-slate-700 font-mono text-[11px] border-r border-slate-100 whitespace-nowrap">
+                            {formatFechaDDMMAAAA(c.fecha)}
                           </td>
                           <td className="py-2 px-3 text-slate-500 font-mono uppercase text-[10px] font-bold text-center border-r border-slate-100">
                             {c.nombre_mes || '-'}
@@ -4601,8 +4650,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           <td className="py-2 px-3 font-mono font-bold text-slate-800 border-r border-slate-100">
                             {c.ordenCompra || '-'}
                           </td>
-                          <td className="py-2 px-3 text-slate-600 font-mono text-[11px] border-r border-slate-100">
-                            {c.fechaSolicitud || c.fechaOC || '-'}
+                          <td className="py-2 px-3 text-slate-700 font-mono text-[11px] border-r border-slate-100 whitespace-nowrap">
+                            {formatFechaDDMMAAAA(c.fechaSolicitud || c.fechaOC)}
                           </td>
                           <td className="py-2 px-3 text-slate-500 font-mono uppercase text-[10px] font-bold text-center border-r border-slate-100">
                             {c.nombre_mes || '-'}
@@ -4874,7 +4923,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                               )}
 
                               <span className="text-slate-400">•</span>
-                              <span className="text-slate-500 font-mono text-[11px]">{m.fecha}</span>
+                              <span className="text-slate-500 font-mono text-[11px]">{formatFechaDDMMAAAA(m.fecha)}</span>
                             </div>
 
                             {/* Persona Solicitante */}
@@ -5044,7 +5093,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           {selectedMovimiento.tipo === 'consumo' 
                             ? `Despacho (DP): ${selectedMovimiento.dp || '-'}  •  Pedido (PA): ${selectedMovimiento.pa || '-'}`
                             : `Solicitud (SC): ${selectedMovimiento.sc || '-'}  •  Orden (OC): ${selectedMovimiento.oc || '-'}`}
-                          <span className="text-slate-400 font-normal ml-2">(Fecha: {selectedMovimiento.fecha})</span>
+                          <span className="text-slate-400 font-normal ml-2">(Fecha: {formatFechaDDMMAAAA(selectedMovimiento.fecha)})</span>
                         </div>
                       </div>
 
@@ -5242,7 +5291,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       Historial de Correcciones Registradas ({filteredReclasificaciones.length} de {reclasificaciones.length})
                     </h3>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300">
-                      433 de Correcciones.xlsx + {reclasificaciones.filter(x => !x.usuario?.includes('Correcciones.xlsx')).length} Sistema
+                      {reclasificaciones.filter(x => x.usuario?.includes('Correcciones.xlsx')).length} de Correcciones.xlsx + {reclasificaciones.filter(x => !x.usuario?.includes('Correcciones.xlsx')).length} Sistema
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
@@ -5276,7 +5325,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   >
                     <option value="todos">Todos los Orígenes ({reclasificaciones.length})</option>
                     <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && x.motivo.toLowerCase().includes('rezagad'))).length})</option>
-                    <option value="historicas">Históricas Correcciones.xlsx (433)</option>
+                    <option value="historicas">Históricas Correcciones.xlsx ({reclasificaciones.filter(x => x.usuario?.includes('Correcciones.xlsx')).length})</option>
                     <option value="recientes">Recientes Sistema</option>
                     <option value="consumos">Solo Consumos</option>
                     <option value="compras">Solo Compras / Servicios</option>
@@ -5294,7 +5343,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     <table className="w-full text-left text-xs whitespace-nowrap">
                       <thead className="bg-slate-100 text-slate-700 uppercase font-semibold border-b border-slate-200 text-[10px] tracking-wider">
                         <tr>
-                          <th className="py-2.5 px-3 border-r border-slate-200">Fecha y Corte</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200">Fecha Movimiento</th>
                           <th className="py-2.5 px-3 border-r border-slate-200">Tipo</th>
                           <th className="py-2.5 px-3 border-r border-slate-200">Documento</th>
                           <th className="py-2.5 px-3 border-r border-slate-200 min-w-[220px]">Descripción del Ítem</th>
@@ -5312,7 +5361,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         {filteredReclasificaciones.slice((pageReclasificaciones - 1) * 50, pageReclasificaciones * 50).map((r, i) => (
                           <tr key={i} className="hover:bg-blue-50/40 transition-colors">
                             <td className="py-2 px-3 font-mono text-slate-600 text-[11px] border-r border-slate-100">
-                              {formatFechaHistorial(r.fecha)}
+                              {formatFechaHistorial(r)}
                             </td>
                             <td className="py-2 px-3 border-r border-slate-100 font-sans">
                               <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
