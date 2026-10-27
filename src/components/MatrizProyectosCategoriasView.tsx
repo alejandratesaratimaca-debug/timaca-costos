@@ -33,12 +33,13 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { GraficaMensualEvolucion } from './GraficaMensualEvolucion';
+import { getSipPeriodoData } from '../services/sipDataService';
 
 interface MatrizProyectosCategoriasViewProps {
   onVolver: () => void;
   onSelectProyecto?: (cuentaAuxiliar: string, categoria?: string) => void;
   onSelectCategoria?: (categoria: string) => void;
-  initialPeriodo?: 'septiembre' | 'agosto' | 'anual';
+  initialPeriodo?: 'octubre' | 'septiembre' | 'agosto' | 'anual';
   initialVista?: 'mensual' | 'proyectos';
 }
 
@@ -46,18 +47,39 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
   onVolver,
   onSelectProyecto,
   onSelectCategoria,
-  initialPeriodo = 'septiembre',
+  initialPeriodo = 'octubre',
   initialVista = 'mensual'
 }) => {
-  const [vistaActiva, setVistaActiva] = useState<'categorias' | 'proyectos'>('categorias');
-  const [periodo, setPeriodo] = useState<'septiembre' | 'agosto' | 'anual'>(initialPeriodo);
+  const [vistaActiva, setVistaActiva] = useState<'categorias' | 'proyectos'>('proyectos');
+  const [periodo, setPeriodo] = useState<'octubre' | 'septiembre' | 'agosto' | 'anual'>(initialPeriodo);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [selectedProyectoModal, setSelectedProyectoModal] = useState<FilaProyectoCategoriasPPT | null>(null);
   const [selectedMesModal, setSelectedMesModal] = useState<{ mesIndex: number; mesNombre: string } | null>(null);
+  const [octubreSipData, setOctubreSipData] = useState<FilaProyectoCategoriasPPT[]>([]);
+
+  useEffect(() => {
+    getSipPeriodoData(10).then(data => {
+      const mapped: FilaProyectoCategoriasPPT[] = data.cuentas.map(c => ({
+        cuentaAuxiliar: c.codigo,
+        proyecto: c.nombre,
+        proyectoCorto: c.proyectoCorto,
+        materiales: c.porCategoria['Materiales Directos'] || 0,
+        servicios: c.porCategoria['Servicios'] || 0,
+        manoDeObra: c.porCategoria['Mano de Obra Directa'] || 0,
+        horasMaquina: c.porCategoria['Horas Maquina'] || 0,
+        indirectos: c.porCategoria['Costos Indirectos'] || 0,
+        totalProyecto: c.totalMonto,
+        porcentaje: c.porcentaje
+      }));
+      setOctubreSipData(mapped);
+    });
+  }, []);
 
   // Lista de datos según período para la tabla de proyectos
-  const datasetProyectos = periodo === 'septiembre' 
+  const datasetProyectos = periodo === 'octubre'
+    ? octubreSipData
+    : periodo === 'septiembre' 
     ? PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026 
     : periodo === 'agosto' 
     ? PROYECTOS_CATEGORIAS_AGOSTO_2026 
@@ -285,6 +307,16 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
           {/* Switcher de período si está en la vista de proyectos */}
           {vistaActiva === 'proyectos' && (
             <div className="flex items-center p-1 bg-blue-50 rounded-xl border border-blue-200 text-xs font-bold">
+              <button
+                onClick={() => setPeriodo('octubre')}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  periodo === 'octubre'
+                    ? 'bg-blue-700 text-white shadow-2xs'
+                    : 'text-blue-900 hover:text-blue-950'
+                }`}
+              >
+                Octubre ($671K SIP)
+              </button>
               <button
                 onClick={() => setPeriodo('septiembre')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
