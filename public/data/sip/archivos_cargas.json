@@ -1,0 +1,824 @@
+{
+  "mdo": [
+    {
+      "nombre": "2025 - Boca Grande.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 35,
+      "fechaMod": "2026-06-09",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2025 - Pellas.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 217,
+      "fechaMod": "2026-06-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2025 - Proyectos.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 309,
+      "fechaMod": "2026-06-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 14.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 19,
+      "fechaMod": "2026-04-20",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 15.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-05-04",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 16.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-05-04",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 17.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 14,
+      "fechaMod": "2026-05-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 18.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 18,
+      "fechaMod": "2026-06-12",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 19.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-07-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 20.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-07-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 21.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 14,
+      "fechaMod": "2026-07-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 22.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-07-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 23.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-07-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 24.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-07-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 25.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-07-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 26.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-07-21",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 27.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-08-03",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 28.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-08-03",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 29.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-08-03",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 30.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-08-03",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 31.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-09-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 32.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-09-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 33.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-09-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 34.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-09-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 35.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-10-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 36.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-10-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 37.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-10-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 38.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-10-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - BG sem 39.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 13,
+      "fechaMod": "2026-10-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Briquetas sem 14 a 15.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 21,
+      "fechaMod": "2026-04-28",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Briquetas sem 16 a 17.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 68,
+      "fechaMod": "2026-05-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Briquetas sem 18 a 21.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 26,
+      "fechaMod": "2026-06-15",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Briquetas sem 22 a 25.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 41,
+      "fechaMod": "2026-07-03",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Briquetas sem 26 a 30.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 40,
+      "fechaMod": "2026-08-04",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Briquetas sem 31.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 34,
+      "fechaMod": "2026-08-11",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Briquetas sem 32 a 34.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 35,
+      "fechaMod": "2026-09-21",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Briquetas sem 35a 38.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 38,
+      "fechaMod": "2026-10-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 01.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 35,
+      "fechaMod": "2026-06-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 02.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 37,
+      "fechaMod": "2026-06-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 03.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 38,
+      "fechaMod": "2026-06-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 04.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 37,
+      "fechaMod": "2026-06-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 05.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 35,
+      "fechaMod": "2026-03-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 06.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 35,
+      "fechaMod": "2026-03-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 07.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 31,
+      "fechaMod": "2026-03-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 08.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 29,
+      "fechaMod": "2026-03-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 09.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-03-24",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 10.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-03-24",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 11.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-03-31",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 12.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-03-31",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 13.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-04-09",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 14.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-04-20",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 15.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-05-04",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 16.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-05-04",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 17.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 29,
+      "fechaMod": "2026-05-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 18.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-06-15",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 19.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 27,
+      "fechaMod": "2026-06-15",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 20.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 27,
+      "fechaMod": "2026-06-11",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 21.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-06-11",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 22.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-07-09",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 23.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 27,
+      "fechaMod": "2026-07-09",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 24.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 30,
+      "fechaMod": "2026-07-09",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 25.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 30,
+      "fechaMod": "2026-07-09",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 26.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 31,
+      "fechaMod": "2026-08-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 27.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 32,
+      "fechaMod": "2026-08-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 28.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 32,
+      "fechaMod": "2026-08-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 29.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 32,
+      "fechaMod": "2026-08-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 30.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 32,
+      "fechaMod": "2026-08-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 31.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 33,
+      "fechaMod": "2026-09-14",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 32.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 33,
+      "fechaMod": "2026-09-21",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 33.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 33,
+      "fechaMod": "2026-09-23",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 34.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 33,
+      "fechaMod": "2026-09-21",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 35.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 32,
+      "fechaMod": "2026-10-14",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 36.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 32,
+      "fechaMod": "2026-10-14",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 37.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 32,
+      "fechaMod": "2026-10-14",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 38.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 32,
+      "fechaMod": "2026-10-14",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Pellas sem 39.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 31,
+      "fechaMod": "2026-10-14",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - PMH sem 16 a 17.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 69,
+      "fechaMod": "2026-05-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - PMH sem 18 a 21.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 48,
+      "fechaMod": "2026-06-15",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - PMH sem 22 a 25.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 50,
+      "fechaMod": "2026-07-03",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - PMH sem 26 a 30.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 65,
+      "fechaMod": "2026-08-11",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - PMH sem 31 a 34.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 59,
+      "fechaMod": "2026-09-10",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - PMH sem 35 a 38.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 70,
+      "fechaMod": "2026-10-05",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Proyectos - Refractarios abril.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 63,
+      "fechaMod": "2026-05-06",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Proyectos Enero.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 60,
+      "fechaMod": "2026-03-26",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Proyectos sem 14 a 15.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 28,
+      "fechaMod": "2026-04-28",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Proyectos sem 5.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 44,
+      "fechaMod": "2026-03-11",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Proyectos sem 6 y 7.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 48,
+      "fechaMod": "2026-03-11",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Proyectos sem 8.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 45,
+      "fechaMod": "2026-03-26",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 - Proyectos sem 9 a 13.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 121,
+      "fechaMod": "2026-04-14",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "Pellas - Liquidaciones.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Inputs/3 Mano de obra",
+      "tamanoKB": 19,
+      "fechaMod": "2026-05-11",
+      "estado": "Procesado / Activo"
+    }
+  ],
+  "hm": [
+    {
+      "nombre": "2025 Diciembre Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 414,
+      "fechaMod": "2026-01-09",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Abril Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 155,
+      "fechaMod": "2026-07-16",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Agosto Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 233,
+      "fechaMod": "2026-09-07",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Enero Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 280,
+      "fechaMod": "2026-02-13",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Febrero Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 224,
+      "fechaMod": "2026-03-07",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Julio Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 167,
+      "fechaMod": "2026-08-03",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Junio Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 110,
+      "fechaMod": "2026-07-16",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Junio Registro ECO.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 123,
+      "fechaMod": "2026-07-10",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Marzo Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 179,
+      "fechaMod": "2026-04-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Mayo Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 176,
+      "fechaMod": "2026-09-07",
+      "estado": "Procesado / Activo"
+    }
+  ],
+  "indirectos": [
+    {
+      "nombre": "3 Analisis Costos Indirectos.xlsx",
+      "categoria": "Costos Indirectos",
+      "carpeta": "1 Informe",
+      "tamanoKB": 51,
+      "fechaMod": "2026-10-14",
+      "estado": "Prorrateo Mensual Activo"
+    },
+    {
+      "nombre": "Vigilancia.xlsx",
+      "categoria": "Costos Indirectos",
+      "carpeta": "3 Inputs/5 Gastos Fuera SIP",
+      "tamanoKB": 13,
+      "fechaMod": "2026-10-13",
+      "estado": "Gasto Fijo Procesado"
+    }
+  ]
+}

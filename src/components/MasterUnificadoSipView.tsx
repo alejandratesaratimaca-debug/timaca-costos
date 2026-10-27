@@ -731,6 +731,18 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'historicas' | 'recientes' | 'consumos' | 'compras'>('todos');
   const [pageReclasificaciones, setPageReclasificaciones] = useState(1);
 
+  // States for Cargas de Insumos al Cierre (MDO, HM & Costos Indirectos)
+  const [archivosCargas, setArchivosCargas] = useState<{ mdo: any[]; hm: any[]; indirectos: any[] }>({ mdo: [], hm: [], indirectos: [] });
+  const [activeSubCarga, setActiveSubCarga] = useState<'mdo' | 'hm' | 'indirectos'>('mdo');
+  const [searchCargas, setSearchCargas] = useState('');
+
+  const fetchArchivosCargas = async () => {
+    try {
+      const res = await fetch('/data/sip/archivos_cargas.json');
+      if (res.ok) setArchivosCargas(await res.json());
+    } catch (e) {}
+  };
+
   // Initial loads
   useEffect(() => {
     fetchStatus();
@@ -746,6 +758,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     if (activeTab === 'compras') fetchCompras();
     if (activeTab === 'correcciones') fetchReclasificaciones();
     if (activeTab === 'matriz') fetchMatriz();
+    if (activeTab === 'cargas') fetchArchivosCargas();
   }, [activeTab]);
 
   // Refetch consumos whenever its filters change
@@ -907,18 +920,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             if (combinedList.length > 0) {
               const corrMap = new Map<string, any>();
               for (const c of combinedList) {
+                const doc = String(c.documento || '').trim();
+                const cod = String(c.codigo || '').trim();
                 const k1 = c.recordId;
-                const k2 = `${c.documento}-${c.codigo}`;
-                if (k1) corrMap.set(String(k1), c);
-                if (k2) corrMap.set(k2, c);
-                if (c.documento) corrMap.set(String(c.documento), c);
+                if (k1 && !k1.startsWith('HIST-SERV--')) corrMap.set(String(k1), c);
+                if (doc && cod) corrMap.set(`${doc}-${cod}`, c);
+                if (doc) corrMap.set(doc, c);
               }
 
               // 1. Actualizar registros existentes en la sábana cargada
               items = items.map((r: any) => {
+                const doc = String(r.numero || '').trim();
+                const cod = String(r.codigo || '').trim();
                 const k1 = r.id != null ? String(r.id) : null;
-                const k2 = `${r.numero}-${r.codigo}`;
-                const match = (k1 && corrMap.get(k1)) || corrMap.get(k2) || (r.numero && corrMap.get(String(r.numero)));
+                const k2 = (doc && cod) ? `${doc}-${cod}` : null;
+                const match = (k1 && corrMap.get(k1)) || (k2 && corrMap.get(k2)) || (doc && corrMap.get(doc));
                 if (match) {
                   return {
                     ...r,
@@ -2068,6 +2084,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     });
   }, [reclasificaciones, searchHistorialCorrecciones, filtroTipoHistorial]);
 
+  const currentFilesList = useMemo(() => {
+    const list = activeSubCarga === 'mdo' 
+      ? archivosCargas.mdo 
+      : activeSubCarga === 'hm' 
+      ? archivosCargas.hm 
+      : archivosCargas.indirectos;
+    if (!searchCargas.trim()) return list;
+    const q = searchCargas.toLowerCase().trim();
+    return list.filter((f: any) => 
+      (f.nombre && f.nombre.toLowerCase().includes(q)) ||
+      (f.carpeta && f.carpeta.toLowerCase().includes(q)) ||
+      (f.estado && f.estado.toLowerCase().includes(q))
+    );
+  }, [activeSubCarga, archivosCargas, searchCargas]);
+
   const formatFechaHistorial = (item: any) => {
     if (!item) return '-';
     if (typeof item === 'object') {
@@ -2592,8 +2623,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <HardHat className="w-4 h-4" />
-          MDO & Horas Máquina (Al Cierre)
+          <HardHat className="w-4 h-4 text-amber-600" />
+          Cargas al Cierre (MDO, HM & Indirectos)
+          {archivosCargas.mdo.length > 0 && (
+            <span className="px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-800 font-bold">
+              {archivosCargas.mdo.length + archivosCargas.hm.length + archivosCargas.indirectos.length}
+            </span>
+          )}
         </button>
       </nav>
 
@@ -5456,66 +5492,223 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           </div>
         )}
 
-        {/* TAB 5: CARGA DE INSUMOS MDO Y HM (PARA EL CIERRE) */}
+        {/* TAB 5: GESTIÓN Y CARGA DE INSUMOS AL CIERRE (MDO, HM & INDIRECTOS) */}
         {activeTab === 'cargas' && (
           <div className="space-y-6 animate-fadeIn">
-            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <HardHat className="w-4 h-4 text-amber-500" />
-                Módulo Preparado para Nómina y Horas Máquina (Mes de Octubre)
-              </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Tal como mencionaste, estos insumos se consolidan al finalizar el mes. Cuando RRHH y Operaciones emitan las semanas de octubre, simplemente se cargarán aquí con validación automática anti-duplicados.
-              </p>
+            {/* Header Card */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <HardHat className="w-5 h-5 text-amber-500" />
+                  Módulo de Gestión y Carga de Insumos al Cierre Mensual
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Control, trazabilidad y visualización de archivos para <strong>Mano de Obra (MDO)</strong>, <strong>Horas Máquina (HM)</strong> y <strong>Costos Indirectos (Prorrateo)</strong> incorporados en la Sábana Unificada.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 flex items-center gap-1.5 font-mono">
+                  <CheckCircle2 className="w-4 h-4 text-amber-600" />
+                  {archivosCargas.mdo.length + archivosCargas.hm.length + archivosCargas.indirectos.length} archivos en sistema
+                </span>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Card Mano de Obra */}
-              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                      <User className="w-4 h-4 text-blue-600" />
-                      Mano de Obra Semanal (Proyectos & ECO)
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
-                      Pendiente Cierre Mes
-                    </span>
+            {/* 3 Selector Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Card 1: Mano de Obra */}
+              <button
+                onClick={() => { setActiveSubCarga('mdo'); setSearchCargas(''); }}
+                className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                  activeSubCarga === 'mdo'
+                    ? 'bg-blue-50/70 border-blue-500 ring-2 ring-blue-500/20 shadow-xs'
+                    : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`p-2 rounded-lg ${activeSubCarga === 'mdo' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                      <User className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-xs text-slate-900 uppercase">Mano de Obra (MDO)</h3>
+                      <p className="text-[11px] text-slate-500">Planillas semanales Proyectos & ECO</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">
-                    Validación automática por cédula y semana para evitar la duplicación que ocurrió en la semana 6.
-                  </p>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-black bg-blue-100 text-blue-800">
+                    {archivosCargas.mdo.length} archivos
+                  </span>
+                </div>
+              </button>
+
+              {/* Card 2: Horas Máquina */}
+              <button
+                onClick={() => { setActiveSubCarga('hm'); setSearchCargas(''); }}
+                className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                  activeSubCarga === 'hm'
+                    ? 'bg-purple-50/70 border-purple-500 ring-2 ring-purple-500/20 shadow-xs'
+                    : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`p-2 rounded-lg ${activeSubCarga === 'hm' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                      <Cpu className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-xs text-slate-900 uppercase">Horas Máquina (HM)</h3>
+                      <p className="text-[11px] text-slate-500">Partes mensuales y horómetros</p>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-black bg-purple-100 text-purple-800">
+                    {archivosCargas.hm.length} archivos
+                  </span>
+                </div>
+              </button>
+
+              {/* Card 3: Costos Indirectos */}
+              <button
+                onClick={() => { setActiveSubCarga('indirectos'); setSearchCargas(''); }}
+                className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                  activeSubCarga === 'indirectos'
+                    ? 'bg-emerald-50/70 border-emerald-500 ring-2 ring-emerald-500/20 shadow-xs'
+                    : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`p-2 rounded-lg ${activeSubCarga === 'indirectos' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                      <PieChart className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-xs text-slate-900 uppercase">Costos Indirectos</h3>
+                      <p className="text-[11px] text-slate-500">Prorrateo administrativo mensual</p>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800">
+                    {archivosCargas.indirectos.length} archivos
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            {/* Banner explicativo específico si está en Costos Indirectos */}
+            {activeSubCarga === 'indirectos' && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-950 space-y-2 shadow-xs">
+                <div className="font-bold uppercase tracking-wider text-emerald-900 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-emerald-600" />
+                  <span>Criterio y Origen Contable de los Costos Indirectos</span>
+                </div>
+                <p className="text-emerald-800 leading-relaxed text-[11px]">
+                  Los costos indirectos provienen del análisis de prorrateo mensual de administración y gerencia general (<strong className="font-mono">Y:\Costos Master\1 Informe\3 Analisis Costos Indirectos.xlsx</strong> y <strong className="font-mono">Vigilancia.xlsx</strong>). Comprenden nómina de talleres, nómina fija TIMACA, servicios de telecomunicaciones, seguros, combustible y gastos operativos fuera de SIP. No se generan por requisición ni vale individual de almacén, sino que se distribuyen mensualmente entre los proyectos activos en proporción directa a sus horas de Mano de Obra Directa (MOD).
+                </p>
+                <div className="pt-2 border-t border-emerald-200/60 flex flex-wrap items-center gap-4 text-[11px] font-semibold text-emerald-900">
+                  <span>• Cierre Septiembre Unificado: <strong>150 partidas distribuidas</strong></span>
+                  <span>• Monto Prorrateado: <strong>$341,374.77 USD</strong> en 10 proyectos externos</span>
+                  <span>• Estado: <strong className="text-emerald-700">Asientos Contables Oficiales</strong></span>
+                </div>
+              </div>
+            )}
+
+            {/* Sección de Carga y Tabla de Archivos Subidos */}
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+              <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                    <FileSpreadsheet className="w-4 h-4 text-slate-600" />
+                    Archivos Cargados y Disponibles: {activeSubCarga === 'mdo' ? 'Mano de Obra Semanal' : activeSubCarga === 'hm' ? 'Horas Máquina y Equipos' : 'Costos Indirectos y Prorrateo'}
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-800 font-mono">
+                    {currentFilesList.length} de {activeSubCarga === 'mdo' ? archivosCargas.mdo.length : activeSubCarga === 'hm' ? archivosCargas.hm.length : archivosCargas.indirectos.length} archivos
+                  </span>
                 </div>
 
-                <div className="mt-6 border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-8 text-center bg-slate-50/80 hover:bg-blue-50/20 transition-all cursor-pointer">
-                  <FileSpreadsheet className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                  <div className="text-xs font-semibold text-slate-700">Arrastra aquí la planilla semanal de MDO</div>
-                  <div className="text-[11px] text-slate-500 mt-1">Formato .xlsx o .csv • Verificación automática</div>
+                <div className="relative w-full md:w-80">
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Buscar archivo por semana, proyecto o nombre..."
+                    value={searchCargas}
+                    onChange={(e) => setSearchCargas(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg pl-8 pr-2.5 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-600"
+                  />
                 </div>
               </div>
 
-              {/* Card Horas Máquina */}
-              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                      <Cpu className="w-4 h-4 text-purple-600" />
-                      Horas Máquina y Equipos
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
-                      Pendiente Cierre Mes
-                    </span>
+              {/* Zona de Arrastrar y Soltar para Nuevas Cargas de Cierre */}
+              <div className="p-4 bg-slate-50/50 border-b border-slate-200">
+                <div className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-5 text-center bg-white transition-all cursor-pointer group">
+                  <FileSpreadsheet className="w-8 h-8 text-slate-400 group-hover:text-blue-500 mx-auto mb-1.5 transition-colors" />
+                  <div className="text-xs font-bold text-slate-700 group-hover:text-blue-600">
+                    Cargar nueva planilla o parte mensual para {activeSubCarga === 'mdo' ? 'Mano de Obra' : activeSubCarga === 'hm' ? 'Horas Máquina' : 'Costos Indirectos'}
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">
-                    Cruce con tarifario oficial de equipos de taller, grúas y compresores.
-                  </p>
+                  <div className="text-[11px] text-slate-500 mt-0.5">Arrastra aquí el archivo en formato .xlsx o .csv • Validación automática anti-duplicados</div>
                 </div>
+              </div>
 
-                <div className="mt-6 border-2 border-dashed border-slate-200 hover:border-purple-400 rounded-xl p-8 text-center bg-slate-50/80 hover:bg-purple-50/20 transition-all cursor-pointer">
-                  <FileSpreadsheet className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                  <div className="text-xs font-semibold text-slate-700">Arrastra aquí los partes de Horas Máquina</div>
-                  <div className="text-[11px] text-slate-500 mt-1">Cálculo de horómetros automáticos</div>
-                </div>
+              {/* Tabla de Archivos */}
+              <div className="overflow-x-auto max-h-[460px]">
+                <table className="w-full text-left text-xs whitespace-nowrap">
+                  <thead className="bg-slate-100 text-slate-700 uppercase font-semibold border-b border-slate-200 text-[10px] tracking-wider sticky top-0 z-10">
+                    <tr>
+                      <th className="py-2.5 px-3 border-r border-slate-200">#</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200">Nombre del Archivo</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200">Categoría</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200">Ubicación / Carpeta</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 text-right">Tamaño</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200">Última Modificación</th>
+                      <th className="py-2.5 px-3 text-center">Estatus en Sábana</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-[11px]">
+                    {currentFilesList.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="py-8 text-center text-slate-500">
+                          No se encontraron archivos que coincidan con la búsqueda.
+                        </td>
+                      </tr>
+                    ) : (
+                      currentFilesList.map((f: any, idx: number) => (
+                        <tr key={idx} className="hover:bg-blue-50/40 transition-colors">
+                          <td className="py-2 px-3 text-slate-400 font-mono text-[10px] border-r border-slate-100">
+                            {idx + 1}
+                          </td>
+                          <td className="py-2 px-3 font-semibold text-slate-800 border-r border-slate-100 flex items-center gap-2">
+                            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>{f.nombre}</span>
+                          </td>
+                          <td className="py-2 px-3 border-r border-slate-100 font-sans">
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              f.categoria === 'Mano de Obra' 
+                                ? 'bg-blue-50 text-blue-700' 
+                                : f.categoria === 'Horas Máquina' 
+                                ? 'bg-purple-50 text-purple-700' 
+                                : 'bg-emerald-50 text-emerald-700'
+                            }`}>
+                              {f.categoria}
+                            </span>
+                          </td>
+                          <td className="py-2 px-3 font-mono text-[10px] text-slate-500 border-r border-slate-100">
+                            {f.carpeta}
+                          </td>
+                          <td className="py-2 px-3 font-mono text-slate-600 text-right border-r border-slate-100">
+                            {f.tamanoKB} KB
+                          </td>
+                          <td className="py-2 px-3 font-mono text-slate-600 border-r border-slate-100">
+                            {formatFechaDDMMAAAA(f.fechaMod)}
+                          </td>
+                          <td className="py-2 px-3 text-center">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              {f.estado}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
