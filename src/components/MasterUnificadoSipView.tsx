@@ -161,6 +161,11 @@ interface MasterRow {
   nombre_mes: string;
   sc: string;
   oc: string;
+  esReclasificado?: boolean;
+  esTrasladado?: boolean;
+  mesOrigen?: string;
+  cuenta_aux_original?: string;
+  infoReclasificacion?: any;
 }
 
 const MESES_LIST = [
@@ -315,6 +320,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     'operativos' | 'todos' | 'rezagadas' | 'ajustes_historicos' | 'viejas_historicas' | 'operativas_campo' | 'todas_normalizaciones'
   >('operativos');
   const [filterRezagadaSubmes, setFilterRezagadaSubmes] = useState<'todos' | 'agosto' | 'junio' | 'julio'>('todos');
+  const [filterEstadoRezagada, setFilterEstadoRezagada] = useState<'pendientes' | 'corregidos' | 'todos'>('pendientes');
   const [inputProyecto, setInputProyecto] = useState<string>('');
   const [showProjectSuggestions, setShowProjectSuggestions] = useState<boolean>(false);
   const [searchMaster, setSearchMaster] = useState<string>('');
@@ -339,12 +345,20 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     norm_count?: number;
     norm_rezagadas_total?: number;
     norm_rezagadas_count?: number;
+    rezagadas_pendientes_count?: number;
+    rezagadas_corregidas_count?: number;
     rezagadas_agosto_count?: number;
     rezagadas_agosto_total?: number;
+    rezagadas_agosto_pendientes_count?: number;
+    rezagadas_agosto_corregidas_count?: number;
     rezagadas_junio_count?: number;
     rezagadas_junio_total?: number;
+    rezagadas_junio_pendientes_count?: number;
+    rezagadas_junio_corregidas_count?: number;
     rezagadas_julio_count?: number;
     rezagadas_julio_total?: number;
+    rezagadas_julio_pendientes_count?: number;
+    rezagadas_julio_corregidas_count?: number;
     norm_viejas_total?: number;
     norm_viejas_count?: number;
   }>({
@@ -362,12 +376,20 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     norm_count: 0,
     norm_rezagadas_total: 0,
     norm_rezagadas_count: 0,
+    rezagadas_pendientes_count: 0,
+    rezagadas_corregidas_count: 0,
     rezagadas_agosto_count: 0,
     rezagadas_agosto_total: 0,
+    rezagadas_agosto_pendientes_count: 0,
+    rezagadas_agosto_corregidas_count: 0,
     rezagadas_junio_count: 0,
     rezagadas_junio_total: 0,
+    rezagadas_junio_pendientes_count: 0,
+    rezagadas_junio_corregidas_count: 0,
     rezagadas_julio_count: 0,
     rezagadas_julio_total: 0,
+    rezagadas_julio_pendientes_count: 0,
+    rezagadas_julio_corregidas_count: 0,
     norm_viejas_total: 0,
     norm_viejas_count: 0
   });
@@ -513,7 +535,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     if (activeTab === 'unificada') {
       fetchMasterData();
     }
-  }, [selectedAno, selectedMes, selectedCta, selectedTipo, selectedClasificacion, selectedCategoria, filterNormalizacion, filterRezagadaSubmes, fechaDesde, fechaHasta, sortMasterBy, sortMasterOrder, pageMaster, limitMaster]);
+  }, [selectedAno, selectedMes, selectedCta, selectedTipo, selectedClasificacion, selectedCategoria, filterNormalizacion, filterRezagadaSubmes, filterEstadoRezagada, fechaDesde, fechaHasta, sortMasterBy, sortMasterOrder, pageMaster, limitMaster]);
 
   // Refetch filter catalogs when selected year changes
   useEffect(() => {
@@ -622,20 +644,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             }
           }
 
-          // Calcular estadísticas globales de normalizaciones antes de filtrar
-          let totalNormUSD = 0;
-          let totalNormCount = 0;
-          let normRezagadasUSD = 0;
-          let normRezagadasCount = 0;
-          let rezagadasAgostoCount = 0;
-          let rezagadasAgostoUSD = 0;
-          let rezagadasJunioCount = 0;
-          let rezagadasJunioUSD = 0;
-          let rezagadasJulioCount = 0;
-          let rezagadasJulioUSD = 0;
-          let normViejasUSD = 0;
-          let normViejasCount = 0;
-
           // Combinar correcciones locales de localStorage para reflejarlas en vivo
           try {
             const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
@@ -647,11 +655,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 const k2 = `${c.documento}-${c.codigo}`;
                 if (k1) corrMap.set(String(k1), c);
                 if (k2) corrMap.set(k2, c);
+                if (c.documento) corrMap.set(String(c.documento), c);
               }
+
+              // 1. Actualizar registros existentes en la sábana cargada
               items = items.map((r: any) => {
                 const k1 = r.id != null ? String(r.id) : null;
                 const k2 = `${r.numero}-${r.codigo}`;
-                const match = (k1 && corrMap.get(k1)) || corrMap.get(k2);
+                const match = (k1 && corrMap.get(k1)) || corrMap.get(k2) || (r.numero && corrMap.get(String(r.numero)));
                 if (match) {
                   return {
                     ...r,
@@ -665,8 +676,108 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 }
                 return r;
               });
+
+              // 2. Si se selecciona un mes específico (ej. Agosto, Junio, Julio):
+              // Trasladar a este mes los registros corregidos que fueron asignados a él desde otro mes
+              if (selectedMes !== 'todos' && !isVerAjustesHistoricos) {
+                const matchingTransfers = localList.filter((c: any) => 
+                  (c.nuevoMes || '').toLowerCase() === selectedMes.toLowerCase()
+                );
+
+                if (matchingTransfers.length > 0) {
+                  const existingKeys = new Set(items.map((x: any) => x.id != null ? String(x.id) : `${x.numero}-${x.codigo}`));
+                  const existingDocs = new Set(items.map((x: any) => x.numero));
+
+                  // Traer registros de Septiembre si no están en memoria para reconstruir las columnas oficiales
+                  let sepMap = new Map<string, any>();
+                  try {
+                    const resSep = await fetch('/data/sip/unificada_septiembre.json');
+                    if (resSep.ok) {
+                      const dSep = await resSep.json();
+                      for (const s of (dSep.items || [])) {
+                        if (s.id != null) sepMap.set(String(s.id), s);
+                        if (s.numero && s.codigo) sepMap.set(`${s.numero}-${s.codigo}`, s);
+                        if (s.numero) sepMap.set(String(s.numero), s);
+                      }
+                    }
+                  } catch (e) {}
+
+                  for (const c of matchingTransfers) {
+                    const k1 = c.recordId != null ? String(c.recordId) : null;
+                    const k2 = `${c.documento}-${c.codigo}`;
+                    const doc = c.documento;
+
+                    // Si ya existe en la lista de este mes, no duplicar
+                    if ((k1 && existingKeys.has(k1)) || existingKeys.has(k2) || (doc && existingDocs.has(doc))) {
+                      continue;
+                    }
+
+                    const orig = (k1 && sepMap.get(k1)) || sepMap.get(k2) || (doc && sepMap.get(String(doc)));
+                    const baseRow = orig ? { ...orig } : {
+                      tipo: c.tipoItem || 'Materiales Directos',
+                      almacen: c.almacen || 'ALMPEI',
+                      fecha: c.fechaMovimiento || '2026-08-31',
+                      numero: c.documento,
+                      pedido: c.pedido || '',
+                      cuenta_aux: c.nuevaCuenta,
+                      ceco: c.ceco || 'MON-3',
+                      codigo: c.codigo,
+                      descripcion: c.descripcion,
+                      cantidad: c.cantidad || 1,
+                      unidad: c.unidad || 'UND',
+                      solicitante: c.solicitante || 'ALEJANDRA TESARA',
+                      motivo: c.motivo || `Consumo rezagado transferido a ${c.nuevoMes}`,
+                      categoria: c.categoria || 'Productos Metalicos Estructurales',
+                      precio_final: c.totalUSD || 0,
+                      total_usd: Number(c.totalUSD) || 0,
+                      datos_descripcion: c.nuevoProyecto || c.proyectoAnterior || '',
+                      datos_tipo_costo: c.datos_tipo_costo || 'Externo',
+                      ano: 2026,
+                      nombre_mes: selectedMes.toLowerCase()
+                    };
+
+                    items.push({
+                      ...baseRow,
+                      id: c.recordId || `trasladado-${c.documento}-${c.codigo}`,
+                      cuenta_aux_original: c.cuentaAnterior || baseRow.cuenta_aux,
+                      cuenta_aux: c.nuevaCuenta || baseRow.cuenta_aux,
+                      nombre_mes: selectedMes.toLowerCase(),
+                      ajuste: 'CORREGIDO',
+                      esReclasificado: true,
+                      esTrasladado: true,
+                      mesOrigen: 'Septiembre',
+                      infoReclasificacion: c
+                    });
+                    if (k1) existingKeys.add(k1);
+                    existingKeys.add(k2);
+                    if (doc) existingDocs.add(doc);
+                  }
+                }
+              }
             }
           } catch (e) {}
+
+          // Calcular estadísticas globales de normalizaciones antes de filtrar
+          let totalNormUSD = 0;
+          let totalNormCount = 0;
+          let normRezagadasUSD = 0;
+          let normRezagadasCount = 0;
+          let rezagadasPendientesCount = 0;
+          let rezagadasCorregidasCount = 0;
+          let rezagadasAgostoCount = 0;
+          let rezagadasAgostoUSD = 0;
+          let rezagadasAgostoPendientesCount = 0;
+          let rezagadasAgostoCorregidasCount = 0;
+          let rezagadasJunioCount = 0;
+          let rezagadasJunioUSD = 0;
+          let rezagadasJunioPendientesCount = 0;
+          let rezagadasJunioCorregidasCount = 0;
+          let rezagadasJulioCount = 0;
+          let rezagadasJulioUSD = 0;
+          let rezagadasJulioPendientesCount = 0;
+          let rezagadasJulioCorregidasCount = 0;
+          let normViejasUSD = 0;
+          let normViejasCount = 0;
 
           for (const r of items) {
             const subtipo = clasificarNormalizacion(r);
@@ -677,16 +788,29 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               if (subtipo === 'rezagada') {
                 normRezagadasCount++;
                 normRezagadasUSD += val;
+                const isCorregido = !!(r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+                if (isCorregido) {
+                  rezagadasCorregidasCount++;
+                } else {
+                  rezagadasPendientesCount++;
+                }
+
                 const mDest = detectarMesRezagada(r);
                 if (mDest === 'Agosto') {
                   rezagadasAgostoCount++;
                   rezagadasAgostoUSD += val;
+                  if (isCorregido) rezagadasAgostoCorregidasCount++;
+                  else rezagadasAgostoPendientesCount++;
                 } else if (mDest === 'Junio') {
                   rezagadasJunioCount++;
                   rezagadasJunioUSD += val;
+                  if (isCorregido) rezagadasJunioCorregidasCount++;
+                  else rezagadasJunioPendientesCount++;
                 } else if (mDest === 'Julio') {
                   rezagadasJulioCount++;
                   rezagadasJulioUSD += val;
+                  if (isCorregido) rezagadasJulioCorregidasCount++;
+                  else rezagadasJulioPendientesCount++;
                 }
               } else if (subtipo === 'vieja_historica') {
                 normViejasCount++;
@@ -698,7 +822,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           // 1. Filtro de Normalización y Ajustes Manuales (Regla estricta indicada por Alejandra)
           if (filterNormalizacion === 'operativos') {
             // Excluir todas las regularizaciones de inventario físico y ajustes manuales (idéntico a desmarcar NORMALIZACION y MANUAL en Excel)
-            items = items.filter(r => !isAjusteNormalizacionOManual(r));
+            items = items.filter(r => {
+              if (isAjusteNormalizacionOManual(r)) return false;
+              // Si estamos auditando Septiembre y el registro fue trasladado a Agosto/Junio/Julio, no inflar Septiembre
+              if (selectedMes === 'septiembre' && r.nombre_mes && r.nombre_mes.toLowerCase() !== 'septiembre') return false;
+              return true;
+            });
           } else if (filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas' || filterNormalizacion === 'todas_normalizaciones') {
             // Categoría para revisar uno a uno todos los ajustes (NORMALIZACION y MANUAL generados en 2025 o antes)
             items = items.filter(r => isAjusteNormalizacionOManual(r));
@@ -709,6 +838,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 const m = detectarMesRezagada(r);
                 return m && m.toLowerCase() === filterRezagadaSubmes.toLowerCase();
               });
+            }
+            // FILTRO DE ESTADO DE AUDITORÍA (PENDIENTES vs YA CORREGIDOS vs TODOS)
+            if (filterEstadoRezagada === 'pendientes') {
+              items = items.filter(r => !r.esReclasificado && !(r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+            } else if (filterEstadoRezagada === 'corregidos') {
+              items = items.filter(r => r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
             }
           }
 
@@ -823,12 +958,20 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             norm_count: totalNormCount,
             norm_rezagadas_total: normRezagadasUSD,
             norm_rezagadas_count: normRezagadasCount,
+            rezagadas_pendientes_count: rezagadasPendientesCount,
+            rezagadas_corregidas_count: rezagadasCorregidasCount,
             rezagadas_agosto_count: rezagadasAgostoCount,
             rezagadas_agosto_total: rezagadasAgostoUSD,
+            rezagadas_agosto_pendientes_count: rezagadasAgostoPendientesCount,
+            rezagadas_agosto_corregidas_count: rezagadasAgostoCorregidasCount,
             rezagadas_junio_count: rezagadasJunioCount,
             rezagadas_junio_total: rezagadasJunioUSD,
+            rezagadas_junio_pendientes_count: rezagadasJunioPendientesCount,
+            rezagadas_junio_corregidas_count: rezagadasJunioCorregidasCount,
             rezagadas_julio_count: rezagadasJulioCount,
             rezagadas_julio_total: rezagadasJulioUSD,
+            rezagadas_julio_pendientes_count: rezagadasJulioPendientesCount,
+            rezagadas_julio_corregidas_count: rezagadasJulioCorregidasCount,
             norm_viejas_total: normViejasUSD,
             norm_viejas_count: normViejasCount
           });
@@ -903,13 +1046,60 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         }
       }
 
+      // Combinar correcciones locales para reflejarlas en el Excel
+      try {
+        const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
+        if (localStr) {
+          const localList = JSON.parse(localStr);
+          const corrMap = new Map<string, any>();
+          for (const c of localList) {
+            const k1 = c.recordId;
+            const k2 = `${c.documento}-${c.codigo}`;
+            if (k1) corrMap.set(String(k1), c);
+            if (k2) corrMap.set(k2, c);
+            if (c.documento) corrMap.set(String(c.documento), c);
+          }
+          rows = rows.map((r: any) => {
+            const k1 = r.id != null ? String(r.id) : null;
+            const k2 = `${r.numero}-${r.codigo}`;
+            const match = (k1 && corrMap.get(k1)) || corrMap.get(k2) || (r.numero && corrMap.get(String(r.numero)));
+            if (match) {
+              return {
+                ...r,
+                esReclasificado: true,
+                cuenta_aux_original: r.cuenta_aux,
+                cuenta_aux: match.nuevaCuenta || r.cuenta_aux,
+                nombre_mes: match.nuevoMes || r.nombre_mes,
+                ajuste: 'CORREGIDO'
+              };
+            }
+            return r;
+          });
+        }
+      } catch (e) {}
+
       // Aplicar filtro de Normalización al exportar
       if (filterNormalizacion === 'operativos') {
-        rows = rows.filter((r: any) => !isAjusteNormalizacionOManual(r));
+        rows = rows.filter((r: any) => {
+          if (isAjusteNormalizacionOManual(r)) return false;
+          if (selectedMes === 'septiembre' && r.nombre_mes && r.nombre_mes.toLowerCase() !== 'septiembre') return false;
+          return true;
+        });
       } else if (filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas' || filterNormalizacion === 'todas_normalizaciones') {
         rows = rows.filter((r: any) => isAjusteNormalizacionOManual(r));
       } else if (filterNormalizacion === 'rezagadas') {
         rows = rows.filter((r: any) => clasificarNormalizacion(r) === 'rezagada');
+        if (filterRezagadaSubmes !== 'todos') {
+          rows = rows.filter((r: any) => {
+            const m = detectarMesRezagada(r);
+            return m && m.toLowerCase() === filterRezagadaSubmes.toLowerCase();
+          });
+        }
+        if (filterEstadoRezagada === 'pendientes') {
+          rows = rows.filter((r: any) => !r.esReclasificado && !(r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+        } else if (filterEstadoRezagada === 'corregidos') {
+          rows = rows.filter((r: any) => r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
+        }
       }
 
       if (selectedCta && selectedCta !== 'TODAS') {
@@ -1246,7 +1436,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     setCorreccionMessage(null);
 
     const docRef = selectedMovimiento.dp || selectedMovimiento.sc || selectedMovimiento.numero || selectedMovimiento.codigo;
-    const successMsg = `✓ Ítem [${docRef}] corregido exitosamente (Mes: ${correccionNuevoMes}, Cuenta: ${correccionNuevaCuenta.toUpperCase()})`;
+    const successMsg = `✓ Ítem [${docRef}] imputado a [${correccionNuevaCuenta.trim().toUpperCase()}]. Trasladado exitosamente al mes de ${correccionNuevoMes.toUpperCase()}.`;
 
     // Guardar en localStorage para disponibilidad inmediata en Vercel y offline
     try {
@@ -1267,7 +1457,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         nuevoMes: correccionNuevoMes,
         motivo: correccionMotivo.trim() || `Reclasificación a mes ${correccionNuevoMes}`,
         fecha: new Date().toISOString(),
-        usuario: currentUser?.username || 'atesara'
+        usuario: currentUser?.username || 'atesara',
+        almacen: (selectedMovimiento as any).almacen || 'ALMPEI',
+        pedido: (selectedMovimiento as any).pedido || '',
+        ceco: (selectedMovimiento as any).ceco || 'MON-3',
+        cantidad: (selectedMovimiento as any).cantidad || 1,
+        unidad: (selectedMovimiento as any).unidad || 'UND',
+        solicitante: (selectedMovimiento as any).solicitante || 'ALEJANDRA TESARA',
+        categoria: (selectedMovimiento as any).categoria || '',
+        datos_tipo_costo: (selectedMovimiento as any).datos_tipo_costo || 'Externo'
       };
       const filtered = localList.filter((x: any) => (x.recordId || `${x.documento}-${x.codigo}`) !== (newEntry.recordId || `${newEntry.documento}-${newEntry.codigo}`));
       filtered.push(newEntry);
@@ -2849,12 +3047,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   </div>
                 </div>
 
-                {/* FILTROS POR SUB-MES DE REZAGADAS */}
-                <div className="pt-3 border-t border-indigo-200/60 flex flex-wrap items-center justify-between gap-2">
+                {/* FILTROS POR SUB-MES DE REZAGADAS Y ESTADO DE AUDITORÍA */}
+                <div className="pt-3 border-t border-indigo-200/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-900 mr-1 flex items-center gap-1">
                       <Filter className="w-3.5 h-3.5 text-indigo-600" />
-                      Filtrar por Mes Real:
+                      Mes Destino:
                     </span>
                     <button
                       onClick={() => { setFilterRezagadaSubmes('todos'); setPageMaster(1); }}
@@ -2884,7 +3082,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           : 'bg-white text-teal-900 border-teal-200 hover:bg-teal-50'
                       }`}
                     >
-                      📅 Junio ({masterTotales.rezagadas_junio_count || 100} reg • {formatUSD(masterTotales.rezagadas_junio_total || 983.07)})
+                      📅 Junio ({masterTotales.rezagadas_junio_count || 100} reg)
                     </button>
                     <button
                       onClick={() => { setFilterRezagadaSubmes('julio'); setPageMaster(1); }}
@@ -2894,11 +3092,68 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           : 'bg-white text-sky-900 border-sky-200 hover:bg-sky-50'
                       }`}
                     >
-                      📅 Julio ({masterTotales.rezagadas_julio_count || 29} reg • {formatUSD(masterTotales.rezagadas_julio_total || 1087.01)})
+                      📅 Julio ({masterTotales.rezagadas_julio_count || 29} reg)
                     </button>
                   </div>
 
-                  {filterRezagadaSubmes !== 'todos' && (
+                  {/* TOGGLE ESTADO DE AUDITORÍA: SOLO PENDIENTES vs YA CORREGIDOS vs TODOS */}
+                  <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-indigo-200 shadow-2xs">
+                    <span className="text-[10px] font-bold text-indigo-900 uppercase px-2 flex items-center gap-1">
+                      Auditoría:
+                    </span>
+                    <button
+                      onClick={() => { setFilterEstadoRezagada('pendientes'); setPageMaster(1); }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        filterEstadoRezagada === 'pendientes'
+                          ? 'bg-amber-500 text-white shadow-xs'
+                          : 'text-slate-600 hover:bg-slate-100'
+                      }`}
+                      title="Mostrar solo los consumos rezagados que aún no han sido imputados/corregidos"
+                    >
+                      ⏳ Solo Pendientes ({
+                        filterRezagadaSubmes === 'agosto' ? (masterTotales.rezagadas_agosto_pendientes_count ?? 291) :
+                        filterRezagadaSubmes === 'junio' ? (masterTotales.rezagadas_junio_pendientes_count ?? 100) :
+                        filterRezagadaSubmes === 'julio' ? (masterTotales.rezagadas_julio_pendientes_count ?? 29) :
+                        (masterTotales.rezagadas_pendientes_count ?? 420)
+                      })
+                    </button>
+                    <button
+                      onClick={() => { setFilterEstadoRezagada('corregidos'); setPageMaster(1); }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        filterEstadoRezagada === 'corregidos'
+                          ? 'bg-purple-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:bg-slate-100'
+                      }`}
+                      title="Mostrar los consumos ya corregidos y trasladados a su mes correspondiente"
+                    >
+                      ✓ Ya Corregidos ({
+                        filterRezagadaSubmes === 'agosto' ? (masterTotales.rezagadas_agosto_corregidas_count ?? 0) :
+                        filterRezagadaSubmes === 'junio' ? (masterTotales.rezagadas_junio_corregidas_count ?? 0) :
+                        filterRezagadaSubmes === 'julio' ? (masterTotales.rezagadas_julio_corregidas_count ?? 0) :
+                        (masterTotales.rezagadas_corregidas_count ?? 0)
+                      })
+                    </button>
+                    <button
+                      onClick={() => { setFilterEstadoRezagada('todos'); setPageMaster(1); }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        filterEstadoRezagada === 'todos'
+                          ? 'bg-indigo-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:bg-slate-100'
+                      }`}
+                      title="Mostrar todos los consumos rezagados sin importar su estado"
+                    >
+                      Todos ({
+                        filterRezagadaSubmes === 'agosto' ? (masterTotales.rezagadas_agosto_count || 291) :
+                        filterRezagadaSubmes === 'junio' ? (masterTotales.rezagadas_junio_count || 100) :
+                        filterRezagadaSubmes === 'julio' ? (masterTotales.rezagadas_julio_count || 29) :
+                        (masterTotales.norm_rezagadas_count || 420)
+                      })
+                    </button>
+                  </div>
+                </div>
+
+                {filterRezagadaSubmes !== 'todos' && (
+                  <div className="pt-2 flex justify-end">
                     <button
                       onClick={() => handleAplicarCorreccionMasiva(
                         filterRezagadaSubmes === 'agosto' ? 'Agosto' : filterRezagadaSubmes === 'junio' ? 'Junio' : 'Julio'
@@ -2908,8 +3163,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       Enviar bloque de {filterRezagadaSubmes.toUpperCase()} a Correcciones
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -3093,9 +3348,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             {r.fecha}
                           </td>
                           <td className="py-2 px-3 text-blue-600 font-bold border-r border-slate-100">
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 flex-wrap">
                               <span>{r.numero}</span>
-                              {subtipoNorm === 'rezagada' ? (
+                              {(r as any).esTrasladado ? (
+                                <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-0.5" title={`Consumo rezagado transferido desde ${(r as any).mesOrigen || 'Septiembre'}`}>
+                                  📥 TRASLADADO DE {(r as any).mesOrigen?.toUpperCase() || 'SEPTIEMBRE'}
+                                </span>
+                              ) : subtipoNorm === 'rezagada' ? (
                                 <span className="px-1 py-0.2 rounded text-[9px] font-black bg-indigo-200 text-indigo-900 border border-indigo-300" title={`Consumo rezagado perteneciente a ${detectarMesRezagada(r) || 'mes anterior'}`}>
                                   {detectarMesRezagada(r) ? `REZ. ${detectarMesRezagada(r)?.toUpperCase()}` : 'REZAGADA'}
                                 </span>
@@ -3130,9 +3389,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                               {isCorr && (
                                 <span 
                                   className="px-1.5 py-0.5 rounded text-[10px] bg-purple-100 text-purple-900 font-bold border border-purple-300 flex items-center gap-0.5" 
-                                  title={`Reclasificado de ${(r as any).cuenta_aux_original || (r as any).cuentaAuxiliarOriginal || 'SIP'}. Motivo: ${(r as any).infoReclasificacion?.motivo || (r as any).motivo || 'Corrección contable'}`}
+                                  title={`Reclasificado a ${r.nombre_mes || 'otro mes'}. Original: ${(r as any).cuenta_aux_original || (r as any).cuentaAuxiliarOriginal || 'SIP'}. Motivo: ${(r as any).infoReclasificacion?.motivo || (r as any).motivo || 'Corrección contable'}`}
                                 >
-                                  ✓ Corregido
+                                  ✓ Corregido {(r as any).esTrasladado ? `(en ${r.nombre_mes?.toUpperCase()})` : (r.nombre_mes && r.nombre_mes.toLowerCase() !== 'septiembre' ? `→ ${r.nombre_mes.toUpperCase()}` : '')}
                                 </span>
                               )}
                               <button
