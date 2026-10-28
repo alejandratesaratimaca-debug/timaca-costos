@@ -39,7 +39,7 @@ interface MatrizProyectosCategoriasViewProps {
   onVolver: () => void;
   onSelectProyecto?: (cuentaAuxiliar: string, categoria?: string) => void;
   onSelectCategoria?: (categoria: string) => void;
-  initialPeriodo?: 'octubre' | 'septiembre' | 'agosto' | 'anual';
+  initialPeriodo?: 'octubre' | 'septiembre' | 'agosto' | 'anual' | 'sip_anual';
   initialVista?: 'mensual' | 'proyectos';
 }
 
@@ -47,11 +47,11 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
   onVolver,
   onSelectProyecto,
   onSelectCategoria,
-  initialPeriodo = 'octubre',
+  initialPeriodo = 'anual',
   initialVista = 'mensual'
 }) => {
   const [vistaActiva, setVistaActiva] = useState<'categorias' | 'proyectos'>('proyectos');
-  const [periodo, setPeriodo] = useState<'octubre' | 'septiembre' | 'agosto' | 'anual'>(initialPeriodo);
+  const [periodo, setPeriodo] = useState<'octubre' | 'septiembre' | 'agosto' | 'anual' | 'sip_anual'>(initialPeriodo);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [selectedProyectoModal, setSelectedProyectoModal] = useState<FilaProyectoCategoriasPPT | null>(null);
@@ -61,37 +61,69 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
 
   useEffect(() => {
     let isMounted = true;
-    const mesNum = periodo === 'octubre' ? 10 : periodo === 'septiembre' ? 9 : periodo === 'agosto' ? 8 : 0;
-    if (sipDataPorPeriodo[periodo]) return;
-
-    setIsLoadingSipMatriz(true);
-    getSipPeriodoData(mesNum).then(data => {
-      if (!isMounted) return;
-      const mapped: FilaProyectoCategoriasPPT[] = data.cuentas.map(c => ({
-        cuentaAuxiliar: c.codigo,
-        proyecto: c.nombre,
-        proyectoCorto: c.proyectoCorto,
-        materiales: c.porCategoria['Materiales Directos'] || 0,
-        servicios: c.porCategoria['Servicios'] || 0,
-        manoDeObra: c.porCategoria['Mano de Obra Directa'] || 0,
-        horasMaquina: c.porCategoria['Horas Maquina'] || 0,
-        indirectos: c.porCategoria['Costos Indirectos'] || 0,
-        totalProyecto: c.totalMonto,
-        porcentaje: c.porcentaje
-      }));
-      setSipDataPorPeriodo(prev => ({ ...prev, [periodo]: mapped }));
-      setIsLoadingSipMatriz(false);
-    });
+    if (periodo === 'octubre') {
+      if (sipDataPorPeriodo['octubre']) return;
+      setIsLoadingSipMatriz(true);
+      getSipPeriodoData(10).then(data => {
+        if (!isMounted) return;
+        const mapped: FilaProyectoCategoriasPPT[] = data.cuentas.map((c, idx) => ({
+          ranking: idx + 1,
+          cuentaAuxiliar: c.codigo,
+          proyecto: c.nombre,
+          proyectoCorto: c.proyectoCorto,
+          materiales: c.porCategoria['Materiales Directos'] || 0,
+          servicios: c.porCategoria['Servicios'] || 0,
+          manoDeObra: c.porCategoria['Mano de Obra Directa'] || 0,
+          horasMaquina: c.porCategoria['Horas Maquina'] || 0,
+          indirectos: c.porCategoria['Costos Indirectos'] || 0,
+          totalProyecto: c.totalMonto,
+          porcentaje: c.porcentaje
+        }));
+        setSipDataPorPeriodo(prev => ({ ...prev, octubre: mapped }));
+        setIsLoadingSipMatriz(false);
+      });
+    } else if (periodo === 'sip_anual') {
+      if (sipDataPorPeriodo['sip_anual']) return;
+      setIsLoadingSipMatriz(true);
+      getSipPeriodoData(0).then(data => {
+        if (!isMounted) return;
+        const mapped: FilaProyectoCategoriasPPT[] = data.cuentas.map((c, idx) => ({
+          ranking: idx + 1,
+          cuentaAuxiliar: c.codigo,
+          proyecto: c.nombre,
+          proyectoCorto: c.proyectoCorto,
+          materiales: c.porCategoria['Materiales Directos'] || 0,
+          servicios: c.porCategoria['Servicios'] || 0,
+          manoDeObra: c.porCategoria['Mano de Obra Directa'] || 0,
+          horasMaquina: c.porCategoria['Horas Maquina'] || 0,
+          indirectos: c.porCategoria['Costos Indirectos'] || 0,
+          totalProyecto: c.totalMonto,
+          porcentaje: c.porcentaje
+        }));
+        setSipDataPorPeriodo(prev => ({ ...prev, sip_anual: mapped }));
+        setIsLoadingSipMatriz(false);
+      });
+    }
     return () => { isMounted = false; };
   }, [periodo, sipDataPorPeriodo]);
 
-  // Lista de datos según período para la tabla de proyectos alimentada 100% de SIP
-  const datasetProyectos = sipDataPorPeriodo[periodo] || (
-    periodo === 'octubre' ? [] :
-    periodo === 'septiembre' ? PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026 :
-    periodo === 'agosto' ? PROYECTOS_CATEGORIAS_AGOSTO_2026 :
-    PROYECTOS_CATEGORIAS_ANUAL_2026
-  );
+  // Lista de datos según período para la tabla de proyectos con los 5 Rubros Oficiales
+  const datasetProyectos = useMemo(() => {
+    if (periodo === 'octubre') {
+      return sipDataPorPeriodo['octubre'] || [];
+    }
+    if (periodo === 'sip_anual') {
+      return sipDataPorPeriodo['sip_anual'] || [];
+    }
+    if (periodo === 'septiembre') {
+      return PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026;
+    }
+    if (periodo === 'agosto') {
+      return PROYECTOS_CATEGORIAS_AGOSTO_2026;
+    }
+    // 'anual' (Acumulado 9 Meses Oficial $12.05M)
+    return PROYECTOS_CATEGORIAS_ANUAL_2026;
+  }, [periodo, sipDataPorPeriodo]);
 
   // Filtrado por buscador para proyectos
   const filasFiltradasProyectos = useMemo(() => {
@@ -242,7 +274,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
 
       const ws = XLSX.utils.json_to_sheet(dataExcel);
       XLSX.utils.book_append_sheet(wb, ws, 'Proyectos x Categorias');
-      XLSX.writeFile(wb, `TIMACA_Proyectos_x_Categorias_${periodo === 'septiembre' ? 'Septiembre_2026' : periodo === 'agosto' ? 'Agosto_2026' : 'Acumulado_Ene_Sep_2026'}.xlsx`);
+      XLSX.writeFile(wb, `TIMACA_Proyectos_x_Categorias_${periodo === 'septiembre' ? 'Septiembre_2026' : periodo === 'agosto' ? 'Agosto_2026' : periodo === 'octubre' ? 'Octubre_2026' : periodo === 'sip_anual' ? 'Compras_SIP_Anual_2026' : 'Acumulado_Ene_Sep_2026'}.xlsx`);
     }
 
     setDownloadSuccess(true);
@@ -280,7 +312,18 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               </h1>
             </div>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Distribución consolidada en USD · 9 meses auditados (Enero - Septiembre 2026) · Total Acumulado: ${totalAnualGlobal.toLocaleString('de-DE')} USD
+              {vistaActiva === 'categorias'
+                ? `Distribución consolidada en USD · 9 meses auditados (Enero - Septiembre 2026) · Total Acumulado: $${Math.round(totalAnualGlobal).toLocaleString('de-DE')} USD`
+                : periodo === 'anual'
+                ? `Distribución consolidada en USD · 9 meses auditados (Enero - Septiembre 2026) · Total Acumulado: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                : periodo === 'septiembre'
+                ? `Cierre operativo de Septiembre 2026 (5 Rubros Oficiales) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                : periodo === 'agosto'
+                ? `Base oficial auditada de Agosto 2026 (5 Rubros Oficiales) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                : periodo === 'sip_anual'
+                ? `Compras y consumos directos de inventario SIP (Todo el Año) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                : `Octubre 2026 en curso (SIP en Vivo) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+              }
             </p>
           </div>
         </div>
@@ -316,14 +359,14 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
           {vistaActiva === 'proyectos' && (
             <div className="flex items-center p-1 bg-blue-50 rounded-xl border border-blue-200 text-xs font-bold">
               <button
-                onClick={() => setPeriodo('octubre')}
+                onClick={() => setPeriodo('anual')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
-                  periodo === 'octubre'
+                  periodo === 'anual'
                     ? 'bg-blue-700 text-white shadow-2xs'
                     : 'text-blue-900 hover:text-blue-950'
                 }`}
               >
-                Octubre ($671K SIP)
+                Acumulado 9M ($12.05M)
               </button>
               <button
                 onClick={() => setPeriodo('septiembre')}
@@ -333,7 +376,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                     : 'text-blue-900 hover:text-blue-950'
                 }`}
               >
-                Septiembre ($1.64M)
+                Septiembre ($1.61M)
               </button>
               <button
                 onClick={() => setPeriodo('agosto')}
@@ -346,14 +389,24 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                 Agosto ($1.20M)
               </button>
               <button
-                onClick={() => setPeriodo('anual')}
+                onClick={() => setPeriodo('octubre')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
-                  periodo === 'anual'
+                  periodo === 'octubre'
                     ? 'bg-blue-700 text-white shadow-2xs'
                     : 'text-blue-900 hover:text-blue-950'
                 }`}
               >
-                Acumulado 9M ($12.08M)
+                Octubre ($671K SIP)
+              </button>
+              <button
+                onClick={() => setPeriodo('sip_anual')}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  periodo === 'sip_anual'
+                    ? 'bg-blue-700 text-white shadow-2xs'
+                    : 'text-blue-900 hover:text-blue-950'
+                }`}
+              >
+                Compras SIP ($4.95M)
               </button>
             </div>
           )}
@@ -701,7 +754,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               />
             </div>
             <div className="text-xs text-neutral-500 font-medium">
-              Mostrando <strong>{filasFiltradasProyectos.length}</strong> proyectos auditados en {periodo === 'septiembre' ? 'Septiembre 2026' : periodo === 'agosto' ? 'Agosto 2026' : 'Acumulado 2026 (Ene - Sep · 9 Meses)'}
+              Mostrando <strong>{filasFiltradasProyectos.length}</strong> proyectos auditados en {periodo === 'septiembre' ? 'Septiembre 2026' : periodo === 'agosto' ? 'Agosto 2026' : periodo === 'octubre' ? 'Octubre 2026 (SIP en Vivo)' : periodo === 'sip_anual' ? 'Compras SIP Almacén (Todo el Año)' : 'Acumulado 2026 (Ene - Sep · 9 Meses Auditados)'}
             </div>
           </div>
 
