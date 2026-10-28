@@ -4,6 +4,7 @@ import {
   getSipPeriodoData, 
   getSipEvolutivoMensual, 
   getMacroCategoriaSip, 
+  invalidateSipCache,
   SipCuentaSummary, 
   SipItem, 
   SipPeriodoData,
@@ -32,7 +33,9 @@ import {
   Info,
   Clock,
   HardHat,
-  Boxes
+  Boxes,
+  RefreshCw,
+  AlertTriangle
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -62,7 +65,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [selectedItemModal, setSelectedItemModal] = useState<SipItem | null>(null);
 
-  // Estados de datos SIP en vivo
+  // Estados de datos SIP en vivo y control de red
   const [sipData, setSipData] = useState<SipPeriodoData | null>(null);
   const [evolutivoData, setEvolutivoData] = useState<{
     meses: MesEvolutivoData[];
@@ -73,17 +76,28 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   } | null>(null);
   const [isLoadingSip, setIsLoadingSip] = useState<boolean>(true);
   const [isLoadingEvolutivo, setIsLoadingEvolutivo] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [errorSip, setErrorSip] = useState<string | null>(null);
+  const [refreshSuccess, setRefreshSuccess] = useState<boolean>(false);
 
-  // Cargar datos SIP del período seleccionado
+  // Cargar datos SIP del período seleccionado con captura de errores
   useEffect(() => {
     let isMounted = true;
     setIsLoadingSip(true);
-    getSipPeriodoData(selectedMesNum).then(data => {
-      if (isMounted) {
-        setSipData(data);
-        setIsLoadingSip(false);
-      }
-    });
+    setErrorSip(null);
+    getSipPeriodoData(selectedMesNum)
+      .then(data => {
+        if (isMounted) {
+          setSipData(data);
+          setIsLoadingSip(false);
+        }
+      })
+      .catch(err => {
+        if (isMounted) {
+          setErrorSip(err?.message || 'Error al conectar con la base de datos SIP');
+          setIsLoadingSip(false);
+        }
+      });
     return () => { isMounted = false; };
   }, [selectedMesNum]);
 
@@ -98,14 +112,37 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   useEffect(() => {
     let isMounted = true;
     setIsLoadingEvolutivo(true);
-    getSipEvolutivoMensual(selectedCuentaCodigo).then(data => {
-      if (isMounted) {
-        setEvolutivoData(data);
-        setIsLoadingEvolutivo(false);
-      }
-    });
+    getSipEvolutivoMensual(selectedCuentaCodigo)
+      .then(data => {
+        if (isMounted) {
+          setEvolutivoData(data);
+          setIsLoadingEvolutivo(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setIsLoadingEvolutivo(false);
+      });
     return () => { isMounted = false; };
   }, [selectedCuentaCodigo]);
+
+  // Revalidación bajo demanda sin caché (Cache Busting Directo)
+  const handleForceRefresh = async () => {
+    setIsRefreshing(true);
+    setErrorSip(null);
+    invalidateSipCache();
+    try {
+      const data = await getSipPeriodoData(selectedMesNum, true);
+      setSipData(data);
+      const evol = await getSipEvolutivoMensual(selectedCuentaCodigo, true);
+      setEvolutivoData(evol);
+      setRefreshSuccess(true);
+      setTimeout(() => setRefreshSuccess(false), 3000);
+    } catch (err: any) {
+      setErrorSip(err?.message || 'Error al revalidar datos SIP');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Lista de cuentas para el ranking lateral
   const cuentasRanking = useMemo(() => {
@@ -132,6 +169,14 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
     if (cuentasRanking.length === 0) return null;
     const found = cuentasRanking.find(c => c.codigo === selectedCuentaCodigo);
     return found || cuentasRanking[0] || null;
+  }, [cuentasRanking, selectedCuentaCodigo]);
+
+  // Sincronizar cuenta activa si cambia el ranking o período para evitar estados huérfanos
+  useEffect(() => {
+    if (cuentasRanking.length > 0 && !cuentasRanking.some(c => c.codigo === selectedCuentaCodigo)) {
+      setSelectedCuentaCodigo(cuentasRanking[0].codigo);
+      setSelectedCategoryFilter('todas');
+    }
   }, [cuentasRanking, selectedCuentaCodigo]);
 
   // Categorías de gasto calculadas directamente de las líneas SIP
@@ -305,6 +350,17 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
             </select>
           </div>
 
+          {/* Botón Sincronizar SIP en Vivo */}
+          <button
+            onClick={handleForceRefresh}
+            disabled={isRefreshing || isLoadingSip}
+            title="Revalidar datos directamente desde la base de datos SIP (sin caché)"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-blue-600 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>{isRefreshing ? 'Sincronizando...' : 'Sincronizar SIP'}</span>
+          </button>
+
           {/* Botón Descargar Excel */}
           <button
             onClick={handleExportProyectos}
@@ -316,6 +372,30 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
           </button>
         </div>
       </div>
+
+      {errorSip && (
+        <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl flex items-center justify-between font-medium">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{errorSip}</span>
+          </div>
+          <button
+            onClick={handleForceRefresh}
+            className="px-2.5 py-1 bg-rose-600 text-white rounded-lg font-bold hover:bg-rose-700 transition-colors text-[11px]"
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
+
+      {refreshSuccess && (
+        <div className="p-3 bg-blue-50 border border-blue-200 text-blue-800 text-xs rounded-xl flex items-center gap-2 animate-fade-in font-medium">
+          <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+          <span>
+            <strong>¡SIP Sincronizado!</strong> Se han revalidado los registros en vivo sin caché para el período seleccionado.
+          </span>
+        </div>
+      )}
 
       {downloadSuccess && (
         <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center gap-2 animate-fade-in font-medium">
@@ -365,12 +445,34 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
           {/* Lista de cuentas en ranking */}
           <div className="space-y-1.5 max-h-[720px] overflow-y-auto pr-1">
             {isLoadingSip ? (
-              <div className="py-12 text-center text-xs text-neutral-500">
-                Cargando datos SIP en vivo...
+              <div className="space-y-2 py-1 animate-pulse">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="p-2.5 rounded-xl border border-neutral-100 bg-neutral-50/80 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div className="h-3 bg-neutral-200 rounded w-28" />
+                      <div className="h-3 bg-neutral-200 rounded w-14" />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="h-2 bg-neutral-200 rounded w-36" />
+                      <div className="h-2 bg-neutral-200 rounded w-10" />
+                    </div>
+                    <div className="w-full h-1 bg-neutral-200 rounded-full" />
+                  </div>
+                ))}
               </div>
             ) : cuentasRanking.length === 0 ? (
-              <div className="py-8 text-center text-xs text-neutral-400">
-                No se encontraron cuentas para este período
+              <div className="py-10 text-center px-4 space-y-2">
+                <Search className="w-6 h-6 text-neutral-300 mx-auto" />
+                <p className="text-xs font-semibold text-neutral-600">No se encontraron cuentas</p>
+                <p className="text-[11px] text-neutral-400">Prueba con otro término de búsqueda o cambia de mes.</p>
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="text-xs text-blue-600 font-bold hover:underline cursor-pointer"
+                  >
+                    Limpiar búsqueda
+                  </button>
+                )}
               </div>
             ) : (
               cuentasRanking.map((c, idx) => {
@@ -428,7 +530,13 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
 
         {/* COLUMNA DERECHA: TARJETA DE CUENTA + EVOLUTIVO + CATEGORÍAS + AUDITORÍA */}
         <div className="lg:col-span-8 space-y-5">
-          {activeCuenta && (
+          {isLoadingSip ? (
+            <div className="space-y-4 animate-pulse">
+              <div className="bg-slate-800 p-6 rounded-2xl h-36" />
+              <div className="bg-white p-6 rounded-2xl border border-neutral-200 h-64" />
+              <div className="bg-white p-6 rounded-2xl border border-neutral-200 h-48" />
+            </div>
+          ) : activeCuenta ? (
             <>
               {/* TARJETA PRINCIPAL DEL PROYECTO / CUENTA SELECCIONADA */}
               <div className="bg-[#112238] text-white p-5 rounded-2xl shadow-md border border-slate-700/80">
@@ -728,6 +836,12 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                 )}
               </div>
             </>
+          ) : (
+            <div className="bg-white p-12 rounded-2xl border border-neutral-200 text-center space-y-3">
+              <Briefcase className="w-8 h-8 text-neutral-300 mx-auto" />
+              <h4 className="text-sm font-bold text-neutral-800">No hay cuenta seleccionada</h4>
+              <p className="text-xs text-neutral-500">Selecciona una cuenta en el listado de la izquierda para ver su auditoría en vivo.</p>
+            </div>
           )}
         </div>
       </div>

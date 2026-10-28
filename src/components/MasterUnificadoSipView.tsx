@@ -464,6 +464,92 @@ export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
   return 'Septiembre';
 }
 
+// Caché en memoria para las sábanas SIP del Master Unificado (evita re-descargas y congelamientos)
+const masterStaticCache = new Map<string, any[]>();
+
+export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoricos: boolean): Promise<any[]> {
+  const cacheKey = `${mesKey || 'todos'}_${isVerAjustesHistoricos}`;
+  if (masterStaticCache.has(cacheKey)) {
+    return [...masterStaticCache.get(cacheKey)!];
+  }
+
+  let items: any[] = [];
+  const lowerMes = (mesKey || 'todos').toLowerCase();
+
+  if (isVerAjustesHistoricos) {
+    const res = await fetch('/data/sip/ajustes_historicos_2026.json');
+    if (res.ok) {
+      const d = await res.json();
+      items = d.items || [];
+      if (lowerMes !== 'todos') {
+        items = items.filter((r: any) => (r.nombre_mes || '').toLowerCase() === lowerMes);
+      }
+    }
+  } else if (lowerMes === 'octubre') {
+    const res = await fetch('/data/sip/unificada_octubre.json');
+    if (res.ok) {
+      const d = await res.json();
+      items = d.items || [];
+    }
+  } else if (lowerMes === 'septiembre') {
+    const res = await fetch('/data/sip/unificada_septiembre.json');
+    if (res.ok) {
+      const d = await res.json();
+      items = d.items || [];
+    }
+  } else if (lowerMes === 'agosto') {
+    const res = await fetch('/data/sip/unificada_agosto.json');
+    if (res.ok) {
+      const d = await res.json();
+      items = d.items || [];
+    }
+  } else if (['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio'].includes(lowerMes)) {
+    const res = await fetch('/data/sip/ajustes_historicos_2026.json');
+    if (res.ok) {
+      const d = await res.json();
+      const allHist = d.items || [];
+      items = allHist.filter((r: any) => (r.nombre_mes || '').toLowerCase() === lowerMes);
+    }
+  } else if (lowerMes === 'todos') {
+    // CARGAR Y CONSOLIDAR TODOS LOS REGISTROS DEL AÑO 2026 (ENERO A OCTUBRE)
+    try {
+      const [resHist, resAgo, resSep, resOct] = await Promise.all([
+        fetch('/data/sip/ajustes_historicos_2026.json'),
+        fetch('/data/sip/unificada_agosto.json'),
+        fetch('/data/sip/unificada_septiembre.json'),
+        fetch('/data/sip/unificada_octubre.json')
+      ]);
+      const [dHist, dAgo, dSep, dOct] = await Promise.all([
+        resHist.ok ? resHist.json() : { items: [] },
+        resAgo.ok ? resAgo.json() : { items: [] },
+        resSep.ok ? resSep.json() : { items: [] },
+        resOct.ok ? resOct.json() : { items: [] }
+      ]);
+      items = [
+        ...(dHist.items || []),
+        ...(dAgo.items || []),
+        ...(dSep.items || []),
+        ...(dOct.items || [])
+      ];
+    } catch (e) {
+      const resFallback = await fetch('/data/sip/unificada_septiembre.json');
+      if (resFallback.ok) {
+        const d = await resFallback.json();
+        items = d.items || [];
+      }
+    }
+  } else {
+    const resFallback = await fetch('/data/sip/unificada_septiembre.json');
+    if (resFallback.ok) {
+      const d = await resFallback.json();
+      items = d.items || [];
+    }
+  }
+
+  masterStaticCache.set(cacheKey, items);
+  return [...items];
+}
+
 export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [activeTab, setActiveTab] = useState<'unificada' | 'matriz' | 'consumos' | 'compras' | 'correcciones' | 'cargas'>('unificada');
   const [status, setStatus] = useState<Status | null>(null);
@@ -884,19 +970,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         if (data.top_cuentas) setTopCuentas(data.top_cuentas);
       } else {
         const isVerAjustesHistoricos = filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas';
-        let staticFile = '/data/sip/unificada_septiembre.json';
-        if (isVerAjustesHistoricos) {
-          staticFile = '/data/sip/ajustes_historicos_2026.json';
-        } else if (selectedMes === 'agosto') {
-          staticFile = '/data/sip/unificada_agosto.json';
-        } else if (selectedMes === 'octubre') {
-          staticFile = '/data/sip/unificada_octubre.json';
-        }
-
-        const resStatic = await fetch(staticFile);
-        if (resStatic.ok) {
-          const data = await resStatic.json();
-          let items: any[] = data.items || [];
+        let items: any[] = await loadStaticMasterItems(selectedMes, isVerAjustesHistoricos);
 
           // Si estamos revisando Ajustes Históricos (2.553 registros de Enero a Julio), filtrar por mes si se seleccionó uno
           if (isVerAjustesHistoricos) {
@@ -1271,7 +1345,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
           const start = (pageMaster - 1) * limitMaster;
           setMasterRows(items.slice(start, start + limitMaster));
-        }
       }
     } catch (e) {
       console.error('Error fetching master unificado:', e);
@@ -1308,16 +1381,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         data = await res.json();
       } else {
         const isVerAjustesHistoricos = filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas';
-        let staticFile = '/data/sip/unificada_septiembre.json';
-        if (isVerAjustesHistoricos) {
-          staticFile = '/data/sip/ajustes_historicos_2026.json';
-        } else if (selectedMes === 'agosto') {
-          staticFile = '/data/sip/unificada_agosto.json';
-        } else if (selectedMes === 'octubre') {
-          staticFile = '/data/sip/unificada_octubre.json';
-        }
-        const resStatic = await fetch(staticFile);
-        data = await resStatic.json();
+        data = { items: await loadStaticMasterItems(selectedMes, isVerAjustesHistoricos) };
       }
       let rows = data?.items || [];
 

@@ -128,22 +128,39 @@ const memoryCache = {
 };
 
 /**
+ * Invalida explícitamente la memoria caché local para forzar lectura fresca del SIP
+ */
+export function invalidateSipCache(): void {
+  memoryCache.proyectos = null;
+  memoryCache.proyectosMap.clear();
+  memoryCache.matriz = null;
+  memoryCache.mesesItems.clear();
+  memoryCache.evolutivoAnual = null;
+}
+
+/**
  * Obtiene el listado de proyectos maestros desde el SIP
  */
-export async function fetchSipProyectos(): Promise<{ list: SipProyectoInfo[]; map: Map<string, SipProyectoInfo> }> {
-  if (memoryCache.proyectos && memoryCache.proyectosMap.size > 0) {
+export async function fetchSipProyectos(forceRefresh = false): Promise<{ list: SipProyectoInfo[]; map: Map<string, SipProyectoInfo> }> {
+  if (!forceRefresh && memoryCache.proyectos && memoryCache.proyectosMap.size > 0) {
     return { list: memoryCache.proyectos, map: memoryCache.proyectosMap };
   }
 
+  const fetchOpts: RequestInit = forceRefresh ? { cache: 'no-store' } : { cache: 'no-cache' };
+  const querySuffix = forceRefresh ? `?_t=${Date.now()}` : '';
+
   let list: SipProyectoInfo[] = [];
   try {
-    const res = await fetch('http://192.168.13.193:3005/api/proyectos', { signal: AbortSignal.timeout(1500) });
+    const res = await fetch(`http://192.168.13.193:3005/api/proyectos${querySuffix}`, { 
+      ...fetchOpts, 
+      signal: AbortSignal.timeout(1500) 
+    });
     if (res.ok) list = await res.json();
   } catch (e) {}
 
   if (list.length === 0) {
     try {
-      const res = await fetch('/data/sip/proyectos.json');
+      const res = await fetch(`/data/sip/proyectos.json${querySuffix}`, fetchOpts);
       if (res.ok) list = await res.json();
     } catch (e) {}
   }
@@ -159,20 +176,25 @@ export async function fetchSipProyectos(): Promise<{ list: SipProyectoInfo[]; ma
 }
 
 /**
- * Obtiene los registros SIP de un mes específico (o anual)
+ * Obtiene los registros SIP de un mes específico (o anual) con soporte para invalidación de caché
  */
-export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
+export async function fetchSipMesItems(mesNum: number, forceRefresh = false): Promise<SipItem[]> {
   const cacheKey = `mes_${mesNum}`;
-  if (memoryCache.mesesItems.has(cacheKey)) {
+  if (!forceRefresh && memoryCache.mesesItems.has(cacheKey)) {
     return memoryCache.mesesItems.get(cacheKey)!;
   }
 
+  const fetchOpts: RequestInit = forceRefresh ? { cache: 'no-store' } : { cache: 'no-cache' };
+  const querySuffix = forceRefresh ? `?_t=${Date.now()}` : '';
   let items: SipItem[] = [];
 
   if (mesNum === 10) {
     // Octubre
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/unificada?ano=2026&mes=octubre&limit=15000', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch(`http://192.168.13.193:3005/api/unificada?ano=2026&mes=octubre&limit=15000&${querySuffix.replace('?', '')}`, { 
+        ...fetchOpts, 
+        signal: AbortSignal.timeout(2000) 
+      });
       if (res.ok) {
         const d = await res.json();
         if (d.items) items = d.items;
@@ -180,7 +202,7 @@ export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
     } catch (e) {}
     if (items.length === 0) {
       try {
-        const res = await fetch('/data/sip/unificada_octubre.json');
+        const res = await fetch(`/data/sip/unificada_octubre.json${querySuffix}`, fetchOpts);
         if (res.ok) {
           const d = await res.json();
           if (d.items) items = d.items;
@@ -190,7 +212,10 @@ export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
   } else if (mesNum === 9) {
     // Septiembre
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/unificada?ano=2026&mes=septiembre&limit=15000', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch(`http://192.168.13.193:3005/api/unificada?ano=2026&mes=septiembre&limit=15000&${querySuffix.replace('?', '')}`, { 
+        ...fetchOpts, 
+        signal: AbortSignal.timeout(2000) 
+      });
       if (res.ok) {
         const d = await res.json();
         if (d.items) items = d.items;
@@ -198,7 +223,7 @@ export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
     } catch (e) {}
     if (items.length === 0) {
       try {
-        const res = await fetch('/data/sip/unificada_septiembre.json');
+        const res = await fetch(`/data/sip/unificada_septiembre.json${querySuffix}`, fetchOpts);
         if (res.ok) {
           const d = await res.json();
           if (d.items) items = d.items;
@@ -208,7 +233,10 @@ export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
   } else if (mesNum === 8) {
     // Agosto
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/unificada?ano=2026&mes=agosto&limit=15000', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch(`http://192.168.13.193:3005/api/unificada?ano=2026&mes=agosto&limit=15000&${querySuffix.replace('?', '')}`, { 
+        ...fetchOpts, 
+        signal: AbortSignal.timeout(2000) 
+      });
       if (res.ok) {
         const d = await res.json();
         if (d.items) items = d.items;
@@ -216,7 +244,7 @@ export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
     } catch (e) {}
     if (items.length === 0) {
       try {
-        const res = await fetch('/data/sip/unificada_agosto.json');
+        const res = await fetch(`/data/sip/unificada_agosto.json${querySuffix}`, fetchOpts);
         if (res.ok) {
           const d = await res.json();
           if (d.items) items = d.items;
@@ -226,7 +254,7 @@ export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
   } else if (mesNum >= 1 && mesNum <= 7) {
     // Enero a Julio desde ajustes históricos
     try {
-      const res = await fetch('/data/sip/ajustes_historicos_2026.json');
+      const res = await fetch(`/data/sip/ajustes_historicos_2026.json${querySuffix}`, fetchOpts);
       if (res.ok) {
         const d = await res.json();
         const allHist: SipItem[] = d.items || [];
@@ -237,12 +265,12 @@ export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
     } catch (e) {}
   } else if (mesNum === 0) {
     // Todo el Año 2026: combinar todos los meses
-    const m10 = await fetchSipMesItems(10);
-    const m9 = await fetchSipMesItems(9);
-    const m8 = await fetchSipMesItems(8);
+    const m10 = await fetchSipMesItems(10, forceRefresh);
+    const m9 = await fetchSipMesItems(9, forceRefresh);
+    const m8 = await fetchSipMesItems(8, forceRefresh);
     let hist: SipItem[] = [];
     try {
-      const res = await fetch('/data/sip/ajustes_historicos_2026.json');
+      const res = await fetch(`/data/sip/ajustes_historicos_2026.json${querySuffix}`, fetchOpts);
       if (res.ok) {
         const d = await res.json();
         hist = d.items || [];
@@ -258,9 +286,9 @@ export async function fetchSipMesItems(mesNum: number): Promise<SipItem[]> {
 /**
  * Procesa y calcula el resumen completo de Cuentas Auxiliares de Obras para un período dado
  */
-export async function getSipPeriodoData(mesNum: number): Promise<SipPeriodoData> {
-  const { map: proyectosMap } = await fetchSipProyectos();
-  const rawItems = await fetchSipMesItems(mesNum);
+export async function getSipPeriodoData(mesNum: number, forceRefresh = false): Promise<SipPeriodoData> {
+  const { map: proyectosMap } = await fetchSipProyectos(forceRefresh);
+  const rawItems = await fetchSipMesItems(mesNum, forceRefresh);
 
   const MESES_LABELS: Record<number, { nombre: string; label: string }> = {
     0: { nombre: 'Anual', label: 'Todo el Año 2026' },
@@ -388,7 +416,7 @@ export async function getSipPeriodoData(mesNum: number): Promise<SipPeriodoData>
 /**
  * Calcula la curva evolutiva mensual de Enero a Octubre 2026 para una cuenta dada o para todo TIMACA
  */
-export async function getSipEvolutivoMensual(cuentaCodigo?: string): Promise<{
+export async function getSipEvolutivoMensual(cuentaCodigo?: string, forceRefresh = false): Promise<{
   meses: MesEvolutivoData[];
   totalAnual: number;
   promedioMensual: number;
@@ -423,7 +451,7 @@ export async function getSipEvolutivoMensual(cuentaCodigo?: string): Promise<{
   let sumaTotalAnual = 0;
 
   for (const m of MESES_DEFS) {
-    const itemsMes = await fetchSipMesItems(m.num);
+    const itemsMes = await fetchSipMesItems(m.num, forceRefresh);
     const itemsFiltrados = itemsMes.filter(r => {
       const c = (r.cuenta_aux || '').trim().toUpperCase();
       if (isConsolidado) {

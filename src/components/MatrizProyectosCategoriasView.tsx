@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026,
   PROYECTOS_CATEGORIAS_AGOSTO_2026, 
