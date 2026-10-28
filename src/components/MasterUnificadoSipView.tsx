@@ -793,7 +793,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   // States for Historial de Correcciones (auditoría de las 447 correcciones)
   const [searchHistorialCorrecciones, setSearchHistorialCorrecciones] = useState('');
-  const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'historicas' | 'recientes' | 'consumos' | 'compras'>('todos');
+  const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'historicas' | 'recientes' | 'consumos' | 'compras' | 'rezagadas' | 'valorizaciones_pellas'>('todos');
   const [pageReclasificaciones, setPageReclasificaciones] = useState(1);
 
   // States for Cargas de Insumos al Cierre (MDO, HM & Costos Indirectos)
@@ -2157,7 +2157,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const filteredReclasificaciones = useMemo(() => {
     return reclasificaciones.filter(r => {
       // 1. Filtro por origen
-      if (filtroTipoHistorial === 'historicas') {
+      if (filtroTipoHistorial === 'valorizaciones_pellas') {
+        if (!r.recordId || !String(r.recordId).startsWith('VAL-0706')) return false;
+      } else if (filtroTipoHistorial === 'historicas') {
         const isHist = (r.usuario && r.usuario.includes('Correcciones.xlsx')) || (r.recordId && String(r.recordId).startsWith('HIST-'));
         if (!isHist) return false;
       } else if (filtroTipoHistorial === 'recientes') {
@@ -5578,6 +5580,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     className="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-purple-600"
                   >
                     <option value="todos">Todos los Orígenes ({reclasificaciones.length})</option>
+                    <option value="valorizaciones_pellas">🏭 Valorizaciones Pellas 1 ({reclasificaciones.filter(x => x.recordId && String(x.recordId).startsWith('VAL-0706')).length})</option>
                     <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && x.motivo.toLowerCase().includes('rezagad'))).length})</option>
                     <option value="historicas">Históricas Correcciones.xlsx ({reclasificaciones.filter(x => x.usuario?.includes('Correcciones.xlsx')).length})</option>
                     <option value="recientes">Recientes Sistema</option>
