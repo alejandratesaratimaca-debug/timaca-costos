@@ -846,11 +846,11 @@
     },
     {
       "nombre": "Vigilancia.xlsx",
-      "categoria": "Costos Indirectos",
+      "categoria": "Costos Indirectos y Servicios",
       "carpeta": "3 Inputs/5 Gastos Fuera SIP",
-      "tamanoKB": 13,
-      "fechaMod": "2026-10-13",
-      "estado": "Gasto Fijo Procesado"
+      "tamanoKB": 15,
+      "fechaMod": "2026-10-28",
+      "estado": "Auditado y Actualizado ($155,526.32 USD)"
     }
   ]
 }
