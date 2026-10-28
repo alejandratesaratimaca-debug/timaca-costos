@@ -357,6 +357,9 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
   #vistaImpresion{position:absolute;inset:0;background:#fff;display:block!important;overflow:visible}
   #hojaImpresion{position:absolute;left:0;top:0;margin:0;box-shadow:none;width:100%}
   .vi-barra{display:none!important}
+  table.vale-items tfoot{display:none!important}
+  table.vale-items tr{page-break-inside:avoid;break-inside:avoid}
+  tr.fila-total-piezas{page-break-inside:avoid;break-inside:avoid}
 }
 @media (max-width:1100px){.captura{grid-template-columns:repeat(4,1fr)}.captura .c-desc{grid-column:span 3}}
 @media (max-width:1200px){.tres-col{grid-template-columns:1fr 1fr}}
@@ -1446,6 +1449,7 @@ function emitirValeDirecto(d) {
     e.disp -= l.cant;
     let destinoEst;
     if (s.tipo === 'ASI' && l.mod === 'EPP') {
+      e.asig = (e.asig || 0) + l.cant;
       e.entregado = (e.entregado || 0) + l.cant;
       l.consumo = true;
       destinoEst = 'ENTREGADO (DOTACIÓN)';
@@ -5928,8 +5932,9 @@ VISTAS.cCatAlm = p => {
     }
     rows = Array.from(ids).map(id => {
       const it = item(id);
-      const e = (DB.exi[S.ctx] && DB.exi[S.ctx][id]) ? Object.assign({}, DB.exi[S.ctx][id]) : { disp: 0, prest: 0, asig: 0, vacio: 0, dan: 0, rep: 0, ext: 0, pend: 0 };
+      const e = (DB.exi[S.ctx] && DB.exi[S.ctx][id]) ? Object.assign({}, DB.exi[S.ctx][id]) : { disp: 0, prest: 0, asig: 0, vacio: 0, dan: 0, rep: 0, ext: 0, pend: 0, entregado: 0 };
       const r = Object.assign({ it }, e);
+      r.asig = (e.asig || 0) + (e.entregado || 0);
       r.total = (r.disp || 0) + (r.vacio || 0) + (r.prest || 0) + (r.asig || 0) + (r.dan || 0) + (r.rep || 0) + (r.ext || 0);
       r.estado = estadoCatalogo(r, r.it);
       return r;
@@ -7898,6 +7903,12 @@ function imprimirVale(n, alm) {
 
   const totPiezasNormal = (v.lineas || []).reduce((a, l) => a + (l.cant || 1), 0);
 
+  const limpiaTxt = s => {
+    if (!s) return '—';
+    const t = String(s).replace(/[\uFFFD\u0000-\u001F\u007F-\u009F]/g, '').trim();
+    return (!t || t === '—' || t === '-' || t === 'null' || t === 'undefined') ? '—' : t;
+  };
+
   const tablaHtml = `<table class="vale-items">
         <thead>
           <tr>
@@ -7909,25 +7920,25 @@ function imprimirVale(n, alm) {
             const it = l.id ? item(l.id) : (DB.catalogo.find(i => i.cod === l.cod) || {});
             let u = (l.umb || it.umb || 'UND').trim().toUpperCase();
             if (u === 'JGO') u = 'JG';
+            const m = limpiaTxt(l.marca || it.marca || 'SIN MARCA');
+            const mod = limpiaTxt(l.modelo || it.modelo || '—');
             return `<tr>
               <td><b>${esc(l.cod)}</b></td>
               <td>${esc(l.desc)}</td>
               <td class="c"><b>${l.cant || 1}</b></td>
               <td class="c"><b>${esc(u)}</b></td>
-              <td>${esc(l.marca || it.marca || '—')} / ${esc(l.modelo || it.modelo || '—')}</td>
+              <td>${esc(m)} / ${esc(mod)}</td>
               <td>${esc(l.serial || it.serial || '—')}</td>
               <td>${esc(l.cat || it.cat || '—')}</td>
               <td>${esc(l.cond || 'ÓPTIMO')}</td>
             </tr>`;
           }).join('')}
-        </tbody>
-        <tfoot>
-          <tr style="font-weight:800;background:#F8FAFC">
+          <tr class="fila-total-piezas" style="font-weight:800;background:#F8FAFC">
             <td colspan="2" style="text-align:right">Total de piezas:</td>
             <td class="c"><b>${totPiezasNormal}</b></td>
             <td colspan="5"></td>
           </tr>
-        </tfoot>
+        </tbody>
       </table>`;
 
   $('hojaImpresion').innerHTML = `
@@ -7965,7 +7976,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V11';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V12';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
