@@ -2154,9 +2154,40 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       : activeSubCarga === 'hm' 
       ? archivosCargas.hm 
       : archivosCargas.indirectos;
-    if (!searchCargas.trim()) return list;
+
+    const monthMap: Record<string, number> = {
+      'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4,
+      'mayo': 5, 'junio': 6, 'julio': 7, 'agosto': 8,
+      'septiembre': 9, 'setiembre': 9, 'octubre': 10,
+      'noviembre': 11, 'diciembre': 12
+    };
+
+    const getChronologicalKey = (item: any) => {
+      const name = (item?.nombre || '').toLowerCase();
+      const yearMatch = name.match(/\b(202\d)\b/);
+      const year = yearMatch ? parseInt(yearMatch[1], 10) : 2026;
+      let month = 0;
+      for (const [mName, mNum] of Object.entries(monthMap)) {
+        if (name.includes(mName)) {
+          month = mNum;
+          break;
+        }
+      }
+      const semMatch = name.match(/sem\s*(\d+)/);
+      const sem = semMatch ? parseInt(semMatch[1], 10) : 0;
+      return year * 1000000 + month * 10000 + sem * 100;
+    };
+
+    const sorted = [...list].sort((a: any, b: any) => {
+      const keyA = getChronologicalKey(a);
+      const keyB = getChronologicalKey(b);
+      if (keyA !== keyB) return keyA - keyB;
+      return (a.nombre || '').localeCompare(b.nombre || '', 'es', { numeric: true });
+    });
+
+    if (!searchCargas.trim()) return sorted;
     const q = searchCargas.toLowerCase().trim();
-    return list.filter((f: any) => 
+    return sorted.filter((f: any) => 
       (f.nombre && f.nombre.toLowerCase().includes(q)) ||
       (f.carpeta && f.carpeta.toLowerCase().includes(q)) ||
       (f.estado && f.estado.toLowerCase().includes(q))
@@ -5675,6 +5706,70 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               </div>
             )}
 
+            {/* Banner de Control y Cobertura Cronológica para Horas Máquina */}
+            {activeSubCarga === 'hm' && (
+              <div className="bg-purple-50/80 border border-purple-200 rounded-xl p-4 text-xs text-purple-950 space-y-3 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="font-bold uppercase tracking-wider text-purple-900 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-purple-600" />
+                    <span>Control Cronológico de Planillas Horas Máquina (2026)</span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-purple-700 bg-purple-100/90 px-2.5 py-0.5 rounded-full border border-purple-200">
+                    Ordenado cronológicamente por mes
+                  </span>
+                </div>
+
+                {/* Semáforo de meses 2026 */}
+                <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                  {[
+                    { mes: 'Ene', label: 'Enero', cargado: true },
+                    { mes: 'Feb', label: 'Febrero', cargado: true },
+                    { mes: 'Mar', label: 'Marzo', cargado: true },
+                    { mes: 'Abr', label: 'Abril', cargado: true },
+                    { mes: 'May', label: 'Mayo', cargado: true },
+                    { mes: 'Jun', label: 'Junio', cargado: true },
+                    { mes: 'Jul', label: 'Julio', cargado: true },
+                    { mes: 'Ago', label: 'Agosto', cargado: true },
+                    { mes: 'Sep', label: 'Septiembre', cargado: false, faltante: true, archivo: '2026 Septiembre Pellas.xlsx' },
+                    { mes: 'Oct', label: 'Octubre', cargado: false, faltante: false }
+                  ].map((m) => (
+                    <div 
+                      key={m.mes} 
+                      className={`p-2 rounded-lg text-center border transition-all ${
+                        m.cargado 
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+                          : m.faltante 
+                          ? 'bg-amber-100/90 border-amber-300 text-amber-900 font-bold ring-2 ring-amber-400/50' 
+                          : 'bg-slate-100 border-slate-200 text-slate-500'
+                      }`}
+                    >
+                      <div className="font-black text-xs">{m.mes}</div>
+                      <div className="text-[10px] mt-0.5 font-medium">
+                        {m.cargado ? '✓ Cargado' : m.faltante ? '⚠️ Faltante' : 'En curso'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-purple-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-purple-900">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="font-bold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded border border-amber-300">
+                      Archivo Faltante:
+                    </span>
+                    <span>
+                      Falta cargar <strong className="font-mono bg-purple-100 px-1.5 py-0.5 rounded border border-purple-300 text-purple-950">2026 Septiembre Pellas.xlsx</strong>
+                    </span>
+                    <span className="text-purple-600 text-[10px]">
+                      (Disponible en tu carpeta local <span className="font-mono font-medium">3 Inputs/4 Horas Maquina/HM/</span>)
+                    </span>
+                  </div>
+                  <div className="text-right text-[10px] text-purple-600">
+                    Histórico 2025: <span className="font-mono font-bold text-purple-800">2025 Diciembre Pellas.xlsx</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Sección de Carga y Tabla de Archivos Subidos */}
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
               <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
@@ -5717,7 +5812,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   <thead className="bg-slate-100 text-slate-700 uppercase font-semibold border-b border-slate-200 text-[10px] tracking-wider sticky top-0 z-10">
                     <tr>
                       <th className="py-2.5 px-3 border-r border-slate-200">#</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Nombre del Archivo</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200">
+                        <div className="flex items-center gap-1.5">
+                          <span>Nombre del Archivo</span>
+                          <span className="text-[9px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded border border-blue-200">
+                            Orden Cronológico
+                          </span>
+                        </div>
+                      </th>
                       <th className="py-2.5 px-3 border-r border-slate-200">Categoría</th>
                       <th className="py-2.5 px-3 border-r border-slate-200">Ubicación / Carpeta</th>
                       <th className="py-2.5 px-3 border-r border-slate-200 text-right">Tamaño</th>

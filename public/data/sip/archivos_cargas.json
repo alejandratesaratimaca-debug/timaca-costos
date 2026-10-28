@@ -755,22 +755,6 @@
       "estado": "Procesado / Activo"
     },
     {
-      "nombre": "2026 Abril Pellas.xlsx",
-      "categoria": "Horas Máquina",
-      "carpeta": "3 Inputs/4 Horas Maquina/HM",
-      "tamanoKB": 155,
-      "fechaMod": "2026-07-16",
-      "estado": "Procesado / Activo"
-    },
-    {
-      "nombre": "2026 Agosto Pellas.xlsx",
-      "categoria": "Horas Máquina",
-      "carpeta": "3 Inputs/4 Horas Maquina/HM",
-      "tamanoKB": 233,
-      "fechaMod": "2026-09-07",
-      "estado": "Procesado / Activo"
-    },
-    {
       "nombre": "2026 Enero Pellas.xlsx",
       "categoria": "Horas Máquina",
       "carpeta": "3 Inputs/4 Horas Maquina/HM",
@@ -787,11 +771,27 @@
       "estado": "Procesado / Activo"
     },
     {
-      "nombre": "2026 Julio Pellas.xlsx",
+      "nombre": "2026 Marzo Pellas.xlsx",
       "categoria": "Horas Máquina",
       "carpeta": "3 Inputs/4 Horas Maquina/HM",
-      "tamanoKB": 167,
-      "fechaMod": "2026-08-03",
+      "tamanoKB": 179,
+      "fechaMod": "2026-04-08",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Abril Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 155,
+      "fechaMod": "2026-07-16",
+      "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Mayo Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 176,
+      "fechaMod": "2026-09-07",
       "estado": "Procesado / Activo"
     },
     {
@@ -811,18 +811,18 @@
       "estado": "Procesado / Activo"
     },
     {
-      "nombre": "2026 Marzo Pellas.xlsx",
+      "nombre": "2026 Julio Pellas.xlsx",
       "categoria": "Horas Máquina",
       "carpeta": "3 Inputs/4 Horas Maquina/HM",
-      "tamanoKB": 179,
-      "fechaMod": "2026-04-08",
+      "tamanoKB": 167,
+      "fechaMod": "2026-08-03",
       "estado": "Procesado / Activo"
     },
     {
-      "nombre": "2026 Mayo Pellas.xlsx",
+      "nombre": "2026 Agosto Pellas.xlsx",
       "categoria": "Horas Máquina",
       "carpeta": "3 Inputs/4 Horas Maquina/HM",
-      "tamanoKB": 176,
+      "tamanoKB": 233,
       "fechaMod": "2026-09-07",
       "estado": "Procesado / Activo"
     }
