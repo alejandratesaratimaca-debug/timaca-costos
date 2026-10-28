@@ -633,36 +633,65 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                   </div>
                 </div>
 
-                {/* Gráfica de barras mensual interactiva */}
+                {/* Gráfica de barras mensual interactiva con montos en vivo y feedback visual */}
                 {evolutivoData && (
                   <div className="pt-2">
-                    <div className="h-44 flex items-end gap-2 border-b border-neutral-200 pb-2 px-1">
+                    <div className="h-48 flex items-end gap-2 border-b border-neutral-200 pb-2 px-1">
                       {evolutivoData.meses.map((m) => {
                         const maxVal = Math.max(...evolutivoData.meses.map(x => x.total), 1);
                         const pctHeight = Math.max(6, Math.round((m.total / maxVal) * 100));
                         const isCurrentMonth = m.mesNum === selectedMesNum;
+                        const isAnual = selectedMesNum === 0;
 
                         return (
                           <div 
                             key={m.mesNum} 
                             onClick={() => setSelectedMesNum(m.mesNum)}
-                            className="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer"
-                            title={`${m.mesLabel}: $${Math.round(m.total).toLocaleString('de-DE')} USD (${m.movimientosCount} movimientos)`}
+                            className="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer transition-all"
+                            title={`Clic para ver ${m.mesLabel}: $${Math.round(m.total).toLocaleString('de-DE')} USD (${m.movimientosCount} movimientos)`}
                           >
-                            <span className="text-[9px] font-mono text-neutral-500 opacity-0 group-hover:opacity-100 transition-opacity mb-1 whitespace-nowrap">
-                              ${Math.round(m.total / 1000)}k
+                            {/* Monto siempre visible encima de la barra */}
+                            <span className={`text-[10px] font-mono mb-1.5 transition-all text-center leading-tight ${
+                              isCurrentMonth 
+                                ? 'text-blue-700 font-extrabold scale-105' 
+                                : m.total > 0 
+                                ? 'text-neutral-700 font-bold group-hover:text-blue-600' 
+                                : 'text-neutral-300 font-normal'
+                            }`}>
+                              {m.total >= 1000000
+                                ? `$${(m.total / 1000000).toFixed(2)}M`
+                                : m.total >= 1000
+                                ? `$${Math.round(m.total / 1000)}k`
+                                : m.total > 0
+                                ? `$${Math.round(m.total)}`
+                                : '$0'}
                             </span>
+
+                            {/* Barra con altura proporcional y estilo activo */}
                             <div 
-                              className={`w-full rounded-t-lg transition-all ${
+                              className={`w-full rounded-t-lg transition-all duration-300 shadow-2xs ${
                                 isCurrentMonth
-                                  ? 'bg-blue-600 ring-2 ring-blue-400'
-                                  : 'bg-slate-300 hover:bg-blue-400'
+                                  ? 'bg-blue-600 ring-2 ring-blue-400 shadow-sm'
+                                  : isAnual
+                                  ? 'bg-blue-500/80 hover:bg-blue-600'
+                                  : m.total > 0
+                                  ? 'bg-slate-400/80 hover:bg-blue-500'
+                                  : 'bg-slate-200 hover:bg-slate-300'
                               }`}
                               style={{ height: `${pctHeight}%` }}
                             />
-                            <span className={`text-[10px] font-bold mt-1.5 ${isCurrentMonth ? 'text-blue-700 font-black' : 'text-neutral-500'}`}>
-                              {m.mesNombre}
-                            </span>
+
+                            {/* Etiqueta del Mes y contador de movimientos */}
+                            <div className="flex flex-col items-center mt-1.5">
+                              <span className={`text-[10px] font-bold ${
+                                isCurrentMonth ? 'text-blue-700 font-black' : 'text-neutral-700'
+                              }`}>
+                                {m.mesNombre}
+                              </span>
+                              <span className="text-[9px] font-mono text-neutral-400 hidden sm:block">
+                                {m.movimientosCount > 0 ? `${m.movimientosCount}m` : '-'}
+                              </span>
+                            </div>
                           </div>
                         );
                       })}
