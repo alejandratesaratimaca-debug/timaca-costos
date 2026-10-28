@@ -6363,7 +6363,7 @@ VISTAS.cVales = p => {
     if (desde && fStr < desde) return false;
     if (hasta && fStr > hasta) return false;
     return true;
-  }).sort((a, b) => b.fecha.localeCompare(a.fecha) || (b.num || '').localeCompare(a.num || ''));
+  }).sort((a, b) => a.fecha.localeCompare(b.fecha) || (a.num || '').localeCompare(b.num || ''));
 
   const cols = [
     { t: 'N° de Vale', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
@@ -6477,7 +6477,7 @@ VISTAS.cValesDet = p => {
     });
   });
 
-  rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha) || (b.v.num || '').localeCompare(a.v.num || ''));
+  rows.sort((a, b) => a.v.fecha.localeCompare(b.v.fecha) || (a.v.num || '').localeCompare(b.v.num || ''));
 
   const cols = [
     { t: 'N° de Vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
@@ -7905,7 +7905,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V5';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V6';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
