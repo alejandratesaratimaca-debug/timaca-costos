@@ -3,6 +3,8 @@ import { formatCurrency, formatNumber } from '../utils/dateHelpers';
 import { 
   getSipPeriodoData, 
   getSipEvolutivoMensual, 
+  getAuditCincoRubrosPeriodoData,
+  getAuditCincoRubrosEvolutivo,
   getMacroCategoriaSip, 
   invalidateSipCache,
   SipCuentaSummary, 
@@ -80,12 +82,19 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   const [errorSip, setErrorSip] = useState<string | null>(null);
   const [refreshSuccess, setRefreshSuccess] = useState<boolean>(false);
 
-  // Cargar datos SIP del período seleccionado con captura de errores
+  // Modo de visualización: 5 Rubros Auditados ($12.05M) vs Compras y Consumos SIP ($4.95M)
+  const [dataMode, setDataMode] = useState<'cinco_rubros' | 'sip_compras'>('cinco_rubros');
+
+  // Cargar datos del período seleccionado con captura de errores
   useEffect(() => {
     let isMounted = true;
     setIsLoadingSip(true);
     setErrorSip(null);
-    getSipPeriodoData(selectedMesNum)
+    const fetcher = dataMode === 'cinco_rubros'
+      ? getAuditCincoRubrosPeriodoData(selectedMesNum)
+      : getSipPeriodoData(selectedMesNum);
+
+    fetcher
       .then(data => {
         if (isMounted) {
           setSipData(data);
@@ -94,12 +103,12 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
       })
       .catch(err => {
         if (isMounted) {
-          setErrorSip(err?.message || 'Error al conectar con la base de datos SIP');
+          setErrorSip(err?.message || 'Error al conectar con la base de datos');
           setIsLoadingSip(false);
         }
       });
     return () => { isMounted = false; };
-  }, [selectedMesNum]);
+  }, [selectedMesNum, dataMode]);
 
   // Sincronizar cuenta inicial si cambia por navegación externa
   useEffect(() => {
@@ -112,7 +121,11 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   useEffect(() => {
     let isMounted = true;
     setIsLoadingEvolutivo(true);
-    getSipEvolutivoMensual(selectedCuentaCodigo)
+    const fetcher = dataMode === 'cinco_rubros'
+      ? getAuditCincoRubrosEvolutivo(selectedCuentaCodigo)
+      : getSipEvolutivoMensual(selectedCuentaCodigo);
+
+    fetcher
       .then(data => {
         if (isMounted) {
           setEvolutivoData(data);
@@ -123,7 +136,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
         if (isMounted) setIsLoadingEvolutivo(false);
       });
     return () => { isMounted = false; };
-  }, [selectedCuentaCodigo]);
+  }, [selectedCuentaCodigo, dataMode]);
 
   // Revalidación bajo demanda sin caché (Cache Busting Directo)
   const handleForceRefresh = async () => {
@@ -131,14 +144,18 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
     setErrorSip(null);
     invalidateSipCache();
     try {
-      const data = await getSipPeriodoData(selectedMesNum, true);
+      const data = dataMode === 'cinco_rubros'
+        ? await getAuditCincoRubrosPeriodoData(selectedMesNum, true)
+        : await getSipPeriodoData(selectedMesNum, true);
       setSipData(data);
-      const evol = await getSipEvolutivoMensual(selectedCuentaCodigo, true);
+      const evol = dataMode === 'cinco_rubros'
+        ? await getAuditCincoRubrosEvolutivo(selectedCuentaCodigo)
+        : await getSipEvolutivoMensual(selectedCuentaCodigo, true);
       setEvolutivoData(evol);
       setRefreshSuccess(true);
       setTimeout(() => setRefreshSuccess(false), 3000);
     } catch (err: any) {
-      setErrorSip(err?.message || 'Error al revalidar datos SIP');
+      setErrorSip(err?.message || 'Error al revalidar datos');
     } finally {
       setIsRefreshing(false);
     }
@@ -297,18 +314,53 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                 <h2 className="text-base sm:text-lg font-bold text-neutral-900 tracking-tight">
                   Cuentas Auxiliares & Proyectos Externos TIMACA
                 </h2>
-                <span className="text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
-                  SIP EN VIVO
+                <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+                  dataMode === 'cinco_rubros'
+                    ? 'bg-blue-50 text-blue-700 border-blue-200 shadow-2xs'
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-2xs'
+                }`}>
+                  {dataMode === 'cinco_rubros' ? '5 RUBROS AUDITADOS ($12.05M)' : 'SIP EN VIVO · COMPRAS ($4.95M)'}
                 </span>
               </div>
               <p className="text-xs text-neutral-500 mt-0.5">
-                Alimentado 100% desde la base de datos SIP · Cuentas maestras, categorías auditadas y detalle por movimiento
+                {dataMode === 'cinco_rubros'
+                  ? 'Consolidado Financiero Oficial (Materiales, Servicios, Mano de Obra, Horas Máquina y CIF) · Cifras reales sin distorsión de Febrero'
+                  : 'Alimentado 100% desde la base de datos SIP · Compras de inventario, consumos de materiales y órdenes de despacho directas'
+                }
               </p>
             </div>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          {/* Segmented Control de Modo: 5 Rubros vs Compras SIP */}
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-2xs">
+            <button
+              onClick={() => setDataMode('cinco_rubros')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                dataMode === 'cinco_rubros'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+              }`}
+              title="Costo Total Consolidado Auditado con los 5 Rubros (Materiales, Servicios, Mano de Obra, Horas Máquina y CIF)"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>5 Rubros Auditados ($12.05M)</span>
+            </button>
+            <button
+              onClick={() => setDataMode('sip_compras')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                dataMode === 'sip_compras'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+              }`}
+              title="Compras y Despachos de Almacén Directos de la Base SIP"
+            >
+              <Boxes className="w-3.5 h-3.5" />
+              <span>Compras & Consumos SIP ($4.95M)</span>
+            </button>
+          </div>
+
           {/* Selector de Cuenta Directo */}
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-neutral-600">Cuenta:</span>
@@ -328,7 +380,7 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
             </select>
           </div>
 
-          {/* Selector de Período (Todos los meses disponibles en SIP) */}
+          {/* Selector de Período (Todos los meses disponibles) */}
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-neutral-600">Período:</span>
             <select
@@ -336,10 +388,12 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
               onChange={(e) => setSelectedMesNum(Number(e.target.value))}
               className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500"
             >
+              <option value={0}>
+                {dataMode === 'cinco_rubros' ? 'Todo el Año 2026 (Consolidado 5 Rubros: $12.05M)' : 'Todo el Año 2026 (Consolidado Ene - Oct SIP)'}
+              </option>
               <option value={10}>Octubre 2026 (En Curso · SIP en Vivo)</option>
-              <option value={9}>Septiembre 2026 (Cierre Operativo SIP)</option>
-              <option value={8}>Agosto 2026 (Base Oficial SIP)</option>
-              <option value={0}>Todo el Año 2026 (Consolidado Ene - Oct SIP)</option>
+              <option value={9}>Septiembre 2026 (Cierre Operativo)</option>
+              <option value={8}>Agosto 2026</option>
               <option value={7}>Julio 2026</option>
               <option value={6}>Junio 2026</option>
               <option value={5}>Mayo 2026</option>

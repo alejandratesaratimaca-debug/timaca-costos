@@ -4,6 +4,8 @@
  * Elimina toda dependencia de constantes estáticas y archivos Excel desconectados.
  */
 
+import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual2026';
+
 export interface SipItem {
   id: number | string;
   tipo: string;
@@ -503,3 +505,321 @@ export async function getSipEvolutivoMensual(cuentaCodigo?: string, forceRefresh
     mayorCategoria: { categoria: topCatEntry[0], total: topCatEntry[1] }
   };
 }
+
+/**
+ * Procesa y calcula los datos del período oficial auditado con los 5 Rubros Completos
+ * (Materiales Directos, Servicios, Mano de Obra, Horas Máquina y Costos Indirectos)
+ */
+export async function getAuditCincoRubrosPeriodoData(mesNum: number, forceRefresh = false): Promise<SipPeriodoData> {
+  const { map: proyectosMap } = await fetchSipProyectos(forceRefresh);
+
+  const MESES_LABELS: Record<number, { nombre: string; label: string }> = {
+    0: { nombre: 'Anual', label: 'Todo el Año 2026 (Consolidado 5 Rubros)' },
+    1: { nombre: 'Enero', label: 'Enero 2026' },
+    2: { nombre: 'Febrero', label: 'Febrero 2026' },
+    3: { nombre: 'Marzo', label: 'Marzo 2026' },
+    4: { nombre: 'Abril', label: 'Abril 2026' },
+    5: { nombre: 'Mayo', label: 'Mayo 2026' },
+    6: { nombre: 'Junio', label: 'Junio 2026' },
+    7: { nombre: 'Julio', label: 'Julio 2026' },
+    8: { nombre: 'Agosto', label: 'Agosto 2026' },
+    9: { nombre: 'Septiembre', label: 'Septiembre 2026' },
+    10: { nombre: 'Octubre', label: 'Octubre 2026' }
+  };
+
+  const infoPeriodo = MESES_LABELS[mesNum] || { nombre: `Mes ${mesNum}`, label: `Mes ${mesNum} 2026` };
+
+  // Si se selecciona Octubre (mes en curso), delegar a la data SIP directa
+  if (mesNum === 10) {
+    return getSipPeriodoData(10, forceRefresh);
+  }
+
+  const allItems: SipItem[] = [];
+  const ctaMap = new Map<string, SipCuentaSummary>();
+  let granTotalPeriodo = 0;
+
+  Object.entries(MATRIZ_REAL_PROYECTOS_MENSUAL_2026).forEach(([code, pData]) => {
+    let totalCuenta = 0;
+    const catMap: Record<string, number> = {
+      'Materiales Directos': 0,
+      'Servicios': 0,
+      'Mano de Obra Directa': 0,
+      'Horas Maquina': 0,
+      'Costos Indirectos': 0
+    };
+    const projectItems: SipItem[] = [];
+
+    if (mesNum >= 1 && mesNum <= 9) {
+      const idx = mesNum - 1;
+      totalCuenta = pData.meses[idx] || 0;
+      const cats = pData.byCategoriaMes?.[idx] || {};
+      Object.entries(cats).forEach(([cat, val]) => {
+        catMap[cat] = (catMap[cat] || 0) + val;
+        if (val > 0) {
+          const item: SipItem = {
+            id: `AUDIT-M${mesNum}-${code}-${cat.replace(/\s+/g, '_')}`,
+            tipo: cat,
+            categoria: cat,
+            cuenta_aux: code,
+            codigo: `RUBRO-${cat.slice(0, 3).toUpperCase()}`,
+            descripcion: `${cat} - Desembolso Auditado ${infoPeriodo.label}`,
+            total_usd: Math.round(val * 100) / 100,
+            precio_final: Math.round(val * 100) / 100,
+            cantidad: 1,
+            unidad: 'GLOBAL',
+            almacen: 'AUDITORÍA CENTRAL',
+            motivo: `Cierre Oficial 5 Rubros (${infoPeriodo.label})`,
+            solicitante: 'Gerencia de Costos TIMACA',
+            nombre_mes: infoPeriodo.nombre.toLowerCase(),
+            datos_descripcion: pData.descripcion,
+            datos_tipo_costo: 'Externo'
+          };
+          projectItems.push(item);
+          allItems.push(item);
+        }
+      });
+    } else if (mesNum === 0) {
+      // Todo el Año: Suma de los 9 meses auditados
+      totalCuenta = pData.meses.reduce((a, b) => a + b, 0);
+      (pData.byCategoriaMes || []).forEach((cats, idx) => {
+        const mLabel = MESES_LABELS[idx + 1]?.label || `Mes ${idx + 1}`;
+        Object.entries(cats).forEach(([cat, val]) => {
+          catMap[cat] = (catMap[cat] || 0) + val;
+          if (val > 0) {
+            const item: SipItem = {
+              id: `AUDIT-M${idx + 1}-${code}-${cat.replace(/\s+/g, '_')}`,
+              tipo: cat,
+              categoria: cat,
+              cuenta_aux: code,
+              codigo: `RUBRO-${cat.slice(0, 3).toUpperCase()}`,
+              descripcion: `${cat} - ${mLabel}`,
+              total_usd: Math.round(val * 100) / 100,
+              precio_final: Math.round(val * 100) / 100,
+              cantidad: 1,
+              unidad: 'GLOBAL',
+              almacen: 'AUDITORÍA CENTRAL',
+              motivo: `Cierre Anual 5 Rubros (${mLabel})`,
+              solicitante: 'Gerencia de Costos TIMACA',
+              nombre_mes: MESES_LABELS[idx + 1]?.nombre.toLowerCase(),
+              datos_descripcion: pData.descripcion,
+              datos_tipo_costo: 'Externo'
+            };
+            projectItems.push(item);
+            allItems.push(item);
+          }
+        });
+      });
+    }
+
+    if (totalCuenta > 0) {
+      granTotalPeriodo += totalCuenta;
+      const pInfo = proyectosMap.get(code);
+      const desc = pInfo?.nombre || pData.descripcion || code;
+      const corto = CUENTAS_CORTAS_OFICIALES[code] || desc;
+      const cliente = pInfo?.cliente || 'Cliente TIMACA';
+
+      ctaMap.set(code, {
+        codigo: code,
+        nombre: desc,
+        proyectoCorto: corto,
+        cliente: cliente,
+        totalMonto: totalCuenta,
+        salidasCount: projectItems.length,
+        porcentaje: 0,
+        porCategoria: catMap,
+        items: projectItems
+      });
+    }
+  });
+
+  const safeTotal = granTotalPeriodo > 0 ? granTotalPeriodo : 1;
+
+  const cuentasList: SipCuentaSummary[] = Array.from(ctaMap.values())
+    .map(c => ({
+      ...c,
+      porcentaje: Math.round((c.totalMonto / safeTotal) * 1000) / 10
+    }))
+    .sort((a, b) => b.totalMonto - a.totalMonto);
+
+  const consolidadoCategorias: Record<string, number> = {
+    'Materiales Directos': 0,
+    'Servicios': 0,
+    'Mano de Obra Directa': 0,
+    'Horas Maquina': 0,
+    'Costos Indirectos': 0
+  };
+
+  cuentasList.forEach(c => {
+    Object.entries(c.porCategoria).forEach(([cat, monto]) => {
+      consolidadoCategorias[cat] = (consolidadoCategorias[cat] || 0) + monto;
+    });
+  });
+
+  const consolidado: SipCuentaSummary = {
+    codigo: 'CONSOLIDADO-TIMACA',
+    nombre: 'Consolidado General TIMACA (Todos los Proyectos Corporativos - 5 Rubros)',
+    proyectoCorto: '★ Consolidado General TIMACA (5 Rubros)',
+    cliente: 'Todos los Clientes',
+    totalMonto: granTotalPeriodo,
+    salidasCount: allItems.length,
+    porcentaje: 100.0,
+    porCategoria: consolidadoCategorias,
+    items: allItems,
+    esConsolidado: true
+  };
+
+  return {
+    mesNum,
+    mesNombre: infoPeriodo.nombre,
+    mesLabel: infoPeriodo.label,
+    totalMonto: granTotalPeriodo,
+    totalMovimientos: allItems.length,
+    cuentas: cuentasList,
+    consolidado,
+    items: allItems
+  };
+}
+
+/**
+ * Evolución mensual histórica basada en los 5 Rubros Auditados (Enero a Octubre 2026)
+ */
+export async function getAuditCincoRubrosEvolutivo(cuentaCodigo?: string): Promise<{
+  meses: MesEvolutivoData[];
+  totalAnual: number;
+  promedioMensual: number;
+  mesPico: MesEvolutivoData;
+  mayorCategoria: { categoria: string; total: number };
+}> {
+  const isConsolidado = !cuentaCodigo || cuentaCodigo === 'CONSOLIDADO-TIMACA';
+  const cClean = (cuentaCodigo || '').trim().toUpperCase();
+
+  const MESES_DEFS = [
+    { num: 1, nombre: 'Ene', label: 'Enero 2026' },
+    { num: 2, nombre: 'Feb', label: 'Febrero 2026' },
+    { num: 3, nombre: 'Mar', label: 'Marzo 2026' },
+    { num: 4, nombre: 'Abr', label: 'Abril 2026' },
+    { num: 5, nombre: 'May', label: 'Mayo 2026' },
+    { num: 6, nombre: 'Jun', label: 'Junio 2026' },
+    { num: 7, nombre: 'Jul', label: 'Julio 2026' },
+    { num: 8, nombre: 'Ago', label: 'Agosto 2026' },
+    { num: 9, nombre: 'Sep', label: 'Septiembre 2026' },
+    { num: 10, nombre: 'Oct', label: 'Octubre 2026' }
+  ];
+
+  const mesesResults: MesEvolutivoData[] = [];
+  const categoriasTotales: Record<string, number> = {
+    'Materiales Directos': 0,
+    'Servicios': 0,
+    'Mano de Obra Directa': 0,
+    'Horas Maquina': 0,
+    'Costos Indirectos': 0
+  };
+
+  let sumaTotalAnual = 0;
+
+  for (let i = 0; i < 9; i++) {
+    const m = MESES_DEFS[i];
+    const catMes: Record<string, number> = {
+      'Materiales Directos': 0,
+      'Servicios': 0,
+      'Mano de Obra Directa': 0,
+      'Horas Maquina': 0,
+      'Costos Indirectos': 0
+    };
+    let totalMes = 0;
+    let movCount = 0;
+
+    if (isConsolidado) {
+      Object.values(MATRIZ_REAL_PROYECTOS_MENSUAL_2026).forEach(p => {
+        const val = p.meses[i] || 0;
+        totalMes += val;
+        const cats = p.byCategoriaMes?.[i] || {};
+        Object.entries(cats).forEach(([cat, cVal]) => {
+          catMes[cat] = (catMes[cat] || 0) + cVal;
+          categoriasTotales[cat] = (categoriasTotales[cat] || 0) + cVal;
+          if (cVal > 0) movCount++;
+        });
+      });
+    } else {
+      const p = MATRIZ_REAL_PROYECTOS_MENSUAL_2026[cClean];
+      if (p) {
+        totalMes = p.meses[i] || 0;
+        const cats = p.byCategoriaMes?.[i] || {};
+        Object.entries(cats).forEach(([cat, cVal]) => {
+          catMes[cat] = (catMes[cat] || 0) + cVal;
+          categoriasTotales[cat] = (categoriasTotales[cat] || 0) + cVal;
+          if (cVal > 0) movCount++;
+        });
+      }
+    }
+
+    sumaTotalAnual += totalMes;
+    mesesResults.push({
+      mesNum: m.num,
+      mesNombre: m.nombre,
+      mesLabel: m.label,
+      total: totalMes,
+      porCategoria: catMes,
+      movimientosCount: movCount || (totalMes > 0 ? 1 : 0)
+    });
+  }
+
+  // Mes 10 (Octubre): Integrar con SIP
+  try {
+    const octItems = await fetchSipMesItems(10);
+    const octFiltrados = octItems.filter(r => {
+      const c = (r.cuenta_aux || '').trim().toUpperCase();
+      if (isConsolidado) {
+        return c.startsWith('TTE-') || (r.datos_tipo_costo || '').toLowerCase().includes('externo');
+      }
+      return c === cClean;
+    });
+    const octCatMes: Record<string, number> = {
+      'Materiales Directos': 0,
+      'Servicios': 0,
+      'Mano de Obra Directa': 0,
+      'Horas Maquina': 0,
+      'Costos Indirectos': 0
+    };
+    let octTotal = 0;
+    octFiltrados.forEach(r => {
+      const val = Number(r.total_usd) || 0;
+      octTotal += val;
+      const cat = getMacroCategoriaSip(r);
+      octCatMes[cat] = (octCatMes[cat] || 0) + val;
+      categoriasTotales[cat] = (categoriasTotales[cat] || 0) + val;
+    });
+    sumaTotalAnual += octTotal;
+    mesesResults.push({
+      mesNum: 10,
+      mesNombre: 'Oct',
+      mesLabel: 'Octubre 2026',
+      total: octTotal,
+      porCategoria: octCatMes,
+      movimientosCount: octFiltrados.length
+    });
+  } catch (e) {
+    mesesResults.push({
+      mesNum: 10,
+      mesNombre: 'Oct',
+      mesLabel: 'Octubre 2026',
+      total: 0,
+      porCategoria: { 'Materiales Directos': 0, 'Servicios': 0, 'Mano de Obra Directa': 0, 'Horas Maquina': 0, 'Costos Indirectos': 0 },
+      movimientosCount: 0
+    });
+  }
+
+  const sortedPico = [...mesesResults].sort((a, b) => b.total - a.total);
+  const mesPico = sortedPico[0] || mesesResults[0];
+  const promedioMensual = Math.round((sumaTotalAnual / MESES_DEFS.length) * 100) / 100;
+  const topCatEntry = Object.entries(categoriasTotales).sort((a, b) => b[1] - a[1])[0] || ['Materiales Directos', 0];
+
+  return {
+    meses: mesesResults,
+    totalAnual: sumaTotalAnual,
+    promedioMensual,
+    mesPico,
+    mayorCategoria: { categoria: topCatEntry[0], total: topCatEntry[1] }
+  };
+}
+
