@@ -315,14 +315,14 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               {vistaActiva === 'categorias'
                 ? `Distribución consolidada en USD · 9 meses auditados (Enero - Septiembre 2026) · Total Acumulado: $${Math.round(totalAnualGlobal).toLocaleString('de-DE')} USD`
                 : periodo === 'anual'
-                ? `Distribución consolidada en USD · 9 meses auditados (Enero - Septiembre 2026) · Total Acumulado: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
-                : periodo === 'septiembre'
-                ? `Cierre operativo de Septiembre 2026 (5 Rubros Oficiales) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                ? `Matriz oficial auditada Enero - Septiembre 2026 (5 Rubros Completos) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
                 : periodo === 'agosto'
                 ? `Base oficial auditada de Agosto 2026 (5 Rubros Oficiales) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
-                : periodo === 'sip_anual'
-                ? `Compras y consumos directos de inventario SIP (Todo el Año) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
-                : `Octubre 2026 en curso (SIP en Vivo) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                : periodo === 'septiembre'
+                ? `Cierre operativo de Septiembre 2026 (5 Rubros Oficiales) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                : periodo === 'octubre'
+                ? `Octubre 2026 preliminar en curso (Compras y Despachos SIP) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                : `Solo compras y consumos directos de inventario SIP (Todo el Año) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
               }
             </p>
           </div>
@@ -355,58 +355,67 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
             </button>
           </div>
 
-          {/* Switcher de período si está en la vista de proyectos */}
+          {/* Switcher de período ordenado cronológicamente y clasificado con claridad */}
           {vistaActiva === 'proyectos' && (
-            <div className="flex items-center p-1 bg-blue-50 rounded-xl border border-blue-200 text-xs font-bold">
+            <div className="flex flex-wrap items-center p-1 bg-blue-50/80 rounded-xl border border-blue-200 text-xs font-bold gap-1 shadow-2xs">
+              <span className="text-[10px] uppercase tracking-wider text-blue-900/60 font-black px-2 hidden sm:inline">
+                Período:
+              </span>
               <button
                 onClick={() => setPeriodo('anual')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   periodo === 'anual'
                     ? 'bg-blue-700 text-white shadow-2xs'
-                    : 'text-blue-900 hover:text-blue-950'
+                    : 'text-blue-900 hover:text-blue-950 hover:bg-blue-100/60'
                 }`}
+                title="Consolidado acumulado 9 meses oficiales (Enero a Septiembre 2026)"
               >
                 Acumulado 9M ($12.05M)
-              </button>
-              <button
-                onClick={() => setPeriodo('septiembre')}
-                className={`px-2.5 py-1 rounded-lg transition-all ${
-                  periodo === 'septiembre'
-                    ? 'bg-blue-700 text-white shadow-2xs'
-                    : 'text-blue-900 hover:text-blue-950'
-                }`}
-              >
-                Septiembre ($1.61M)
               </button>
               <button
                 onClick={() => setPeriodo('agosto')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   periodo === 'agosto'
                     ? 'bg-blue-700 text-white shadow-2xs'
-                    : 'text-blue-900 hover:text-blue-950'
+                    : 'text-blue-900 hover:text-blue-950 hover:bg-blue-100/60'
                 }`}
+                title="Cierre oficial auditado de Agosto 2026 (5 Rubros Completos)"
               >
                 Agosto ($1.20M)
+              </button>
+              <button
+                onClick={() => setPeriodo('septiembre')}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  periodo === 'septiembre'
+                    ? 'bg-blue-700 text-white shadow-2xs'
+                    : 'text-blue-900 hover:text-blue-950 hover:bg-blue-100/60'
+                }`}
+                title="Cierre oficial auditado de Septiembre 2026 (5 Rubros Completos)"
+              >
+                Septiembre ($1.61M)
               </button>
               <button
                 onClick={() => setPeriodo('octubre')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   periodo === 'octubre'
                     ? 'bg-blue-700 text-white shadow-2xs'
-                    : 'text-blue-900 hover:text-blue-950'
+                    : 'text-blue-900 hover:text-blue-950 hover:bg-blue-100/60'
                 }`}
+                title="Cierre preliminar en curso de Octubre 2026 (Base SIP)"
               >
-                Octubre ($671K SIP)
+                Octubre Preliminar ($671K)
               </button>
+              <div className="h-4 w-px bg-blue-200 mx-0.5 hidden sm:block" />
               <button
                 onClick={() => setPeriodo('sip_anual')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   periodo === 'sip_anual'
                     ? 'bg-blue-700 text-white shadow-2xs'
-                    : 'text-blue-900 hover:text-blue-950'
+                    : 'text-blue-800 hover:text-blue-950 hover:bg-blue-100/60'
                 }`}
+                title="Solo compras y consumos directos de almacén registrados en SIP"
               >
-                Compras SIP ($4.95M)
+                Solo Compras SIP ($4.95M)
               </button>
             </div>
           )}

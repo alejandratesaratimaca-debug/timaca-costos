@@ -310,16 +310,16 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-base sm:text-lg font-bold text-neutral-900 tracking-tight">
                   Cuentas Auxiliares & Proyectos Externos TIMACA
                 </h2>
-                <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+                <span className={`inline-flex items-center justify-center text-center whitespace-nowrap text-[10px] font-mono font-bold px-3 py-1 rounded-full border shadow-2xs shrink-0 self-center ${
                   dataMode === 'cinco_rubros'
-                    ? 'bg-blue-50 text-blue-700 border-blue-200 shadow-2xs'
-                    : 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-2xs'
+                    ? 'bg-blue-50 text-blue-700 border-blue-200'
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                 }`}>
-                  {dataMode === 'cinco_rubros' ? '5 RUBROS AUDITADOS ($12.05M)' : 'SIP EN VIVO · COMPRAS ($4.95M)'}
+                  {dataMode === 'cinco_rubros' ? '5 Rubros Auditados ($12.05M)' : 'SIP en Vivo · Compras ($4.95M)'}
                 </span>
               </div>
               <p className="text-xs text-neutral-500 mt-0.5">
