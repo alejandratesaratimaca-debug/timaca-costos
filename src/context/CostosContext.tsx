@@ -347,7 +347,7 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     fechaFin
   ]);
 
-  // Totales Globales Oficiales 2026 (Base SIP: $27.628.689,52 USD)
+  // Totales Globales Oficiales 2026 (Consolidado Oficial Auditado: $13.476.398,64 USD)
   const totalMontoGlobal = useMemo(() => {
     return Math.round(TOTALES_MESES_PPT.reduce((acc, curr) => acc + curr.total, 0) * 100) / 100;
   }, []);

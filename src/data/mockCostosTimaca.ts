@@ -168,18 +168,16 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   }
 ];
 
-export const TOTALES_MESES_PPT = [
-  { mesNum: 1, mesNombre: 'Enero 2026', total: 1543277.49 },
-  { mesNum: 2, mesNombre: 'Febrero 2026', total: 11248552.10 },
-  { mesNum: 3, mesNombre: 'Marzo 2026', total: 2175763.39 },
-  { mesNum: 4, mesNombre: 'Abril 2026', total: 1298976.94 },
-  { mesNum: 5, mesNombre: 'Mayo 2026', total: 1675082.63 },
-  { mesNum: 6, mesNombre: 'Junio 2026', total: 3621978.79 },
-  { mesNum: 7, mesNombre: 'Julio 2026', total: 1830010.54 },
-  { mesNum: 8, mesNombre: 'Agosto 2026', total: 1780600.70 },
-  { mesNum: 9, mesNombre: 'Septiembre 2026', total: 1707277.95 },
-  { mesNum: 10, mesNombre: 'Octubre 2026', total: 747168.99 }
+const MESES_NOMBRES_ANUAL = [
+  'Enero 2026', 'Febrero 2026', 'Marzo 2026', 'Abril 2026', 'Mayo 2026',
+  'Junio 2026', 'Julio 2026', 'Agosto 2026', 'Septiembre 2026', 'Octubre 2026'
 ];
+
+export const TOTALES_MESES_PPT = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(mIdx => ({
+  mesNum: mIdx + 1,
+  mesNombre: MESES_NOMBRES_ANUAL[mIdx],
+  total: Math.round(TABLA_PPT_DISTRIBUCION_2026.reduce((sum, cat) => sum + (cat.meses[mIdx] || 0), 0) * 100) / 100
+}));
 
 // LISTADO OFICIAL DE PROYECTOS EXTERNOS DE AGOSTO 2026 ($1.197.600 USD)
 export interface CuentaAuxiliarProyecto {

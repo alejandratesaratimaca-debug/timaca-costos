@@ -348,9 +348,6 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 <h2 className="text-lg font-black text-neutral-900 tracking-tight">
                   Mano de Obra Directa (MOD) & Devengo Calendario
                 </h2>
-                <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300">
-                  Sin Necesidad de Excel
-                </span>
               </div>
               <p className="text-xs text-neutral-500 mt-0.5">
                 Procesamiento automático de nóminas semanales de RRHH con distribución exacta a meses de 30 o 31 días
