@@ -113,9 +113,16 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
             <span className="text-2xl font-bold tracking-tight text-neutral-900 group-hover:text-blue-800 transition-colors font-mono tabular-nums block">
               {formatCurrency(displayMonto)}
             </span>
+            {!isFiltered && (
+              <span className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200/70 rounded px-1.5 py-0.5 inline-block font-medium mt-1">
+                * Suma 9M auditados + prev. del mes en curso (Oct)
+              </span>
+            )}
           </div>
           <div className="pt-2 border-t border-neutral-100 text-xs text-neutral-500 flex items-center justify-between">
-            <span className="text-[11px] text-neutral-400">{resumenMeses.length} meses cerrados (PPT)</span>
+            <span className="text-[11px] text-neutral-400">
+              {!isFiltered ? '9M auditados + prev. Octubre' : `${resumenMeses.length} meses cerrados (PPT)`}
+            </span>
             <span className="text-[11px] font-semibold text-blue-600 group-hover:text-blue-800 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
               <span>Ver distribución</span>
               <ArrowRight className="w-3 h-3" />
