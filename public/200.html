@@ -1164,8 +1164,24 @@ function sigNum5(pref) { DB.corr = DB.corr || {}; DB.corr[pref] = (DB.corr[pref]
 /* ----------------------------- Accesores ----------------------------- */
 const almNombre = c => (DB.almacenes.find(a => a.c === c) || { n: c }).n;
 const item = id => DB.catalogo.find(i => i.id === id);
-const valeDe = n => DB.vales.find(v => v.num === n);
-const solDe = n => DB.solicitudes.find(s => s.num === n);
+const valeDe = (n, alm) => {
+  if (!n) return null;
+  const ctx = alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+  if (ctx && ctx !== 'TODOS' && ctx !== 'MAESTRO') {
+    const match = (DB.vales || []).find(v => v.num === n && (v.origen === ctx || v.destino === ctx));
+    if (match) return match;
+  }
+  return (DB.vales || []).find(v => v.num === n);
+};
+const solDe = (n, alm) => {
+  if (!n) return null;
+  const ctx = alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+  if (ctx && ctx !== 'TODOS' && ctx !== 'MAESTRO') {
+    const match = (DB.solicitudes || []).find(s => s.num === n && (s.origen === ctx || s.destino === ctx));
+    if (match) return match;
+  }
+  return (DB.solicitudes || []).find(s => s.num === n);
+};
 const userDe = u => {
   if (!DB || !Array.isArray(DB.usuarios)) return null;
   const q = String(u || '').trim().toLowerCase();
@@ -4609,7 +4625,7 @@ function finalizarFormulario(finalizar) {
     if (t === 'PRH' || t === 'ASI') {
       const res = emitirValeDirecto({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas });
       toast(`Vale ${res.vale.num} emitido exitosamente. Listo para imprimir y firmar.`, 'ok');
-      ir('doc', { num: res.vale.num, back: 'sol' });
+      ir('doc', { num: res.vale.num, alm: res.vale.origen, back: 'sol' });
     } else if (t === 'TRF') {
       if (F.num) {
         const v = actualizarTransferencia(F.num, {
@@ -5136,7 +5152,8 @@ function registrarEntradaUI() {
    ===================================================================== */
 VISTAS.doc = p => {
   const esSol = p.num.startsWith('SOL-');
-  const d = esSol ? solDe(p.num) : valeDe(p.num);
+  const alm = p.alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+  const d = esSol ? solDe(p.num, alm) : valeDe(p.num, alm);
   if (!d) { $('area').innerHTML = cab('Documento no encontrado'); return; }
   if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
   const t = d.tipo, est = esSol ? formatoEstSol(d.estatus) : (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : estadoVale(d));
@@ -5253,14 +5270,14 @@ function motivoNoAprueba(s) {
 }
 function accionesDoc(d, esSol, p) {
   let h = '';
-  if (enMaestro()) return esSol ? '' : `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.solicitud || d.vale || d.num}')">✏️ Editar vale</button><button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>`;
+  if (enMaestro()) return esSol ? '' : `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.solicitud || d.vale || d.num}')">✏️ Editar vale</button><button class="btn btn-azul" onclick="imprimirVale('${d.num}', '${d.origen}')">🖨 Imprimir vale</button>`;
   if (esSol) {
     if ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') && d.origen === S.ctx) {
       const ok = puede('aprobar', d.origen) && d.generadoPor.usuario !== S.u.usuario;
       h += `<button class="btn btn-rojo" ${ok ? '' : 'disabled'} onclick="accionAnular('${d.num}')">Anular solicitud</button><button class="btn btn-verde" ${ok ? '' : 'disabled'} onclick="accionAprobar('${d.num}')">Aceptar solicitud</button>`;
     }
     h += `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.num}')">✏️ Editar solicitud / vale</button>`;
-    if (d.vale && puedeImprimir()) h += `<button class="btn btn-azul" onclick="imprimirVale('${d.vale}')">🖨 Imprimir vale</button>`;
+    if (d.vale && puedeImprimir()) h += `<button class="btn btn-azul" onclick="imprimirVale('${d.vale}', '${d.origen}')">🖨 Imprimir vale</button>`;
     return h;
   }
   if (d.tipo === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN') {
@@ -5282,7 +5299,7 @@ function accionesDoc(d, esSol, p) {
     if (d.cajaId) h += `<button class="btn btn-claro" onclick="ir('cajaFicha',{id:'${d.cajaId}'})">🧰 Ver Ficha de Caja</button>`;
     if (d.tipo === 'DEVCH' && d.novedades) h += `<button class="btn btn-naranja" onclick="abrirModalReponer('${d.cajaId}')">🔧 Reponer caja</button>`;
   }
-  return h + (puedeImprimir() ? `<button class="btn btn-azul" onclick="imprimirVale('${d.num}')">🖨 Imprimir vale</button>` : '');
+  return h + (puedeImprimir() ? `<button class="btn btn-azul" onclick="imprimirVale('${d.num}', '${d.origen}')">🖨 Imprimir vale</button>` : '');
 }
 function timeline(d) {
   return `<div class="timeline">${d.hist.map((h, i) => {
@@ -7799,9 +7816,9 @@ function restaurarRespaldo() {
 /* =====================================================================
    IMPRESIÓN DEL VALE (todos los movimientos)
    ===================================================================== */
-function imprimirVale(n) {
+function imprimirVale(n, alm) {
   if (!n) return toast('El vale aún no tiene número asignado.', 'err');
-  const v = valeDe(n); if (!v) return toast('Vale no encontrado.', 'err');
+  const v = valeDe(n, alm); if (!v) return toast('Vale no encontrado.', 'err');
   const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT';
 
   if (!puedeImprimir()) return toast('La impresión del vale corresponde al personal del almacén. El supervisor solo aprueba.', 'err');
@@ -7905,7 +7922,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V7';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V8';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
