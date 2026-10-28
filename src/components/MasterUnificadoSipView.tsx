@@ -4248,10 +4248,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs relative overflow-hidden">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Gran Total Costos Octubre</div>
-                <div className="text-2xl font-black text-slate-900 mt-1 font-mono">{formatUSD(matrizData?.granTotal || 0)}</div>
+                <div className="text-2xl font-black text-slate-900 mt-1 font-mono">{formatUSD(matrizTotalesDinamicos.granTotal)}</div>
                 <div className="flex items-center gap-1.5 text-xs text-emerald-600 mt-2 font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Sincronizado directo de SIP
+                  {filterTipoMatriz === 'EXTERNOS' 
+                    ? 'Proyectos de Clientes (TTE-C)' 
+                    : filterTipoMatriz === 'INTERNOS' 
+                      ? 'Costos Internos & OPEX' 
+                      : 'Sincronizado directo de SIP'}
                 </div>
                 <div className="absolute right-3 top-3 text-slate-100">
                   <DollarSign className="w-16 h-16" />
@@ -4260,26 +4264,32 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
               <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Materiales Directos (Consumos)</div>
-                <div className="text-2xl font-black text-emerald-600 mt-1 font-mono">{formatUSD(matrizData?.totalMateriales || 0)}</div>
-                <div className="text-xs text-slate-500 mt-2">{status?.totalConsumos || 3976} vales procesados sin duplicados</div>
+                <div className="text-2xl font-black text-emerald-600 mt-1 font-mono">{formatUSD(matrizTotalesDinamicos.totalMateriales)}</div>
+                <div className="text-xs text-slate-500 mt-2">{status?.totalConsumos || 3976} vales procesados</div>
               </div>
 
               <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Servicios & Contratistas</div>
-                <div className="text-2xl font-black text-blue-600 mt-1 font-mono">{formatUSD(matrizData?.totalServicios || 0)}</div>
+                <div className="text-2xl font-black text-blue-600 mt-1 font-mono">{formatUSD(matrizTotalesDinamicos.totalServicios)}</div>
                 <div className="text-xs text-slate-500 mt-2">{status?.totalCompras || 1594} órdenes de compra auditadas</div>
               </div>
 
               <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
-                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Proyectos con Movimiento</div>
-                <div className="text-2xl font-black text-purple-600 mt-1 font-mono">{matrizData?.proyectos.length || 0}</div>
-                <div className="text-xs text-slate-500 mt-2">De {status?.totalProyectos || 1578} cuentas activas en catálogo</div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Cuentas con Movimiento</div>
+                <div className="text-2xl font-black text-purple-600 mt-1 font-mono">{matrizTotalesDinamicos.count}</div>
+                <div className="text-xs text-slate-500 mt-2">
+                  {filterTipoMatriz === 'EXTERNOS'
+                    ? `${conteoExternosMatriz} proyectos externos auditados`
+                    : filterTipoMatriz === 'INTERNOS'
+                      ? `${conteoInternosMatriz} cuentas internas/OPEX`
+                      : `De ${matrizData?.proyectos.length || 0} cuentas en matriz`}
+                </div>
               </div>
             </div>
 
             {/* TABLA MATRIZ DE PROYECTOS */}
             <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-              <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
+              <div className="p-4 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-50/50">
                 <div>
                   <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                     <Layers className="w-4 h-4 text-blue-600" />
@@ -4288,8 +4298,49 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   <p className="text-xs text-slate-500">Consolidación automática en dólares sin intervención manual de Excel</p>
                 </div>
 
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <div className="relative flex-1 sm:w-64">
+                <div className="flex flex-wrap items-center gap-2.5 w-full xl:w-auto">
+                  {/* Segmented Control Filtro Externos / Internos */}
+                  <div className="flex items-center gap-1 p-1 bg-slate-200/80 rounded-xl border border-slate-300 text-xs font-bold shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => setFilterTipoMatriz('TODOS')}
+                      className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                        filterTipoMatriz === 'TODOS'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
+                      }`}
+                    >
+                      Todos ({matrizData?.proyectos.length || 0})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterTipoMatriz('EXTERNOS')}
+                      className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                        filterTipoMatriz === 'EXTERNOS'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
+                      }`}
+                      title="Filtrar proyectos de clientes externos (TTE-C)"
+                    >
+                      <Briefcase className="w-3.5 h-3.5" />
+                      <span>Proyectos Externos ({conteoExternosMatriz})</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterTipoMatriz('INTERNOS')}
+                      className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                        filterTipoMatriz === 'INTERNOS'
+                          ? 'bg-blue-600 text-white shadow-xs'
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-white/70'
+                      }`}
+                      title="Filtrar costos internos, obras civiles, mantenimiento de flota y administración"
+                    >
+                      <Building2 className="w-3.5 h-3.5" />
+                      <span>Internos & OPEX ({conteoInternosMatriz})</span>
+                    </button>
+                  </div>
+
+                  <div className="relative flex-1 sm:w-60">
                     <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
                       type="text"
@@ -4299,6 +4350,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       className="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
                     />
                   </div>
+
+                  <button
+                    onClick={handleExportMatrizExcel}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-xs transition-colors cursor-pointer"
+                    title="Descargar matriz en Excel"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Excel</span>
+                  </button>
                 </div>
               </div>
 
@@ -4308,7 +4368,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     <tr>
                       <th className="py-2.5 px-4">Cuenta Auxiliar</th>
                       <th className="py-2.5 px-4">Descripción del Proyecto</th>
-                      <th className="py-2.5 px-4">Cliente / Tipo</th>
+                      <th className="py-2.5 px-4">Cliente / Clasificación</th>
                       <th className="py-2.5 px-4 text-right">Materiales Directos</th>
                       <th className="py-2.5 px-4 text-right">Servicios</th>
                       <th className="py-2.5 px-4 text-right font-bold text-slate-900">Total USD</th>
@@ -4316,31 +4376,43 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {filteredProyectosMatriz.map((p, idx) => (
-                      <tr key={p.codigo || idx} className="hover:bg-blue-50/40 transition-colors">
-                        <td className="py-2.5 px-4 font-mono font-bold text-blue-600">
-                          {p.codigo}
-                        </td>
-                        <td className="py-2.5 px-4 text-slate-800 font-medium min-w-[280px] whitespace-normal break-words leading-snug">
-                          {p.nombre}
-                        </td>
-                        <td className="py-2.5 px-4 text-slate-600 font-sans text-xs">
-                          {p.cliente || p.tipoCosto || 'N/A'}
-                        </td>
-                        <td className="py-2.5 px-4 text-right font-mono text-emerald-600">
-                          {formatUSD(p.materialesDirectos || 0)}
-                        </td>
-                        <td className="py-2.5 px-4 text-right font-mono text-blue-600">
-                          {formatUSD(p.servicios || 0)}
-                        </td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-slate-900">
-                          {formatUSD(p.totalUSD || 0)}
-                        </td>
-                        <td className="py-2.5 px-4 text-center text-slate-600 font-mono text-[11px]">
-                          <span className="text-emerald-600 font-semibold" title="Consumos">{p.totalItemsConsumos} C</span> + <span className="text-blue-600 font-semibold" title="Compras">{p.totalItemsCompras} O</span>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredProyectosMatriz.map((p, idx) => {
+                      const esExt = isProyectoExterno(p);
+                      return (
+                        <tr key={p.codigo || idx} className="hover:bg-blue-50/40 transition-colors">
+                          <td className="py-2.5 px-4 font-mono font-bold text-blue-600">
+                            {p.codigo}
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-800 font-medium min-w-[280px] whitespace-normal break-words leading-snug">
+                            {p.nombre}
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-600 font-sans text-xs">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-semibold text-slate-800">{p.cliente || 'TIMACA'}</span>
+                              <span className={`inline-flex items-center gap-1 w-fit text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                                esExt
+                                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                  : 'bg-slate-100 text-slate-600 border-slate-200'
+                              }`}>
+                                {esExt ? 'Externo (Cliente)' : (p.tipoCosto || 'Interno / OPEX')}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-mono text-emerald-600">
+                            {formatUSD(p.materialesDirectos || 0)}
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-mono text-blue-600">
+                            {formatUSD(p.servicios || 0)}
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-mono font-bold text-slate-900">
+                            {formatUSD(p.totalUSD || 0)}
+                          </td>
+                          <td className="py-2.5 px-4 text-center text-slate-600 font-mono text-[11px]">
+                            <span className="text-emerald-600 font-semibold" title="Consumos">{p.totalItemsConsumos} C</span> + <span className="text-blue-600 font-semibold" title="Compras">{p.totalItemsCompras} O</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
