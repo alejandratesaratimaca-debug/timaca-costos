@@ -1242,6 +1242,84 @@ function exi(alm, id) {
 }
 /* Total físico bajo responsabilidad del almacén (no incluye bajas ni EPP entregado) */
 const totalExi = e => e.disp + e.prest + e.asig + e.dan + e.rep + e.ext + e.vacio + e.pend;
+
+function reconciliarStockAlmacen(alm) {
+  if (!alm || alm === 'TODOS' || alm === 'MAESTRO') {
+    (DB.almacenes || []).forEach(a => reconciliarStockAlmacen(a.c));
+    return;
+  }
+  DB.exi = DB.exi || {};
+  const nuevoExi = {};
+  const init = id => {
+    if (!nuevoExi[id]) nuevoExi[id] = { disp: 0, prest: 0, asig: 0, dan: 0, rep: 0, ext: 0, vacio: 0, pend: 0, baja: 0, entregado: 0 };
+  };
+
+  // 1. Entradas (ENT)
+  (DB.vales || []).filter(v => v.origen === alm && v.tipo === 'ENT').forEach(v => {
+    (v.lineas || []).forEach(l => {
+      init(l.id);
+      nuevoExi[l.id].disp += (Number(l.cant) || 0);
+    });
+  });
+
+  // 2. Transferencias RECIBIDAS
+  (DB.vales || []).filter(v => v.tipo === 'TRF' && v.destino === alm && v.estatus === 'RECIBIDA').forEach(v => {
+    (v.lineas || []).forEach(l => {
+      init(l.id);
+      if (l.est === 'DAN' || l.cond === 'DAÑADO') nuevoExi[l.id].dan += (Number(l.cant) || 0);
+      else if (l.est === 'VACIO' || l.cond === 'VACÍO') nuevoExi[l.id].vacio += (Number(l.cant) || 0);
+      else nuevoExi[l.id].disp += (Number(l.cant) || 0);
+    });
+  });
+
+  // 3. Transferencias ENVIADAS
+  (DB.vales || []).filter(v => v.tipo === 'TRF' && v.origen === alm).forEach(v => {
+    (v.lineas || []).forEach(l => {
+      init(l.id);
+      const c = Number(l.cant) || 0;
+      if (v.estatus === 'PENDIENTE DE RECEPCIÓN') {
+        nuevoExi[l.id].pend += c;
+        if (l.est === 'DAN' || l.cond === 'DAÑADO') nuevoExi[l.id].dan = Math.max(0, nuevoExi[l.id].dan - c);
+        else if (l.est === 'VACIO' || l.cond === 'VACÍO') nuevoExi[l.id].vacio = Math.max(0, nuevoExi[l.id].vacio - c);
+        else nuevoExi[l.id].disp = Math.max(0, nuevoExi[l.id].disp - c);
+      } else if (v.estatus === 'RECIBIDA') {
+        if (l.est === 'DAN' || l.cond === 'DAÑADO') nuevoExi[l.id].dan = Math.max(0, nuevoExi[l.id].dan - c);
+        else if (l.est === 'VACIO' || l.cond === 'VACÍO') nuevoExi[l.id].vacio = Math.max(0, nuevoExi[l.id].vacio - c);
+        else nuevoExi[l.id].disp = Math.max(0, nuevoExi[l.id].disp - c);
+      }
+    });
+  });
+
+  // 4. Asignaciones y préstamos emitidos en este almacén
+  (DB.vales || []).filter(v => v.origen === alm && (v.tipo === 'ASI' || v.tipo === 'PRH')).forEach(v => {
+    (v.lineas || []).forEach(l => {
+      init(l.id);
+      const devuelto = Number(l.dev) || 0;
+      const cantTotal = Number(l.cant) || 0;
+      const saldo = Math.max(0, cantTotal - devuelto);
+      nuevoExi[l.id].disp = Math.max(0, nuevoExi[l.id].disp - cantTotal + devuelto);
+      if (v.tipo === 'ASI') {
+        nuevoExi[l.id].asig += saldo;
+        if (l.mod === 'EPP' || l.consumo) nuevoExi[l.id].entregado += saldo;
+      } else if (v.tipo === 'PRH') {
+        nuevoExi[l.id].prest += saldo;
+      }
+    });
+  });
+
+  // 5. Incidencias registradas
+  (DB.incid || []).filter(inc => inc.alm === alm).forEach(inc => {
+    if (inc.id && inc.cant) {
+      init(inc.id);
+      if (inc.tipo === 'DAN' && inc.estado === 'EN TALLER') nuevoExi[inc.id].rep += inc.cant;
+      else if (inc.tipo === 'DAN' && inc.estado === 'DAÑADO') nuevoExi[inc.id].dan += inc.cant;
+      else if (inc.tipo === 'EXT' && inc.estado === 'EN INVESTIGACIÓN') nuevoExi[inc.id].ext += inc.cant;
+    }
+  });
+
+  DB.exi[alm] = nuevoExi;
+  return nuevoExi;
+}
 const quien = () => S.u ? { usuario: S.u.usuario, nombre: S.u.nombre, cedula: S.u.cedula, cargo: S.u.cargo } : { usuario: 'SISTEMA', nombre: 'SISTEMA', cedula: '', cargo: '' };
 
 /* ----------------------------- Permisos ----------------------------- */
@@ -1384,8 +1462,11 @@ function emitirValeDirecto(d) {
     v.lineas.forEach(l => {
       const e = exi(v.origen, l.id);
       e.disp += l.cant;
-      if (v.tipo === 'ASI' && l.consumo) {
-        e.entregado = Math.max(0, (e.entregado || 0) - l.cant);
+      if (v.tipo === 'ASI') {
+        e.asig = Math.max(0, (e.asig || 0) - l.cant);
+        if (l.consumo || l.mod === 'EPP') {
+          e.entregado = Math.max(0, (e.entregado || 0) - l.cant);
+        }
       } else if (v.tipo === 'PRH') {
         e.prest = Math.max(0, (e.prest || 0) - l.cant);
       } else {
@@ -1402,9 +1483,14 @@ function emitirValeDirecto(d) {
       v.lineas.forEach(l => {
         const e = exi(v.origen, l.id);
         e.disp = Math.max(0, e.disp - l.cant);
-        if (v.tipo === 'ASI' && l.consumo) e.entregado = (e.entregado || 0) + l.cant;
-        else if (v.tipo === 'PRH') e.prest = (e.prest || 0) + l.cant;
-        else e.asig = (e.asig || 0) + l.cant;
+        if (v.tipo === 'ASI') {
+          e.asig = (e.asig || 0) + l.cant;
+          if (l.consumo || l.mod === 'EPP') e.entregado = (e.entregado || 0) + l.cant;
+        } else if (v.tipo === 'PRH') {
+          e.prest = (e.prest || 0) + l.cant;
+        } else {
+          e.asig = (e.asig || 0) + l.cant;
+        }
       });
     }
     throw err;
@@ -1484,6 +1570,7 @@ function emitirValeDirecto(d) {
   });
   s.vale = v.num;
   bit(editando ? 'SOLICITUD Y VALE ACTUALIZADOS' : 'SOLICITUD Y VALE EMITIDOS', `${s.num} → ${v.num}`);
+  reconciliarStockAlmacen(s.origen);
   guardar();
 
   notificarSistema(
@@ -5958,7 +6045,7 @@ VISTAS.cCatAlm = p => {
       const it = item(id);
       const e = (DB.exi[S.ctx] && DB.exi[S.ctx][id]) ? Object.assign({}, DB.exi[S.ctx][id]) : { disp: 0, prest: 0, asig: 0, vacio: 0, dan: 0, rep: 0, ext: 0, pend: 0, entregado: 0 };
       const r = Object.assign({ it }, e);
-      r.asig = (e.asig || 0) + (e.entregado || 0);
+      r.asig = (e.asig || 0);
       r.total = (r.disp || 0) + (r.vacio || 0) + (r.prest || 0) + (r.asig || 0) + (r.dan || 0) + (r.rep || 0) + (r.ext || 0);
       r.estado = estadoCatalogo(r, r.it);
       return r;
@@ -8005,7 +8092,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V14';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V15';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
