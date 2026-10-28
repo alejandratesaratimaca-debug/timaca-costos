@@ -5730,7 +5730,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     { mes: 'Jun', label: 'Junio', cargado: true },
                     { mes: 'Jul', label: 'Julio', cargado: true },
                     { mes: 'Ago', label: 'Agosto', cargado: true },
-                    { mes: 'Sep', label: 'Septiembre', cargado: false, faltante: true, archivo: '2026 Septiembre Pellas.xlsx' },
+                    { mes: 'Sep', label: 'Septiembre', cargado: true },
                     { mes: 'Oct', label: 'Octubre', cargado: false, faltante: false }
                   ].map((m) => (
                     <div 
@@ -5738,14 +5738,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       className={`p-2 rounded-lg text-center border transition-all ${
                         m.cargado 
                           ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
-                          : m.faltante 
-                          ? 'bg-amber-100/90 border-amber-300 text-amber-900 font-bold ring-2 ring-amber-400/50' 
                           : 'bg-slate-100 border-slate-200 text-slate-500'
                       }`}
                     >
                       <div className="font-black text-xs">{m.mes}</div>
                       <div className="text-[10px] mt-0.5 font-medium">
-                        {m.cargado ? '✓ Cargado' : m.faltante ? '⚠️ Faltante' : 'En curso'}
+                        {m.cargado ? '✓ Cargado' : 'En curso'}
                       </div>
                     </div>
                   ))}
@@ -5753,14 +5751,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                 <div className="pt-2 border-t border-purple-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-purple-900">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="font-bold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded border border-amber-300">
-                      Archivo Faltante:
+                    <span className="font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200">
+                      ✓ Cobertura 9 Meses Completa:
                     </span>
                     <span>
-                      Falta cargar <strong className="font-mono bg-purple-100 px-1.5 py-0.5 rounded border border-purple-300 text-purple-950">2026 Septiembre Pellas.xlsx</strong>
-                    </span>
-                    <span className="text-purple-600 text-[10px]">
-                      (Disponible en tu carpeta local <span className="font-mono font-medium">3 Inputs/4 Horas Maquina/HM/</span>)
+                      Planillas de <strong className="font-mono bg-purple-100 px-1.5 py-0.5 rounded border border-purple-300 text-purple-950">Enero a Septiembre 2026</strong> procesadas y activas en sábana (11 archivos).
                     </span>
                   </div>
                   <div className="text-right text-[10px] text-purple-600">

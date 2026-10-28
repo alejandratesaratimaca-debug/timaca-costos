@@ -825,6 +825,14 @@
       "tamanoKB": 233,
       "fechaMod": "2026-09-07",
       "estado": "Procesado / Activo"
+    },
+    {
+      "nombre": "2026 Septiembre Pellas.xlsx",
+      "categoria": "Horas Máquina",
+      "carpeta": "3 Inputs/4 Horas Maquina/HM",
+      "tamanoKB": 144,
+      "fechaMod": "2026-10-05",
+      "estado": "Procesado / Activo"
     }
   ],
   "indirectos": [
