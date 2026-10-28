@@ -5011,7 +5011,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   Módulo de Correcciones Contables
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  Reemplazo oficial y centralizado de <code className="text-slate-700 font-mono font-semibold">Correcciones.xlsx</code>. Permite re-imputar consumos y servicios/compras a las cuentas auxiliares creadas en SIP con auditoría completa y sincronización en vivo.
+                  Módulo centralizado de auditoría y correcciones contables. Integra las <strong>456 correcciones históricas dejadas por Elizabeth</strong> (<code className="text-slate-700 font-mono font-semibold">Correcciones.xlsx</code>) más las <strong>3.668 valorizaciones y ajustes detectados directamente en el sistema SIP</strong> por Alejandra Tesara.
                 </p>
               </div>
 
@@ -5550,12 +5550,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       <Database className="w-4 h-4 text-purple-600" />
                       Historial de Correcciones Registradas ({filteredReclasificaciones.length} de {reclasificaciones.length})
                     </h3>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300">
-                      {reclasificaciones.filter(x => x.usuario?.includes('Correcciones.xlsx')).length} de Correcciones.xlsx + {reclasificaciones.filter(x => !x.usuario?.includes('Correcciones.xlsx')).length} Sistema
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300" title="Correcciones históricas dejadas por Elizabeth en Correcciones.xlsx">
+                      456 Históricas Elizabeth (Correcciones.xlsx)
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-300" title="Valorizaciones de Pellas Línea 1 y re-imputaciones detectadas directamente en SIP">
+                      {reclasificaciones.filter(x => !x.usuario?.includes('Correcciones.xlsx')).length} Directas del Sistema SIP
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Auditoría de todas las re-imputaciones contables cargadas desde <strong className="font-mono text-purple-700">Y:\Costos Master\2 Data Fija\Correcciones.xlsx</strong> y registradas en el sistema.
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Auditoría de correcciones: <strong>456 correcciones históricas dejadas por Elizabeth</strong> (cargadas de <span className="font-mono text-slate-600">Y:\Costos Master\2 Data Fija\Correcciones.xlsx</span>) + <strong>3.668 valorizaciones de Pellas 1 y re-imputaciones encontradas directamente en el sistema SIP</strong>.
                   </p>
                 </div>
 
@@ -5584,10 +5587,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     className="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-purple-600"
                   >
                     <option value="todos">Todos los Orígenes ({reclasificaciones.length})</option>
-                    <option value="valorizaciones_pellas">🏭 Valorizaciones Pellas 1 ({reclasificaciones.filter(x => x.recordId && String(x.recordId).startsWith('VAL-0706')).length})</option>
+                    <option value="valorizaciones_pellas">🏭 Valorizaciones Pellas 1 (Directas del Sistema SIP) ({reclasificaciones.filter(x => x.recordId && String(x.recordId).startsWith('VAL-0706')).length})</option>
+                    <option value="historicas">📋 Históricas de Elizabeth (Correcciones.xlsx) ({reclasificaciones.filter(x => x.usuario?.includes('Correcciones.xlsx')).length})</option>
                     <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && x.motivo.toLowerCase().includes('rezagad'))).length})</option>
-                    <option value="historicas">Históricas Correcciones.xlsx ({reclasificaciones.filter(x => x.usuario?.includes('Correcciones.xlsx')).length})</option>
-                    <option value="recientes">Recientes Sistema</option>
+                    <option value="recientes">⚡ Recientes Sistema</option>
                     <option value="consumos">Solo Consumos</option>
                     <option value="compras">Solo Compras / Servicios</option>
                   </select>
