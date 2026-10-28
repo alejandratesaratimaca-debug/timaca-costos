@@ -669,6 +669,34 @@ function asegurarUsuariosClave() {
     uAdm.almacenes = ALMS_TODOS;
   }
 
+  // Usuario Jessica Navarro
+  let uNav = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro');
+  if (!uNav && !DB.usuariosEliminados.includes('jnavarro')) {
+    uNav = {
+      usuario: 'jnavarro',
+      alias: 'jessica',
+      correos: ['jnavarro@timaca.com.ve'],
+      clave: '231090',
+      nombre: 'Jessica Navarro',
+      cedula: '',
+      cargo: 'Analista',
+      activo: true,
+      admin: false,
+      maestro: false,
+      editaCostos: false,
+      almacenes: ALMS_TODOS,
+      perm: { aprobar: [], transferir: ALMS_TODOS, recibir: ALMS_TODOS }
+    };
+    DB.usuarios.push(uNav);
+  } else if (uNav) {
+    uNav.clave = '231090';
+    uNav.nombre = 'Jessica Navarro';
+    uNav.cargo = 'Analista';
+    uNav.activo = true;
+    uNav.almacenes = ALMS_TODOS;
+    uNav.perm = { aprobar: [], transferir: ALMS_TODOS, recibir: ALMS_TODOS };
+  }
+
   // Desactivar usuarios demo viejos que ya no correspondan
     // Sincronizar usuario activo si ya inició sesión
   if (S.u) {
@@ -694,7 +722,7 @@ function asegurarUsuariosClave() {
     }
   });
 
-  DB.usuarios = DB.usuarios.filter(u => !['central', 'pellas', 'eco', 'jnavarro'].includes(u.usuario.toLowerCase()));
+  DB.usuarios = DB.usuarios.filter(u => !['central', 'pellas', 'eco'].includes(u.usuario.toLowerCase()));
 
   DB.notificaciones = DB.notificaciones || [];
   DB.extSol = DB.extSol || [];
@@ -1306,6 +1334,10 @@ function validarResponsable(resp, alm) {
     (alm === 'MAESTRO' || (p.almacenes || []).includes('TODOS') || (p.almacenes || []).includes(alm)) &&
     (normTexto(p.nombre) === normTexto(resp.nombre) || (resp.cedula && resp.cedula !== 'S/C' && digitosCI(p.cedula) === digitosCI(resp.cedula))));
   if (!respMatch) throw new Error(`El responsable custodio "${resp.nombre}" no pertenece al personal autorizado de ${almNombre(alm)}. Debe seleccionarlo de la lista oficial.`);
+  const ci = (resp.cedula || respMatch.cedula || '').trim();
+  if (!ci || /S\/C/i.test(ci) || digitosCI(ci).length < 5) {
+    throw new Error(`El responsable custodio "${resp.nombre}" no posee cédula de identidad registrada. Por regla obligatoria del sistema, todos deben tener cédula para procesar movimientos.`);
+  }
   return respMatch;
 }
 
@@ -1315,6 +1347,10 @@ function validarSupervisor(sup, alm) {
     (alm === 'MAESTRO' || (p.almacenes || []).includes('TODOS') || (p.almacenes || []).includes(alm)) &&
     normTexto(p.nombre) === normTexto(sup));
   if (!supMatch) throw new Error(`El supervisor "${sup}" no está registrado como supervisor autorizado para ${almNombre(alm)}. Seleccione de la lista oficial.`);
+  const ci = (supMatch.cedula || '').trim();
+  if (!ci || /S\/C/i.test(ci) || digitosCI(ci).length < 5) {
+    throw new Error(`El supervisor "${sup}" no posee cédula de identidad registrada. Por regla obligatoria del sistema, todos deben tener cédula para autorizar movimientos.`);
+  }
   return supMatch;
 }
 
@@ -1538,7 +1574,8 @@ const DESTINOS_SOLICITUD = {
     { c: 'BOCA GRANDE', n: 'Almacén Boca Grande' }
   ],
   PMH: [
-    { c: 'PMH', n: 'Almacén PMH' }
+    { c: 'PMH', n: 'Almacén PMH' },
+    { c: 'Almacén Eléctrico', n: 'Almacén Eléctrico' }
   ],
   BRIQUETAS: [
     { c: 'BRIQUETAS', n: 'Almacén Briquetas' }
@@ -1565,6 +1602,12 @@ function destinosPermitidos(origen) { return origen === 'CENTRAL' ? DB.almacenes
 function crearTransferencia(d) {
   if (!puede('transferir', d.origen)) throw new Error('No tiene permiso para transferir desde ' + almNombre(d.origen) + '.');
   if (!destinosPermitidos(d.origen).includes(d.destino)) throw new Error('Destino no permitido. Central transfiere a los satélites y los satélites solo transfieren a Central.');
+  if (d.resp) {
+    const ciResp = (d.resp.cedula || '').trim();
+    if (!ciResp || /S\/C/i.test(ciResp) || digitosCI(ciResp).length < 5) {
+      throw new Error(`El responsable custodio "${d.resp.nombre}" no tiene cédula registrada. Todos deben tener cédula para procesar.`);
+    }
+  }
   if (!d.lineas.length) throw new Error('Agregue al menos un ítem en la carga de material.');
   validarStock(d.origen, d.lineas);
   const lineas = d.lineas.map(l => Object.assign({}, l));
@@ -2495,6 +2538,7 @@ const fuentePersonal = (q, alFoco) => {
     if (p.activo === false) return false;
     const tipos = Array.isArray(p.tipo) ? p.tipo : [p.tipo];
     if (!tipos.includes('RESPONSABLE')) return false;
+    if (!p.cedula || /S\/C/i.test(p.cedula) || digitosCI(p.cedula).length < 5) return false;
 
     const alms = Array.isArray(p.almacenes) ? p.almacenes : [p.depto || 'CENTRAL'];
     if (ctx !== 'MAESTRO' && !alms.includes('TODOS') && !alms.includes(ctx)) return false;
@@ -2522,6 +2566,7 @@ const fuenteSupervisores = (q, alFoco) => {
     if (p.activo === false) return false;
     const tipos = Array.isArray(p.tipo) ? p.tipo : [p.tipo];
     if (!tipos.includes('SUPERVISOR')) return false;
+    if (!p.cedula || /S\/C/i.test(p.cedula) || digitosCI(p.cedula).length < 5) return false;
 
     const alms = Array.isArray(p.almacenes) ? p.almacenes : [p.depto || 'CENTRAL'];
     if (ctx !== 'MAESTRO' && !alms.includes('TODOS') && !alms.includes(ctx)) return false;
@@ -4830,7 +4875,7 @@ function pintarEntrada() {
         ${campo('Módulo', `<select id="eMod" onchange="cambioModEntrada()">${opciones(Object.entries(MODULOS))}</select>`)}
         ${campo('Categoría', `<select id="eCat" onchange="cambioCatEntrada()">${opciones(CATEGORIAS_OFICIALES, 'Herramientas manuales')}</select>`)}
         ${campo('Unidad', `<select id="eUmb">${opciones(UMBS_OFICIALES, 'UND')}</select>`)}
-        ${campo('Marca', `<input id="eMarca" placeholder="Ej. STANLEY">`)}
+        ${campo('Marca', `<input id="eMarca" placeholder="Ej. STANLEY (o en blanco para SIN MARCA)">`)}
         ${campo('Modelo', `<input id="eModelo">`)}
         ${campo('Serial (ítem único)', `<input id="eSerial" placeholder="Opcional">`)}
         ${campo('Condición', `<select id="eCond"></select>`)}
@@ -4941,7 +4986,7 @@ function guardarEntradaDirecta() {
       mod: $('eMod').value,
       cat: $('eCat').value.trim() || 'Herramientas manuales',
       umb: $('eUmb').value.trim() || 'UND',
-      marca: $('eMarca').value.trim().toUpperCase() || 'GENÉRICA',
+      marca: $('eMarca').value.trim().toUpperCase() || 'SIN MARCA',
       modelo: $('eModelo').value.trim() || '—',
       serial,
       cond: $('eCond').value,
@@ -4979,7 +5024,7 @@ function agregarEntrada() {
       mod: $('eMod').value,
       cat: $('eCat').value.trim() || 'Herramientas manuales',
       umb: $('eUmb').value.trim() || 'UND',
-      marca: $('eMarca').value.trim().toUpperCase() || 'GENÉRICA',
+      marca: $('eMarca').value.trim().toUpperCase() || 'SIN MARCA',
       modelo: $('eModelo').value.trim() || '—',
       serial,
       cond: $('eCond').value,
@@ -5051,7 +5096,7 @@ function guardarEdicionEntrada() {
       mod: $('eMod').value,
       cat: $('eCat').value.trim() || 'Herramientas manuales',
       umb: $('eUmb').value.trim() || 'UND',
-      marca: $('eMarca').value.trim().toUpperCase() || 'GENÉRICA',
+      marca: $('eMarca').value.trim().toUpperCase() || 'SIN MARCA',
       modelo: $('eModelo').value.trim() || '—',
       serial,
       cond: $('eCond').value,
@@ -6753,7 +6798,7 @@ const TABLAS_EXP = {
   existencias: () => ({ rows: Object.entries(DB.exi).flatMap(([a, o]) => Object.entries(o).map(([id, e]) => Object.assign({ alm: a, it: item(+id) }, e))).filter(r => totalExi(r) + r.baja + r.entregado > 0),
     cols: [{ t: 'Almacén', k: 'alm' }, { t: 'Código', v: r => r.it.cod }, { t: 'Descripción', v: r => r.it.desc }, { t: 'Serial', v: r => r.it.serial }, { t: 'Disponible', k: 'disp', cls: 'num' }, { t: 'Vacío', k: 'vacio', cls: 'num' }, { t: 'Préstamo', k: 'prest', cls: 'num' }, { t: 'Asignado', k: 'asig', cls: 'num' }, { t: 'Dañado', k: 'dan', cls: 'num' }, { t: 'En taller', k: 'rep', cls: 'num' }, { t: 'Extraviado', k: 'ext', cls: 'num' }, { t: 'Pend. recepción', k: 'pend', cls: 'num' }, { t: 'Baja', k: 'baja', cls: 'num' }, { t: 'EPP entregado', k: 'entregado', cls: 'num' }, { t: 'Valor USD', v: r => +(totalExi(r) * r.it.costo).toFixed(2), cls: 'num' }] }),
   catalogo: () => ({ rows: DB.catalogo, cols: [{ t: 'Código', k: 'cod' }, { t: 'Descripción', k: 'desc' }, { t: 'Módulo', k: 'mod' }, { t: 'Categoría', k: 'cat' }, { t: 'Marca', k: 'marca' }, { t: 'Modelo', k: 'modelo' }, { t: 'Serial', k: 'serial' }, { t: 'UMB', k: 'umb' }, { t: 'Tipo A', v: r => r.tipoA ? 'SI' : 'NO' }, { t: 'Talla', k: 'talla' }, { t: 'Vida útil', k: 'vida', cls: 'num' }, { t: 'Costo USD', k: 'costo', cls: 'num' }] }),
-  personal: () => ({ rows: DB.personal, cols: [{ t: 'Nombre', k: 'nombre' }, { t: 'Cédula', v: r => r.cedula || 'S/C' }, { t: 'Cargo', k: 'cargo' }, { t: 'Rol', v: r => (r.tipo || []).join(', ') }, { t: 'Almacenes', v: r => (r.almacenes || []).join(', ') }, { t: 'Módulo', k: 'modulo' }, { t: 'Estado', v: r => r.activo !== false ? 'ACTIVO' : 'INACTIVO' }] }),
+  personal: () => ({ rows: DB.personal, cols: [{ t: 'Nombre', k: 'nombre' }, { t: 'Cédula', v: r => r.cedula || 'S/C', f: r => (r.cedula && r.cedula !== 'S/C') ? esc(r.cedula) : '<span class="est est-rojo" style="font-weight:700">SIN CÉDULA</span>' }, { t: 'Cargo', k: 'cargo' }, { t: 'Rol', v: r => (r.tipo || []).join(', ') }, { t: 'Almacenes', v: r => (r.almacenes || []).join(', ') }, { t: 'Módulo', k: 'modulo' }, { t: 'Estado', v: r => r.activo !== false ? 'ACTIVO' : 'INACTIVO' }] }),
   incidencias: () => ({ rows: DB.incid, cols: [{ t: 'Documento', k: 'valeRef' }, { t: 'Tipo', k: 'tipo' }, { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha }, { t: 'Almacén', k: 'alm' }, { t: 'Código', k: 'cod' }, { t: 'Serial', k: 'serial' }, { t: 'Cant.', k: 'cant', cls: 'num' }, { t: 'Estado', k: 'estado' }, { t: 'Mal uso', k: 'malUso' }, { t: 'Valor USD', v: r => +(r.cant * item(r.id).costo).toFixed(2), cls: 'num' }] })
 };
 VISTAS.mExp = p => {
@@ -7212,16 +7257,13 @@ function editarRegistroPersonal(r) {
       if (!esResp && !esSup) throw new Error('Debe marcar al menos un rol: Responsable o Supervisor.');
       if (!almsSel.length) throw new Error('Debe seleccionar al menos un almacén.');
 
-      if (!ced) ced = 'S/C';
-      else if (!/S\/C/i.test(ced)) ced = formatCedula(ced);
-
-      if (ced !== 'S/C') {
-        const dig = digitosCI(ced);
-        if (dig.length >= 5) {
-          const dup = DB.personal.find(x => x !== r && x.cedula && x.cedula !== 'S/C' && digitosCI(x.cedula) === dig);
-          if (dup) throw new Error(`Ya existe una persona registrada con la cédula ${ced}: ${dup.nombre} (${(dup.almacenes||[]).join(', ')}).`);
-        }
+      if (!ced || /S\/C/i.test(ced) || digitosCI(ced).length < 5) {
+        throw new Error('Debe indicar una cédula de identidad válida (ej. V-12.345.678). Por regla obligatoria del sistema, todo el personal debe tener cédula.');
       }
+      ced = formatCedula(ced);
+      const dig = digitosCI(ced);
+      const dup = DB.personal.find(x => x !== r && x.cedula && x.cedula !== 'S/C' && digitosCI(x.cedula) === dig);
+      if (dup) throw new Error(`Ya existe una persona registrada con la cédula ${ced}: ${dup.nombre} (${(dup.almacenes||[]).join(', ')}).`);
 
       const tipoArr = [];
       if (esResp) tipoArr.push('RESPONSABLE');
@@ -7379,7 +7421,8 @@ function importarPersonalExcel() {
       if (!nombre) return err.push(`Fila ${i + 2}: falta Nombre`);
       if (!cargo) return err.push(`Fila ${i + 2}: falta Cargo para ${nombre}`);
 
-      cedula = cedula ? formatCedula(cedula) : 'S/C';
+      if (!cedula || /S\/C/i.test(cedula) || digitosCI(cedula).length < 5) return err.push(`Fila ${i + 2}: falta Cédula para ${nombre} (todo el personal debe tener cédula obligatoriamente)`);
+      cedula = formatCedula(cedula);
 
       const tipo = [];
       if (rolStr.includes('RESP') || rolStr.includes('AMB')) tipo.push('RESPONSABLE');
@@ -7565,7 +7608,7 @@ function editarItem(it) {
       const cod = $('ciCod').value.trim().toUpperCase(), serial = $('ciSer').value.trim();
       if (!cod || !$('ciDesc').value.trim()) throw new Error('Código y descripción son obligatorios.');
       if (DB.catalogo.some(x => x !== it && x.cod === cod && x.serial === serial)) throw new Error('Ya existe un ítem con ese código y serial.');
-      Object.assign(it, { cod, desc: $('ciDesc').value.trim(), mod: $('ciMod').value, cat: $('ciCat').value.trim(), marca: $('ciMar').value.trim(), modelo: $('ciMod2').value.trim(), serial, umb: $('ciUmb').value.trim() || 'UND', tipoA: $('ciTA').value === '1', talla: $('ciTal').value.trim(), vida: Number($('ciVid').value) || 0, activo: $('ciAct').value === '1' });
+      Object.assign(it, { cod, desc: $('ciDesc').value.trim(), mod: $('ciMod').value, cat: $('ciCat').value.trim(), marca: $('ciMar').value.trim().toUpperCase() || 'SIN MARCA', modelo: $('ciMod2').value.trim() || '—', serial, umb: $('ciUmb').value.trim() || 'UND', tipoA: $('ciTA').value === '1', talla: $('ciTal').value.trim(), vida: Number($('ciVid').value) || 0, activo: $('ciAct').value === '1' });
       if (n) { it.id = Math.max(0, ...DB.catalogo.map(x => x.id)) + 1; DB.catalogo.push(it); }
       bit(n ? 'ÍTEM CREADO' : 'ÍTEM MODIFICADO', cod + (serial ? ' ' + serial : '')); guardar(); cerrarModal(); toast('Ítem guardado.', 'ok'); refrescar();
     }) }], true);
@@ -7700,7 +7743,7 @@ function accionIni() {
           desc: q,
           mod: mod,
           cat: catSel,
-          marca: 'GENÉRICA',
+          marca: 'SIN MARCA',
           modelo: '—',
           serial: '',
           umb: 'UND',
@@ -7922,7 +7965,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V9';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V11';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
