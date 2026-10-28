@@ -56,10 +56,17 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [selectedProyectoModal, setSelectedProyectoModal] = useState<FilaProyectoCategoriasPPT | null>(null);
   const [selectedMesModal, setSelectedMesModal] = useState<{ mesIndex: number; mesNombre: string } | null>(null);
-  const [octubreSipData, setOctubreSipData] = useState<FilaProyectoCategoriasPPT[]>([]);
+  const [sipDataPorPeriodo, setSipDataPorPeriodo] = useState<Record<string, FilaProyectoCategoriasPPT[]>>({});
+  const [isLoadingSipMatriz, setIsLoadingSipMatriz] = useState(false);
 
   useEffect(() => {
-    getSipPeriodoData(10).then(data => {
+    let isMounted = true;
+    const mesNum = periodo === 'octubre' ? 10 : periodo === 'septiembre' ? 9 : periodo === 'agosto' ? 8 : 0;
+    if (sipDataPorPeriodo[periodo]) return;
+
+    setIsLoadingSipMatriz(true);
+    getSipPeriodoData(mesNum).then(data => {
+      if (!isMounted) return;
       const mapped: FilaProyectoCategoriasPPT[] = data.cuentas.map(c => ({
         cuentaAuxiliar: c.codigo,
         proyecto: c.nombre,
@@ -72,18 +79,19 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
         totalProyecto: c.totalMonto,
         porcentaje: c.porcentaje
       }));
-      setOctubreSipData(mapped);
+      setSipDataPorPeriodo(prev => ({ ...prev, [periodo]: mapped }));
+      setIsLoadingSipMatriz(false);
     });
-  }, []);
+    return () => { isMounted = false; };
+  }, [periodo, sipDataPorPeriodo]);
 
-  // Lista de datos según período para la tabla de proyectos
-  const datasetProyectos = periodo === 'octubre'
-    ? octubreSipData
-    : periodo === 'septiembre' 
-    ? PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026 
-    : periodo === 'agosto' 
-    ? PROYECTOS_CATEGORIAS_AGOSTO_2026 
-    : PROYECTOS_CATEGORIAS_ANUAL_2026;
+  // Lista de datos según período para la tabla de proyectos alimentada 100% de SIP
+  const datasetProyectos = sipDataPorPeriodo[periodo] || (
+    periodo === 'octubre' ? [] :
+    periodo === 'septiembre' ? PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026 :
+    periodo === 'agosto' ? PROYECTOS_CATEGORIAS_AGOSTO_2026 :
+    PROYECTOS_CATEGORIAS_ANUAL_2026
+  );
 
   // Filtrado por buscador para proyectos
   const filasFiltradasProyectos = useMemo(() => {

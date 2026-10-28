@@ -274,7 +274,10 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
             >
               {cuentasRanking.map((c, idx) => (
                 <option key={c.codigo} value={c.codigo}>
-                  #{idx + 1} {c.codigo} · {c.proyectoCorto} (${Math.round(c.totalMonto).toLocaleString('de-DE')})
+                  {c.esConsolidado
+                    ? `★ Consolidado General TIMACA ($${Math.round(c.totalMonto).toLocaleString('de-DE')})`
+                    : `#${idx} ${c.codigo} · ${c.proyectoCorto} ($${Math.round(c.totalMonto).toLocaleString('de-DE')})`
+                  }
                 </option>
               ))}
             </select>
