@@ -1262,6 +1262,14 @@ function reconciliarStockAlmacen(alm) {
     });
   });
 
+  // 1b. Cargas iniciales directas (movs con tipo = INI)
+  (DB.movs || []).filter(m => m.origen === alm && m.tipo === 'INI').forEach(m => {
+    init(m.id);
+    const esVacio = m.estNue === 'VACÍO' || m.estNue === 'VACIO';
+    if (esVacio) nuevoExi[m.id].vacio += (Number(m.cant) || 0);
+    else nuevoExi[m.id].disp += (Number(m.cant) || 0);
+  });
+
   // 2. Transferencias RECIBIDAS
   (DB.vales || []).filter(v => v.tipo === 'TRF' && v.destino === alm && v.estatus === 'RECIBIDA').forEach(v => {
     (v.lineas || []).forEach(l => {
@@ -4964,8 +4972,41 @@ function bindResponsableProyecto() {
    ENTRADA DE ÍTEMS AL CATÁLOGO DEL ALMACÉN
    ===================================================================== */
 let E = null;
-VISTAS.ent = () => {
+function draftKeyEnt(ctx) {
+  return 'TIMACA_DRAFT_ENT_' + (ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL'));
+}
+
+function guardarBorradorEntrada() {
+  try {
+    if (E && Array.isArray(E.lineas) && E.lineas.length > 0) {
+      const k = draftKeyEnt(S.ctx);
+      localStorage.setItem(k, JSON.stringify({ lineas: E.lineas, obs: $('enObs') ? $('enObs').value : '', fecha: nowISO() }));
+    } else {
+      localStorage.removeItem(draftKeyEnt(S.ctx));
+    }
+  } catch(e) {}
+}
+
+function descartarBorradorEntrada() {
+  if (!confirm('¿Desea descartar y limpiar todos los ítems agregados en este borrador?')) return;
+  try { localStorage.removeItem(draftKeyEnt(S.ctx)); } catch(e) {}
   E = { lineas: [], sel: -1, editIdx: -1, hecho: null, base: null };
+  toast('Borrador descartado.', 'info');
+  refrescar();
+}
+
+VISTAS.ent = () => {
+  let draftLineas = [];
+  try {
+    const dStr = localStorage.getItem(draftKeyEnt(S.ctx));
+    if (dStr) {
+      const parsed = JSON.parse(dStr);
+      if (Array.isArray(parsed.lineas) && parsed.lineas.length > 0) {
+        draftLineas = parsed.lineas;
+      }
+    }
+  } catch(e) {}
+  E = { lineas: draftLineas, sel: -1, editIdx: -1, hecho: null, base: null };
   pintarEntrada();
 };
 
@@ -4977,6 +5018,7 @@ function pintarEntrada() {
 
   $('area').innerHTML = cab('➕ Entrada de ítems al catálogo', 'Registre herramientas, cilindros o EPP que ingresan al almacén. Si el código ya existe se suma la cantidad; si es nuevo, se crea en el catálogo. Cada vez que inserte un registro, los cuadros se limpian automáticamente para el siguiente.')
     + (E.hecho ? `<div class="franja-est verde"><span>Entrada <b>${E.hecho}</b> registrada. Los ítems ya aparecen en el catálogo de ${esc(almNombre(S.ctx))}.</span><span><button class="btn btn-claro btn-mini" onclick="ir('cCatAlm')">Ver catálogo</button></span></div>` : '')
+    + (!E.hecho && E.lineas.length > 0 ? `<div class="franja-est naranja" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span>💾 <b>Borrador protegido:</b> Tiene <b>${E.lineas.length} ítem(s)</b> cargados en curso en ${esc(almNombre(S.ctx))}. No se perderán si recarga la página.</span><span><button class="btn btn-claro btn-mini" onclick="descartarBorradorEntrada()">🗑️ Descartar borrador</button></span></div>` : '')
     + `<div class="form-reg"><div class="f3">
       ${campo('Almacén', `<input value="${esc(almNombre(S.ctx))}" readonly>`)}${campo('Fecha', `<input value="${fF(nowISO())}" readonly>`)}${campo('Registrado por', `<input value="${esc(S.u.nombre)}" readonly>`)}
       ${campo('Observación', `<input id="enObs" ${ro} placeholder="Opcional">`)}
@@ -8092,7 +8134,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V15';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V16';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
@@ -8240,7 +8282,21 @@ function descargarDeNube(cloudDB) {
   asegurarEstatusSolicitudes();
   guardarLocalSolo();
 
-  if (typeof refrescar === 'function' && typeof S !== 'undefined' && S && S.u) refrescar();
+  if (typeof refrescar === 'function' && typeof S !== 'undefined' && S && S.u) {
+    if (S.vista === 'ent' && E && Array.isArray(E.lineas) && E.lineas.length > 0) {
+      console.log('☁️ Sincronización en segundo plano: se preservan los renglones en captura de entrada.');
+      return;
+    }
+    if (S.vista === 'solNueva' && F && Array.isArray(F.lineas) && F.lineas.length > 0) {
+      console.log('☁️ Sincronización en segundo plano: se preservan las líneas de solicitud en curso.');
+      return;
+    }
+    if (S.vista === 'trfNueva' && F && Array.isArray(F.lineas) && F.lineas.length > 0) {
+      console.log('☁️ Sincronización en segundo plano: se preservan las líneas de transferencia en curso.');
+      return;
+    }
+    refrescar();
+  }
   if (typeof actualizarAccesosLogin === 'function' && $('lgUsuario')) actualizarAccesosLogin();
   console.log(`☁️ Sincronizados ${(DB.catalogo||[]).length} ítems desde Supabase Cloud.`);
 }
