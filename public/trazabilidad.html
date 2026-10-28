@@ -4289,6 +4289,45 @@ function editarSolicitudVale(param, alm) {
   ir('solNueva', { num, alm: a });
 }
 
+
+function draftKeySol(ctx) {
+  return 'TIMACA_DRAFT_SOL_' + (ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL'));
+}
+
+function guardarBorradorSol() {
+  try {
+    if (F && !F.num && Array.isArray(F.lineas) && F.lineas.length > 0) {
+      const k = draftKeySol(F.origen || S.ctx);
+      leerCabecera();
+      localStorage.setItem(k, JSON.stringify({
+        tipo: F.tipo,
+        origen: F.origen,
+        destino: F.destino,
+        resp: F.resp,
+        sup: F.sup,
+        proyecto: F.proyecto,
+        cuenta: F.cuenta,
+        fechaReq: F.fechaReq,
+        fechaDev: F.fechaDev,
+        fechaAsig: F.fechaAsig,
+        obs: F.obs || '',
+        lineas: F.lineas,
+        fecha: nowISO()
+      }));
+    } else if (F && !F.num) {
+      localStorage.removeItem(draftKeySol(F.origen || S.ctx));
+    }
+  } catch(e) {}
+}
+
+function descartarBorradorSol() {
+  if (!confirm('¿Desea descartar y limpiar el borrador de esta solicitud?')) return;
+  try { localStorage.removeItem(draftKeySol(S.ctx)); } catch(e) {}
+  F = nuevoF('ASI');
+  toast('Borrador descartado.', 'info');
+  refrescar();
+}
+
 VISTAS.solNueva = p => {
   if (p && p.num) {
     const ctx = (p && p.alm) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
@@ -4334,7 +4373,18 @@ VISTAS.solNueva = p => {
       lineas: lineasCopiadas
     });
     F.lineasOriginales = lineasCopiadas.map(l => Object.assign({}, l));
-  } else F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
+  } else {
+    let draft = null;
+    try {
+      const dStr = localStorage.getItem(draftKeySol(S.ctx));
+      if (dStr) draft = JSON.parse(dStr);
+    } catch(e) {}
+    if (draft && Array.isArray(draft.lineas) && draft.lineas.length > 0) {
+      F = nuevoF(draft.tipo || (p && p.tipo === 'ASI' ? 'ASI' : 'PRH'), draft);
+    } else {
+      F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
+    }
+  }
   pintarSolicitud();
 };
 VISTAS.trfNueva = p => {
@@ -4791,6 +4841,7 @@ function finalizarFormulario(finalizar) {
     if (t === 'PRH' || t === 'ASI') {
       const res = emitirValeDirecto({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas });
       toast(`Vale ${res.vale.num} emitido exitosamente. Listo para imprimir y firmar.`, 'ok');
+      try { localStorage.removeItem(draftKeySol(F.origen || S.ctx)); } catch(e) {}
       ir('doc', { num: res.vale.num, alm: res.vale.origen, back: 'sol' });
     } else if (t === 'TRF') {
       if (F.num) {
@@ -4843,6 +4894,7 @@ function pintarSolicitud() {
     ? L('Fecha requerida') + `<div class="vl"><input type="date" id="fFReq" value="${F.fechaReq}"></div>` + L('Fecha de devolución') + `<div class="vl"><input type="date" id="fFDev" value="${F.fechaDev}"></div>`
     : L('Fecha de asignación') + `<div class="vl"><input type="date" id="fFAsig" value="${F.fechaAsig}"></div><div class="vacio"></div>`;
   $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al guardar se genera inmediatamente el vale para imprimir y firmar.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
+    + (!F.num && F.lineas && F.lineas.length > 0 ? `<div class="franja-est naranja" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span>💾 <b>Borrador en curso:</b> Tiene <b>${F.lineas.length} ítem(s)</b> cargados en esta solicitud en ${esc(almNombre(F.origen))}. Puede ir a otros módulos y regresar sin perder información.</span><span><button class="btn btn-claro btn-mini" onclick="descartarBorradorSol()">🗑️ Descartar borrador</button></span></div>` : '')
     + `<div class="form-reg"><div class="sipf">
       ${L('Empresa')}<div class="vl"><input value="TIMACA" readonly></div>
       ${L('Número')}<div class="vl"><input id="sNum" value="${esc(F.num || '')}" placeholder="Se asigna al salvar" readonly></div>
@@ -4980,7 +5032,8 @@ function guardarBorradorEntrada() {
   try {
     if (E && Array.isArray(E.lineas) && E.lineas.length > 0) {
       const k = draftKeyEnt(S.ctx);
-      localStorage.setItem(k, JSON.stringify({ lineas: E.lineas, obs: $('enObs') ? $('enObs').value : '', fecha: nowISO() }));
+      const obs = $('enObs') ? $('enObs').value : (E.obs || '');
+      localStorage.setItem(k, JSON.stringify({ lineas: E.lineas, obs, fecha: nowISO() }));
     } else {
       localStorage.removeItem(draftKeyEnt(S.ctx));
     }
@@ -4990,13 +5043,14 @@ function guardarBorradorEntrada() {
 function descartarBorradorEntrada() {
   if (!confirm('¿Desea descartar y limpiar todos los ítems agregados en este borrador?')) return;
   try { localStorage.removeItem(draftKeyEnt(S.ctx)); } catch(e) {}
-  E = { lineas: [], sel: -1, editIdx: -1, hecho: null, base: null };
+  E = { lineas: [], obs: '', sel: -1, editIdx: -1, hecho: null, base: null };
   toast('Borrador descartado.', 'info');
   refrescar();
 }
 
 VISTAS.ent = () => {
   let draftLineas = [];
+  let draftObs = '';
   try {
     const dStr = localStorage.getItem(draftKeyEnt(S.ctx));
     if (dStr) {
@@ -5004,9 +5058,10 @@ VISTAS.ent = () => {
       if (Array.isArray(parsed.lineas) && parsed.lineas.length > 0) {
         draftLineas = parsed.lineas;
       }
+      if (parsed.obs) draftObs = parsed.obs;
     }
   } catch(e) {}
-  E = { lineas: draftLineas, sel: -1, editIdx: -1, hecho: null, base: null };
+  E = { lineas: draftLineas, obs: draftObs, sel: -1, editIdx: -1, hecho: null, base: null };
   pintarEntrada();
 };
 
@@ -5021,7 +5076,7 @@ function pintarEntrada() {
     + (!E.hecho && E.lineas.length > 0 ? `<div class="franja-est naranja" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span>💾 <b>Borrador protegido:</b> Tiene <b>${E.lineas.length} ítem(s)</b> cargados en curso en ${esc(almNombre(S.ctx))}. No se perderán si recarga la página.</span><span><button class="btn btn-claro btn-mini" onclick="descartarBorradorEntrada()">🗑️ Descartar borrador</button></span></div>` : '')
     + `<div class="form-reg"><div class="f3">
       ${campo('Almacén', `<input value="${esc(almNombre(S.ctx))}" readonly>`)}${campo('Fecha', `<input value="${fF(nowISO())}" readonly>`)}${campo('Registrado por', `<input value="${esc(S.u.nombre)}" readonly>`)}
-      ${campo('Observación', `<input id="enObs" ${ro} placeholder="Opcional">`)}
+      ${campo('Observación', `<input id="enObs" ${ro} placeholder="Opcional" value="${esc((E && E.obs) || '')}" oninput="if(E){E.obs=this.value;guardarBorradorEntrada();}">`)}
     </div>
     <div class="carga" id="cargaEntrada">
       <div class="carga-h" id="eCargaH" style="${esEdicion ? 'background:var(--ambar-bg,#fef3c7);color:var(--ambar,#b45309)' : ''}">${esEdicion ? `⚠️ MODO CORRECCIÓN: Editando línea #${E.editIdx + 1} (${esc(linEd.cod)})` : 'ÍTEM A INGRESAR'}</div>
@@ -8134,7 +8189,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V16';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V17';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
