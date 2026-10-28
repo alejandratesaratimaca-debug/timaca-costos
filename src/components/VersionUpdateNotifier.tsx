@@ -61,7 +61,7 @@ export const VersionUpdateNotifier: React.FC = () => {
   const handleRefresh = () => {
     setIsRefreshing(true);
     // Forzar recarga completa evitando caché del navegador
-    window.location.reload();
+    window.location.href = window.location.pathname + '?_v=' + Date.now();
   };
 
   if (!hasNewVersion || isDismissed) return null;

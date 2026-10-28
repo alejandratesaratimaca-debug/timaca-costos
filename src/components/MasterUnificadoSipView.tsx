@@ -1502,22 +1502,22 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   const fetchProyectos = async () => {
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/proyectos', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch('http://192.168.13.193:3005/api/proyectos', { signal: AbortSignal.timeout(400) });
       if (res.ok) { setProyectos(await res.json()); return; }
     } catch (e) {}
     try {
-      const res = await fetch('/data/sip/proyectos.json');
+      const res = await fetch('/data/sip/proyectos.json?v=' + Date.now(), { cache: 'no-store' });
       if (res.ok) setProyectos(await res.json());
     } catch (e) {}
   };
 
   const fetchMatriz = async () => {
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/matriz', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch('http://192.168.13.193:3005/api/matriz', { signal: AbortSignal.timeout(400) });
       if (res.ok) { setMatrizData(await res.json()); return; }
     } catch (e) {}
     try {
-      const res = await fetch('/data/sip/matriz.json');
+      const res = await fetch('/data/sip/matriz.json?v=' + Date.now(), { cache: 'no-store' });
       if (res.ok) setMatrizData(await res.json());
     } catch (e) {}
   };
