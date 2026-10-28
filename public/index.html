@@ -1375,8 +1375,8 @@ function validarSolicitud(d, finalizar) {
   validarStock(d.origen, d.lineas);
 }
 function emitirValeDirecto(d) {
-  let s = d.num ? solDe(d.num) : null;
-  let v = (s && s.vale) ? valeDe(s.vale) : (d.valeId ? valeDe(d.valeId) : null);
+  let s = d.num ? solDe(d.num, d.origen) : null;
+  let v = (s && s.vale) ? valeDe(s.vale, d.origen) : (d.valeId ? valeDe(d.valeId, d.origen) : null);
   const editando = !!(v || (s && s.vale));
 
   // 1. Si estamos editando un vale existente, revertir temporalmente el inventario anterior para validar
@@ -1648,8 +1648,9 @@ function crearTransferencia(d) {
   notificarSistema('Nueva transferencia enviada', `Transferencia ${v.num} enviada desde ${almNombre(v.origen)} hacia ${almNombre(v.destino)} por ${v.realizadoPor.nombre}. Esperando recepción.`, 'info', { doc: v.num });
   return v;
 }
-function actualizarTransferencia(num, d) {
-  const v = valeDe(num);
+function actualizarTransferencia(num, d, alm) {
+  const ctx = alm || (d && d.origen) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+  const v = valeDe(num, ctx);
   if (!v) throw new Error('Transferencia no encontrada: ' + num);
   if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') throw new Error(`Esta transferencia ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`);
   if (!d.lineas || !d.lineas.length) throw new Error('Agregue al menos un ítem en la carga de material.');
@@ -4180,21 +4181,41 @@ function nuevoF(tipo, extra) {
   return Object.assign({ tipo, num: null, origen: S.ctx, destino: defDest, resp: null, sup: '', proyecto: '', cuenta: '',
     fechaReq: hoy(), fechaDev: sumarDias(hoy(), 7), fechaAsig: hoy(), obs: '', lineas: [], sel: -1, cap: null, valeRef: '', detalle: '', malUso: 'NO', dictamen: 'POR EVALUAR', hecho: null }, extra || {});
 }
-function editarSolicitudVale(param) {
+function editarSolicitudVale(param, alm) {
   let num = '';
+  let a = alm || '';
   if (typeof param === 'string') num = param;
-  else if (param && typeof param === 'object') num = param.solicitud || param.vale || param.num || '';
+  else if (param && typeof param === 'object') {
+    num = param.solicitud || param.vale || param.num || '';
+    a = param.origen || param.alm || a;
+  }
   if (!num) return toast('Seleccione una solicitud o vale para editar.', 'err');
-  ir('solNueva', { num });
+  a = a || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+  ir('solNueva', { num, alm: a });
 }
 
 VISTAS.solNueva = p => {
   if (p && p.num) {
-    const s = solDe(p.num) || DB.solicitudes.find(x => x.vale === p.num);
-    const v = valeDe(p.num) || (s && s.vale ? valeDe(s.vale) : null);
+    const ctx = (p && p.alm) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+    let s = solDe(p.num, ctx);
+    if (!s && ctx && ctx !== 'TODOS' && ctx !== 'MAESTRO') {
+      s = (DB.solicitudes || []).find(x => (x.vale === p.num || x.num === p.num) && (x.origen === ctx || x.destino === ctx));
+    }
+    if (!s) {
+      s = (DB.solicitudes || []).find(x => x.vale === p.num || x.num === p.num);
+    }
+
+    let v = valeDe(p.num, ctx);
+    if (!v && s && s.vale) {
+      v = valeDe(s.vale, ctx);
+    }
+    if (!v && p.num && ctx && ctx !== 'TODOS' && ctx !== 'MAESTRO') {
+      v = (DB.vales || []).find(x => x.num === p.num && (x.origen === ctx || x.destino === ctx));
+    }
+
     if (!s && !v) return ir('sol');
     const base = s || v;
-    const origen = s ? s.origen : v.origen;
+    const origen = (v && v.origen) ? v.origen : (s ? s.origen : ctx);
 
     if (s && (s.estatus === 'ANULADO' || s.estatus === 'ANULADA')) {
       toast(`La solicitud ${s.num} está ANULADA y no se puede editar.`, 'err');
@@ -4224,7 +4245,8 @@ VISTAS.solNueva = p => {
 VISTAS.trfNueva = p => {
   if (!puede('transferir', S.ctx)) { $('area').innerHTML = cab('Nueva transferencia') + avisoSinPermiso('Su usuario no tiene permiso para registrar transferencias desde este almacén.'); return; }
   if (p && p.num) {
-    const v = valeDe(p.num);
+    const ctx = (p && p.alm) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+    const v = valeDe(p.num, ctx);
     if (!v) return ir('trfEnv');
     if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') {
       toast(`La transferencia ${v.num} ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`, 'err');
@@ -4678,6 +4700,7 @@ function finalizarFormulario(finalizar) {
     } else if (t === 'TRF') {
       if (F.num) {
         const v = actualizarTransferencia(F.num, {
+          origen: F.origen,
           destino: F.destino,
           resp: F.resp,
           sup: F.sup,
@@ -4718,7 +4741,7 @@ function finalizarFormulario(finalizar) {
    CREACIÓN DE SOLICITUDES (estilo SIP) · Préstamos y asignaciones
    ===================================================================== */
 function pintarSolicitud() {
-  const t = F.tipo, s = F.num ? solDe(F.num) : null;
+  const t = F.tipo, s = F.num ? solDe(F.num, F.origen) : null;
   const est = s ? formatoEstSol(s.estatus) : 'FINALIZADA';
   const L = txt => `<div class="lb">${txt}</div>`;
   const fechas = t === 'PRH'
@@ -4748,7 +4771,7 @@ function pintarSolicitud() {
     <div class="pie-form"><div class="totales" id="fTotales"></div><div class="der">
       <button class="btn btn-claro" onclick="ir('sol')">Cancelar</button>
       <button class="btn btn-verde" onclick="finalizarFormulario(true)">💾 Generar e imprimir vale</button>
-      ${(s && s.vale) ? `<button class="btn btn-azul" onclick="imprimirVale('${s.vale}')">🖨 Imprimir vale</button>` : ''}
+      ${(s && s.vale) ? `<button class="btn btn-azul" onclick="imprimirVale('${s.vale}', '${F.origen}')">🖨 Imprimir vale</button>` : ''}
     </div></div></div>${datalistPersonal()}`;
   bindResponsableProyecto();
   bindCaptura();
@@ -5325,7 +5348,7 @@ function accionesDoc(d, esSol, p) {
       const ok = puede('aprobar', d.origen) && d.generadoPor.usuario !== S.u.usuario;
       h += `<button class="btn btn-rojo" ${ok ? '' : 'disabled'} onclick="accionAnular('${d.num}')">Anular solicitud</button><button class="btn btn-verde" ${ok ? '' : 'disabled'} onclick="accionAprobar('${d.num}')">Aceptar solicitud</button>`;
     }
-    h += `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.num}')">✏️ Editar solicitud / vale</button>`;
+    h += `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.num}', '${d.origen}')">✏️ Editar solicitud / vale</button>`;
     if (d.vale && puedeImprimir()) h += `<button class="btn btn-azul" onclick="imprimirVale('${d.vale}', '${d.origen}')">🖨 Imprimir vale</button>`;
     return h;
   }
@@ -5338,7 +5361,7 @@ function accionesDoc(d, esSol, p) {
     }
   }
   if ((d.tipo === 'PRH' || d.tipo === 'ASI') && d.origen === S.ctx) {
-    h += `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.num}')">✏️ Editar ${d.tipo === 'ASI' ? 'asignación' : 'préstamo'}</button>`;
+    h += `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.num}', '${d.origen}')">✏️ Editar ${d.tipo === 'ASI' ? 'asignación' : 'préstamo'}</button>`;
     if (saldoVale(d) > 0) {
       h += `<button class="btn btn-claro" onclick="ir('dev',{vale:'${d.num}'})">Registrar devolución</button>`;
       if (d.tipo === 'PRH') h += `<button class="btn btn-claro" onclick="ir('plz',{vale:'${d.num}'})">Extender plazo</button>`;
@@ -5374,7 +5397,7 @@ VISTAS.sol = p => {
   const cols = [
     { t: 'Número', k: 'num', f: r => {
       const docNum = r.vale || r.num;
-      return `<a href="javascript:void(0)" onclick="event.stopPropagation();ir('doc',{num:'${docNum}',back:'sol'})" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="Haga clic para ver el vale ${docNum}">${esc(r.num)}</a>`;
+      return `<a href="javascript:void(0)" onclick="event.stopPropagation();ir('doc',{num:'${docNum}',alm:'${r.origen}',back:'sol'})" style="font-weight:800;color:var(--azul);text-decoration:underline;cursor:pointer" title="Haga clic para ver el vale ${docNum}">${esc(r.num)}</a>`;
     }},
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
     { t: 'Movimiento', v: r => `${r.tipo} - ${TIPOS[r.tipo].n}` },
@@ -5384,7 +5407,7 @@ VISTAS.sol = p => {
     { t: 'Solicitado por', v: r => r.resp ? r.resp.nombre : '' },
     { t: 'Generado por', v: r => r.generadoPor.nombre },
     { t: 'Estatus', k: 'estatus', f: r => estB(formatoEstSol(r.estatus)) },
-    { t: 'Vale', v: r => r.vale || '', f: r => r.vale ? `<a href="javascript:void(0)" onclick="event.stopPropagation();ir('doc',{num:'${r.vale}',back:'sol'})" style="font-weight:800;color:var(--azul)">${esc(r.vale)}</a>` : '—' }
+    { t: 'Vale', v: r => r.vale || '', f: r => r.vale ? `<a href="javascript:void(0)" onclick="event.stopPropagation();ir('doc',{num:'${r.vale}',alm:'${r.origen}',back:'sol'})" style="font-weight:800;color:var(--azul)">${esc(r.vale)}</a>` : '—' }
   ];
   $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos y asignaciones de ' + esc(almNombre(S.ctx)) + '. Al crear una solicitud, se emite de inmediato el vale para imprimir y firmar.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
@@ -5393,9 +5416,9 @@ VISTAS.sol = p => {
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
       <button class="btn-sip" onclick="ir('solNueva')">Nueva solicitud</button>
-      <button class="btn-sip btn-ambar" id="bEditar" disabled onclick="editarSolicitudVale(selDe('gSol'))">✏️ Editar solicitud / vale</button>
-      <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').vale || selDe('gSol').num,back:'sol'})">Visualizar vale</button>
-      <button class="btn-sip" id="bImp" disabled onclick="imprimirVale(selDe('gSol').vale || selDe('gSol').num)">🖨 Imprimir vale</button>
+      <button class="btn-sip btn-ambar" id="bEditar" disabled onclick="editarSolicitudVale(selDe('gSol'), S.ctx)">✏️ Editar solicitud / vale</button>
+      <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').vale || selDe('gSol').num,alm:selDe('gSol').origen,back:'sol'})">Visualizar vale</button>
+      <button class="btn-sip" id="bImp" disabled onclick="imprimirVale(selDe('gSol').vale || selDe('gSol').num, selDe('gSol').origen)">🖨 Imprimir vale</button>
       <button class="btn-ayuda" onclick="ayuda('sol')">AYUDA</button>
     </div>`;
   if (p && p.sel) { const g = GR.gSol; const i = g.vis.findIndex(r => r.num === p.sel); if (i >= 0) selGrid('gSol', i); }
@@ -5481,7 +5504,7 @@ function accionAnular(n) { pedirTexto('Anular solicitud ' + n, 'Motivo de anulac
    TRANSFERENCIAS
    ===================================================================== */
 const colsTrf = (recibidas) => [
-  { t: 'N° vale', k: 'num', f: r => (!recibidas && r.estatus === 'PENDIENTE DE RECEPCIÓN') ? `<a href="javascript:void(0)" onclick="event.stopPropagation();editarTransferencia('${r.num}')" style="color:var(--azul);font-weight:800;text-decoration:underline" title="Haga clic para editar la transferencia ${r.num}">${esc(r.num)}</a>` : `<b>${esc(r.num)}</b>` },
+  { t: 'N° vale', k: 'num', f: r => (!recibidas && r.estatus === 'PENDIENTE DE RECEPCIÓN') ? `<a href="javascript:void(0)" onclick="event.stopPropagation();editarTransferencia('${r.num}', '${r.origen}')" style="color:var(--azul);font-weight:800;text-decoration:underline" title="Haga clic para editar la transferencia ${r.num}">${esc(r.num)}</a>` : `<b>${esc(r.num)}</b>` },
   { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
   { t: 'Tiempo restante (12 h)', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
@@ -5538,7 +5561,7 @@ VISTAS.trfRec = p => {
       <button class="btn-sip" id="rVer" disabled onclick="ir('doc',{num:selDe('gRec').num,back:'trfRec'})">Visualizar transferencia</button>
       <button class="btn-sip" id="rOk" disabled onclick="accionAceptarTrf(selDe('gRec').num)">Aceptar transferencia</button>
       <button class="btn-sip" id="rNo" disabled onclick="accionRechazarTrf(selDe('gRec').num)">Rechazar transferencia</button>
-      <button class="btn-sip" id="rImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gRec').num)">Imprimir vale</button>
+      <button class="btn-sip" id="rImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gRec').num, selDe('gRec').origen)">Imprimir vale</button>
       <button class="btn-ayuda" onclick="ayuda('trf')">AYUDA</button>
     </div>`;
 };
@@ -5576,9 +5599,10 @@ function accionAceptarTrf(n) {
   confirmar(`¿Aceptar la transferencia <b>${n}</b> desde ${esc(almNombre(v.origen))}?<br><br>Carga: ${det.join(', ')} en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(n); toast(`Transferencia ${n} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
 }
 function accionRechazarTrf(n) { pedirTexto('Rechazar transferencia ' + n, 'Motivo del rechazo (obligatorio)', v => { rechazarTransferencia(n, v); toast(`Transferencia ${n} rechazada. El material regresó al almacén de origen.`, 'ok'); pintarMenu(); refrescar(); }, 'Rechazar transferencia', 'btn-rojo', true); }
-function editarTransferencia(n) {
+function editarTransferencia(n, alm) {
   if (!n) return;
-  const v = valeDe(n);
+  const ctx = alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+  const v = valeDe(n, ctx);
   if (!v) return toast('Transferencia no encontrada.', 'err');
   if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') {
     return toast(`La transferencia ${v.num} ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`, 'err');
@@ -5586,7 +5610,7 @@ function editarTransferencia(n) {
   if (!puede('transferir', v.origen)) {
     return toast(`Su usuario no tiene permiso para editar transferencias desde ${almNombre(v.origen)}.`, 'err');
   }
-  ir('trfNueva', { num: v.num });
+  ir('trfNueva', { num: v.num, alm: v.origen });
 }
 VISTAS.trfEnv = p => {
   p = p || {};
@@ -5607,10 +5631,10 @@ VISTAS.trfEnv = p => {
     <div class="sel-strip"><span class="lbl">Transferencia seleccionada</span><span class="box" id="teNum"></span><span class="box" id="teInfo" style="flex:1"></span></div>
     <div class="barra-btn">
       ${puede('transferir', S.ctx) ? `<button class="btn-sip" onclick="ir('trfNueva')">Nueva transferencia</button>` : ''}
-      <button class="btn-sip" id="eEdit" disabled onclick="editarTransferencia(selDe('gEnv').num)">Editar transferencia</button>
+      <button class="btn-sip" id="eEdit" disabled onclick="editarTransferencia(selDe('gEnv').num, selDe('gEnv').origen)">Editar transferencia</button>
       <button class="btn-sip" id="eVer" disabled onclick="ir('doc',{num:selDe('gEnv').num,back:'trfEnv'})">Visualizar transferencia</button>
-      <button class="btn-sip" id="eImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gEnv').num)">Imprimir vale</button>
-      <button class="btn-sip" id="eHist" disabled onclick="verHistorial(selDe('gEnv').num)">Ver historial</button>
+      <button class="btn-sip" id="eImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gEnv').num, selDe('gEnv').origen)">Imprimir vale</button>
+      <button class="btn-sip" id="eHist" disabled onclick="verHistorial(selDe('gEnv').num, selDe('gEnv').origen)">Ver historial</button>
       <button class="btn-ayuda" onclick="ayuda('trf')">AYUDA</button>
     </div>`;
 };
@@ -6476,9 +6500,9 @@ VISTAS.cVales = p => {
       </div>`
     + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; $('vDet').disabled = false; } })
     + `<div class="barra-btn">
-        <button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,back:'cVales'})">Visualizar</button>
-        <button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num)">Imprimir vale</button>
-        <button class="btn-sip" id="vDet" disabled onclick="ir('cValesDet',{vale:selDe('gVal').num})">Ver detalle de ítems</button>
+        <button class="btn-sip" id="vVer" disabled onclick="ir('doc',{num:selDe('gVal').num,alm:selDe('gVal').origen,back:'cVales'})">Visualizar</button>
+        <button class="btn-sip" id="vImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gVal').num, selDe('gVal').origen)">Imprimir vale</button>
+        <button class="btn-sip" id="vDet" disabled onclick="ir('cValesDet',{vale:selDe('gVal').num,alm:selDe('gVal').origen})">Ver detalle de ítems</button>
       </div>`;
 };
 
@@ -6600,8 +6624,8 @@ VISTAS.cValesDet = p => {
     + grid('gValDet', cols, rows, { pag: 25, onSel: r => tiraValDet(r) })
     + `<div class="sel-strip"><span class="lbl">Renglón seleccionado</span><span class="box" id="vdVale"></span><span class="box" id="vdItem" style="flex:1"></span></div>
     <div class="barra-btn">
-      <button class="btn-sip" id="vdVer" disabled onclick="ir('doc',{num:selDe('gValDet').v.num,back:'cValesDet'})">Visualizar vale</button>
-      <button class="btn-sip" id="vdImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gValDet').v.num)">Imprimir vale</button>
+      <button class="btn-sip" id="vdVer" disabled onclick="ir('doc',{num:selDe('gValDet').v.num,alm:selDe('gValDet').v.origen,back:'cValesDet'})">Visualizar vale</button>
+      <button class="btn-sip" id="vdImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gValDet').v.num, selDe('gValDet').v.origen)">Imprimir vale</button>
       <button class="btn-sip" id="vdKdx" disabled onclick="ir('cKardex',{q:selDe('gValDet').l.serial || selDe('gValDet').l.cod || selDe('gValDet').it.cod})">Ver Kardex del ítem</button>
     </div>`;
 };
@@ -7866,7 +7890,12 @@ function restaurarRespaldo() {
    ===================================================================== */
 function imprimirVale(n, alm) {
   if (!n) return toast('El vale aún no tiene número asignado.', 'err');
-  const v = valeDe(n, alm); if (!v) return toast('Vale no encontrado.', 'err');
+  let v = valeDe(n, alm);
+  if (!v && String(n).startsWith('SOL-')) {
+    const s = solDe(n, alm);
+    if (s && s.vale) v = valeDe(s.vale, alm || s.origen);
+  }
+  if (!v) return toast('Vale no encontrado.', 'err');
   const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT';
 
   if (!puedeImprimir()) return toast('La impresión del vale corresponde al personal del almacén. El supervisor solo aprueba.', 'err');
@@ -7976,7 +8005,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V12';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V14';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
