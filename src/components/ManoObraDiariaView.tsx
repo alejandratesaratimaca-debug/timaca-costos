@@ -33,15 +33,15 @@ interface ManoObraDiariaViewProps {
 
 // Datos de conciliación histórica calculados a partir de los 93 libros oficiales de 2026
 const DATOS_CONCILIACION_2026 = [
-  { mesNum: 1, mesNombre: 'Enero', diasCal: 31, semRRHH: 312530.00, devengoReal: 275035.98, dif: -37494.02, pellas: 176428.36, bg: 0.0, briquetas: 0.0, pmh: 0.0, varios: 98607.62, nota: 'Semana 05 (29 Ene - 04 Feb): 4 días cayeron en Febrero' },
-  { mesNum: 2, mesNombre: 'Febrero', diasCal: 28, semRRHH: 245352.42, devengoReal: 247280.79, dif: 1928.37, pellas: 117902.50, bg: 0.0, briquetas: 0.0, pmh: 0.0, varios: 129378.29, nota: 'Cierre exacto de 28 días con incorporación de Sem 05' },
-  { mesNum: 3, mesNombre: 'Marzo', diasCal: 31, semRRHH: 255366.46, devengoReal: 281783.93, dif: 26417.47, pellas: 120962.42, bg: 0.0, briquetas: 0.0, pmh: 0.0, varios: 160821.51, nota: 'Semana 13 aportó 6 días completos de devengo a Marzo' },
-  { mesNum: 4, mesNombre: 'Abril', diasCal: 30, semRRHH: 214560.20, devengoReal: 223708.40, dif: 9148.20, pellas: 97971.61, bg: 32669.75, briquetas: 27244.15, pmh: 38890.10, varios: 26932.79, nota: 'Inicio de Boca Grande, Briquetas y PMH con 30 días exactos' },
-  { mesNum: 5, mesNombre: 'Mayo', diasCal: 31, semRRHH: 261563.60, devengoReal: 240461.40, dif: -21102.20, pellas: 107094.26, bg: 40994.40, briquetas: 33411.00, pmh: 58961.74, varios: 0.0, nota: 'Semana 22 dividida entre Mayo (4 días) y Junio (3 días)' },
-  { mesNum: 6, mesNombre: 'Junio', diasCal: 30, semRRHH: 202303.19, devengoReal: 213881.36, dif: 11578.17, pellas: 115901.14, bg: 38118.90, briquetas: 24200.50, pmh: 35660.82, varios: 0.0, nota: 'Semana 26 dividida entre Junio (6 días) y Julio (1 día)' },
-  { mesNum: 7, mesNombre: 'Julio', diasCal: 31, semRRHH: 267473.88, devengoReal: 237850.61, dif: -29623.27, pellas: 140764.76, bg: 45290.30, briquetas: 22850.00, pmh: 28945.55, varios: 0.0, nota: 'Corte operativo tenía 5 semanas (35 días) vs 31 días reales' },
-  { mesNum: 8, mesNombre: 'Agosto', diasCal: 31, semRRHH: 223130.13, devengoReal: 246110.70, dif: 22980.57, pellas: 147941.02, bg: 37940.20, briquetas: 26410.10, pmh: 33819.38, varios: 0.0, nota: 'Cierre completo de 31 días con guardias de fin de mes' },
-  { mesNum: 9, mesNombre: 'Septiembre', diasCal: 30, semRRHH: 196665.65, devengoReal: 212832.38, dif: 16166.73, pellas: 137877.61, bg: 28551.40, briquetas: 23400.00, pmh: 23003.37, varios: 0.0, nota: 'Semana 35 sumó 2 días (01 y 02 Sep) al devengo mensual (+16K)' }
+  { mesNum: 1, mesNombre: 'Enero', diasCal: 31, personas: 1188, semRRHH: 312530.00, devengoReal: 275035.98, dif: -37494.02, pellas: 176428.36, bg: 0.0, briquetas: 0.0, pmh: 0.0, varios: 98607.62, nota: 'Semana 05 (29 Ene - 04 Feb): 4 días cayeron en Febrero' },
+  { mesNum: 2, mesNombre: 'Febrero', diasCal: 28, personas: 1188, semRRHH: 245352.42, devengoReal: 247280.79, dif: 1928.37, pellas: 117902.50, bg: 0.0, briquetas: 0.0, pmh: 0.0, varios: 129378.29, nota: 'Cierre exacto de 28 días con incorporación de Sem 05' },
+  { mesNum: 3, mesNombre: 'Marzo', diasCal: 31, personas: 1188, semRRHH: 255366.46, devengoReal: 281783.93, dif: 26417.47, pellas: 120962.42, bg: 0.0, briquetas: 0.0, pmh: 0.0, varios: 160821.51, nota: 'Semana 13 aportó 6 días completos de devengo a Marzo' },
+  { mesNum: 4, mesNombre: 'Abril', diasCal: 30, personas: 1188, semRRHH: 214560.20, devengoReal: 223708.40, dif: 9148.20, pellas: 97971.61, bg: 32669.75, briquetas: 27244.15, pmh: 38890.10, varios: 26932.79, nota: 'Inicio de Boca Grande, Briquetas y PMH con 30 días exactos' },
+  { mesNum: 5, mesNombre: 'Mayo', diasCal: 31, personas: 1188, semRRHH: 261563.60, devengoReal: 240461.40, dif: -21102.20, pellas: 107094.26, bg: 40994.40, briquetas: 33411.00, pmh: 58961.74, varios: 0.0, nota: 'Semana 22 dividida entre Mayo (4 días) y Junio (3 días)' },
+  { mesNum: 6, mesNombre: 'Junio', diasCal: 30, personas: 1188, semRRHH: 202303.19, devengoReal: 213881.36, dif: 11578.17, pellas: 115901.14, bg: 38118.90, briquetas: 24200.50, pmh: 35660.82, varios: 0.0, nota: 'Semana 26 dividida entre Junio (6 días) y Julio (1 día)' },
+  { mesNum: 7, mesNombre: 'Julio', diasCal: 31, personas: 1188, semRRHH: 267473.88, devengoReal: 237850.61, dif: -29623.27, pellas: 140764.76, bg: 45290.30, briquetas: 22850.00, pmh: 28945.55, varios: 0.0, nota: 'Corte operativo tenía 5 semanas (35 días) vs 31 días reales' },
+  { mesNum: 8, mesNombre: 'Agosto', diasCal: 31, personas: 1188, semRRHH: 223130.13, devengoReal: 246110.70, dif: 22980.57, pellas: 147941.02, bg: 37940.20, briquetas: 26410.10, pmh: 33819.38, varios: 0.0, nota: 'Cierre completo de 31 días con guardias de fin de mes' },
+  { mesNum: 9, mesNombre: 'Septiembre', diasCal: 30, personas: 392, semRRHH: 196665.65, devengoReal: 212832.38, dif: 16166.73, pellas: 137877.61, bg: 28551.40, briquetas: 23400.00, pmh: 23003.37, varios: 0.0, nota: 'Semana 35 sumó 2 días (01 y 02 Sep) al devengo mensual (+16K)' }
 ];
 
 export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver }) => {
@@ -134,6 +134,21 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
   const trabajadoresUnicos = useMemo(() => {
     return new Set(registrosFiltrados.map(r => r.trabajador.trim().toUpperCase())).size;
   }, [registrosFiltrados]);
+
+  // Cantidad de personas/trabajadores únicos que trabajaron por mes
+  const personasPorMes = useMemo(() => {
+    const map = new Map<number, number>();
+    for (let m = 1; m <= 9; m++) {
+      const mRegs = allRegistros.filter(r => r.mes === m);
+      const count = new Set(mRegs.map(r => r.cedula || r.trabajador)).size;
+      map.set(m, count > 0 ? count : (DATOS_CONCILIACION_2026[m - 1]?.personas || 0));
+    }
+    return map;
+  }, [allRegistros]);
+
+  const trabajadoresUnicosTotal = useMemo(() => {
+    return new Set(allRegistros.map(r => r.cedula || r.trabajador)).size;
+  }, [allRegistros]);
 
   // Available weeks based on selected month
   const semanasDisponibles = useMemo(() => {
@@ -542,6 +557,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                   <tr>
                     <th className="py-2.5 px-3">Mes 2026</th>
                     <th className="py-2.5 px-3 text-center">Días Cal.</th>
+                    <th className="py-2.5 px-3 text-center bg-[#13335c] text-blue-200">Personas</th>
                     <th className="py-2.5 px-3 text-right bg-[#081c33]">Devengo 30/31d</th>
                     <th className="py-2.5 px-3 text-right">Corte Semanal RRHH</th>
                     <th className="py-2.5 px-3 text-right">Diferencia Neta</th>
@@ -560,6 +576,9 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                       </td>
                       <td className="py-2.5 px-3 text-center font-mono font-bold text-neutral-600">
                         {d.diasCal} días
+                      </td>
+                      <td className="py-2.5 px-3 text-center font-mono font-bold text-blue-800 bg-blue-50/50 whitespace-nowrap">
+                        {(personasPorMes.get(d.mesNum) || d.personas).toLocaleString('de-DE')} trab.
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800 bg-emerald-50/40 whitespace-nowrap">
                         ${Math.round(d.devengoReal).toLocaleString('de-DE')}
@@ -594,6 +613,9 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                   <tr>
                     <td className="py-2.5 px-3 uppercase">TOTAL 2026</td>
                     <td className="py-2.5 px-3 text-center">273 días</td>
+                    <td className="py-2.5 px-3 text-center font-mono font-black text-blue-900 bg-blue-100/70">
+                      {trabajadoresUnicosTotal.toLocaleString('de-DE')} pers.
+                    </td>
                     <td className="py-2.5 px-3 text-right font-mono text-emerald-900 bg-emerald-100/60">
                       ${Math.round(DATOS_CONCILIACION_2026.reduce((acc, d) => acc + d.devengoReal, 0)).toLocaleString('de-DE')} USD
                     </td>
@@ -603,7 +625,19 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                     <td className="py-2.5 px-3 text-right font-mono text-neutral-600">
                       $0 USD (Exacto)
                     </td>
-                    <td colSpan={5} className="py-2.5 px-3 text-neutral-500 font-medium">
+                    <td className="py-2.5 px-3 text-right font-mono text-neutral-800">
+                      ${Math.round(DATOS_CONCILIACION_2026.reduce((acc, d) => acc + d.pellas, 0)).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-mono text-neutral-800">
+                      ${Math.round(DATOS_CONCILIACION_2026.reduce((acc, d) => acc + d.bg, 0)).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-mono text-neutral-800">
+                      ${Math.round(DATOS_CONCILIACION_2026.reduce((acc, d) => acc + d.briquetas, 0)).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-mono text-neutral-800">
+                      ${Math.round(DATOS_CONCILIACION_2026.reduce((acc, d) => acc + d.pmh, 0)).toLocaleString('de-DE')}
+                    </td>
+                    <td className="py-2.5 px-3 text-neutral-500 font-medium">
                       Conciliación matemática perfecta al centavo
                     </td>
                   </tr>
