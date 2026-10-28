@@ -4217,7 +4217,7 @@ function pintarFormulario() {
     + campo('Almacén origen', `<input value="${esc(almNombre(F.origen).replace('Almacén ', '').toUpperCase())}" readonly>`);
   if (t === 'TRF') {
     cabecera += campo('Almacén destino', `<select id="fDestino" ${ro}>${destinosPermitidos(F.origen).map(c => `<option value="${c}" ${c === F.destino ? 'selected' : ''}>${esc(almNombre(c))}</option>`).join('')}</select>`)
-      + campo('Realizado por', `<input value="${esc(S.u.nombre)}" readonly>`) + campo('Cédula', `<input value="${esc(S.u.cedula)}" readonly>`) + campo('Cargo', `<input value="${esc(S.u.cargo)}" readonly>`)
+      + campo('Realizado por', `<input value="${esc(S.u.nombre)}" readonly>`)
       + campo('Quién despacha', `<input id="fDespacha" ${ro} placeholder="Quién despacha" value="${esc(F.despacha || S.u.nombre)}">`)
       + campo('Responsable custodio', `<input id="fResp" ${ro} autocomplete="off" placeholder="Escriba el nombre o la cédula" value="${esc(F.resp ? F.resp.nombre : '')}">`)
       + campo('Cédula', `<input id="fCed" readonly value="${esc(F.resp ? F.resp.cedula : '')}" placeholder="Se completa al elegir el responsable">`)
@@ -5166,7 +5166,7 @@ VISTAS.doc = p => {
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
     + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', almNombre(d.destino));
   if (t === 'TRF') {
-    c += R('Realizado por', d.realizadoPor.nombre) + R('Cédula', d.realizadoPor.cedula) + R('Cargo', d.realizadoPor.cargo);
+    c += R('Realizado por', d.realizadoPor.nombre);
     if (d.despacha) c += R('Quién despacha', d.despacha);
     if (d.resp) c += R('Responsable custodio', d.resp.nombre) + R('Cédula', d.resp.cedula) + R('Cargo', d.resp.cargo);
     if (d.cuenta) c += R('Cuenta auxiliar', d.cuenta);
@@ -7830,7 +7830,7 @@ function imprimirVale(n, alm) {
   const izq = esEnt
     ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)}</div><div><b>Cédula:</b> ${esc(v.realizadoPor.cedula)}</div><div><b>Cargo:</b> ${esc(v.realizadoPor.cargo)}</div>`
     : esTrf
-    ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)} (${esc(v.realizadoPor.cargo)})</div><div><b>Despachado por:</b> ${esc(v.despacha || v.realizadoPor.nombre)}</div>${v.resp ? `<div><b>Responsable / Custodio:</b> ${esc(v.resp.nombre)} (C.I. ${esc(v.resp.cedula)})</div><div><b>Cargo:</b> ${esc(v.resp.cargo)}</div>` : ''}`
+    ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)}</div><div><b>Despachado por:</b> ${esc(v.despacha || v.realizadoPor.nombre)}</div>${v.resp ? `<div><b>Responsable / Custodio:</b> ${esc(v.resp.nombre)} (C.I. ${esc(v.resp.cedula)})</div><div><b>Cargo:</b> ${esc(v.resp.cargo)}</div>` : ''}`
     : `<div><b>Responsable:</b> ${esc(v.resp ? v.resp.nombre : '')}</div><div><b>Cédula:</b> ${esc(v.resp ? v.resp.cedula : '')}</div><div><b>Cargo / Supervisor:</b> ${esc(v.resp ? v.resp.cargo : '')} / ${esc(v.sup)}</div><div><b>Cuenta Auxiliar:</b> ${esc(v.cuenta)}</div>`;
 
   const der = esEnt
