@@ -35,7 +35,8 @@ import {
   Info,
   TableProperties,
   Square,
-  RectangleHorizontal
+  RectangleHorizontal,
+  LayoutGrid
 } from 'lucide-react';
 import { GraficaMensualEvolucion } from './GraficaMensualEvolucion';
 import { 
@@ -79,7 +80,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
   const [slide4Tab, setSlide4Tab] = useState<'variaciones' | 'mixProcura'>('variaciones');
   const [slide5Tab, setSlide5Tab] = useState<'contrato' | 'evolucion' | 'tabla-evolutivo'>('contrato');
   const [slide6Tab, setSlide6Tab] = useState<'servicios' | 'horasMaquina'>('servicios');
-  const [slidePmhTab, setSlidePmhTab] = useState<'materiales' | 'obras'>('materiales');
+  const [slidePmhTab, setSlidePmhTab] = useState<'ambos' | 'materiales' | 'obras'>('ambos');
   const [slideDravoTab, setSlideDravoTab] = useState<'evolucion' | 'blindajes'>('evolucion');
   const [slide7Tab, setSlide7Tab] = useState<'prorrateo' | 'subconceptos'>('prorrateo');
   const [slide8Tab, setSlide8Tab] = useState<'semaforo' | 'notas'>('semaforo');
@@ -2986,6 +2987,17 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
 
                   <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
                     <button
+                      onClick={() => setSlidePmhTab('ambos')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        slidePmhTab === 'ambos'
+                          ? 'bg-[#0b2545] text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                      }`}
+                    >
+                      <LayoutGrid className="w-3.5 h-3.5" />
+                      <span>Ver Ambos</span>
+                    </button>
+                    <button
                       onClick={() => setSlidePmhTab('materiales')}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                         slidePmhTab === 'materiales'
@@ -3046,116 +3058,130 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                 </div>
 
                 {/* Main Content Area */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className={slidePmhTab === 'ambos' ? "grid grid-cols-1 lg:grid-cols-2 gap-4" : "space-y-4"}>
                   {/* Left Column: Materiales Críticos */}
-                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-blue-600" />
-                        <span>Materiales e Insumos Críticos Despachados</span>
-                      </h3>
-                      <span className="text-[11px] font-bold font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                        $249.494 USD
-                      </span>
-                    </div>
+                  {(slidePmhTab === 'ambos' || slidePmhTab === 'materiales') && (
+                    <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3 animate-fade-in">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                          <Layers className="w-4 h-4 text-blue-600" />
+                          <span>Materiales e Insumos Críticos Despachados</span>
+                          {slidePmhTab === 'materiales' && (
+                            <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                              Vista Detallada Activa
+                            </span>
+                          )}
+                        </h3>
+                        <span className="text-[11px] font-bold font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                          $249.494 USD
+                        </span>
+                      </div>
 
-                    <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300">
-                      <table className="w-full text-left text-xs border-collapse min-w-[480px]">
-                        <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-                          <tr>
-                            <th className="py-2 px-2.5">Insumo Despachado</th>
-                            <th className="py-2 px-2 text-center">Cant / UM</th>
-                            <th className="py-2 px-2 text-right">Monto ($)</th>
-                            <th className="py-2 px-2.5">Función en Obra</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 text-[11px]">
-                          <tr className="hover:bg-slate-50/70">
-                            <td className="py-2 px-2.5 font-medium text-slate-900">Apoyos Elastómero Neopreno Shore A 60 ASTM</td>
-                            <td className="py-2 px-2 text-center font-mono">48 UND</td>
-                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$67.000</td>
-                            <td className="py-2 px-2.5 text-slate-500">Amortiguamiento sísmico y térmico de galerías</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50/70">
-                            <td className="py-2 px-2.5 font-medium text-slate-900">Tubería Conduit PVC Alto Impacto 5" Pesada</td>
-                            <td className="py-2 px-2 text-center font-mono">1.240 M</td>
-                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$27.846</td>
-                            <td className="py-2 px-2.5 text-slate-500">Canalizaciones subterráneas de fuerza y control</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50/70">
-                            <td className="py-2 px-2.5 font-medium text-slate-900">Concreto Premezclado Estructural 250 kg/cm²</td>
-                            <td className="py-2 px-2 text-center font-mono">180 M³</td>
-                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$25.488</td>
-                            <td className="py-2 px-2.5 text-slate-500">Pedestales y zapatas de torres de transferencia</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50/70">
-                            <td className="py-2 px-2.5 font-medium text-slate-900">Perfiles Estructurales y Planchas ASTM A36</td>
-                            <td className="py-2 px-2 text-center font-mono">78.500 KG</td>
-                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$129.160</td>
-                            <td className="py-2 px-2.5 text-slate-500">Vigas maestras de soporte de cintas de mineral</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300">
+                        <table className="w-full text-left text-xs border-collapse min-w-[480px]">
+                          <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                            <tr>
+                              <th className="py-2 px-2.5">Insumo Despachado</th>
+                              <th className="py-2 px-2 text-center">Cant / UM</th>
+                              <th className="py-2 px-2 text-right">Monto ($)</th>
+                              <th className="py-2 px-2.5">Función en Obra</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-[11px]">
+                            <tr className="hover:bg-slate-50/70">
+                              <td className="py-2 px-2.5 font-medium text-slate-900">Apoyos Elastómero Neopreno Shore A 60 ASTM</td>
+                              <td className="py-2 px-2 text-center font-mono">48 UND</td>
+                              <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$67.000</td>
+                              <td className="py-2 px-2.5 text-slate-500">Amortiguamiento sísmico y térmico de galerías</td>
+                            </tr>
+                            <tr className="hover:bg-slate-50/70">
+                              <td className="py-2 px-2.5 font-medium text-slate-900">Tubería Conduit PVC Alto Impacto 5" Pesada</td>
+                              <td className="py-2 px-2 text-center font-mono">1.240 M</td>
+                              <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$27.846</td>
+                              <td className="py-2 px-2.5 text-slate-500">Canalizaciones subterráneas de fuerza y control</td>
+                            </tr>
+                            <tr className="hover:bg-slate-50/70">
+                              <td className="py-2 px-2.5 font-medium text-slate-900">Concreto Premezclado Estructural 250 kg/cm²</td>
+                              <td className="py-2 px-2 text-center font-mono">180 M³</td>
+                              <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$25.488</td>
+                              <td className="py-2 px-2.5 text-slate-500">Pedestales y zapatas de torres de transferencia</td>
+                            </tr>
+                            <tr className="hover:bg-slate-50/70">
+                              <td className="py-2 px-2.5 font-medium text-slate-900">Perfiles Estructurales y Planchas ASTM A36</td>
+                              <td className="py-2 px-2 text-center font-mono">78.500 KG</td>
+                              <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$129.160</td>
+                              <td className="py-2 px-2.5 text-slate-500">Vigas maestras de soporte de cintas de mineral</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Right Column: Red de Proyectos Complejo PMH */}
-                  <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                        <Briefcase className="w-4 h-4 text-emerald-600" />
-                        <span>Red de Proyectos del Complejo PMH (FMO / VISCO)</span>
-                      </h3>
-                      <span className="text-[11px] font-bold font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        $438.002 USD (Sep)
-                      </span>
-                    </div>
+                  {(slidePmhTab === 'ambos' || slidePmhTab === 'obras') && (
+                    <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3 animate-fade-in">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <h3 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                          <Briefcase className="w-4 h-4 text-emerald-600" />
+                          <span>Red de Proyectos del Complejo PMH (FMO / VISCO)</span>
+                          {slidePmhTab === 'obras' && (
+                            <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                              Vista Detallada Activa
+                            </span>
+                          )}
+                        </h3>
+                        <span className="text-[11px] font-bold font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          $438.002 USD (Sep)
+                        </span>
+                      </div>
 
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs border-collapse">
-                        <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-                          <tr>
-                            <th className="py-2 px-2.5">Frente de Trabajo / Obra</th>
-                            <th className="py-2 px-2 text-center">Cuenta</th>
-                            <th className="py-2 px-2 text-right">Septiembre</th>
-                            <th className="py-2 px-2.5 text-right">Acumulado 2026</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 text-[11px]">
-                          <tr className="hover:bg-slate-50/70">
-                            <td className="py-2 px-2.5 font-bold text-slate-900">Segunda Línea PMH (Incremento Capacidad)</td>
-                            <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0671</td>
-                            <td className="py-2 px-2 text-right font-bold text-blue-700 font-mono">$291.949</td>
-                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">$1.143.217</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50/70">
-                            <td className="py-2 px-2.5 font-medium text-slate-800">Rehabilitación Bandas Torre #3 a JD-8012</td>
-                            <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0656</td>
-                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$92.544</td>
-                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">$1.235.820</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50/70">
-                            <td className="py-2 px-2.5 font-medium text-slate-800">Proyecto Pila HA y HB (Suministro Apilador)</td>
-                            <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0678</td>
-                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$47.673</td>
-                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">$329.757</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50/70">
-                            <td className="py-2 px-2.5 font-medium text-slate-800">Interconexión Tolva Multipropósito PMH</td>
-                            <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0655</td>
-                            <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$5.836</td>
-                            <td className="py-2 px-2.5 text-right font-mono text-slate-700">$294.459</td>
-                          </tr>
-                          <tr className="bg-slate-50/90 font-bold border-t border-slate-200">
-                            <td className="py-2 px-2.5 text-slate-900">TOTAL COMPLEJO PMH (4 FRENTES ACTIVOS)</td>
-                            <td className="py-2 px-2 text-center font-mono text-slate-600">4 CTAS</td>
-                            <td className="py-2 px-2 text-right font-black text-emerald-700 font-mono">$438.002</td>
-                            <td className="py-2 px-2.5 text-right font-black text-slate-900 font-mono">$3.003.253</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                            <tr>
+                              <th className="py-2 px-2.5">Frente de Trabajo / Obra</th>
+                              <th className="py-2 px-2 text-center">Cuenta</th>
+                              <th className="py-2 px-2 text-right">Septiembre</th>
+                              <th className="py-2 px-2.5 text-right">Acumulado 2026</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-[11px]">
+                            <tr className="hover:bg-slate-50/70">
+                              <td className="py-2 px-2.5 font-bold text-slate-900">Segunda Línea PMH (Incremento Capacidad)</td>
+                              <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0671</td>
+                              <td className="py-2 px-2 text-right font-bold text-blue-700 font-mono">$291.949</td>
+                              <td className="py-2 px-2.5 text-right font-mono text-slate-700">$1.143.217</td>
+                            </tr>
+                            <tr className="hover:bg-slate-50/70">
+                              <td className="py-2 px-2.5 font-medium text-slate-800">Rehabilitación Bandas Torre #3 a JD-8012</td>
+                              <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0656</td>
+                              <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$92.544</td>
+                              <td className="py-2 px-2.5 text-right font-mono text-slate-700">$1.235.820</td>
+                            </tr>
+                            <tr className="hover:bg-slate-50/70">
+                              <td className="py-2 px-2.5 font-medium text-slate-800">Proyecto Pila HA y HB (Suministro Apilador)</td>
+                              <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0678</td>
+                              <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$47.673</td>
+                              <td className="py-2 px-2.5 text-right font-mono text-slate-700">$329.757</td>
+                            </tr>
+                            <tr className="hover:bg-slate-50/70">
+                              <td className="py-2 px-2.5 font-medium text-slate-800">Interconexión Tolva Multipropósito PMH</td>
+                              <td className="py-2 px-2 text-center font-mono text-slate-500">TTE-C-0655</td>
+                              <td className="py-2 px-2 text-right font-bold text-slate-900 font-mono">$5.836</td>
+                              <td className="py-2 px-2.5 text-right font-mono text-slate-700">$294.459</td>
+                            </tr>
+                            <tr className="bg-slate-50/90 font-bold border-t border-slate-200">
+                              <td className="py-2 px-2.5 text-slate-900">TOTAL COMPLEJO PMH (4 FRENTES ACTIVOS)</td>
+                              <td className="py-2 px-2 text-center font-mono text-slate-600">4 CTAS</td>
+                              <td className="py-2 px-2 text-right font-black text-emerald-700 font-mono">$438.002</td>
+                              <td className="py-2 px-2.5 text-right font-black text-slate-900 font-mono">$3.003.253</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Callout Box: Dictamen Técnico */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import { 
   Building2, 
+  Briefcase,
   RefreshCw, 
   Search, 
   Filter, 
@@ -466,6 +467,7 @@ export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
 
 // Caché en memoria para las sábanas SIP del Master Unificado (evita re-descargas y congelamientos)
 const masterStaticCache = new Map<string, any[]>();
+let isLanApiAvailable: boolean | null = null;
 
 export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoricos: boolean): Promise<any[]> {
   const cacheKey = `${mesKey || 'todos'}_${isVerAjustesHistoricos}`;
@@ -485,52 +487,13 @@ export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoric
         items = items.filter((r: any) => (r.nombre_mes || '').toLowerCase() === lowerMes);
       }
     }
-  } else if (lowerMes === 'octubre') {
-    const res = await fetch('/data/sip/unificada_octubre.json');
-    if (res.ok) {
-      const d = await res.json();
-      items = d.items || [];
-    }
-  } else if (lowerMes === 'septiembre') {
-    const res = await fetch('/data/sip/unificada_septiembre.json');
-    if (res.ok) {
-      const d = await res.json();
-      items = d.items || [];
-    }
-  } else if (lowerMes === 'agosto') {
-    const res = await fetch('/data/sip/unificada_agosto.json');
-    if (res.ok) {
-      const d = await res.json();
-      items = d.items || [];
-    }
-  } else if (['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio'].includes(lowerMes)) {
-    const res = await fetch('/data/sip/ajustes_historicos_2026.json');
-    if (res.ok) {
-      const d = await res.json();
-      const allHist = d.items || [];
-      items = allHist.filter((r: any) => (r.nombre_mes || '').toLowerCase() === lowerMes);
-    }
   } else if (lowerMes === 'todos') {
-    // CARGAR Y CONSOLIDAR TODOS LOS REGISTROS DEL AÑO 2026 (ENERO A OCTUBRE)
+    // CARGAR Y CONSOLIDAR REGISTROS OPERATIVOS DE TODOS LOS MESES
     try {
-      const [resHist, resAgo, resSep, resOct] = await Promise.all([
-        fetch('/data/sip/ajustes_historicos_2026.json'),
-        fetch('/data/sip/unificada_agosto.json'),
-        fetch('/data/sip/unificada_septiembre.json'),
-        fetch('/data/sip/unificada_octubre.json')
-      ]);
-      const [dHist, dAgo, dSep, dOct] = await Promise.all([
-        resHist.ok ? resHist.json() : { items: [] },
-        resAgo.ok ? resAgo.json() : { items: [] },
-        resSep.ok ? resSep.json() : { items: [] },
-        resOct.ok ? resOct.json() : { items: [] }
-      ]);
-      items = [
-        ...(dHist.items || []),
-        ...(dAgo.items || []),
-        ...(dSep.items || []),
-        ...(dOct.items || [])
-      ];
+      const mesesConsolidados = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+      const responses = await Promise.all(mesesConsolidados.map(m => fetch(`/data/sip/unificada_${m}.json`)));
+      const dataSets = await Promise.all(responses.map(r => r.ok ? r.json() : { items: [] }));
+      items = dataSets.flatMap(d => d.items || []);
     } catch (e) {
       const resFallback = await fetch('/data/sip/unificada_septiembre.json');
       if (resFallback.ok) {
@@ -539,10 +502,25 @@ export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoric
       }
     }
   } else {
-    const resFallback = await fetch('/data/sip/unificada_septiembre.json');
-    if (resFallback.ok) {
-      const d = await resFallback.json();
-      items = d.items || [];
+    // CARGAR ARCHIVO DEDICADO DEL MES SELECCIONADO (Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic)
+    try {
+      const res = await fetch(`/data/sip/unificada_${lowerMes}.json`);
+      if (res.ok) {
+        const d = await res.json();
+        items = d.items || [];
+      } else {
+        const resFallback = await fetch('/data/sip/unificada_septiembre.json');
+        if (resFallback.ok) {
+          const d = await resFallback.json();
+          items = d.items || [];
+        }
+      }
+    } catch (e) {
+      const resFallback = await fetch('/data/sip/unificada_septiembre.json');
+      if (resFallback.ok) {
+        const d = await resFallback.json();
+        items = d.items || [];
+      }
     }
   }
 
@@ -726,6 +704,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [isLoadingCompras, setIsLoadingCompras] = useState(false);
 
   const [searchMatriz, setSearchMatriz] = useState('');
+  const [filterTipoMatriz, setFilterTipoMatriz] = useState<'TODOS' | 'EXTERNOS' | 'INTERNOS'>('TODOS');
 
   // Módulo de Correcciones States
   const [searchMovimiento, setSearchMovimiento] = useState('');
@@ -960,9 +939,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       if (fechaDesde) params.set('fecha_desde', fechaDesde);
       if (fechaHasta) params.set('fecha_hasta', fechaHasta);
       let res = null;
-      try {
-        res = await fetch('http://192.168.13.193:3005/api/unificada?' + params.toString(), { signal: AbortSignal.timeout(2500) });
-      } catch (e) {}
+      if (isLanApiAvailable !== false) {
+        try {
+          res = await fetch('http://192.168.13.193:3005/api/unificada?' + params.toString(), { signal: AbortSignal.timeout(400) });
+          if (!res.ok) isLanApiAvailable = false;
+        } catch (e) {
+          isLanApiAvailable = false;
+        }
+      }
       if (res && res.ok) {
         const data = await res.json();
         setMasterRows(data.items || []);
@@ -2099,15 +2083,76 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       .sort((a, b) => (b.totalUSD || 0) - (a.totalUSD || 0));
   }, [compras, searchCompras, filterTipoCompras]);
 
-  const filteredProyectosMatriz = useMemo(() => {
-    if (!matrizData) return [];
-    return matrizData.proyectos.filter(p => 
-      !searchMatriz ||
-      p.codigo.toLowerCase().includes(searchMatriz.toLowerCase()) ||
-      p.nombre.toLowerCase().includes(searchMatriz.toLowerCase()) ||
-      (p.cliente && p.cliente.toLowerCase().includes(searchMatriz.toLowerCase()))
+  const isProyectoExterno = (p: Proyecto) => {
+    if (p.codigo === 'SIN-ASIGNAR') return false;
+    return (
+      p.codigo.startsWith('TTE-C') ||
+      p.tipoCosto === 'Externo' ||
+      (p.cliente && (p.cliente.toUpperCase().includes('VISCO') || p.cliente.toUpperCase().includes('IMPSA')))
     );
-  }, [matrizData, searchMatriz]);
+  };
+
+  const { conteoExternosMatriz, conteoInternosMatriz } = useMemo(() => {
+    if (!matrizData?.proyectos) return { conteoExternosMatriz: 0, conteoInternosMatriz: 0 };
+    let ext = 0;
+    let int = 0;
+    for (const p of matrizData.proyectos) {
+      if (isProyectoExterno(p)) ext++;
+      else int++;
+    }
+    return { conteoExternosMatriz: ext, conteoInternosMatriz: int };
+  }, [matrizData]);
+
+  const filteredProyectosMatriz = useMemo(() => {
+    if (!matrizData?.proyectos) return [];
+    return matrizData.proyectos.filter(p => {
+      if (filterTipoMatriz === 'EXTERNOS' && !isProyectoExterno(p)) return false;
+      if (filterTipoMatriz === 'INTERNOS' && isProyectoExterno(p)) return false;
+      if (!searchMatriz.trim()) return true;
+      const q = searchMatriz.toLowerCase().trim();
+      return (
+        p.codigo.toLowerCase().includes(q) ||
+        p.nombre.toLowerCase().includes(q) ||
+        (p.cliente && p.cliente.toLowerCase().includes(q)) ||
+        (p.tipoCosto && p.tipoCosto.toLowerCase().includes(q))
+      );
+    });
+  }, [matrizData, searchMatriz, filterTipoMatriz]);
+
+  const matrizTotalesDinamicos = useMemo(() => {
+    if (!matrizData?.proyectos) {
+      return { granTotal: 0, totalMateriales: 0, totalServicios: 0, count: 0 };
+    }
+    const totMat = filteredProyectosMatriz.reduce((sum, p) => sum + (p.materialesDirectos || 0), 0);
+    const totServ = filteredProyectosMatriz.reduce((sum, p) => sum + (p.servicios || 0), 0);
+    const totGen = filteredProyectosMatriz.reduce((sum, p) => sum + (p.totalUSD || 0), 0);
+    return {
+      granTotal: Math.round(totGen * 100) / 100,
+      totalMateriales: Math.round(totMat * 100) / 100,
+      totalServicios: Math.round(totServ * 100) / 100,
+      count: filteredProyectosMatriz.length
+    };
+  }, [matrizData, filteredProyectosMatriz]);
+
+  const handleExportMatrizExcel = () => {
+    if (!filteredProyectosMatriz || filteredProyectosMatriz.length === 0) return;
+    const dataExport = filteredProyectosMatriz.map(p => ({
+      'Cuenta Auxiliar': p.codigo,
+      'Descripción del Proyecto': p.nombre,
+      'Cliente': p.cliente || 'TIMACA',
+      'Clasificación / Tipo': isProyectoExterno(p) ? 'Externo (Cliente)' : (p.tipoCosto || 'Interno / OPEX'),
+      'Materiales Directos (USD)': p.materialesDirectos || 0,
+      'Servicios y Subcontratos (USD)': p.servicios || 0,
+      'Total General (USD)': p.totalUSD || 0,
+      'Vales Consumos': p.totalItemsConsumos || 0,
+      'Órdenes Compra': p.totalItemsCompras || 0
+    }));
+    const ws = XLSX.utils.json_to_sheet(dataExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Matriz_Proyectos');
+    const suffix = filterTipoMatriz === 'EXTERNOS' ? 'Externos' : filterTipoMatriz === 'INTERNOS' ? 'Internos_OPEX' : 'Todos';
+    XLSX.writeFile(wb, `Matriz_Costos_Proyectos_${suffix}_Octubre_2026.xlsx`);
+  };
 
   const filteredReclasificaciones = useMemo(() => {
     return reclasificaciones.filter(r => {
