@@ -3352,6 +3352,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   <div className="text-xl lg:text-2xl font-black text-white mt-1">
                     {formatUSD(masterTotales.gran_total)}
                   </div>
+                  <div 
+                    className="text-[10px] text-blue-200/90 font-medium leading-tight mt-0.5"
+                    title="Registro transaccional en bruto en SIP (vales de almacén y órdenes de compra acumuladas). Difiere del informe auditado ($12,05M) que mide avance físico a Sep."
+                  >
+                    * Base transaccional bruta SIP (vales y compras de almacén)
+                  </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-blue-100 mt-1 font-mono">
                     <span>{formatNumber(masterTotales.total_count)} filas</span>
                     <span>•</span>
