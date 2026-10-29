@@ -793,7 +793,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   // States for Historial de Correcciones (auditoría de las 447 correcciones)
   const [searchHistorialCorrecciones, setSearchHistorialCorrecciones] = useState('');
-  const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'historicas' | 'recientes' | 'consumos' | 'compras' | 'rezagadas' | 'valorizaciones_pellas'>('todos');
+  const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'historicas' | 'recientes' | 'consumos' | 'compras' | 'rezagadas' | 'valorizaciones_pellas' | 'pellas_todas'>('todos');
   const [pageReclasificaciones, setPageReclasificaciones] = useState(1);
 
   // States for Cargas de Insumos al Cierre (MDO, HM & Costos Indirectos)
@@ -2154,11 +2154,30 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     XLSX.writeFile(wb, `Matriz_Costos_Proyectos_${suffix}_Octubre_2026.xlsx`);
   };
 
+  const isPellas1Record = (r: any) => {
+    if (!r) return false;
+    const cta = (r.nuevaCuenta || r.cuentaAnterior || '').toUpperCase();
+    const proj = (r.nuevoProyecto || r.proyectoAnterior || '').toLowerCase();
+    const mot = (r.motivo || '').toLowerCase();
+    const rec = String(r.recordId || '').toUpperCase();
+    return cta.includes('0706') || proj.includes('línea 1') || proj.includes('linea 1') || rec.includes('0706') || mot.includes('0706');
+  };
+
+  const isPellasTotalRecord = (r: any) => {
+    if (!r) return false;
+    const cta = (r.nuevaCuenta || r.cuentaAnterior || '').toUpperCase();
+    const proj = (r.nuevoProyecto || r.proyectoAnterior || '').toLowerCase();
+    const mot = (r.motivo || '').toLowerCase();
+    return cta.includes('0706') || cta.includes('0676') || cta.includes('0640') || cta.includes('0104') || cta.includes('0681') || proj.includes('pella') || mot.includes('pella');
+  };
+
   const filteredReclasificaciones = useMemo(() => {
     return reclasificaciones.filter(r => {
       // 1. Filtro por origen
       if (filtroTipoHistorial === 'valorizaciones_pellas') {
-        if (!r.recordId || !String(r.recordId).startsWith('VAL-0706')) return false;
+        if (!isPellas1Record(r)) return false;
+      } else if (filtroTipoHistorial === 'pellas_todas') {
+        if (!isPellasTotalRecord(r)) return false;
       } else if (filtroTipoHistorial === 'historicas') {
         const isHist = (r.usuario && r.usuario.includes('Correcciones.xlsx')) || (r.recordId && String(r.recordId).startsWith('HIST-'));
         if (!isHist) return false;
@@ -5558,7 +5577,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-1">
-                    Auditoría de correcciones: <strong>456 correcciones históricas anteriores</strong> (cargadas de <span className="font-mono text-slate-600">Y:\Costos Master\2 Data Fija\Correcciones.xlsx</span>) + <strong>3.668 valorizaciones de Pellas 1 y re-imputaciones encontradas directamente en el sistema SIP</strong>.
+                    Auditoría de correcciones: <strong>456 correcciones históricas anteriores</strong> (cargadas de <span className="font-mono text-slate-600">Y:\Costos Master\2 Data Fija\Correcciones.xlsx</span>) + <strong>{reclasificaciones.filter(isPellas1Record).length.toLocaleString()} valorizaciones de Pellas 1</strong> ({reclasificaciones.filter(isPellasTotalRecord).length.toLocaleString()} en todas las obras de Pellas) y re-imputaciones encontradas directamente en el sistema SIP.
                   </p>
                 </div>
 
@@ -5586,13 +5605,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     }}
                     className="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-purple-600"
                   >
-                    <option value="todos">Todos los Orígenes ({reclasificaciones.length})</option>
-                    <option value="valorizaciones_pellas">🏭 Valorizaciones Pellas 1 (Directas del Sistema SIP) ({reclasificaciones.filter(x => x.recordId && String(x.recordId).startsWith('VAL-0706')).length})</option>
-                    <option value="historicas">📋 Históricas Anteriores (Correcciones.xlsx) ({reclasificaciones.filter(x => x.usuario?.includes('Correcciones.xlsx')).length})</option>
-                    <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && x.motivo.toLowerCase().includes('rezagad'))).length})</option>
-                    <option value="recientes">⚡ Recientes Sistema</option>
-                    <option value="consumos">Solo Consumos</option>
-                    <option value="compras">Solo Compras / Servicios</option>
+                    <option value="todos">Todos los Orígenes ({reclasificaciones.length.toLocaleString()})</option>
+                    <option value="valorizaciones_pellas">🏭 Valorizaciones Pellas 1 (Línea 1 · TTE-C-0706) ({reclasificaciones.filter(isPellas1Record).length.toLocaleString()})</option>
+                    <option value="pellas_todas">🏗️ Todas las Plantas de Pellas ({reclasificaciones.filter(isPellasTotalRecord).length.toLocaleString()})</option>
+                    <option value="historicas">📋 Históricas Anteriores (Correcciones.xlsx) ({reclasificaciones.filter(x => (x.usuario && x.usuario.includes('Correcciones.xlsx')) || (x.recordId && String(x.recordId).startsWith('HIST-'))).length.toLocaleString()})</option>
+                    <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && x.motivo.toLowerCase().includes('rezagad'))).length.toLocaleString()})</option>
+                    <option value="recientes">⚡ Recientes Sistema ({reclasificaciones.filter(x => !((x.usuario && x.usuario.includes('Correcciones.xlsx')) || (x.recordId && String(x.recordId).startsWith('HIST-')))).length.toLocaleString()})</option>
+                    <option value="consumos">Solo Consumos ({reclasificaciones.filter(x => x.tipoItem === 'consumo').length.toLocaleString()})</option>
+                    <option value="compras">Solo Compras / Servicios ({reclasificaciones.filter(x => x.tipoItem === 'compra').length.toLocaleString()})</option>
                   </select>
                 </div>
               </div>
