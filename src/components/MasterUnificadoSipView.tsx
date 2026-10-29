@@ -41,6 +41,7 @@ import {
 } from 'lucide-react';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 import { safeNumber, safeFormatUSD, safeFormatQuantity, safePercent } from '../utils/numericHelpers';
+import { BandejaAlertasSipView } from './BandejaAlertasSipView';
 
 interface Proyecto {
   codigo: string;
@@ -624,7 +625,7 @@ export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoric
 }
 
 export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
-  const [activeTab, setActiveTab] = useState<'unificada' | 'matriz' | 'consumos' | 'compras' | 'correcciones' | 'cargas'>('unificada');
+  const [activeTab, setActiveTab] = useState<'unificada' | 'matriz' | 'consumos' | 'compras' | 'correcciones' | 'cargas' | 'alertas'>('unificada');
   const [status, setStatus] = useState<Status | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
@@ -3069,6 +3070,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               4,138
             </span>
           )}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('alertas')}
+          className={`flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 transition-all ${
+            activeTab === 'alertas'
+              ? 'border-red-600 text-red-700 bg-red-50/70 font-bold'
+              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}
+        >
+          <AlertCircle className="w-4 h-4 text-red-600" />
+          Alertas Precios & UM
+          <span className="px-2 py-0.5 text-[10px] rounded-full bg-red-100 text-red-800 font-bold animate-pulse">
+            Revisión
+          </span>
         </button>
 
         <button
@@ -6307,6 +6323,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               </div>
             </div>
           </div>
+        )}
+
+        {/* TAB 7: BANDEJA DE ALERTAS DE PRECIOS Y UNIDADES DE MEDIDA (PA vs DP vs OC) */}
+        {activeTab === 'alertas' && (
+          <BandejaAlertasSipView />
         )}
 
       </main>
