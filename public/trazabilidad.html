@@ -345,26 +345,33 @@ table.grid tbody tr.sel td{background:#DBEAFE!important;color:#1E3A8A!important;
 .vale-items th{color:#475569;font-weight:700;text-align:left;padding:6px 4px;border-bottom:1.5px solid #CBD5E1;border-top:1px solid #CBD5E1;font-size:9.5px;text-transform:uppercase}
 .vale-items td{padding:5px 4px;border-bottom:1px solid #E5E7EB;font-size:10px}
 .vale-items .c{text-align:center}
-.vale-extra{font-size:11px;margin-top:12px;border:1px dashed #CBD5E1;border-radius:6px;padding:8px 12px;line-height:1.6}
-.vale-firmas{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:70px;font-size:11px;text-align:center}
-.vale-firmas div{border-top:1.5px solid #111;padding-top:6px}
-.vale-firmas b{display:block}
+.vale-cierre{page-break-inside:avoid;break-inside:avoid;margin-top:10px}
+.vale-extra{font-size:10.5px;margin-top:6px;border:1px dashed #CBD5E1;border-radius:6px;padding:6px 12px;line-height:1.5;page-break-inside:avoid;break-inside:avoid}
+.vale-firmas{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:28px;font-size:11px;text-align:center;page-break-inside:avoid;break-inside:avoid}
+.vale-extra + .vale-firmas{margin-top:18px}
+.vale-firmas div{border-top:1.5px solid #111;padding-top:5px;page-break-inside:avoid;break-inside:avoid}
+.vale-firmas b{display:block;font-size:11px}
 .vale-firmas span{color:#475569;font-size:10px}
-.vale-firmas .nom{display:block;margin-top:3px;font-size:10px;color:#111}
+.vale-firmas .nom{display:block;margin-top:2px;font-size:10px;color:#111;font-weight:600}
 .rep-tabla{width:100%;border-collapse:collapse;font-size:10px}
 .rep-tabla th{background:#EEF2F7;text-align:left;padding:5px;border:1px solid #CBD5E1}
 .rep-tabla td{padding:4px 5px;border:1px solid #E2E8F0}
 
 @media print{
-  @page{size:letter portrait;margin:0}
+  @page{size:letter portrait;margin:8mm 8mm 8mm 8mm}
   body *{visibility:hidden}
   #hojaImpresion,#hojaImpresion *{visibility:visible}
   #vistaImpresion{position:absolute;inset:0;background:#fff;display:block!important;overflow:visible}
-  #hojaImpresion{position:absolute;left:0;top:0;margin:0;box-shadow:none;width:100%}
+  #hojaImpresion{position:absolute;left:0;top:0;margin:0;box-shadow:none;width:100%!important;padding:0!important}
   .vi-barra{display:none!important}
   table.vale-items tfoot{display:none!important}
   table.vale-items tr{page-break-inside:avoid;break-inside:avoid}
   tr.fila-total-piezas{page-break-inside:avoid;break-inside:avoid}
+  .vale-cierre{page-break-inside:avoid!important;break-inside:avoid!important;margin-top:8px!important}
+  .vale-extra{page-break-inside:avoid!important;break-inside:avoid!important;margin-top:4px!important;padding:4px 8px!important}
+  .vale-firmas{page-break-inside:avoid!important;break-inside:avoid!important;margin-top:20px!important}
+  .vale-extra + .vale-firmas{margin-top:14px!important}
+  .vale-firmas div{page-break-inside:avoid!important;break-inside:avoid!important}
 }
 @media (max-width:1100px){.captura{grid-template-columns:repeat(4,1fr)}.captura .c-desc{grid-column:span 3}}
 @media (max-width:1200px){.tres-col{grid-template-columns:1fr 1fr}}
@@ -8384,8 +8391,10 @@ function imprimirVale(n, alm) {
     </div>
     <div class="vale-datos"><div>${izq}</div><div>${der}</div></div>
     ${tablaHtml}
-    ${extra ? `<div class="vale-extra">${extra}</div>` : ''}
-    <div class="vale-firmas">${firmas.map(f => `<div><b>${esc(f[0])}</b><span>${esc(f[1])}</span>${f[2] ? `<span class="nom">${esc(f[2])}</span>` : ''}</div>`).join('')}</div>`;
+    <div class="vale-cierre">
+      ${extra ? `<div class="vale-extra">${extra}</div>` : ''}
+      <div class="vale-firmas">${firmas.map(f => `<div><b>${esc(f[0])}</b><span>${esc(f[1])}</span>${f[2] ? `<span class="nom">${esc(f[2])}</span>` : ''}</div>`).join('')}</div>
+    </div>`;
   abrirImpresion();
 }
 
