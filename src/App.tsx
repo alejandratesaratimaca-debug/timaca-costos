@@ -3,33 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { CostosProvider } from './context/CostosContext';
 import { Header } from './components/Header';
-import { DashboardView } from './components/DashboardView';
-import { DashboardInternosView } from './components/DashboardInternosView';
-import { InformeInternosPPTView } from './components/InformeInternosPPTView';
-import { ProyectosView } from './components/ProyectosView';
-import { SemanaSemanaView } from './components/SemanaSemanaView';
-import { MesMesView } from './components/MesMesView';
-import { InformeMensualView } from './components/InformeMensualView';
-import { CategoriaDetalleView } from './components/CategoriaDetalleView';
-import { MatrizProyectosCategoriasView } from './components/MatrizProyectosCategoriasView';
-import { DesglosePartidaView } from './components/DesglosePartidaView';
-import { ManoObraDiariaView } from './components/ManoObraDiariaView';
-import { UsuariosView } from './components/UsuariosView';
-import { ImportModal } from './components/ImportModal';
-import { MasterUnificadoSipView } from './components/MasterUnificadoSipView';
-import { CatalogoPreciosView } from './components/CatalogoPreciosView';
-import { SalidaFormModal } from './components/SalidaFormModal';
-import { LoginPortadaView } from './components/LoginPortadaView';
-import { HerramientasModuleView } from './components/herramientas/HerramientasModuleView';
-import { DotacionModuleView } from './components/dotacion/DotacionModuleView';
-import { SeguridadModuleView } from './components/seguridad/SeguridadModuleView';
-import { CertificadosModuleView } from './components/certificados/CertificadosModuleView';
-import { SIPPmhModuleView } from './components/sip-pmh/SIPPmhModuleView';
-import { RRHHModuleView } from './components/rrhh/RRHHModuleView';
 import { Sidebar } from './components/Sidebar';
+import { LoginPortadaView } from './components/LoginPortadaView';
 import { VersionUpdateNotifier } from './components/VersionUpdateNotifier';
 import { SalidaCosto } from './types/costos';
 import { UsuarioSistema, USUARIOS_INICIALES_TIMACA } from './types/usuarios';
@@ -49,6 +27,115 @@ import {
   Clock
 } from 'lucide-react';
 import { restaurarSesion, cerrarSesion } from './lib/auth';
+
+// Lazy loaded views for ultra-fast bundle load and isolated memory consumption
+const DashboardView = lazy(() => import('./components/DashboardView').then(m => ({ default: m.DashboardView })));
+const DashboardInternosView = lazy(() => import('./components/DashboardInternosView').then(m => ({ default: m.DashboardInternosView })));
+const InformeInternosPPTView = lazy(() => import('./components/InformeInternosPPTView').then(m => ({ default: m.InformeInternosPPTView })));
+const ProyectosView = lazy(() => import('./components/ProyectosView').then(m => ({ default: m.ProyectosView })));
+const SemanaSemanaView = lazy(() => import('./components/SemanaSemanaView').then(m => ({ default: m.SemanaSemanaView })));
+const MesMesView = lazy(() => import('./components/MesMesView').then(m => ({ default: m.MesMesView })));
+const InformeMensualView = lazy(() => import('./components/InformeMensualView').then(m => ({ default: m.InformeMensualView })));
+const CategoriaDetalleView = lazy(() => import('./components/CategoriaDetalleView').then(m => ({ default: m.CategoriaDetalleView })));
+const MatrizProyectosCategoriasView = lazy(() => import('./components/MatrizProyectosCategoriasView').then(m => ({ default: m.MatrizProyectosCategoriasView })));
+const DesglosePartidaView = lazy(() => import('./components/DesglosePartidaView').then(m => ({ default: m.DesglosePartidaView })));
+const ManoObraDiariaView = lazy(() => import('./components/ManoObraDiariaView').then(m => ({ default: m.ManoObraDiariaView })));
+const UsuariosView = lazy(() => import('./components/UsuariosView').then(m => ({ default: m.UsuariosView })));
+const MasterUnificadoSipView = lazy(() => import('./components/MasterUnificadoSipView').then(m => ({ default: m.MasterUnificadoSipView })));
+const CatalogoPreciosView = lazy(() => import('./components/CatalogoPreciosView').then(m => ({ default: m.CatalogoPreciosView })));
+const HerramientasModuleView = lazy(() => import('./components/herramientas/HerramientasModuleView').then(m => ({ default: m.HerramientasModuleView })));
+const DotacionModuleView = lazy(() => import('./components/dotacion/DotacionModuleView').then(m => ({ default: m.DotacionModuleView })));
+const SeguridadModuleView = lazy(() => import('./components/seguridad/SeguridadModuleView').then(m => ({ default: m.SeguridadModuleView })));
+const CertificadosModuleView = lazy(() => import('./components/certificados/CertificadosModuleView').then(m => ({ default: m.CertificadosModuleView })));
+const SIPPmhModuleView = lazy(() => import('./components/sip-pmh/SIPPmhModuleView').then(m => ({ default: m.SIPPmhModuleView })));
+const RRHHModuleView = lazy(() => import('./components/rrhh/RRHHModuleView').then(m => ({ default: m.RRHHModuleView })));
+const ImportModal = lazy(() => import('./components/ImportModal').then(m => ({ default: m.ImportModal })));
+const SalidaFormModal = lazy(() => import('./components/SalidaFormModal').then(m => ({ default: m.SalidaFormModal })));
+
+function ViewLoader({ message = 'Cargando módulo...' }: { message?: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[380px] p-8 text-center animate-fadeIn">
+      <div className="w-10 h-10 rounded-full border-3 border-blue-100 border-t-blue-600 animate-spin mb-3" />
+      <p className="text-xs font-bold text-slate-700 tracking-tight">{message}</p>
+      <p className="text-[11px] text-slate-400 mt-0.5">Preparando datos del sistema TIMACA</p>
+    </div>
+  );
+}
+
+interface ContentErrorBoundaryProps {
+  children: React.ReactNode;
+  activeKey: string;
+  onResetToDashboard: () => void;
+}
+
+interface ContentErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+  errorKey: string;
+}
+
+class ContentErrorBoundary extends React.Component<ContentErrorBoundaryProps, ContentErrorBoundaryState> {
+  constructor(props: ContentErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null, errorKey: props.activeKey };
+  }
+
+  static getDerivedStateFromError(error: Error): Partial<ContentErrorBoundaryState> {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Error capturado en vista:', error, errorInfo);
+  }
+
+  componentDidUpdate(prevProps: ContentErrorBoundaryProps) {
+    if (prevProps.activeKey !== this.props.activeKey && this.state.hasError) {
+      this.setState({ hasError: false, error: null, errorKey: this.props.activeKey });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-amber-200 shadow-sm max-w-2xl mx-auto my-8 text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto border border-amber-200">
+            <AlertTriangle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">Observación en la vista seleccionada</h3>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1">
+              Ocurrió un detalle al procesar los datos de esta sección. Puedes reintentar o regresar al menú principal; los demás módulos continúan operativos.
+            </p>
+          </div>
+          {this.state.error && (
+            <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl text-left text-xs font-mono text-slate-700 overflow-x-auto max-h-36 select-all">
+              {this.state.error.message}
+            </div>
+          )}
+          <div className="pt-2 flex flex-wrap justify-center gap-3">
+            <button
+              onClick={() => this.setState({ hasError: false, error: null })}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer border border-slate-300"
+            >
+              Reintentar Vista
+            </button>
+            <button
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                this.props.onResetToDashboard();
+              }}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors shadow-xs cursor-pointer"
+            >
+              Volver al Dashboard Principal
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const AUTH_STATE_STORAGE_KEY = 'TIMACA_AUTH_STATE_ACTIVE_V1';
 const ACTIVE_USER_STORAGE_KEY = 'TIMACA_ACTIVE_USER_ID_V7_PERMISOS_HSE';
@@ -367,6 +454,16 @@ function AppContent() {
 
         {/* Main Container */}
         <main className="flex-1 max-w-[1920px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-5">
+          <ContentErrorBoundary
+            activeKey={`${moduloActivo}-${entornoActivo}-${activeTab}-${dashboardSubTab}-${proyectosSubTab}-${informeSubTab}`}
+            onResetToDashboard={() => {
+              handleCambiarModulo('costos');
+              handleCambiarEntorno('externos');
+              setActiveTab('dashboard');
+              setDashboardSubTab('resumen');
+            }}
+          >
+            <Suspense fallback={<ViewLoader />}>
         
         {/* ================= MÓDULO 1: SISTEMA DE HERRAMIENTAS ================= */}
         {moduloActivo === 'herramientas' && (
@@ -816,22 +913,30 @@ function AppContent() {
           </>
         )
       )}
-      </main>
+            </Suspense>
+          </ContentErrorBoundary>
+        </main>
 
-      {/* Modals */}
-      <ImportModal
-        isOpen={isImportOpen}
-        onClose={() => setIsImportOpen(false)}
-      />
+        {/* Modals con carga diferida */}
+        <Suspense fallback={null}>
+          {isImportOpen && (
+            <ImportModal
+              isOpen={isImportOpen}
+              onClose={() => setIsImportOpen(false)}
+            />
+          )}
 
-      <SalidaFormModal
-        isOpen={isFormOpen}
-        onClose={() => {
-          setIsFormOpen(false);
-          setSalidaToEdit(null);
-        }}
-        salidaToEdit={salidaToEdit}
-      />
+          {isFormOpen && (
+            <SalidaFormModal
+              isOpen={isFormOpen}
+              onClose={() => {
+                setIsFormOpen(false);
+                setSalidaToEdit(null);
+              }}
+              salidaToEdit={salidaToEdit}
+            />
+          )}
+        </Suspense>
 
       {/* Footer Adaptativo */}
       <footer className={`py-3.5 mt-8 transition-colors duration-300 border-t ${
@@ -899,8 +1004,22 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error capturado por ErrorBoundary:', error, errorInfo);
+    console.error('Error global capturado por ErrorBoundary:', error, errorInfo);
   }
+
+  handleResetAndReload = () => {
+    try {
+      localStorage.removeItem('TIMACA_ACTIVE_TAB_NAV');
+      localStorage.removeItem('TIMACA_ACTIVE_CAT_NAV');
+      localStorage.removeItem('TIMACA_ACTIVE_PARTIDA_NAV');
+      localStorage.removeItem('TIMACA_MODULO_SUITE_ACTIVO');
+      localStorage.removeItem('TIMACA_ENTORNO_ACTIVO');
+    } catch {
+      // ignore
+    }
+    this.setState({ hasError: false, error: null });
+    window.location.reload();
+  };
 
   render() {
     if (this.state.hasError) {
@@ -910,24 +1029,27 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <h2 className="text-xl font-bold text-slate-900">Se ha detectado una observación en la vista</h2>
+            <h2 className="text-xl font-bold text-slate-900">Se ha detectado una observación en el sistema</h2>
             <p className="text-sm text-slate-600">
-              Ocurrió un error inesperado al renderizar este componente. Puedes recargar el sistema de costos para restablecer el estado.
+              Ocurrió un error inesperado al renderizar la aplicación. Puedes reintentar o volver al inicio con la navegación restablecida.
             </p>
             {this.state.error && (
-              <div className="bg-slate-100 p-3 rounded-lg text-left text-xs font-mono text-slate-700 overflow-x-auto max-h-32">
+              <div className="bg-slate-100 p-3 rounded-lg text-left text-xs font-mono text-slate-700 overflow-x-auto max-h-32 select-all">
                 {this.state.error.message}
               </div>
             )}
-            <div className="pt-2 flex justify-center gap-3">
+            <div className="pt-2 flex flex-wrap justify-center gap-3">
               <button
-                onClick={() => {
-                  this.setState({ hasError: false, error: null });
-                  window.location.reload();
-                }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-xs"
+                onClick={() => this.setState({ hasError: false, error: null })}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-colors cursor-pointer border border-slate-300"
               >
-                Recargar Sistema
+                Reintentar
+              </button>
+              <button
+                onClick={this.handleResetAndReload}
+                className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
+              >
+                Volver al Inicio y Recargar
               </button>
             </div>
           </div>
