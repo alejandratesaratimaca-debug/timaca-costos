@@ -327,56 +327,44 @@ table.grid tbody tr.sel td{background:#DBEAFE!important;color:#1E3A8A!important;
 .chip-demo{background:var(--ambar-bg);color:var(--ambar-tx);border:1px solid #FCD34D;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:800}
 
 /* ================= IMPRESIÓN ================= */
-#vistaImpresion{display:none;position:fixed;inset:0;background:#CBD5E1;z-index:1500;overflow:auto}
-#vistaImpresion .vi-barra{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--borde);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-#hojaImpresion{background:#fff;width:215.9mm;max-width:215.9mm;min-height:279.4mm;margin:20px auto;padding:12mm 14mm;box-shadow:0 8px 24px rgba(0,0,0,.18);color:#111;box-sizing:border-box!important}
-.vale-enc{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding-bottom:8px;border-bottom:2px solid #0F172A;margin-bottom:8px}
-.vale-enc img{height:40px;width:auto}
-.vale-emp{font-size:9.5px;line-height:1.35;color:#334155}
-.vale-emp b{font-size:11px;display:block;color:#0F172A}
-.vale-tit{text-align:right;font-size:10px;line-height:1.4}
-.vale-tit .t{font-size:13.5px;font-weight:800;color:#0F172A;margin-bottom:2px;letter-spacing:.3px}
-.vale-tit .n{font-family:Consolas,"Courier New",monospace;font-size:11px;font-weight:700;color:#0284C7}
-.vale-copia{display:inline-block;border:2px solid #B91C1C;color:#B91C1C;font-weight:800;padding:1px 10px;font-size:11px;margin-top:4px;letter-spacing:2px}
-.vale-datos{border:1px solid #CBD5E1;border-radius:6px;display:grid;grid-template-columns:1fr 1fr;gap:2px 20px;padding:8px 12px;font-size:10px;margin:6px 0 10px;background:#F8FAFC}
-.vale-datos div{padding:1.5px 0}
-.vale-datos b{font-weight:700;color:#1E293B}
-.vale-items{width:100%!important;border-collapse:collapse;font-size:9px;table-layout:fixed}
-.vale-items thead{display:table-header-group!important}
-.vale-thead-enc th{background:#fff!important;border:none!important;border-bottom:1.5px solid #0F172A!important;padding:4px 0 6px!important}
-.vale-enc-cont{display:flex;justify-content:space-between;align-items:center;font-size:9px;color:#0F172A;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
-.vale-items th{color:#334155;font-weight:700;text-align:left;padding:5px 4px;border-bottom:1.5px solid #94A3B8;border-top:1px solid #CBD5E1;font-size:8.5px;text-transform:uppercase;background:#F8FAFC}
-.vale-items td{padding:4px 4px;border-bottom:1px solid #E2E8F0;font-size:9px;word-break:break-word;overflow:hidden}
+#vistaImpresion{display:none;position:fixed;inset:0;background:#E5E7EB;z-index:1500;overflow:auto}
+#vistaImpresion .vi-barra{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--borde);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+#hojaImpresion{background:#fff;width:216mm;min-height:279mm;margin:18px auto;padding:14mm 13mm;box-shadow:0 6px 20px rgba(0,0,0,.15);color:#111}
+.vale-enc{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding-bottom:10px}
+.vale-enc img{height:42px}
+.vale-emp{font-size:10px;line-height:1.35}
+.vale-emp b{font-size:11.5px;display:block}
+.vale-tit{text-align:right;font-size:10.5px;line-height:1.5}
+.vale-tit .t{font-size:14px;font-weight:800;color:#0F172A;max-width:220px;margin-left:auto;line-height:1.2;margin-bottom:4px}
+.vale-tit .n{font-family:Consolas,"Courier New",monospace;font-size:11.5px}
+.vale-copia{display:inline-block;border:2px solid #B91C1C;color:#B91C1C;font-weight:800;padding:1px 10px;font-size:12px;margin-top:4px;letter-spacing:2px}
+.vale-datos{border:1px solid #CBD5E1;border-radius:8px;display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;padding:12px 16px;font-size:11px;margin:8px 0 14px}
+.vale-datos div{padding:2px 0}
+.vale-datos b{font-weight:700}
+.vale-items{width:100%;border-collapse:collapse;font-size:10px}
+.vale-items th{color:#475569;font-weight:700;text-align:left;padding:6px 4px;border-bottom:1.5px solid #CBD5E1;border-top:1px solid #CBD5E1;font-size:9.5px;text-transform:uppercase}
+.vale-items td{padding:5px 4px;border-bottom:1px solid #E5E7EB;font-size:10px}
 .vale-items .c{text-align:center}
-.vale-cierre{page-break-inside:avoid!important;break-inside:avoid!important;margin-top:10px}
-.vale-extra{font-size:10px;margin-top:6px;border:1px dashed #CBD5E1;border-radius:6px;padding:6px 10px;line-height:1.45;background:#FAFAFA;page-break-inside:avoid!important;break-inside:avoid!important}
-.vale-firmas{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px;font-size:10.5px;text-align:center;page-break-inside:avoid!important;break-inside:avoid!important}
-.vale-firma-col{display:flex;flex-direction:column;align-items:center;text-align:center;page-break-inside:avoid!important;break-inside:avoid!important}
-.firma-espacio{height:50px;width:100%}
-.firma-linea{width:100%;border-top:1.5px solid #111;margin-bottom:5px}
-.vale-firma-col b{display:block;font-size:10.5px;font-weight:700;color:#111}
-.vale-firma-col span{display:block;color:#475569;font-size:9.5px}
-.vale-firma-col .nom{display:block;margin-top:2px;font-size:10px;color:#111;font-weight:600}
+.vale-extra{font-size:11px;margin-top:12px;border:1px dashed #CBD5E1;border-radius:6px;padding:8px 12px;line-height:1.6}
+.vale-firmas{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:70px;font-size:11px;text-align:center}
+.vale-firmas div{border-top:1.5px solid #111;padding-top:6px}
+.vale-firmas b{display:block}
+.vale-firmas span{color:#475569;font-size:10px}
+.vale-firmas .nom{display:block;margin-top:3px;font-size:10px;color:#111}
 .rep-tabla{width:100%;border-collapse:collapse;font-size:10px}
 .rep-tabla th{background:#EEF2F7;text-align:left;padding:5px;border:1px solid #CBD5E1}
 .rep-tabla td{padding:4px 5px;border:1px solid #E2E8F0}
 
 @media print{
-  @page{size:letter portrait;margin:12mm 14mm 12mm 14mm}
-  html,body{margin:0!important;padding:0!important;background:#fff!important;width:100%!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  body > *:not(#vistaImpresion){display:none!important}
-  #vistaImpresion{display:block!important;position:static!important;margin:0!important;padding:0!important;background:transparent!important;overflow:visible!important;width:100%!important}
+  @page{size:letter portrait;margin:0}
+  body *{visibility:hidden}
+  #hojaImpresion,#hojaImpresion *{visibility:visible}
+  #vistaImpresion{position:absolute;inset:0;background:#fff;display:block!important;overflow:visible}
+  #hojaImpresion{position:absolute;left:0;top:0;margin:0;box-shadow:none;width:100%}
   .vi-barra{display:none!important}
-  #hojaImpresion{position:static!important;width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;box-shadow:none!important;background:transparent!important;color:#111!important;overflow:visible!important;box-sizing:border-box!important}
-  table.vale-items{width:100%!important;page-break-inside:auto}
-  table.vale-items thead{display:table-header-group!important}
-  table.vale-items tr{page-break-inside:avoid!important;break-inside:avoid!important}
-  tr.fila-total-piezas{page-break-inside:avoid!important;break-inside:avoid!important}
-  .vale-cierre{page-break-inside:avoid!important;break-inside:avoid!important;margin-top:10px!important}
-  .vale-extra{page-break-inside:avoid!important;break-inside:avoid!important;margin-top:6px!important;padding:5px 8px!important}
-  .vale-firmas{page-break-inside:avoid!important;break-inside:avoid!important;margin-top:8px!important}
-  .vale-firma-col{page-break-inside:avoid!important;break-inside:avoid!important}
-  .firma-espacio{height:50px!important}
+  table.vale-items tfoot{display:none!important}
+  table.vale-items tr{page-break-inside:avoid;break-inside:avoid}
+  tr.fila-total-piezas{page-break-inside:avoid;break-inside:avoid}
 }
 @media (max-width:1100px){.captura{grid-template-columns:repeat(4,1fr)}.captura .c-desc{grid-column:span 3}}
 @media (max-width:1200px){.tres-col{grid-template-columns:1fr 1fr}}
@@ -8410,23 +8398,8 @@ function imprimirVale(n, alm) {
 
   const tablaHtml = `<table class="vale-items">
         <thead>
-          <tr class="vale-thead-enc">
-            <th colspan="8">
-              <div class="vale-enc-cont">
-                <span><b>TIMACA</b> · ${esc(DB.config.empresa)}</span>
-                <span><b>${esc(TIPOS[t].titulo)}</b> · N° ${esc(v.num)}</span>
-              </div>
-            </th>
-          </tr>
           <tr>
-            <th style="width:75px">Código</th>
-            <th>Descripción</th>
-            <th class="c" style="width:38px">Cantidad</th>
-            <th class="c" style="width:34px">UMB</th>
-            <th style="width:105px">Marca / Modelo</th>
-            <th style="width:65px">Serial</th>
-            <th style="width:95px">Categoría</th>
-            <th class="c" style="width:58px">Condición</th>
+            <th>Código</th><th>Descripción</th><th class="c">Cantidad</th><th class="c">UMB</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Condición</th>
           </tr>
         </thead>
         <tbody>
@@ -8463,10 +8436,8 @@ function imprimirVale(n, alm) {
     </div>
     <div class="vale-datos"><div>${izq}</div><div>${der}</div></div>
     ${tablaHtml}
-    <div class="vale-cierre">
-      ${extra ? `<div class="vale-extra">${extra}</div>` : ''}
-      <div class="vale-firmas">${firmas.map(f => `<div class="vale-firma-col"><div class="firma-espacio"></div><div class="firma-linea"></div><b>${esc(f[0])}</b><span>${esc(f[1])}</span>${f[2] ? `<span class="nom">${esc(f[2])}</span>` : ''}</div>`).join('')}</div>
-    </div>`;
+    ${extra ? `<div class="vale-extra">${extra}</div>` : ''}
+    <div class="vale-firmas">${firmas.map(f => `<div><b>${esc(f[0])}</b><span>${esc(f[1])}</span>${f[2] ? `<span class="nom">${esc(f[2])}</span>` : ''}</div>`).join('')}</div>`;
   abrirImpresion();
 }
 
