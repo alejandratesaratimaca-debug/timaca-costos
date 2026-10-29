@@ -1,5 +1,5 @@
 import React from 'react';
-import { DollarSign, Clock, Boxes, Activity, TrendingUp, Layers } from 'lucide-react';
+import { DollarSign, Clock, Boxes, Activity, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { SipCuentaSummary } from '../../services/sipDataService';
 import { safeFormatUSD, safePercent } from '../../utils/numericHelpers';
 
@@ -17,7 +17,6 @@ export const ProyectosKpiGrid: React.FC<ProyectosKpiGridProps> = ({
   const totalMonto = activeCuenta.totalMonto || 0;
   const modMonto = activeCuenta.porCategoria?.['Mano de Obra Directa'] || 0;
   const matMonto = activeCuenta.porCategoria?.['Materiales Directos'] || 0;
-  const servMonto = activeCuenta.porCategoria?.['Servicios'] || 0;
   const count = activeCuenta.salidasCount || 0;
   const ticketPromedio = count > 0 ? totalMonto / count : 0;
 
@@ -26,113 +25,109 @@ export const ProyectosKpiGrid: React.FC<ProyectosKpiGridProps> = ({
   const pctCorp = activeCuenta.porcentaje || safePercent(totalMonto, totalCorporativoPeriodo);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* KPI 1: Costo Total Imputado */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs border-l-4 border-l-blue-600 transition-all hover:shadow-sm">
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <span className="font-semibold uppercase tracking-wider text-[10px]">
-            Costo Total Imputado
-          </span>
-          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
-            <DollarSign className="w-4 h-4" />
+    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+        
+        {/* Metric 1: Costo Total Imputado */}
+        <div className="p-5 sm:p-6 space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              Costo Total Ejecutado
+            </span>
+            <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+          </div>
+
+          <div className="pt-1">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-slate-900 tracking-tight tabular-nums block">
+              {safeFormatUSD(totalMonto, false)}
+            </span>
+          </div>
+
+          <div className="pt-1 flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              {pctCorp}%
+            </span>
+            <span className="text-slate-400 text-[11px]">
+              del total TIMACA ({mesLabel || '2026'})
+            </span>
           </div>
         </div>
 
-        <div className="mt-2">
-          <span className="font-mono text-xl sm:text-2xl font-black text-slate-900 tabular-nums tracking-tight block">
-            {safeFormatUSD(totalMonto, false)}
-          </span>
-        </div>
+        {/* Metric 2: Mano de Obra (MOD) - Ámbar */}
+        <div className="p-5 sm:p-6 space-y-1 bg-slate-50/30">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              Mano de Obra (MOD)
+            </span>
+            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+          </div>
 
-        <div className="mt-2.5 flex items-center gap-1.5 text-xs">
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-            {pctCorp}% TIMACA
-          </span>
-          <span className="text-slate-400 text-[11px] truncate">
-            {mesLabel || 'Período en curso'}
-          </span>
-        </div>
-      </div>
+          <div className="pt-1">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-amber-600 tracking-tight tabular-nums block">
+              {safeFormatUSD(modMonto, false)}
+            </span>
+          </div>
 
-      {/* KPI 2: Mano de Obra Directa (MOD) - Ámbar */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs border-l-4 border-l-amber-500 transition-all hover:shadow-sm">
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <span className="font-semibold uppercase tracking-wider text-[10px]">
-            Mano de Obra (MOD)
-          </span>
-          <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
-            <Clock className="w-4 h-4" />
+          <div className="pt-1 flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+              {pctMOD}%
+            </span>
+            <span className="text-slate-400 text-[11px]">
+              Fuerza laboral en frentes de obra
+            </span>
           </div>
         </div>
 
-        <div className="mt-2">
-          <span className="font-mono text-xl sm:text-2xl font-black text-amber-900 tabular-nums tracking-tight block">
-            {safeFormatUSD(modMonto, false)}
-          </span>
-        </div>
+        {/* Metric 3: Materiales Directos - Azul Cobalto */}
+        <div className="p-5 sm:p-6 space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              Materiales Directos
+            </span>
+            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+          </div>
 
-        <div className="mt-2.5 flex items-center gap-1.5 text-xs">
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-            {pctMOD}% del proyecto
-          </span>
-          <span className="text-slate-400 text-[11px]">
-            Cuadrilla en obra
-          </span>
-        </div>
-      </div>
+          <div className="pt-1">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-blue-700 tracking-tight tabular-nums block">
+              {safeFormatUSD(matMonto, false)}
+            </span>
+          </div>
 
-      {/* KPI 3: Materiales Directos & Insumos - Azul */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs border-l-4 border-l-blue-500 transition-all hover:shadow-sm">
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <span className="font-semibold uppercase tracking-wider text-[10px]">
-            Materiales Directos
-          </span>
-          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-            <Boxes className="w-4 h-4" />
+          <div className="pt-1 flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              {pctMat}%
+            </span>
+            <span className="text-slate-400 text-[11px]">
+              Consumos de almacén y compras
+            </span>
           </div>
         </div>
 
-        <div className="mt-2">
-          <span className="font-mono text-xl sm:text-2xl font-black text-slate-900 tabular-nums tracking-tight block">
-            {safeFormatUSD(matMonto, false)}
-          </span>
-        </div>
+        {/* Metric 4: Vales & Movimientos - Verde Esmeralda (Estilo "En la cartera") */}
+        <div className="p-5 sm:p-6 space-y-1 bg-slate-50/30">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              Vales Imputados SIP
+            </span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
 
-        <div className="mt-2.5 flex items-center gap-1.5 text-xs">
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-            {pctMat}% del proyecto
-          </span>
-          <span className="text-slate-400 text-[11px]">
-            Almacén & Compras
-          </span>
-        </div>
-      </div>
+          <div className="pt-1">
+            <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight tabular-nums block">
+              {count.toLocaleString('de-DE')}
+            </span>
+          </div>
 
-      {/* KPI 4: Intensidad & Ticket Promedio - Esmeralda */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs border-l-4 border-l-emerald-500 transition-all hover:shadow-sm">
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <span className="font-semibold uppercase tracking-wider text-[10px]">
-            Auditoría de Vales
-          </span>
-          <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-            <Activity className="w-4 h-4" />
+          <div className="pt-1 flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+            <span className="text-slate-400 text-[11px]">
+              Ticket promedio:
+            </span>
+            <span className="font-mono font-bold text-slate-800 text-[11px]">
+              {safeFormatUSD(ticketPromedio, false)} / vale
+            </span>
           </div>
         </div>
 
-        <div className="mt-2">
-          <span className="font-mono text-xl sm:text-2xl font-black text-slate-900 tabular-nums tracking-tight block">
-            {count.toLocaleString('de-DE')} <span className="text-xs font-sans font-semibold text-slate-400">movimientos</span>
-          </span>
-        </div>
-
-        <div className="mt-2.5 flex items-center gap-1.5 text-xs">
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            {safeFormatUSD(ticketPromedio, false)}
-          </span>
-          <span className="text-slate-400 text-[11px]">
-            Promedio / comprobante
-          </span>
-        </div>
       </div>
     </div>
   );
