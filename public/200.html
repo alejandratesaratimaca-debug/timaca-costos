@@ -1462,7 +1462,7 @@ function validarSolicitud(d, finalizar) {
   if (d.tipo === 'PRH') {
     if (!d.fechaReq || !d.fechaDev) throw new Error('El préstamo requiere fecha requerida y fecha de devolución.');
     if (d.fechaDev < d.fechaReq) throw new Error('La fecha de devolución no puede ser anterior a la fecha requerida.');
-    if (d.lineas.some(l => l.mod === 'EPP')) throw new Error('El EPP no se presta: regístrelo como asignación (dotación).');
+    if (d.lineas.some(l => l.mod === 'EPP')) throw new Error('El EPP no se presta: regístrelo como asignación.');
   } else if (!d.fechaAsig) throw new Error('Indique la fecha de asignación.');
   validarStock(d.origen, d.lineas);
 }
@@ -1552,7 +1552,7 @@ function emitirValeDirecto(d) {
       e.asig = (e.asig || 0) + l.cant;
       e.entregado = (e.entregado || 0) + l.cant;
       l.consumo = true;
-      destinoEst = 'ENTREGADO (DOTACIÓN)';
+      destinoEst = 'ASIGNADO';
     } else if (s.tipo === 'PRH') {
       e.prest = (e.prest || 0) + l.cant;
       destinoEst = 'EN PRÉSTAMO';
@@ -1626,7 +1626,7 @@ function aprobarSolicitud(numSol, aprobGer) {
     const e = exi(s.origen, l.id);
     e.disp -= l.cant;
     let destinoEst;
-    if (s.tipo === 'ASI' && l.mod === 'EPP') { e.entregado += l.cant; l.consumo = true; destinoEst = 'ENTREGADO (DOTACIÓN)'; }
+    if (s.tipo === 'ASI' && l.mod === 'EPP') { e.entregado += l.cant; l.consumo = true; destinoEst = 'ASIGNADO'; }
     else if (s.tipo === 'PRH') { e.prest += l.cant; destinoEst = 'EN PRÉSTAMO'; }
     else { e.asig += l.cant; destinoEst = 'ASIGNADO'; }
     mov({ doc: v.num, tipo: s.tipo, id: l.id, cant: l.cant, origen: s.origen, destino: s.destino, estAnt: 'DISPONIBLE', estNue: destinoEst, resp: s.resp.nombre, cedula: s.resp.cedula, obs: s.proyecto });
@@ -4492,7 +4492,7 @@ function pintarFormulario() {
   const t = F.tipo, bloqueado = !!F.hecho;
   const ro = bloqueado ? 'disabled' : '';
   const titulos = { PRH: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', ASI: F.num ? 'Editar solicitud ' + F.num : 'Crear solicitud', TRF: F.num ? '🚚 Editar transferencia ' + F.num : '🚚 Nueva transferencia', DAN: '➕ Registrar movimiento y carga de material', EXT: '➕ Registrar movimiento y carga de material' };
-  const subt = { PRH: 'El préstamo es por tiempo definido. Al finalizar, la solicitud pasa a aprobación del supervisor del almacén.', ASI: 'La asignación es por tiempo indefinido. El EPP entregado se registra como dotación. Al finalizar, pasa a aprobación del supervisor.',
+  const subt = { PRH: 'El préstamo es por tiempo definido. Al finalizar, la solicitud pasa a aprobación del supervisor del almacén.', ASI: 'La asignación es por tiempo indefinido. Al finalizar, pasa a aprobación del supervisor.',
     TRF: F.num ? 'Modifique los datos o ítems de la transferencia antes de que sea aceptada por el almacén receptor.' : 'La transferencia no requiere aprobación. El almacén destino tendrá ' + DB.config.plazoHoras + ' horas para aceptarla; si no lo hace, el material regresa automáticamente.',
     DAN: 'Registre el daño de un ítem del almacén o de uno entregado en préstamo o asignación.', EXT: 'Registre el robo o extravío de un ítem del almacén o de uno entregado en préstamo o asignación.' };
   let cabecera = campo('Tipo de movimiento', `<select id="fTipo" ${bloqueado || F.num || OPC_MOV().length === 1 ? 'disabled' : ''} onchange="cambiarTipoMov(this.value)">${opciones(OPC_MOV(), t)}</select>`)
@@ -5022,7 +5022,7 @@ function pintarSolicitud() {
 }
 function cambiarTipoSol(t) {
   leerCabecera(); F.tipo = t;
-  if (t === 'PRH' && F.lineas.some(l => l.mod === 'EPP')) { F.lineas = F.lineas.filter(l => l.mod !== 'EPP'); toast('Se retiraron las líneas de EPP: el EPP no se presta, se asigna como dotación.', 'err'); }
+  if (t === 'PRH' && F.lineas.some(l => l.mod === 'EPP')) { F.lineas = F.lineas.filter(l => l.mod !== 'EPP'); toast('Se retiraron las líneas de EPP: el EPP no se presta, se registra como asignación.', 'err'); }
   pintarSolicitud();
 }
 function salvarSolicitud() {
@@ -5617,7 +5617,7 @@ VISTAS.doc = p => {
           <td>${esc(l.serial || it.serial || '—')}</td>
           <td>${esc(l.cat || it.cat || '—')}</td>
           <td>${l.cond === 'DAÑADO' ? '<span class="est est-rojo">DAÑADO</span>' : esc(l.cond || 'ÓPTIMO')}</td>
-          ${conSaldo ? `<td class="cen">${l.consumo ? 'Dotación' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}
+          ${conSaldo ? `<td class="cen">${l.consumo ? 'Asignado' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}
         </tr>`;
       }).join('');
   const und = d.lineas.reduce((a, l) => a + l.cant, 0);
@@ -7078,7 +7078,7 @@ VISTAS.mKpi = () => {
       ${k('Tiempo promedio de aceptación de transferencias', A.tAcep, hrs, B.tAcep, true, 'Horas entre el envío y la aceptación en el almacén destino.')}
       ${k('Transferencias rechazadas', A.rechPct, pct, B.rechPct, true, `Rechazadas ÷ transferencias procesadas (${A.nTrf} creadas en el período).`)}
       ${k('Transferencias vencidas', A.vencTrfPct, pct, B.vencTrfPct, true, `Vencidas sin respuesta en ${DB.config.plazoHoras} h ÷ transferencias procesadas.`)}
-      ${k('EPP entregado', A.eppCant, n0, B.eppCant, false, `Unidades de EPP entregadas como dotación. Valor: ${usd(A.eppVal)}.`)}
+      ${k('EPP entregado', A.eppCant, n0, B.eppCant, false, `Unidades de EPP entregadas en asignación. Valor: ${usd(A.eppVal)}.`)}
       ${k('Trabajadores con EPP vencido', A.eppVenc, n0, undefined, true, 'Trabajadores cuya última entrega de algún EPP superó su vida útil.')}
     </div>
     <div class="dos-col">
@@ -8241,7 +8241,7 @@ function imprimirVale(n, alm) {
 
   let extra = '';
   if (t === 'PRH') extra = `<b>Fecha requerida:</b> ${fF(v.fechaReq)} &nbsp;·&nbsp; <b>Fecha de devolución:</b> ${fF(v.fechaDev)}${v.extensiones ? ` &nbsp;·&nbsp; <b>Extensiones:</b> ${v.extensiones}` : ''}`;
-  if (t === 'ASI') extra = `<b>Fecha de asignación:</b> ${fF(v.fechaAsig)} &nbsp;·&nbsp; <b>Tipo de asignación:</b> tiempo indefinido${v.lineas.some(l => l.consumo) ? ' &nbsp;·&nbsp; El EPP se entrega como dotación' : ''}`;
+  if (t === 'ASI') extra = `<b>Fecha de asignación:</b> ${fF(v.fechaAsig)} &nbsp;·&nbsp; <b>Tipo de asignación:</b> tiempo indefinido`;
   if (t === 'DEV') extra = `<b>Vale de referencia:</b> ${esc(v.ref)} &nbsp;·&nbsp; <b>Recibido por:</b> ${esc(v.extra.recibe)}`;
   if (t === 'DAN') extra = `<b>Descripción del daño:</b> ${esc(v.extra.detalle)}<br><b>¿Mal uso o negligencia?:</b> ${esc(v.extra.malUso)} &nbsp;·&nbsp; <b>Dictamen:</b> ${esc(v.extra.dictamen)}`;
   if (t === 'EXT') extra = `<b>Descripción de la incidencia:</b> ${esc(v.extra.detalle)}`;
@@ -8328,7 +8328,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V20';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V21';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
