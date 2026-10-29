@@ -2403,7 +2403,8 @@ const PROYECTOS_OFICIALES = [
   { cuenta: 'EE-A-C-509', nombre: 'Sección Servicios Generales', activo: true },
   { cuenta: 'TT-A-C-505', nombre: 'Departamento de Fabricación', activo: true },
   { cuenta: 'TT-A-C-502', nombre: 'Coordinación de Operaciones', activo: true },
-  { cuenta: 'TT-A-C-205', nombre: 'Departamento de Tecnologia', activo: true }
+  { cuenta: 'TT-A-C-205', nombre: 'Departamento de Tecnologia', activo: true },
+  { cuenta: 'SS-A-C-506', nombre: 'Departamento de Servicios Especializados', activo: true }
 ];
 
 function asegurarProyectosOficiales() {
@@ -7490,12 +7491,16 @@ let filtroModPers = '';
 let filtroEstPers = 'ACTIVO';
 
 VISTAS.aPers = () => {
+  const esM = enMaestro();
+  const almActivo = (!esM && typeof S !== 'undefined' && S && S.ctx) ? S.ctx : '';
+  const almFiltro = esM ? filtroAlmPers : almActivo;
+
   let rows = DB.personal.slice();
   if (filtroRolPers === 'RESPONSABLE') rows = rows.filter(p => (p.tipo || []).includes('RESPONSABLE'));
   else if (filtroRolPers === 'SUPERVISOR') rows = rows.filter(p => (p.tipo || []).includes('SUPERVISOR'));
   else if (filtroRolPers === 'AMBOS') rows = rows.filter(p => (p.tipo || []).includes('RESPONSABLE') && (p.tipo || []).includes('SUPERVISOR'));
 
-  if (filtroAlmPers) rows = rows.filter(p => (p.almacenes || []).includes('TODOS') || (p.almacenes || []).includes(filtroAlmPers));
+  if (almFiltro) rows = rows.filter(p => (p.almacenes || []).includes(almFiltro));
   if (filtroModPers) rows = rows.filter(p => !filtroModPers || p.modulo === 'TODOS' || p.modulo === filtroModPers);
   if (filtroEstPers === 'ACTIVO') rows = rows.filter(p => p.activo !== false);
   else if (filtroEstPers === 'INACTIVO') rows = rows.filter(p => p.activo === false);
@@ -7512,7 +7517,12 @@ VISTAS.aPers = () => {
 
   const botones = `${botonesExport('gPers', 'Responsables y Supervisores')} <button class="btn btn-claro btn-mini" onclick="descargarPlantillaPersonal()">Descargar plantilla</button> <button class="btn btn-navy btn-mini" onclick="importarPersonalExcel()">Importar Excel</button>`;
 
-  $('area').innerHTML = cab('Responsables y supervisores', 'Catálogo oficial de personal custodio y supervisores autorizados por almacén.', botones)
+  const titPers = 'Responsables y supervisores' + (!esM ? ` - ${almNombre(almActivo)}` : '');
+  const subTitPers = !esM
+    ? `Personal custodio y supervisores autorizados asignados a ${almNombre(almActivo)}.`
+    : 'Catálogo oficial consolidado de personal custodio y supervisores autorizados por almacén.';
+
+  $('area').innerHTML = cab(titPers, subTitPers, botones)
     + `<div class="fila-filtros" style="flex-wrap:wrap;gap:8px">
         ${buscador('gPers', 'Buscar por nombre, cédula o cargo…')}
         <div class="campo" style="margin-bottom:0">
@@ -7526,10 +7536,16 @@ VISTAS.aPers = () => {
         </div>
         <div class="campo" style="margin-bottom:0">
           <label>Almacén</label>
+          ${esM ? `
           <select onchange="filtroAlmPers=this.value;ir('aPers')">
             <option value="" ${filtroAlmPers === '' ? 'selected' : ''}>Todos los almacenes</option>
             ${DB.almacenes.map(a => `<option value="${a.c}" ${filtroAlmPers === a.c ? 'selected' : ''}>${esc(a.n)}</option>`).join('')}
           </select>
+          ` : `
+          <select disabled style="background:var(--fondo-gris,#f1f5f9);cursor:not-allowed;font-weight:700">
+            <option value="${esc(almActivo)}" selected>${esc(almNombre(almActivo))}</option>
+          </select>
+          `}
         </div>
         <div class="campo" style="margin-bottom:0">
           <label>Módulo</label>
@@ -7587,7 +7603,8 @@ function toggleActivoPersonal(p) {
 
 function editarRegistroPersonal(r) {
   const esEdicion = !!r;
-  r = r || { nombre: '', cedula: '', cargo: '', depto: 'CENTRAL', tipo: ['RESPONSABLE'], almacenes: ['CENTRAL'], modulo: 'TODOS', activo: true };
+  const almDef = (!enMaestro() && typeof S !== 'undefined' && S && S.ctx) ? S.ctx : 'CENTRAL';
+  r = r || { nombre: '', cedula: '', cargo: '', depto: almDef, tipo: ['RESPONSABLE'], almacenes: [almDef], modulo: 'TODOS', activo: true };
   const alms = Array.isArray(r.almacenes) ? r.almacenes : [r.depto || 'CENTRAL'];
   const tipos = Array.isArray(r.tipo) ? r.tipo : ['RESPONSABLE'];
   const modulos = ['TODOS', 'HERRAMIENTA', 'CILINDRO', 'EPP'];
@@ -7829,7 +7846,8 @@ function importarPersonalExcel() {
       if (almStr) {
         almacenes = almStr.split(/[,;\/]+/).map(a => a.trim().toUpperCase()).filter(Boolean);
       }
-      if (!almacenes.length) almacenes = ['CENTRAL'];
+      const defAlmImp = (!enMaestro() && typeof S !== 'undefined' && S && S.ctx) ? S.ctx : 'CENTRAL';
+      if (!almacenes.length) almacenes = [defAlmImp];
       almacenes = almacenes.map(a => {
         const found = DB.almacenes.find(x => normTexto(x.c) === normTexto(a) || normTexto(x.n).includes(normTexto(a)));
         return found ? found.c : a;
@@ -8393,7 +8411,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V23';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V24';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
