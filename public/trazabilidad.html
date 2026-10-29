@@ -247,6 +247,11 @@ svg.g-svg{width:100%;height:auto;display:block;overflow:visible}
 .captura input.cant{text-align:center;font-weight:800}
 .captura input.cant[readonly]{background:#E9EDF2}
 .btn-salvar{background:#1E88B4;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-weight:800;cursor:pointer;height:35px}
+.btn-sip-salvar{background:#00a8e8!important;color:#fff!important;border:none!important;border-radius:4px!important;padding:8px 20px!important;font-weight:800!important;font-size:13px!important;letter-spacing:.3px!important;cursor:pointer!important;height:36px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 2px 4px rgba(0,168,232,0.25)!important;transition:all .15s ease!important}
+.btn-sip-salvar:hover{background:#0096d1!important;box-shadow:0 3px 6px rgba(0,168,232,0.4)!important}
+.btn-sip-eliminar{background:#ff2d55!important;color:#fff!important;border:none!important;border-radius:4px!important;padding:8px 20px!important;font-weight:800!important;font-size:13px!important;letter-spacing:.3px!important;cursor:pointer!important;height:36px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 2px 4px rgba(255,45,85,0.25)!important;transition:all .15s ease!important}
+.btn-sip-eliminar:hover{background:#e02247!important;box-shadow:0 3px 6px rgba(255,45,85,0.4)!important}
+table.grid tbody tr.sel td{background:#DBEAFE!important;color:#1E3A8A!important;font-weight:600}
 .btn-salvar:hover{background:#17709A}
 .pie-form{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--borde-suave)}
 .pie-form .der{display:flex;gap:8px;flex-wrap:wrap}
@@ -861,6 +866,7 @@ function guardarLocalSolo() {
 }
 
 function guardar() {
+  DB = deepCleanDB(DB);
   try {
     DB._actualizadoEn = new Date().toISOString();
     DB._actualizadoPor = (typeof S !== 'undefined' && S && S.u) ? S.u.usuario : 'SISTEMA';
@@ -2489,6 +2495,26 @@ function semilla() {
 /* =====================================================================
    COMPONENTES DE INTERFAZ
    ===================================================================== */
+const limpiaTxt = s => {
+  if (s === undefined || s === null) return '—';
+  let t = String(s).replace(/[\uFFFD\u0000-\u001F\u007F-\u009F]/g, '').trim();
+  t = t.replace(/cat[\uFFFD]?logo/gi, 'catálogo').replace(/SE[\uFFFD]?ORITA/gi, 'SEÑORITA').replace(/[\uFFFD]?PTIMO/gi, 'ÓPTIMO').replace(/[\?]{2,}/g, '');
+  return (!t || t === '—' || t === '-' || t === 'null' || t === 'undefined') ? '—' : t;
+};
+
+function deepCleanDB(obj) {
+  if (typeof obj === 'string') {
+    return limpiaTxt(obj);
+  }
+  if (Array.isArray(obj)) return obj.map(deepCleanDB);
+  if (obj && typeof obj === 'object') {
+    for (const k of Object.keys(obj)) {
+      obj[k] = deepCleanDB(obj[k]);
+    }
+  }
+  return obj;
+}
+
 const $ = id => document.getElementById(id);
 function toast(msg, tipo) {
   const c = $('toast');
@@ -2558,7 +2584,19 @@ function gridHTML(id) {
 function rGrid(id) { const w = $('gw_' + id); if (w) w.innerHTML = gridHTML(id); }
 function ordGrid(id, i) { const g = GR[id]; if (g.sort === i) g.dir = -g.dir; else { g.sort = i; g.dir = 1; } rGrid(id); }
 function pagGrid(id, d) { GR[id].pag += d; rGrid(id); }
-function selGrid(id, i) { const g = GR[id]; g.sel = g.vis[i]; rGrid(id); if (g.o.onSel) g.o.onSel(g.sel); }
+function selGrid(id, i) {
+  const g = GR[id];
+  if (!g) return;
+  if (g.sel === g.vis[i]) {
+    g.sel = null;
+    rGrid(id);
+    if (g.o.onSel) g.o.onSel(null);
+  } else {
+    g.sel = g.vis[i];
+    rGrid(id);
+    if (g.o.onSel) g.o.onSel(g.sel);
+  }
+}
 function buscarGrid(id, q) { GR[id].q = q; GR[id].pag = 0; rGrid(id); }
 const buscador = (id, ph) => `<input class="buscar-grid" placeholder="${esc(ph || 'Buscar en la tabla…')}" oninput="buscarGrid('${id}',this.value)">`;
 const selDe = id => GR[id] ? GR[id].sel : null;
@@ -4532,7 +4570,10 @@ function filaCaptura() {
     ${campo('Stock disp.', `<input id="cDisp" class="ro" readonly placeholder="Stock">`)}
     ${campo('Condición', `<select id="cCond" onchange="actualizarDispCaptura()"><option>ÓPTIMO</option><option>NUEVO</option><option>DAÑADO</option></select>`)}
     ${campo('Cantidad', `<input id="cCant" class="cant" type="number" min="1" step="1" value="1">`)}
-    <button class="btn-salvar" id="btnSalvarCaptura" onclick="salvarLinea()">Salvar</button>
+    <div class="campo" style="display:flex;flex-direction:row;align-items:flex-end;gap:8px;margin-bottom:0">
+      <button type="button" class="btn btn-sip-salvar" id="btnSalvarCaptura" onclick="salvarLinea()" title="Salvar ítem nuevo o cambios al seleccionado">Salvar</button>
+      <button type="button" class="btn btn-sip-eliminar" id="btnEliminarCaptura" onclick="eliminarLineaSeleccionada()" title="Eliminar línea seleccionada o limpiar campos">Eliminar</button>
+    </div>
   </div>`;
 }
 function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO' ? e.vacio : (est === 'DAN' ? e.dan : e.disp); }
@@ -4654,7 +4695,7 @@ function limpiarCaptura(mantenerCod) {
   if (!mantenerCod) $('cCod').value = '';
   $('cCant').value = 1; $('cCant').readOnly = false; $('cCant').title = '';
   $('cCond').innerHTML = '<option>ÓPTIMO</option><option>NUEVO</option><option>DAÑADO</option>';
-  if ($('btnSalvarCaptura')) $('btnSalvarCaptura').textContent = 'Salvar';
+  // botón Salvar permanece con texto Salvar
 }
 function cargarParaEditarLineaSol(i) {
   if (F.hecho || F.valeRef) return;
@@ -4729,7 +4770,7 @@ function cargarParaEditarLineaSol(i) {
     $('cCant').readOnly = !!(it.serial || l.serial);
   }
 
-  if ($('btnSalvarCaptura')) $('btnSalvarCaptura').textContent = '💾 Actualizar ítem';
+  // botón Salvar permanece con texto Salvar
   pintarLineas();
   toast(`Editando línea #${i + 1} (${l.cod}). Puede cambiar la condición en el selector o directamente en la tabla.`, 'ok');
   setTimeout(() => { const el = $('cCond'); if (el) el.focus(); }, 50);
@@ -4758,11 +4799,12 @@ function salvarLinea(confirmado) {
   const nueva = lineaDe(it, cant, cond);
   if (editIdx >= 0 && editIdx < F.lineas.length) {
     F.lineas[editIdx] = nueva;
-    toast(`Línea #${editIdx + 1} corregida.`, 'ok');
+    toast(`Línea corregida (${nueva.cod}).`, 'ok');
   } else {
     F.lineas.push(nueva);
+    toast(`Línea agregada (${nueva.cod}).`, 'ok');
   }
-  limpiarCaptura(); pintarLineas(); $('cCod').focus();
+  limpiarCaptura(); guardarBorradorSol(); pintarLineas(); if ($('cCod')) $('cCod').focus();
 }
 function cambiarCantLinea(i, val) {
   const l = F.lineas[i];
@@ -4797,15 +4839,41 @@ function cambiarCondLinea(i, cond) {
   toast(`Condición de ${l.cod} actualizada a ${cond}.`, 'ok');
 }
 
+function toggleSeleccionarLineaSol(i) {
+  if (F.hecho || F.valeRef) return;
+  if (F.sel === i) {
+    limpiarCaptura();
+    pintarLineas();
+  } else {
+    cargarParaEditarLineaSol(i);
+  }
+}
+
+function eliminarLineaSeleccionada() {
+  if (F.hecho || F.valeRef) return;
+  const i = F.sel;
+  if (i >= 0 && F.lineas && F.lineas[i]) {
+    const l = F.lineas[i];
+    F.lineas.splice(i, 1);
+    limpiarCaptura();
+    guardarBorradorSol();
+    pintarLineas();
+    toast(`Línea eliminada (${l.cod}).`, 'info');
+  } else {
+    limpiarCaptura();
+    toast('Campos limpiados.', 'info');
+  }
+}
+
 function pintarLineas() {
   const conRef = !!F.valeRef, bloqueado = !!F.hecho;
   let filas;
-  if (!F.lineas.length) filas = `<tr><td class="grid-vacio" colspan="${conRef ? 9 : 9}">${conRef ? 'El vale no tiene ítems con saldo pendiente.' : 'Aún no hay ítems. Busque por código o descripción y presione Salvar.'}</td></tr>`;
+  if (!F.lineas.length) filas = `<tr><td class="grid-vacio" colspan="${conRef ? 7 : 8}">${conRef ? 'El vale no tiene ítems con saldo pendiente.' : 'Aún no hay ítems. Busque por código o descripción y presione Salvar.'}</td></tr>`;
   else filas = F.lineas.map((l, i) => conRef ? `<tr>
-      <td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.umb)}</td>
-      <td class="cen">${l.saldo}</td><td class="cen"><input type="number" min="0" max="${l.saldo}" value="${l.cant}" ${bloqueado ? 'disabled' : ''} style="width:70px;padding:4px;text-align:center" onchange="F.lineas[${i}].cant=Math.max(0,Math.min(${l.saldo},Number(this.value)||0));this.value=F.lineas[${i}].cant;pintarTotales()"></td><td colspan="2"></td></tr>`
-    : `<tr class="${F.sel === i ? 'sel' : ''}" style="cursor:${bloqueado ? 'default' : 'pointer'}" onclick="${bloqueado ? '' : `cargarParaEditarLineaSol(${i})`}" title="${bloqueado ? '' : 'Haga clic para editar esta línea'}">
-      <td><b>${esc(l.cod)}</b></td><td>${esc(l.desc)}</td><td>${esc(l.marca)} / ${esc(l.modelo)}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td>
+      <td>${esc(l.cod)}</td><td>${esc(l.desc)}</td><td>${esc(limpiaTxt(l.marca || 'SIN MARCA'))} / ${esc(limpiaTxt(l.modelo))}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.umb)}</td>
+      <td class="cen">${l.saldo}</td><td class="cen"><input type="number" min="0" max="${l.saldo}" value="${l.cant}" ${bloqueado ? 'disabled' : ''} style="width:70px;padding:4px;text-align:center" onchange="F.lineas[${i}].cant=Math.max(0,Math.min(${l.saldo},Number(this.value)||0));this.value=F.lineas[${i}].cant;pintarTotales()"></td></tr>`
+    : `<tr class="${F.sel === i ? 'sel' : ''}" style="cursor:${bloqueado ? 'default' : 'pointer'}" onclick="${bloqueado ? '' : `toggleSeleccionarLineaSol(${i})`}" title="${bloqueado ? '' : 'Haga clic para seleccionar y cargar datos, o deseleccionar'}">
+      <td><b>${esc(l.cod)}</b></td><td>${esc(l.desc)}</td><td>${esc(limpiaTxt(l.marca || 'SIN MARCA'))} / ${esc(limpiaTxt(l.modelo))}</td><td>${esc(l.serial || '—')}</td><td>${esc(l.cat)}</td><td>${esc(l.umb)}</td>
       <td class="cen" onclick="event.stopPropagation()">
         ${bloqueado
           ? esc(l.cond)
@@ -4813,9 +4881,9 @@ function pintarLineas() {
         }
       </td>
       <td class="cen" onclick="event.stopPropagation()">${bloqueado || l.serial ? `<b>${l.cant}</b>` : `<input type="number" min="1" max="${dispItem(F.origen, l.id, l.est) + (F.lineasOriginales ? ((F.lineasOriginales.find(x => x.id === l.id && x.est === l.est) || {}).cant || l.cant) : l.cant)}" value="${l.cant}" style="width:60px;padding:3px;text-align:center;font-weight:700" onchange="cambiarCantLinea(${i}, this.value)">`}</td>
-      <td class="cen">${bloqueado ? '' : `<button class="btn btn-rojo btn-mini" title="Eliminar ítem" onclick="event.stopPropagation();eliminarLinea(${i})">🗑️</button>`}</td></tr>`).join('');
-  const th = conRef ? '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Unidad</th><th class="cen">Saldo</th><th class="cen">Cantidad</th><th colspan="2"></th>'
-    : '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th><th class="cen">Acción</th>';
+      </tr>`).join('');
+  const th = conRef ? '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Unidad</th><th class="cen">Saldo</th><th class="cen">Cantidad</th>'
+    : '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th>';
   $('fLineas').innerHTML = `<div style="overflow:auto"><table class="grid"><thead><tr>${th}</tr></thead><tbody>${filas}</tbody></table></div>`;
   pintarTotales();
 }
@@ -5355,36 +5423,57 @@ function limpiarFormularioEntrada() {
 
   const btnArea = $('eBtnArea');
   if (btnArea) {
-    btnArea.innerHTML = `<label>&nbsp;</label><button class="btn-salvar" onclick="agregarEntrada()">➕ Agregar ítem</button>`;
+    btnArea.innerHTML = `<label>&nbsp;</label><div style="display:flex;gap:8px"><button type="button" class="btn btn-sip-salvar" onclick="salvarLineaEntrada()">Salvar</button><button type="button" class="btn btn-sip-eliminar" onclick="eliminarLineaEntradaSeleccionada()">Eliminar</button></div>`;
   }
 
   if ($('eCod')) $('eCod').focus();
 }
 
+function toggleSeleccionarLineaEntrada(i) {
+  if (E.hecho) return;
+  if (E.sel === i) {
+    limpiarFormularioEntrada();
+    pintarLineasEntrada();
+  } else {
+    cargarParaEditarEntrada(i);
+  }
+}
+
+function salvarLineaEntrada() {
+  if (E.editIdx >= 0) {
+    guardarEdicionEntrada();
+  } else {
+    agregarEntrada();
+  }
+}
+
+function eliminarLineaEntradaSeleccionada() {
+  if (E.sel >= 0 && E.lineas && E.lineas[E.sel]) {
+    eliminarLineaEntrada(E.sel);
+  } else {
+    limpiarFormularioEntrada();
+    toast('Campos limpiados.', 'info');
+  }
+}
+
 function pintarLineasEntrada() {
   const bloq = !!E.hecho;
   $('eLineas').innerHTML = `<div style="overflow:auto"><table class="grid"><thead><tr>
-    <th>Código</th><th>Descripción</th><th>Módulo</th><th>Categoría</th><th>Unidad</th><th>Marca / Modelo</th><th>Serial</th><th>Condición</th><th class="cen">Cantidad</th><th class="cen">Acciones</th>
+    <th>Código</th><th>Descripción</th><th>Módulo</th><th>Categoría</th><th>Unidad</th><th>Marca / Modelo</th><th>Serial</th><th>Condición</th><th class="cen">Cantidad</th>
   </tr></thead><tbody>
     ${E.lineas.length ? E.lineas.map((l, i) => `
-      <tr class="${E.sel === i ? 'sel' : ''}" style="cursor:${bloq ? 'default' : 'pointer'}" onclick="${bloq ? '' : `cargarParaEditarEntrada(${i})`}">
+      <tr class="${E.sel === i ? 'sel' : ''}" style="cursor:${bloq ? 'default' : 'pointer'}" onclick="${bloq ? '' : `toggleSeleccionarLineaEntrada(${i})`}" title="${bloq ? '' : 'Haga clic para seleccionar/cargar datos o deseleccionar'}">
         <td><b>${esc(l.cod)}</b></td>
         <td>${esc(l.desc)}</td>
         <td>${chipMod(l.mod)}</td>
         <td>${esc(l.cat)}</td>
         <td>${esc(l.umb)}</td>
-        <td>${esc(l.marca)} / ${esc(l.modelo)}</td>
+        <td>${esc(limpiaTxt(l.marca || 'SIN MARCA'))} / ${esc(limpiaTxt(l.modelo))}</td>
         <td>${esc(l.serial || '—')}</td>
         <td>${esc(l.cond)}</td>
         <td class="cen"><b>${l.cant}</b></td>
-        <td class="cen" style="white-space:nowrap">
-          ${bloq ? '' : `
-            <button class="btn btn-chico btn-azul" onclick="event.stopPropagation();cargarParaEditarEntrada(${i})" title="Editar campos de esta línea">✏️ Corregir</button>
-            <button class="btn btn-chico btn-rojo" onclick="event.stopPropagation();eliminarLineaEntrada(${i})" title="Eliminar línea">🗑️</button>
-          `}
-        </td>
       </tr>`).join('')
-      : `<tr><td class="grid-vacio" colspan="10">Agregue los ítems que ingresan al almacén.</td></tr>`}
+      : `<tr><td class="grid-vacio" colspan="9">Agregue los ítems que ingresan al almacén.</td></tr>`}
   </tbody></table></div>`;
 
   $('eTot').innerHTML = `Total de líneas: <b>${E.lineas.length}</b> · Total de unidades: <b>${E.lineas.reduce((a, l) => a + l.cant, 0)}</b>${E.lineas.length && !bloq ? ' · Haga clic en cualquier registro para editarlo o corregirlo' : ''}`;
@@ -6154,7 +6243,7 @@ VISTAS.cCatAlm = p => {
   const cols = [
     { t: 'Código', v: r => r.it.cod, f: r => `<b>${esc(r.it.cod)}</b>` },
     { t: 'Descripción', v: r => r.it.desc, td: 'wrap' },
-    { t: 'Marca / Modelo', v: r => `${r.it.marca} / ${r.it.modelo}`, td: 'wrap' },
+    { t: 'Marca / Modelo', v: r => `${limpiaTxt(r.it.marca || 'SIN MARCA')} / ${limpiaTxt(r.it.modelo)}`, td: 'wrap' },
     { t: 'Serial', v: r => r.it.serial || '' },
     { t: 'Categoría', v: r => r.it.cat, td: 'wrap' },
     { t: 'Unidad', v: r => r.it.umb, cls: 'cen' },
@@ -6339,7 +6428,7 @@ function vistaPrestamos(tit, sub, p) {
     { t: 'Supervisor', v: r => r.v.sup || '—' },
     { t: 'Código del ítem', v: r => r.l.cod || r.it.cod || '—', f: r => `<b>${esc(r.l.cod || r.it.cod || '—')}</b>` },
     { t: 'Descripción del ítem', v: r => r.it.desc || r.l.desc || '—', td: 'wrap' },
-    { t: 'Marca / Modelo', v: r => [r.it.marca || r.l.marca, r.it.modelo || r.l.modelo].filter(Boolean).join(' / ') || '—' },
+    { t: 'Marca / Modelo', v: r => `${limpiaTxt(r.it.marca || r.l.marca || 'SIN MARCA')} / ${limpiaTxt(r.it.modelo || r.l.modelo)}` },
     { t: 'Serial', v: r => r.l.serial || r.it.serial || '—', f: r => (r.l.serial || r.it.serial) ? `<span style="font-family:monospace;font-weight:700">${esc(r.l.serial || r.it.serial)}</span>` : '—' },
     { t: 'Categoría', v: r => r.cat || '—' },
     { t: 'Fecha devolución', v: r => r.v.fechaDev ? fF(r.v.fechaDev) : (r.v.tipo === 'ASI' ? 'Indefinida' : '—'), s: r => r.v.fechaDev || '9999' },
@@ -7832,9 +7921,10 @@ VISTAS.aIni = () => {
   const itEdit = esEdicion ? item(movEdit.id) : null;
   if (esEdicion && itEdit) window.__iniItem = itEdit;
 
-  const btnHtml = esEdicion
-    ? `<button class="btn btn-ambar" onclick="accionIni()">💾 Guardar corrección</button> <button class="btn btn-rojo" onclick="eliminarCargaIni(${movEdit.n})">🗑️ Revertir registro</button> <button class="btn btn-claro" onclick="cancelarEdicionIni()">❌ Cancelar</button>`
-    : `<button class="btn btn-verde" onclick="accionIni()">➕ Registrar carga inicial</button>`;
+  const btnHtml = `
+    <button type="button" class="btn btn-sip-salvar" id="btnSalvarIni" onclick="salvarCargaIni()" title="Salvar carga inicial o cambios">${esEdicion ? 'Salvar' : 'Salvar'}</button>
+    <button type="button" class="btn btn-sip-eliminar" id="btnEliminarIni" onclick="eliminarCargaIniSeleccionada()" title="Eliminar registro seleccionado o limpiar campos">Eliminar</button>
+  `;
 
   const colsIni = [
     { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
@@ -7846,8 +7936,7 @@ VISTAS.aIni = () => {
     { t: 'Categoría', v: r => { const it = item(r.id); return it ? it.cat : (r.cat || '—'); } },
     { t: 'Serial', v: r => r.serial || '-' },
     { t: 'Estado', v: r => estB(r.estNue || 'DISPONIBLE') },
-    { t: 'Usuario', k: 'usr' },
-    { t: 'Acción', v: r => `<button class="btn btn-rojo btn-mini" title="Revertir y eliminar registro" onclick="event.stopPropagation();eliminarCargaIni(${r.n})">🗑️</button>`, cls: 'cen' }
+    { t: 'Usuario', k: 'usr' }
   ];
 
   const cargas = DB.movs.filter(m => m.tipo === 'INI' && (enMaestro() || m.origen === S.ctx)).slice().reverse();
@@ -7875,7 +7964,7 @@ VISTAS.aIni = () => {
         <span>Cargas iniciales registradas (${cargas.length})</span>
         <small style="color:var(--texto-3)">Haga clic en cualquier fila para seleccionarla y editarla</small>
       </div>
-      <div class="panel-b">${grid('gIni', colsIni, cargas, { pag: 15, onSel: r => cargarParaEditarIni(r.n), vacio: 'No hay cargas iniciales registradas aún.' })}</div>
+      <div class="panel-b">${grid('gIni', colsIni, cargas, { pag: 15, onSel: r => toggleSeleccionarIni(r), vacio: 'No hay cargas iniciales registradas aún.' })}</div>
     </div>`;
 
   bindAC('iniIt', q => {
@@ -7892,6 +7981,27 @@ VISTAS.aIni = () => {
     if (i.serial) $('iniCant').value = 1;
   });
 };
+
+function toggleSeleccionarIni(r) {
+  if (!r || (window.__iniEditMov && window.__iniEditMov.n === r.n)) {
+    cancelarEdicionIni();
+  } else {
+    cargarParaEditarIni(r.n);
+  }
+}
+
+function salvarCargaIni() {
+  accionIni();
+}
+
+function eliminarCargaIniSeleccionada() {
+  if (window.__iniEditMov) {
+    eliminarCargaIni(window.__iniEditMov.n);
+  } else {
+    cancelarEdicionIni();
+    toast('Campos limpiados.', 'info');
+  }
+}
 
 function cargarParaEditarIni(movNum) {
   const m = DB.movs.find(x => x.n === movNum && x.tipo === 'INI');
@@ -8189,7 +8299,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V17';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V18';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
@@ -8313,6 +8423,7 @@ function subirANubeDebounced() {
 
 function descargarDeNube(cloudDB) {
   if (!cloudDB || typeof cloudDB !== 'object') return;
+  cloudDB = deepCleanDB(cloudDB);
   const base = semilla();
   DB = Object.assign({}, base, cloudDB);
 
