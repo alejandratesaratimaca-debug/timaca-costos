@@ -4772,7 +4772,7 @@ function cargarParaEditarLineaSol(i) {
 
   // botón Salvar permanece con texto Salvar
   pintarLineas();
-  toast(`Editando línea #${i + 1} (${l.cod}). Puede cambiar la condición en el selector o directamente en la tabla.`, 'ok');
+  toast(`Línea #${i + 1} (${l.cod}) seleccionada.`, 'ok');
   setTimeout(() => { const el = $('cCond'); if (el) el.focus(); }, 50);
 }
 
@@ -5147,7 +5147,7 @@ function pintarEntrada() {
       ${campo('Observación', `<input id="enObs" ${ro} placeholder="Opcional" value="${esc((E && E.obs) || '')}" oninput="if(E){E.obs=this.value;guardarBorradorEntrada();}">`)}
     </div>
     <div class="carga" id="cargaEntrada">
-      <div class="carga-h" id="eCargaH" style="${esEdicion ? 'background:var(--ambar-bg,#fef3c7);color:var(--ambar,#b45309)' : ''}">${esEdicion ? `⚠️ MODO CORRECCIÓN: Editando línea #${E.editIdx + 1} (${esc(linEd.cod)})` : 'ÍTEM A INGRESAR'}</div>
+      <div class="carga-h" id="eCargaH">ÍTEM A INGRESAR</div>
       ${bloq ? '' : `<div style="padding:12px;border-bottom:1px solid var(--borde)"><div class="f3" style="grid-template-columns:repeat(6,1fr)">
         <div class="campo" style="position:relative"><label>Código</label><input id="eCod" autocomplete="off" placeholder="Nuevo o existente"></div>
         <div class="campo" style="grid-column:span 2"><label>Descripción</label><input id="eDesc"></div>
@@ -5160,10 +5160,11 @@ function pintarEntrada() {
         ${campo('Condición', `<select id="eCond"></select>`)}
         ${campo('Cantidad', `<input id="eCant" type="number" min="1" value="1" style="text-align:center;font-weight:800">`)}
         <div class="campo" style="justify-content:flex-end;gap:8px" id="eBtnArea">
-          ${esEdicion
-            ? `<button class="btn btn-ambar" onclick="guardarEdicionEntrada()">💾 Guardar corrección</button> <button class="btn btn-claro" onclick="cancelarEdicionEntrada()">❌ Cancelar</button>`
-            : `<label>&nbsp;</label><button type="button" class="btn-salvar" onclick="agregarEntrada()">➕ Agregar ítem</button>`
-          }
+          <label>&nbsp;</label>
+          <div style="display:flex;gap:8px">
+            <button type="button" class="btn btn-sip-salvar" id="btnSalvarEnt" onclick="salvarLineaEntrada()" title="Salvar nuevo ítem o guardar cambios al seleccionado">Salvar</button>
+            <button type="button" class="btn btn-sip-eliminar" id="btnEliminarEnt" onclick="eliminarLineaEntradaSeleccionada()" title="Eliminar ítem seleccionado o limpiar campos">Eliminar</button>
+          </div>
         </div>
       </div></div>`}
       <div id="eLineas"></div></div>
@@ -5339,14 +5340,14 @@ function cargarParaEditarEntrada(i) {
 
   const h = $('eCargaH');
   if (h) {
-    h.textContent = `⚠️ MODO CORRECCIÓN: Editando línea #${i + 1} (${l.cod})`;
-    h.style.background = 'var(--ambar-bg, #fef3c7)';
-    h.style.color = 'var(--ambar, #b45309)';
+    h.textContent = 'ÍTEM A INGRESAR';
+    h.style.background = '';
+    h.style.color = '';
   }
 
   const btnArea = $('eBtnArea');
   if (btnArea) {
-    btnArea.innerHTML = `<button class="btn btn-ambar" onclick="guardarEdicionEntrada()">💾 Guardar corrección</button> <button class="btn btn-claro" onclick="cancelarEdicionEntrada()">❌ Cancelar</button>`;
+    btnArea.innerHTML = `<label>&nbsp;</label><div style="display:flex;gap:8px"><button type="button" class="btn btn-sip-salvar" id="btnSalvarEnt" onclick="salvarLineaEntrada()" title="Salvar nuevo ítem o guardar cambios al seleccionado">Salvar</button><button type="button" class="btn btn-sip-eliminar" id="btnEliminarEnt" onclick="eliminarLineaEntradaSeleccionada()" title="Eliminar ítem seleccionado o limpiar campos">Eliminar</button></div>`;
   }
 
   pintarLineasEntrada();
@@ -5384,7 +5385,7 @@ function guardarEdicionEntrada() {
 
     limpiarFormularioEntrada();
     pintarLineasEntrada();
-    toast('Corrección guardada con éxito.', 'ok');
+    toast('Ítem actualizado con éxito.', 'ok');
   });
 }
 
@@ -7941,7 +7942,7 @@ VISTAS.aIni = () => {
 
   const cargas = DB.movs.filter(m => m.tipo === 'INI' && (enMaestro() || m.origen === S.ctx)).slice().reverse();
 
-  $('area').innerHTML = cab('Carga inicial de inventario' + (enMaestro() ? ' (Consolidado)' : ' - ' + esc(almNombre(S.ctx))), esEdicion ? '⚠️ Modo de corrección: Ajuste cantidad, categoría o almacén y guarde los cambios.' : 'Registra existencias iniciales en ' + esc(almNombre(S.ctx)) + '. Al registrar, el formulario se limpia automáticamente para el siguiente ítem.')
+  $('area').innerHTML = cab('Carga inicial de inventario' + (enMaestro() ? ' (Consolidado)' : ' - ' + esc(almNombre(S.ctx))), 'Registra existencias iniciales en ' + esc(almNombre(S.ctx)) + '. Al registrar, el formulario se limpia automáticamente para el siguiente ítem.')
     + `<div class="form-reg" id="formCargaIni">
       <div class="f3">
         ${campo('Almacén', selAlm('iniAlm', esEdicion ? movEdit.origen : S.ctx))}
@@ -8299,7 +8300,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V18';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V19';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
