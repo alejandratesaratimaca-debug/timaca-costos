@@ -125,14 +125,13 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
     return PROYECTOS_CATEGORIAS_ANUAL_2026;
   }, [periodo, sipDataPorPeriodo]);
 
-  // Filtrado por buscador para proyectos
   const filasFiltradasProyectos = useMemo(() => {
-    if (!searchTerm) return datasetProyectos;
-    const q = searchTerm.toLowerCase();
+    if (!searchTerm.trim()) return datasetProyectos;
+    const q = searchTerm.toLowerCase().trim();
     return datasetProyectos.filter(p => 
-      p.cuentaAuxiliar.toLowerCase().includes(q) ||
-      p.proyecto.toLowerCase().includes(q) ||
-      p.proyectoCorto.toLowerCase().includes(q)
+      String(p.cuentaAuxiliar || '').toLowerCase().includes(q) ||
+      String(p.proyecto || '').toLowerCase().includes(q) ||
+      String(p.proyectoCorto || '').toLowerCase().includes(q)
     );
   }, [datasetProyectos, searchTerm]);
 
@@ -186,12 +185,12 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
   }, [totalesMensualesOficiales]);
 
   const filasMensualesProyectosFiltradas = useMemo(() => {
-    if (!searchTerm) return filasMensualesProyectos;
-    const q = searchTerm.toLowerCase();
+    if (!searchTerm.trim()) return filasMensualesProyectos;
+    const q = searchTerm.toLowerCase().trim();
     return filasMensualesProyectos.filter(p =>
-      p.cuentaAuxiliar.toLowerCase().includes(q) ||
-      p.proyecto.toLowerCase().includes(q) ||
-      p.proyectoCorto.toLowerCase().includes(q)
+      String(p.cuentaAuxiliar || '').toLowerCase().includes(q) ||
+      String(p.proyecto || '').toLowerCase().includes(q) ||
+      String(p.proyectoCorto || '').toLowerCase().includes(q)
     );
   }, [filasMensualesProyectos, searchTerm]);
 

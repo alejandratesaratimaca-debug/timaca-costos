@@ -94,10 +94,12 @@ export const SIPPmhModuleView: React.FC<SIPPmhModuleViewProps> = ({
   // Filtered vales
   const filteredVales = useMemo(() => {
     return vales.filter(v => {
-      const matchSearch = v.numeroVale.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          v.solicitadoPor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (v.equipoIntervenido && v.equipoIntervenido.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                          v.cuentaAuxiliarCodigo.toLowerCase().includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch = !q ||
+                          String(v.numeroVale || '').toLowerCase().includes(q) ||
+                          String(v.solicitadoPor || '').toLowerCase().includes(q) ||
+                          String(v.equipoIntervenido || '').toLowerCase().includes(q) ||
+                          String(v.cuentaAuxiliarCodigo || '').toLowerCase().includes(q);
       const matchFrente = selectedFrente === 'TODOS' || v.frenteTrabajo === selectedFrente;
       const matchCta = selectedCuenta === 'TODAS' || v.cuentaAuxiliarCodigo === selectedCuenta;
       return matchSearch && matchFrente && matchCta;

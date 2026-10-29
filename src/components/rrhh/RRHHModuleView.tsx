@@ -150,11 +150,12 @@ export const RRHHModuleView: React.FC<RRHHModuleViewProps> = ({
   // -------------------------------------------------------------
   const empleadosFiltrados = useMemo(() => {
     return MOCK_EMPLEADOS_EXPEDIENTES.filter(emp => {
-      const matchSearch =
-        emp.nombreCompleto.toLowerCase().includes(searchEmpleados.toLowerCase()) ||
-        emp.cedula.includes(searchEmpleados) ||
-        emp.puestoCargo.toLowerCase().includes(searchEmpleados.toLowerCase()) ||
-        emp.codigoEmpleado.toLowerCase().includes(searchEmpleados.toLowerCase());
+      const q = searchEmpleados.toLowerCase().trim();
+      const matchSearch = !q ||
+        String(emp.nombreCompleto || '').toLowerCase().includes(q) ||
+        String(emp.cedula || '').includes(q) ||
+        String(emp.puestoCargo || '').toLowerCase().includes(q) ||
+        String(emp.codigoEmpleado || '').toLowerCase().includes(q);
 
       const matchGerencia =
         filtroGerenciaEmpleado === 'TODAS' || emp.gerencia === filtroGerenciaEmpleado;
@@ -173,10 +174,11 @@ export const RRHHModuleView: React.FC<RRHHModuleViewProps> = ({
   // -------------------------------------------------------------
   const contratosFiltrados = useMemo(() => {
     return MOCK_CONTRATOS.filter(cnt => {
-      const matchSearch =
-        cnt.empleadoNombre.toLowerCase().includes(searchContratos.toLowerCase()) ||
-        cnt.cedula.includes(searchContratos) ||
-        cnt.cargo.toLowerCase().includes(searchContratos.toLowerCase());
+      const q = searchContratos.toLowerCase().trim();
+      const matchSearch = !q ||
+        String(cnt.empleadoNombre || '').toLowerCase().includes(q) ||
+        String(cnt.cedula || '').includes(q) ||
+        String(cnt.cargo || '').toLowerCase().includes(q);
 
       const matchSemaforo =
         filtroSemaforoContrato === 'TODOS' || cnt.semaforo === filtroSemaforoContrato;

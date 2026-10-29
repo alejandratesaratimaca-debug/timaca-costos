@@ -97,13 +97,13 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
       // Cuenta filter
       const matchCta = selectedCuenta === 'todas' || r.cuentaAuxiliar === selectedCuenta;
 
-      // Search term
-      const matchSearch = !searchTerm || 
-        r.trabajador.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.cedula.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.cargo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.proyectoCorto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.sourceFile.toLowerCase().includes(searchTerm.toLowerCase());
+      const q = searchTerm.toLowerCase().trim();
+      const matchSearch = !q || 
+        String(r.trabajador || '').toLowerCase().includes(q) ||
+        String(r.cedula || '').toLowerCase().includes(q) ||
+        String(r.cargo || '').toLowerCase().includes(q) ||
+        String(r.proyectoCorto || '').toLowerCase().includes(q) ||
+        String(r.sourceFile || '').toLowerCase().includes(q);
       
       return matchMes && matchProj && matchSem && matchFec && matchCta && matchSearch;
     });

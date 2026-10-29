@@ -153,11 +153,11 @@ export const SeguridadModuleView: React.FC<SeguridadModuleViewProps> = ({
     return planesControl.filter(p => {
       const q = searchPlanes.toLowerCase().trim();
       const matchSearch = !q ||
-        p.idPlan.toLowerCase().includes(q) ||
-        p.area.toLowerCase().includes(q) ||
-        p.puestoActividad.toLowerCase().includes(q) ||
-        p.peligro.toLowerCase().includes(q) ||
-        p.responsable.toLowerCase().includes(q);
+        String(p.idPlan || '').toLowerCase().includes(q) ||
+        String(p.area || '').toLowerCase().includes(q) ||
+        String(p.puestoActividad || '').toLowerCase().includes(q) ||
+        String(p.peligro || '').toLowerCase().includes(q) ||
+        String(p.responsable || '').toLowerCase().includes(q);
 
       const matchEstado = filtroEstadoPlan === 'TODOS' || p.estado === filtroEstadoPlan;
       return matchSearch && matchEstado;
@@ -169,10 +169,10 @@ export const SeguridadModuleView: React.FC<SeguridadModuleViewProps> = ({
     return matrizIPER.filter(r => {
       const q = searchIPER.toLowerCase().trim();
       const matchSearch = !q ||
-        r.id.toLowerCase().includes(q) ||
-        r.area.toLowerCase().includes(q) ||
-        r.puestoActividad.toLowerCase().includes(q) ||
-        r.peligroIdentificado.toLowerCase().includes(q);
+        String(r.id || '').toLowerCase().includes(q) ||
+        String(r.area || '').toLowerCase().includes(q) ||
+        String(r.puestoActividad || '').toLowerCase().includes(q) ||
+        String(r.peligroIdentificado || '').toLowerCase().includes(q);
 
       const matchArea = filtroAreaIPER === 'TODAS' || r.area === filtroAreaIPER;
       const matchNivel = filtroNivelIPER === 'TODOS' || r.ni === filtroNivelIPER;
@@ -185,9 +185,9 @@ export const SeguridadModuleView: React.FC<SeguridadModuleViewProps> = ({
     return CATALOGO_PELIGROS_OFICIAL.filter(p => {
       const q = searchPeligros.toLowerCase().trim();
       const matchSearch = !q ||
-        String(p.codigo).includes(q) ||
-        p.peligro.toLowerCase().includes(q) ||
-        p.categoria.toLowerCase().includes(q);
+        String(p.codigo || '').includes(q) ||
+        String(p.peligro || '').toLowerCase().includes(q) ||
+        String(p.categoria || '').toLowerCase().includes(q);
 
       const matchCat = filtroCategoriaPeligro === 'TODAS' || p.categoria === filtroCategoriaPeligro;
       return matchSearch && matchCat;

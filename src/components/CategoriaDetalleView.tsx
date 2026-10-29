@@ -383,9 +383,13 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
         return list
           .filter(p => {
             if (p.montoActual === 0 && p.montoAnterior === 0) return false;
-            if (!searchTerm) return true;
-            const term = searchTerm.toLowerCase();
-            return p.nombre.toLowerCase().includes(term) || p.cliente.toLowerCase().includes(term) || p.codigo.toLowerCase().includes(term);
+            if (!searchTerm.trim()) return true;
+            const term = searchTerm.toLowerCase().trim();
+            return (
+              String(p.nombre || '').toLowerCase().includes(term) ||
+              String(p.cliente || '').toLowerCase().includes(term) ||
+              String(p.codigo || '').toLowerCase().includes(term)
+            );
           })
           .sort((a, b) => b.montoActual - a.montoActual || b.montoAnterior - a.montoAnterior);
       }
@@ -440,9 +444,13 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
       return list
         .filter(p => {
-          if (!searchTerm) return true;
-          const term = searchTerm.toLowerCase();
-          return p.nombre.toLowerCase().includes(term) || p.cliente.toLowerCase().includes(term) || p.codigo.toLowerCase().includes(term);
+          if (!searchTerm.trim()) return true;
+          const term = searchTerm.toLowerCase().trim();
+          return (
+            String(p.nombre || '').toLowerCase().includes(term) ||
+            String(p.cliente || '').toLowerCase().includes(term) ||
+            String(p.codigo || '').toLowerCase().includes(term)
+          );
         })
         .sort((a, b) => b.montoActual - a.montoActual || b.totalAgostoPry - a.totalAgostoPry);
     }

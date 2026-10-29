@@ -92,10 +92,12 @@ export const DotacionModuleView: React.FC<DotacionModuleViewProps> = ({
   // Filtered entregas
   const filteredEntregas = useMemo(() => {
     return entregas.filter(e => {
-      const matchSearch = e.trabajadorNombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          e.cedula.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          e.cargo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          e.numeroActa.toLowerCase().includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch = !q ||
+                          String(e.trabajadorNombre || '').toLowerCase().includes(q) ||
+                          String(e.cedula || '').toLowerCase().includes(q) ||
+                          String(e.cargo || '').toLowerCase().includes(q) ||
+                          String(e.numeroActa || '').toLowerCase().includes(q);
       const matchDepto = selectedDepto === 'TODOS' || e.departamento === selectedDepto;
       const matchEst = selectedEstado === 'TODOS' || e.estado === selectedEstado;
       return matchSearch && matchDepto && matchEst;

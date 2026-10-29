@@ -165,12 +165,12 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
     return certificadosData.filter(c => {
       const q = searchDriveQuery.toLowerCase().trim();
       const matchSearch = !q || 
-        c.nombre.toLowerCase().includes(q) ||
-        c.cedula.toLowerCase().includes(q) ||
-        c.cargo.toLowerCase().includes(q) ||
-        c.curso.toLowerCase().includes(q);
+        String(c.nombre || '').toLowerCase().includes(q) ||
+        String(c.cedula || '').toLowerCase().includes(q) ||
+        String(c.cargo || '').toLowerCase().includes(q) ||
+        String(c.curso || '').toLowerCase().includes(q);
 
-      const matchCurso = selectedCursoDrive === 'TODOS' || c.curso.toLowerCase() === selectedCursoDrive.toLowerCase();
+      const matchCurso = selectedCursoDrive === 'TODOS' || String(c.curso || '').toLowerCase() === selectedCursoDrive.toLowerCase();
       return matchSearch && matchCurso;
     });
   }, [certificadosData, searchDriveQuery, selectedCursoDrive]);
@@ -185,7 +185,7 @@ export const CertificadosModuleView: React.FC<CertificadosModuleViewProps> = ({
       `"${t.departamento}"`,
       `"${t.areaFisica}"`,
       ...catalogoNombres.map(cName => {
-        const cur = t.cursos.find(c => c.curso.toLowerCase() === cName.toLowerCase());
+        const cur = (t.cursos || []).find(c => String(c?.curso || '').toLowerCase() === String(cName || '').toLowerCase());
         return cur ? `"${cur.estado}${cur.fecha ? ' (' + cur.fecha + ')' : ''}"` : '"No aplica"';
       })
     ]);

@@ -131,9 +131,37 @@ async function runSync() {
 
   // 3. Load Reclasificaciones
   const recPath = path.join(__dirname, '../public/data/sip/reclasificaciones.json');
-  let reclasificaciones = {};
+  let reclasificacionesRaw = [];
   if (fs.existsSync(recPath)) {
-    reclasificaciones = JSON.parse(fs.readFileSync(recPath, 'utf8'));
+    const parsed = JSON.parse(fs.readFileSync(recPath, 'utf8'));
+    reclasificacionesRaw = Array.isArray(parsed) ? parsed : (parsed.items || Object.values(parsed));
+  }
+  const reclasificacionesMap = new Map();
+  for (const r of reclasificacionesRaw) {
+    if (r.recordId) reclasificacionesMap.set(r.recordId.trim(), r);
+    const doc = String(r.documento || '').trim().toUpperCase();
+    const cod = String(r.codigo || '').trim().toUpperCase();
+    const sol = String(r.solicitud || '').trim().toUpperCase();
+    if (doc && cod) reclasificacionesMap.set(`${doc}-${cod}`, r);
+    if (doc) reclasificacionesMap.set(doc, r);
+    if (sol && cod) reclasificacionesMap.set(`${sol}-${cod}`, r);
+    if (sol) reclasificacionesMap.set(sol, r);
+    if (r.recordId && r.recordId.startsWith('COMP-')) {
+      const parts = r.recordId.split('-');
+      if (parts.length >= 4) {
+        const pSC = parts[1].toUpperCase();
+        const pOC = parts[2].toUpperCase();
+        const pCod = parts[3].toUpperCase();
+        if (pSC && pSC !== 'NOSC') {
+          reclasificacionesMap.set(pSC, r);
+          reclasificacionesMap.set(`${pSC}-${pCod}`, r);
+        }
+        if (pOC && pOC !== 'NOOC') {
+          reclasificacionesMap.set(pOC, r);
+          reclasificacionesMap.set(`${pOC}-${pCod}`, r);
+        }
+      }
+    }
   }
 
   // 4. Build Article Category Catalog
@@ -169,8 +197,11 @@ async function runSync() {
     let esReclasificado = false;
     let ajuste = '';
 
-    if (reclasificaciones[recId]) {
-      ctaAux = reclasificaciones[recId].nuevaCuenta.toUpperCase();
+    const match = reclasificacionesMap.get(recId) || 
+                  reclasificacionesMap.get(`${num}-${cod}`) || 
+                  (num && reclasificacionesMap.get(num));
+    if (match) {
+      ctaAux = match.nuevaCuenta.toUpperCase();
       esReclasificado = true;
       ajuste = 'CORREGIDO';
     }
@@ -274,8 +305,13 @@ async function runSync() {
     let esReclasificado = false;
     let ajuste = '';
 
-    if (reclasificaciones[recId]) {
-      ctaAux = reclasificaciones[recId].nuevaCuenta.toUpperCase();
+    const match = reclasificacionesMap.get(recId) || 
+                  (sc && cod && reclasificacionesMap.get(`${sc}-${cod}`)) || 
+                  (oc && cod && reclasificacionesMap.get(`${oc}-${cod}`)) || 
+                  (sc && reclasificacionesMap.get(sc)) || 
+                  (oc && reclasificacionesMap.get(oc));
+    if (match) {
+      ctaAux = match.nuevaCuenta.toUpperCase();
       esReclasificado = true;
       ajuste = 'CORREGIDO';
     }

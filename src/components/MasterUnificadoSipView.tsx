@@ -465,9 +465,59 @@ export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
   return 'Septiembre';
 }
 
+export function determinarTipoGasto(cuenta?: string, tipoCostoExistente?: string): string {
+  if (tipoCostoExistente && tipoCostoExistente !== 'Externo' && tipoCostoExistente !== 'Interno') {
+    return tipoCostoExistente;
+  }
+  const c = (cuenta || '').toUpperCase().trim();
+  if (!c || c === 'SIN-ASIGNAR') return 'Externo';
+  if (c.startsWith('TTE') || c.startsWith('EEE') || c.startsWith('ESE') || c.startsWith('ETE')) {
+    return 'Externo';
+  }
+  if (c.startsWith('TTI') || c.startsWith('ESI') || c.startsWith('EEI')) {
+    return 'Interno';
+  }
+  if (c.startsWith('TT-A') || c.startsWith('AE-A') || c.startsWith('EE-A') || c.includes('ADMON') || c.includes('ADMIN')) {
+    return 'Admon';
+  }
+  if (c.startsWith('TT-F') || c.startsWith('EEA') || c.startsWith('EEM') || c.includes('OPEX') || c.includes('FLOTA')) {
+    return 'Mantto Flota (OPEX)';
+  }
+  if (c.includes('SOCIO') || c.startsWith('AE-S') || c.startsWith('EE-S')) {
+    return 'Socio';
+  }
+  return tipoCostoExistente || 'Externo';
+}
+
 // Caché en memoria para las sábanas SIP del Master Unificado (evita re-descargas y congelamientos)
 const masterStaticCache = new Map<string, any[]>();
 let isLanApiAvailable: boolean | null = null;
+let cachedReclasificaciones: any[] | null = null;
+let reclasificacionesLoadingPromise: Promise<any[]> | null = null;
+
+export async function getReclasificacionesData(): Promise<any[]> {
+  if (cachedReclasificaciones && cachedReclasificaciones.length > 0) {
+    return cachedReclasificaciones;
+  }
+  if (reclasificacionesLoadingPromise) {
+    return reclasificacionesLoadingPromise;
+  }
+  reclasificacionesLoadingPromise = (async () => {
+    try {
+      const res = await fetch('/data/sip/reclasificaciones.json');
+      if (res.ok) {
+        cachedReclasificaciones = await res.json();
+        return cachedReclasificaciones || [];
+      }
+    } catch (e) {
+      console.warn('Error cargando reclasificaciones.json', e);
+    } finally {
+      reclasificacionesLoadingPromise = null;
+    }
+    return cachedReclasificaciones || [];
+  })();
+  return reclasificacionesLoadingPromise;
+}
 
 export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoricos: boolean): Promise<any[]> {
   const cacheKey = `${mesKey || 'todos'}_${isVerAjustesHistoricos}`;
@@ -547,9 +597,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     proyectos: Proyecto[];
   } | null>(null);
 
-  // MASTER UNIFICADO STATE
   const [selectedAno, setSelectedAno] = useState<string>('2026');
-  const [selectedMes, setSelectedMes] = useState<string>('todos');
+  const [selectedMes, setSelectedMes] = useState<string>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('TIMACA_MASTER_SELECTED_MES') : null;
+      return saved || 'septiembre';
+    } catch {
+      return 'septiembre';
+    }
+  });
   const [fechaDesde, setFechaDesde] = useState<string>('');
   const [fechaHasta, setFechaHasta] = useState<string>('');
 
@@ -965,11 +1021,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
           // Combinar correcciones de reclasificaciones.json y locales de localStorage para reflejarlas en vivo
           try {
-            let baseList: any[] = [];
-            try {
-              const resBase = await fetch('/data/sip/reclasificaciones.json?v=' + Date.now(), { cache: 'no-store' });
-              if (resBase.ok) baseList = await resBase.json();
-            } catch (e) {}
+            const baseList: any[] = await getReclasificacionesData();
 
             const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
             const localList = localStr ? JSON.parse(localStr) : [];
@@ -978,28 +1030,75 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             if (combinedList.length > 0) {
               const corrMap = new Map<string, any>();
               for (const c of combinedList) {
-                const doc = String(c.documento || '').trim();
-                const cod = String(c.codigo || '').trim();
-                const k1 = c.recordId;
-                if (k1 && !String(k1).startsWith('HIST-SERV--')) corrMap.set(String(k1), c);
+                const doc = String(c.documento || '').trim().toUpperCase();
+                const cod = String(c.codigo || '').trim().toUpperCase();
+                const k1 = c.recordId ? String(c.recordId).trim() : null;
+                const sol = String(c.solicitud || '').trim().toUpperCase();
+                const ped = String(c.pedido || '').trim().toUpperCase();
+
+                if (k1 && !k1.startsWith('HIST-SERV--')) {
+                  corrMap.set(k1, c);
+                  corrMap.set(k1.toUpperCase(), c);
+                }
                 if (doc && cod) corrMap.set(`${doc}-${cod}`, c);
                 if (doc) corrMap.set(doc, c);
+                if (sol && cod) corrMap.set(`${sol}-${cod}`, c);
+                if (sol) corrMap.set(sol, c);
+                if (ped && cod) corrMap.set(`${ped}-${cod}`, c);
+                if (ped) corrMap.set(ped, c);
+
+                if (k1 && k1.startsWith('COMP-')) {
+                  const parts = k1.split('-');
+                  if (parts.length >= 4) {
+                    const pSC = parts[1].toUpperCase();
+                    const pOC = parts[2].toUpperCase();
+                    const pCod = parts[3].toUpperCase();
+                    if (pSC && pSC !== 'NOSC') {
+                      corrMap.set(pSC, c);
+                      corrMap.set(`${pSC}-${pCod}`, c);
+                    }
+                    if (pOC && pOC !== 'NOOC') {
+                      corrMap.set(pOC, c);
+                      corrMap.set(`${pOC}-${pCod}`, c);
+                    }
+                  }
+                }
               }
 
-              // 1. Actualizar registros existentes en la sábana cargada
+              // 1. Actualizar registros existentes en la sábana cargada (mes, cuenta, proyecto, tipo de gasto)
               items = items.map((r: any) => {
-                const doc = String(r.numero || '').trim();
-                const cod = String(r.codigo || '').trim();
+                const doc = String(r.numero || '').trim().toUpperCase();
+                const ped = String(r.pedido || '').trim().toUpperCase();
+                const sc = String(r.sc || '').trim().toUpperCase();
+                const oc = String(r.oc || '').trim().toUpperCase();
+                const cod = String(r.codigo || '').trim().toUpperCase();
                 const k1 = r.id != null ? String(r.id) : null;
-                const k2 = (doc && cod) ? `${doc}-${cod}` : null;
-                const match = (k1 && corrMap.get(k1)) || (k2 && corrMap.get(k2)) || (doc && corrMap.get(doc));
+
+                const match = 
+                  (k1 && corrMap.get(k1)) ||
+                  (doc && cod && corrMap.get(`${doc}-${cod}`)) ||
+                  (ped && cod && corrMap.get(`${ped}-${cod}`)) ||
+                  (sc && cod && corrMap.get(`${sc}-${cod}`)) ||
+                  (oc && cod && corrMap.get(`${oc}-${cod}`)) ||
+                  (doc && corrMap.get(doc)) ||
+                  (ped && corrMap.get(ped)) ||
+                  (sc && corrMap.get(sc)) ||
+                  (oc && corrMap.get(oc));
+
                 if (match) {
+                  const targetCuenta = (match.nuevaCuenta || r.cuenta_aux || '').toUpperCase().trim();
+                  const targetDesc = match.nuevoProyecto || r.datos_descripcion;
+                  const targetTipoCosto = determinarTipoGasto(targetCuenta, match.datos_tipo_costo || r.datos_tipo_costo);
+                  const targetMes = match.nuevoMes ? match.nuevoMes.toLowerCase() : r.nombre_mes;
+
                   return {
                     ...r,
                     esReclasificado: true,
-                    cuenta_aux_original: r.cuenta_aux,
-                    cuenta_aux: match.nuevaCuenta || r.cuenta_aux,
-                    nombre_mes: match.nuevoMes || r.nombre_mes,
+                    cuenta_aux_original: r.cuenta_aux_original || r.cuenta_aux,
+                    cuenta_aux: targetCuenta,
+                    datos_descripcion: targetDesc,
+                    datos_tipo_costo: targetTipoCosto,
+                    nombre_mes: targetMes,
                     ajuste: 'CORREGIDO',
                     infoReclasificacion: match
                   };
@@ -1007,7 +1106,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 return r;
               });
 
-              // 2. Si se selecciona un mes específico (ej. Agosto, Junio, Julio):
+              // Si se selecciona un mes específico, filtrar para que movimientos trasladados a otro mes no se queden en este
+              if (selectedMes !== 'todos' && !isVerAjustesHistoricos) {
+                items = items.filter((r: any) => (r.nombre_mes || '').toLowerCase() === selectedMes.toLowerCase());
+              }
+
+              // 2. Si se selecciona un mes específico (ej. Agosto, Junio, Julio, Octubre):
               // Trasladar a este mes los registros corregidos que fueron asignados a él desde otro mes
               if (selectedMes !== 'todos' && !isVerAjustesHistoricos) {
                 const matchingTransfers = combinedList.filter((c: any) => 
@@ -1043,13 +1147,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     }
 
                     const orig = (k1 && sepMap.get(k1)) || sepMap.get(k2) || (doc && sepMap.get(String(doc)));
+                    const targetCuenta = (c.nuevaCuenta || orig?.cuenta_aux || '').toUpperCase().trim();
+                    const targetDesc = c.nuevoProyecto || c.proyectoAnterior || orig?.datos_descripcion || '';
+                    const targetTipoCosto = determinarTipoGasto(targetCuenta, c.datos_tipo_costo || orig?.datos_tipo_costo);
+
                     const baseRow = orig ? { ...orig } : {
                       tipo: c.tipoItem || 'Materiales Directos',
                       almacen: c.almacen || 'ALMPEI',
                       fecha: c.fechaMovimiento || '2026-08-31',
                       numero: c.documento,
                       pedido: c.pedido || '',
-                      cuenta_aux: c.nuevaCuenta,
+                      cuenta_aux: targetCuenta,
                       ceco: c.ceco || 'MON-3',
                       codigo: c.codigo,
                       descripcion: c.descripcion,
@@ -1060,8 +1168,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       categoria: c.categoria || 'Productos Metalicos Estructurales',
                       precio_final: c.costoUnitario || c.precio_final || (c.cantidad ? (Number(c.totalUSD) / c.cantidad) : Number(c.totalUSD)) || 0,
                       total_usd: Number(c.totalUSD) || 0,
-                      datos_descripcion: c.nuevoProyecto || c.proyectoAnterior || '',
-                      datos_tipo_costo: c.datos_tipo_costo || 'Externo',
+                      datos_descripcion: targetDesc,
+                      datos_tipo_costo: targetTipoCosto,
                       ano: 2026,
                       nombre_mes: selectedMes.toLowerCase()
                     };
@@ -1070,7 +1178,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       ...baseRow,
                       id: c.recordId || `trasladado-${c.documento}-${c.codigo}`,
                       cuenta_aux_original: c.cuentaAnterior || baseRow.cuenta_aux,
-                      cuenta_aux: c.nuevaCuenta || baseRow.cuenta_aux,
+                      cuenta_aux: targetCuenta,
+                      datos_descripcion: targetDesc,
+                      datos_tipo_costo: targetTipoCosto,
                       nombre_mes: selectedMes.toLowerCase(),
                       ajuste: 'CORREGIDO',
                       esReclasificado: true,
@@ -1376,35 +1486,99 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         }
       }
 
-      // Combinar correcciones locales para reflejarlas en el Excel
+      // Combinar correcciones de reclasificaciones.json y locales para reflejarlas en el Excel
       try {
+        let baseList: any[] = [];
+        try {
+          const resBase = await fetch('/data/sip/reclasificaciones.json?v=' + Date.now(), { cache: 'no-store' });
+          if (resBase.ok) baseList = await resBase.json();
+        } catch (e) {}
+
         const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
-        if (localStr) {
-          const localList = JSON.parse(localStr);
+        const localList = localStr ? JSON.parse(localStr) : [];
+        const combinedList = [...baseList, ...localList];
+
+        if (combinedList.length > 0) {
           const corrMap = new Map<string, any>();
-          for (const c of localList) {
-            const k1 = c.recordId;
-            const k2 = `${c.documento}-${c.codigo}`;
-            if (k1) corrMap.set(String(k1), c);
-            if (k2) corrMap.set(k2, c);
-            if (c.documento) corrMap.set(String(c.documento), c);
+          for (const c of combinedList) {
+            const doc = String(c.documento || '').trim().toUpperCase();
+            const cod = String(c.codigo || '').trim().toUpperCase();
+            const k1 = c.recordId ? String(c.recordId).trim() : null;
+            const sol = String(c.solicitud || '').trim().toUpperCase();
+            const ped = String(c.pedido || '').trim().toUpperCase();
+
+            if (k1 && !k1.startsWith('HIST-SERV--')) {
+              corrMap.set(k1, c);
+              corrMap.set(k1.toUpperCase(), c);
+            }
+            if (doc && cod) corrMap.set(`${doc}-${cod}`, c);
+            if (doc) corrMap.set(doc, c);
+            if (sol && cod) corrMap.set(`${sol}-${cod}`, c);
+            if (sol) corrMap.set(sol, c);
+            if (ped && cod) corrMap.set(`${ped}-${cod}`, c);
+            if (ped) corrMap.set(ped, c);
+
+            if (k1 && k1.startsWith('COMP-')) {
+              const parts = k1.split('-');
+              if (parts.length >= 4) {
+                const pSC = parts[1].toUpperCase();
+                const pOC = parts[2].toUpperCase();
+                const pCod = parts[3].toUpperCase();
+                if (pSC && pSC !== 'NOSC') {
+                  corrMap.set(pSC, c);
+                  corrMap.set(`${pSC}-${pCod}`, c);
+                }
+                if (pOC && pOC !== 'NOOC') {
+                  corrMap.set(pOC, c);
+                  corrMap.set(`${pOC}-${pCod}`, c);
+                }
+              }
+            }
           }
+
           rows = rows.map((r: any) => {
+            const doc = String(r.numero || '').trim().toUpperCase();
+            const ped = String(r.pedido || '').trim().toUpperCase();
+            const sc = String(r.sc || '').trim().toUpperCase();
+            const oc = String(r.oc || '').trim().toUpperCase();
+            const cod = String(r.codigo || '').trim().toUpperCase();
             const k1 = r.id != null ? String(r.id) : null;
-            const k2 = `${r.numero}-${r.codigo}`;
-            const match = (k1 && corrMap.get(k1)) || corrMap.get(k2) || (r.numero && corrMap.get(String(r.numero)));
+
+            const match = 
+              (k1 && corrMap.get(k1)) ||
+              (doc && cod && corrMap.get(`${doc}-${cod}`)) ||
+              (ped && cod && corrMap.get(`${ped}-${cod}`)) ||
+              (sc && cod && corrMap.get(`${sc}-${cod}`)) ||
+              (oc && cod && corrMap.get(`${oc}-${cod}`)) ||
+              (doc && corrMap.get(doc)) ||
+              (ped && corrMap.get(ped)) ||
+              (sc && corrMap.get(sc)) ||
+              (oc && corrMap.get(oc));
+
             if (match) {
+              const targetCuenta = (match.nuevaCuenta || r.cuenta_aux || '').toUpperCase().trim();
+              const targetDesc = match.nuevoProyecto || r.datos_descripcion;
+              const targetTipoCosto = determinarTipoGasto(targetCuenta, match.datos_tipo_costo || r.datos_tipo_costo);
+              const targetMes = match.nuevoMes ? match.nuevoMes.toLowerCase() : r.nombre_mes;
+
               return {
                 ...r,
                 esReclasificado: true,
-                cuenta_aux_original: r.cuenta_aux,
-                cuenta_aux: match.nuevaCuenta || r.cuenta_aux,
-                nombre_mes: match.nuevoMes || r.nombre_mes,
-                ajuste: 'CORREGIDO'
+                cuenta_aux_original: r.cuenta_aux_original || r.cuenta_aux,
+                cuenta_aux: targetCuenta,
+                datos_descripcion: targetDesc,
+                datos_tipo_costo: targetTipoCosto,
+                nombre_mes: targetMes,
+                ajuste: 'CORREGIDO',
+                infoReclasificacion: match
               };
             }
             return r;
           });
+
+          if (selectedMes !== 'todos' && !isVerAjustesHistoricos) {
+            rows = rows.filter((r: any) => (r.nombre_mes || '').toLowerCase() === selectedMes.toLowerCase());
+          }
         }
       } catch (e) {}
 
@@ -1605,11 +1779,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   };
 
   const fetchReclasificaciones = async () => {
-    let staticList: any[] = [];
-    try {
-      const res = await fetch('/data/sip/reclasificaciones.json?v=' + Date.now(), { cache: 'no-store' });
-      if (res.ok) staticList = await res.json();
-    } catch (e) {}
+    const staticList: any[] = await getReclasificacionesData();
 
     let lanList: any[] = [];
     try {
@@ -1839,7 +2009,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         unidad: (selectedMovimiento as any).unidad || 'UND',
         solicitante: (selectedMovimiento as any).solicitante || 'S/D',
         categoria: (selectedMovimiento as any).categoria || '',
-        datos_tipo_costo: (selectedMovimiento as any).datos_tipo_costo || 'Externo'
+        datos_tipo_costo: determinarTipoGasto(correccionNuevaCuenta.trim().toUpperCase(), (selectedMovimiento as any).datos_tipo_costo)
       };
       const filtered = localList.filter((x: any) => (x.recordId || `${x.documento}-${x.codigo}`) !== (newEntry.recordId || `${newEntry.documento}-${newEntry.codigo}`));
       filtered.push(newEntry);

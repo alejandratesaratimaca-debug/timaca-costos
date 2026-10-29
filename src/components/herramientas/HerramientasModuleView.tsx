@@ -126,10 +126,12 @@ export const HerramientasModuleView: React.FC<HerramientasModuleViewProps> = ({
   // Filtered tools
   const filteredHerramientas = useMemo(() => {
     return herramientas.filter(h => {
-      const matchSearch = h.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          h.codigo.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (h.responsableActual && h.responsableActual.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                          h.ubicacion.toLowerCase().includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch = !q ||
+                          String(h.nombre || '').toLowerCase().includes(q) ||
+                          String(h.codigo || '').toLowerCase().includes(q) ||
+                          String(h.responsableActual || '').toLowerCase().includes(q) ||
+                          String(h.ubicacion || '').toLowerCase().includes(q);
       const matchCat = selectedCategoria === 'TODAS' || h.categoria === selectedCategoria;
       const matchEst = selectedEstado === 'TODOS' || h.estado === selectedEstado;
       return matchSearch && matchCat && matchEst;

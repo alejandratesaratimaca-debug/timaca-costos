@@ -164,18 +164,18 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   // Lista de cuentas para el ranking lateral
   const cuentasRanking = useMemo(() => {
     if (!sipData) return [];
-    const list = sipData.cuentas;
+    const list = sipData.cuentas || [];
     if (!searchTerm) {
-      return [sipData.consolidado, ...list];
+      return sipData.consolidado ? [sipData.consolidado, ...list] : list;
     }
-    const q = searchTerm.toLowerCase();
+    const q = searchTerm.toLowerCase().trim();
     const filtered = list.filter(item => 
-      item.codigo.toLowerCase().includes(q) || 
-      item.nombre.toLowerCase().includes(q) ||
-      item.proyectoCorto.toLowerCase().includes(q) ||
-      item.cliente.toLowerCase().includes(q)
+      (item?.codigo && String(item.codigo).toLowerCase().includes(q)) || 
+      (item?.nombre && String(item.nombre).toLowerCase().includes(q)) ||
+      (item?.proyectoCorto && String(item.proyectoCorto).toLowerCase().includes(q)) ||
+      (item?.cliente && String(item.cliente).toLowerCase().includes(q))
     );
-    if ('consolidado general timaca todos los proyectos corporativo'.includes(q)) {
+    if ('consolidado general timaca todos los proyectos corporativo'.includes(q) && sipData.consolidado) {
       return [sipData.consolidado, ...filtered];
     }
     return filtered;
@@ -184,14 +184,14 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   // Cuenta activa actualmente visualizada
   const activeCuenta = useMemo(() => {
     if (cuentasRanking.length === 0) return null;
-    const found = cuentasRanking.find(c => c.codigo === selectedCuentaCodigo);
+    const found = cuentasRanking.find(c => c?.codigo === selectedCuentaCodigo);
     return found || cuentasRanking[0] || null;
   }, [cuentasRanking, selectedCuentaCodigo]);
 
   // Sincronizar cuenta activa si cambia el ranking o período para evitar estados huérfanos
   useEffect(() => {
-    if (cuentasRanking.length > 0 && !cuentasRanking.some(c => c.codigo === selectedCuentaCodigo)) {
-      setSelectedCuentaCodigo(cuentasRanking[0].codigo);
+    if (cuentasRanking.length > 0 && !cuentasRanking.some(c => c?.codigo === selectedCuentaCodigo)) {
+      setSelectedCuentaCodigo(cuentasRanking[0]?.codigo || 'TTE-C-0671');
       setSelectedCategoryFilter('todas');
     }
   }, [cuentasRanking, selectedCuentaCodigo]);
@@ -201,9 +201,11 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
     if (!activeCuenta) return [];
     const totalCuenta = activeCuenta.totalMonto > 0 ? activeCuenta.totalMonto : 1;
     const cats = ['Materiales Directos', 'Servicios', 'Mano de Obra Directa', 'Horas Maquina', 'Costos Indirectos'];
+    const porCat = activeCuenta.porCategoria || {};
+    const itemsList = activeCuenta.items || [];
     return cats.map(categoria => {
-      const tot = activeCuenta.porCategoria[categoria] || 0;
-      const salidasCat = activeCuenta.items.filter(it => getMacroCategoriaSip(it) === categoria);
+      const tot = porCat[categoria] || 0;
+      const salidasCat = itemsList.filter(it => getMacroCategoriaSip(it) === categoria);
       return {
         categoria,
         total: tot,
@@ -217,19 +219,19 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   // Líneas de movimientos para la auditoría profunda línea por línea
   const lineasProfundas = useMemo(() => {
     if (!activeCuenta) return [];
-    let list = activeCuenta.items;
+    let list = activeCuenta.items || [];
     if (selectedCategoryFilter !== 'todas') {
       list = list.filter(it => getMacroCategoriaSip(it) === selectedCategoryFilter);
     }
-    if (itemSearchTerm) {
-      const q = itemSearchTerm.toLowerCase();
+    if (itemSearchTerm.trim()) {
+      const q = itemSearchTerm.toLowerCase().trim();
       list = list.filter(it => 
-        (it.numero && it.numero.toLowerCase().includes(q)) ||
-        (it.codigo && it.codigo.toLowerCase().includes(q)) ||
-        (it.descripcion && it.descripcion.toLowerCase().includes(q)) ||
-        (it.motivo && it.motivo.toLowerCase().includes(q)) ||
-        (it.solicitante && it.solicitante.toLowerCase().includes(q)) ||
-        (it.almacen && it.almacen.toLowerCase().includes(q))
+        (it.numero && String(it.numero).toLowerCase().includes(q)) ||
+        (it.codigo && String(it.codigo).toLowerCase().includes(q)) ||
+        (it.descripcion && String(it.descripcion).toLowerCase().includes(q)) ||
+        (it.motivo && String(it.motivo).toLowerCase().includes(q)) ||
+        (it.solicitante && String(it.solicitante).toLowerCase().includes(q)) ||
+        (it.almacen && String(it.almacen).toLowerCase().includes(q))
       );
     }
     return list;
@@ -679,10 +681,10 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
                   <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-200">
                     <span className="text-[10px] text-neutral-500 block">MAYOR CATEGORÍA</span>
                     <span className="font-bold text-emerald-700 text-sm truncate block">
-                      {evolutivoData?.mayorCategoria.categoria || 'Materiales'}
+                      {evolutivoData?.mayorCategoria?.categoria || 'Materiales'}
                     </span>
                     <span className="text-[10px] font-mono text-neutral-400 block mt-0.5">
-                      ${Math.round(evolutivoData?.mayorCategoria.total || 0).toLocaleString('de-DE')} USD
+                      ${Math.round(evolutivoData?.mayorCategoria?.total || 0).toLocaleString('de-DE')} USD
                     </span>
                   </div>
                 </div>

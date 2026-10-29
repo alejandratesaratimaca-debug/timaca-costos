@@ -264,16 +264,15 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
       list = list.filter(s => selectedCuentasAuditoria.some(c => s.cuentaAuxiliarCodigo.includes(c)));
     }
 
-    // Buscador en tiempo real
     if (busquedaAuditoria.trim() !== '') {
-      const q = busquedaAuditoria.toLowerCase();
+      const q = busquedaAuditoria.toLowerCase().trim();
       list = list.filter(s => 
-        s.codigoSalida.toLowerCase().includes(q) ||
-        s.cuentaAuxiliarCodigo.toLowerCase().includes(q) ||
-        s.cuentaAuxiliarNombre.toLowerCase().includes(q) ||
-        s.itemDescripcion.toLowerCase().includes(q) ||
-        (s.solicitante || '').toLowerCase().includes(q) ||
-        (s.observaciones || '').toLowerCase().includes(q)
+        String(s.codigoSalida || '').toLowerCase().includes(q) ||
+        String(s.cuentaAuxiliarCodigo || '').toLowerCase().includes(q) ||
+        String(s.cuentaAuxiliarNombre || '').toLowerCase().includes(q) ||
+        String(s.itemDescripcion || '').toLowerCase().includes(q) ||
+        String(s.solicitante || '').toLowerCase().includes(q) ||
+        String(s.observaciones || '').toLowerCase().includes(q)
       );
     }
 
@@ -489,11 +488,12 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   // Filtrado de cuentas de Horas Hombre Septiembre
   const cuentasMODFiltradas = useMemo(() => {
     return HORAS_HOMBRE_POR_CUENTA_SEPTIEMBRE.filter(item => {
-      const matchBusqueda = busquedaMOD === '' || 
-        item.cuenta.toLowerCase().includes(busquedaMOD.toLowerCase()) ||
-        item.equipo.toLowerCase().includes(busquedaMOD.toLowerCase()) ||
-        item.tipo.toLowerCase().includes(busquedaMOD.toLowerCase()) ||
-        item.principalesLabores.toLowerCase().includes(busquedaMOD.toLowerCase());
+      const q = busquedaMOD.toLowerCase().trim();
+      const matchBusqueda = !q || 
+        String(item.cuenta || '').toLowerCase().includes(q) ||
+        String(item.equipo || '').toLowerCase().includes(q) ||
+        String(item.tipo || '').toLowerCase().includes(q) ||
+        String(item.principalesLabores || '').toLowerCase().includes(q);
       
       const matchFamilia = filtroFamiliaMOD === 'todos' || item.tipo === filtroFamiliaMOD;
       return matchBusqueda && matchFamilia;
@@ -503,10 +503,11 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   // Filtrado de ítems sin cuenta auxiliar para conciliación
   const sinCuentaMODFiltrados = useMemo(() => {
     return HORAS_HOMBRE_SIN_CUENTA_SEPTIEMBRE.filter(item => {
-      return busquedaConciliacion === '' ||
-        item.trabajador.toLowerCase().includes(busquedaConciliacion.toLowerCase()) ||
-        item.motivoLabor.toLowerCase().includes(busquedaConciliacion.toLowerCase()) ||
-        item.tipoEquipo.toLowerCase().includes(busquedaConciliacion.toLowerCase());
+      const q = busquedaConciliacion.toLowerCase().trim();
+      return !q ||
+        String(item.trabajador || '').toLowerCase().includes(q) ||
+        String(item.motivoLabor || '').toLowerCase().includes(q) ||
+        String(item.tipoEquipo || '').toLowerCase().includes(q);
     });
   }, [busquedaConciliacion]);
 

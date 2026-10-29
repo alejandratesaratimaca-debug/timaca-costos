@@ -74,10 +74,12 @@ export const UsuariosView: React.FC<UsuariosViewProps> = ({
   }, []);
 
   const filteredUsuarios = usuarios.filter((u) => {
-    const matchSearch = u.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.correo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.cargo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.departamento.toLowerCase().includes(searchTerm.toLowerCase());
+    const q = searchTerm.toLowerCase().trim();
+    const matchSearch = !q ||
+      String(u.nombre || '').toLowerCase().includes(q) ||
+      String(u.correo || '').toLowerCase().includes(q) ||
+      String(u.cargo || '').toLowerCase().includes(q) ||
+      String(u.departamento || '').toLowerCase().includes(q);
     const matchRole = selectedRole === 'todos' || u.rol === selectedRole;
     return matchSearch && matchRole;
   });
