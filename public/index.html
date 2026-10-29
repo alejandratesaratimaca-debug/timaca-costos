@@ -408,7 +408,7 @@ table.grid tbody tr.sel td{background:#DBEAFE!important;color:#1E3A8A!important;
         <div class="campo"><label for="lgClave">Clave</label>
           <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onfocus="actualizarAccesosLogin()" oninput="actualizarAccesosLogin()" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
         <div class="campo"><label for="lgAcceso">Acceso</label>
-          <select id="lgAcceso" onfocus="actualizarAccesosLogin()" onmousedown="actualizarAccesosLogin()" onclick="actualizarAccesosLogin()"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
+          <select id="lgAcceso" onfocus="actualizarAccesosLogin()"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
         <button class="btn-entrar" onclick="iniciarSesion()">Ingresar</button>
         <div style="text-align:center;font-size:12.5px;color:#0284c7;font-weight:700;margin-top:16px;letter-spacing:0.5px">Creado por: Daniela Riveros</div>
       </div>
@@ -640,7 +640,7 @@ function asegurarUsuariosClave() {
 
   // 2. Jackson Cubillán (Almacén Central, clave timaca.1974)
   let uJack = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jcubillan');
-  if (!uJack && !DB.usuariosEliminados.includes('jcubillan')) {
+  if (!uJack && !(DB.usuariosEliminados || []).includes('jcubillan')) {
     uJack = { usuario: 'jcubillan', alias: 'jackson', correos: ['jcubillan@timaca.com.ve'], clave: 'timaca.1974', nombre: 'Jackson Cubillán', cedula: 'V-16.789.012', cargo: 'Encargado de Almacén Central', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['CENTRAL'], perm: { aprobar: [], transferir: ['CENTRAL'], recibir: ['CENTRAL'] } };
     DB.usuarios.push(uJack);
   } else if (uJack) {
@@ -657,7 +657,7 @@ function asegurarUsuariosClave() {
 
   // 3. Juan Aguilar (Almacén PMH, clave timaca.1974)
   let uJuan = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jaguilar');
-  if (!uJuan && !DB.usuariosEliminados.includes('jaguilar')) {
+  if (!uJuan && !(DB.usuariosEliminados || []).includes('jaguilar')) {
     uJuan = { usuario: 'jaguilar', alias: 'juan', correos: ['jaguilar@timaca.com.ve'], clave: 'timaca.1974', nombre: 'Juan Aguilar', cedula: 'V-17.654.321', cargo: 'Encargado de Almacén PMH', activo: true, admin: false, maestro: false, editaCostos: false, almacenes: ['PMH'], perm: { aprobar: [], transferir: ['PMH'], recibir: ['PMH'] } };
     DB.usuarios.push(uJuan);
   } else if (uJuan) {
@@ -674,7 +674,7 @@ function asegurarUsuariosClave() {
 
   // 4. Administradores de respaldo (atesara / admin)
   let uAle = DB.usuarios.find(x => x.usuario.toLowerCase() === 'atesara' || x.usuario.toLowerCase() === 'alejandra');
-  if (!uAle && !DB.usuariosEliminados.includes('atesara')) {
+  if (!uAle && !(DB.usuariosEliminados || []).includes('atesara')) {
     uAle = { usuario: 'atesara', alias: 'alejandra', correos: ['atesara@timaca.com.ve', 'alejandratesara.timaca@gmail.com'], clave: 'timaca2026', nombre: 'Alejandra Tesara', cedula: 'V-18.456.789', cargo: 'Analista Principal de Costos', activo: true, admin: false, maestro: true, editaCostos: true, almacenes: ALMS_TODOS, perm: { aprobar: ALMS_TODOS, transferir: ALMS_TODOS, recibir: ALMS_TODOS } };
     DB.usuarios.push(uAle);
   } else {
@@ -691,7 +691,7 @@ function asegurarUsuariosClave() {
 
   // Usuario Jessica Navarro
   let uNav = DB.usuarios.find(x => x.usuario.toLowerCase() === 'jnavarro');
-  if (!uNav && !DB.usuariosEliminados.includes('jnavarro')) {
+  if (!uNav && !(DB.usuariosEliminados || []).includes('jnavarro')) {
     uNav = {
       usuario: 'jnavarro',
       alias: 'jessica',
@@ -2337,7 +2337,9 @@ const PERSONAL_OFICIAL = [
   {"id":"p-139","nombre":"Carlos Rzepka","cedula":"V-14.743.214","cargo":"Analista IT","depto":"PELLAS","tipo":["RESPONSABLE"],"almacenes":["PELLAS"],"modulo":"TODOS","activo":true},
   {"id":"p-140","nombre":"Jose Medina","cedula":"V-13.334.970","cargo":"Supervisor","depto":"PELLAS","tipo":["RESPONSABLE","SUPERVISOR"],"almacenes":["PELLAS"],"modulo":"TODOS","activo":true},
   {"id":"p-141","nombre":"Jose Figueredo","cedula":"V-8.955.407","cargo":"Supervisor","depto":"PELLAS","tipo":["RESPONSABLE","SUPERVISOR"],"almacenes":["PELLAS"],"modulo":"TODOS","activo":true},
-  {"id":"p-142","nombre":"Marcos Cordero","cedula":"","cargo":"Jefe de Proyecto","depto":"PELLAS","tipo":["RESPONSABLE"],"almacenes":["PELLAS"],"modulo":"TODOS","activo":true}
+  {"id":"p-142","nombre":"Marcos Cordero","cedula":"","cargo":"Jefe de Proyecto","depto":"PELLAS","tipo":["RESPONSABLE"],"almacenes":["PELLAS"],"modulo":"TODOS","activo":true},
+  {"id":"p-pmh-1","nombre":"Frank Hamilton","cedula":"V-24.409.901","cargo":"Líder de Proyecto","depto":"PMH","tipo":["RESPONSABLE","SUPERVISOR"],"almacenes":["PMH"],"modulo":"TODOS","activo":true},
+  {"id":"p-pmh-2","nombre":"Elvis Rodriguez","cedula":"","cargo":"Supervisor","depto":"PMH","tipo":["RESPONSABLE","SUPERVISOR"],"almacenes":["PMH"],"modulo":"TODOS","activo":true}
 ];
 
 
@@ -2829,17 +2831,50 @@ function opcionesAcceso(u) {
   return ops;
 }
 function actualizarAccesosLogin() {
-  if (!DB || !Array.isArray(DB.usuarios) || !Array.isArray(DB.almacenes) || !DB.usuarios.length) {
-    if (typeof cargarDatos === 'function') cargarDatos();
-    if (typeof asegurarUsuariosClave === 'function') asegurarUsuariosClave();
+  try {
+    if (!DB || !Array.isArray(DB.usuarios) || !Array.isArray(DB.almacenes) || !DB.usuarios.length) {
+      if (typeof cargarDatos === 'function') cargarDatos();
+    }
+    if (DB) {
+      DB.usuariosEliminados = DB.usuariosEliminados || [];
+      if (typeof asegurarUsuariosClave === 'function') asegurarUsuariosClave();
+    }
+    const usrVal = $('lgUsuario') ? $('lgUsuario').value.trim() : '';
+    const sel = $('lgAcceso');
+    if (!sel) return;
+    const u = userDe(usrVal);
+    if (!u || !u.activo) {
+      if (sel.options.length !== 1 || sel.options[0].value !== '') {
+        sel.innerHTML = '<option value="">Escriba su usuario para ver sus accesos</option>';
+      }
+      return;
+    }
+    const ops = opcionesAcceso(u);
+    if (!ops.length) {
+      if (sel.options.length !== 1 || sel.options[0].value !== '') {
+        sel.innerHTML = '<option value="">Sin accesos asignados</option>';
+      }
+      return;
+    }
+
+    const currentSig = Array.from(sel.options).map(o => o.value).join('|');
+    const newSig = ops.map(o => o.v).join('|');
+    if (currentSig === newSig && sel.value) {
+      return; // Ya sincronizado
+    }
+
+    const prevVal = sel.value;
+    sel.innerHTML = ops.map(o => `<option value="${esc(o.v)}">${esc(o.t)}</option>`).join('');
+    if (prevVal && ops.some(o => o.v === prevVal)) {
+      sel.value = prevVal;
+    } else if (ops.some(o => o.v === 'CENTRAL')) {
+      sel.value = 'CENTRAL';
+    } else {
+      sel.value = ops[0].v;
+    }
+  } catch (err) {
+    console.error('Error en actualizarAccesosLogin:', err);
   }
-  const usrVal = $('lgUsuario') ? $('lgUsuario').value.trim() : '';
-  const u = userDe(usrVal);
-  const sel = $('lgAcceso');
-  if (!sel) return;
-  if (!u || !u.activo) { sel.innerHTML = '<option value="">Escriba su usuario para ver sus accesos</option>'; return; }
-  const ops = opcionesAcceso(u);
-  sel.innerHTML = ops.length ? ops.map((o, i) => `<option value="${esc(o.v)}" ${i === (ops[0].v === 'MAESTRO' && ops.length > 1 ? 1 : 0) ? 'selected' : ''}>${esc(o.t)}</option>`).join('') : '<option value="">Sin accesos asignados</option>';
 }
 function claveValida(u, claveIngresada) {
   if (!u) return false;
@@ -2852,30 +2887,41 @@ function claveValida(u, claveIngresada) {
 function errLogin(m) { const e = $('loginErr'); e.textContent = m; e.style.display = m ? 'block' : 'none'; }
 function iniciarSesion() {
   actualizarAccesosLogin();
-  const usr = $('lgUsuario').value.trim(), clave = $('lgClave').value;
-  let acc = $('lgAcceso').value;
-  if (!acc && $('lgAcceso').options.length > 1) {
-    acc = $('lgAcceso').options[1].value;
-    $('lgAcceso').value = acc;
+  const usr = $('lgUsuario') ? $('lgUsuario').value.trim() : '';
+  const clave = $('lgClave') ? $('lgClave').value : '';
+  let acc = $('lgAcceso') ? $('lgAcceso').value : '';
+  if (!acc && $('lgAcceso') && $('lgAcceso').options.length > 0) {
+    for (let i = 0; i < $('lgAcceso').options.length; i++) {
+      if ($('lgAcceso').options[i].value) {
+        acc = $('lgAcceso').options[i].value;
+        $('lgAcceso').value = acc;
+        break;
+      }
+    }
   }
   const u = userDe(usr);
-  const k = usr.toLowerCase(); const it = DB.intentos[k] || { n: 0, hasta: null };
+  const k = usr.toLowerCase(); const it = (DB && DB.intentos ? DB.intentos[k] : null) || { n: 0, hasta: null };
   const esClaveCorrecta = u && u.activo && claveValida(u, clave);
   if (it.hasta && new Date(it.hasta) > ahora() && !esClaveCorrecta) {
     return errLogin(`Usuario bloqueado temporalmente por intentos fallidos. Intente de nuevo después de las ${fFH(it.hasta).slice(11)}.`);
   }
   if (!u || !u.activo || !esClaveCorrecta) {
     it.n++; if (it.n >= 5) { it.hasta = new Date(ahora().getTime() + 5 * 60000).toISOString(); it.n = 0; }
-    DB.intentos[k] = it; bit('INICIO FALLIDO', 'Usuario: ' + usr, usr || '(vacío)'); guardar();
+    if (DB && DB.intentos) DB.intentos[k] = it;
+    bit('INICIO FALLIDO', 'Usuario: ' + usr, usr || '(vacío)');
+    guardar();
     return errLogin(!u ? 'El usuario no existe.' : !u.activo ? 'El usuario está inactivo.' : 'La clave es incorrecta.' + (it.hasta ? ' El usuario quedó bloqueado por 5 minutos.' : ''));
   }
   if (!acc) return errLogin('Seleccione el acceso.');
   if (!opcionesAcceso(u).some(o => o.v === acc)) {
-    bit(acc === 'MAESTRO' ? 'ACCESO DENEGADO MAESTRO' : 'ACCESO DENEGADO', acc, u.usuario); guardar();
+    bit(acc === 'MAESTRO' ? 'ACCESO DENEGADO MAESTRO' : 'ACCESO DENEGADO', acc, u.usuario);
+    guardar();
     return errLogin('No tiene autorización para ese acceso.');
   }
-  DB.intentos[k] = { n: 0, hasta: null };
-  errLogin(''); S.u = u; $('lgClave').value = '';
+  if (DB && DB.intentos) DB.intentos[k] = { n: 0, hasta: null };
+  errLogin('');
+  S.u = u;
+  if ($('lgClave')) $('lgClave').value = '';
   bit('INICIO DE SESIÓN', acc === 'MAESTRO' ? 'Maestro' : almNombre(acc));
   entrarContexto(acc);
 }
@@ -8382,7 +8428,7 @@ function imprimirVale(n, alm) {
             <th style="width:95px">Categoría</th>
             <th class="c" style="width:58px">Condición</th>
           </tr>
-        </thead>`
+        </thead>
         <tbody>
           ${v.lineas.map(l => {
             const it = l.id ? item(l.id) : (DB.catalogo.find(i => i.cod === l.cod) || {});
