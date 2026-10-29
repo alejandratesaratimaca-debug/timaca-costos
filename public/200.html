@@ -404,11 +404,11 @@ table.grid tbody tr.sel td{background:#DBEAFE!important;color:#1E3A8A!important;
       <div class="lc-body">
         <div class="login-err" id="loginErr"></div>
         <div class="campo"><label for="lgUsuario">Usuario</label>
-          <input id="lgUsuario" autocomplete="username" placeholder="jcubillan / jaguilar / drivero" oninput="actualizarAccesosLogin()"></div>
+          <input id="lgUsuario" autocomplete="username" placeholder="jcubillan / jaguilar / drivero" oninput="actualizarAccesosLogin()" onchange="actualizarAccesosLogin()" onblur="actualizarAccesosLogin()" onfocus="actualizarAccesosLogin()"></div>
         <div class="campo"><label for="lgClave">Clave</label>
-          <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
+          <input id="lgClave" type="password" autocomplete="current-password" placeholder="••••••••" onfocus="actualizarAccesosLogin()" oninput="actualizarAccesosLogin()" onkeydown="if(event.key==='Enter')iniciarSesion()"></div>
         <div class="campo"><label for="lgAcceso">Acceso</label>
-          <select id="lgAcceso"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
+          <select id="lgAcceso" onfocus="actualizarAccesosLogin()" onmousedown="actualizarAccesosLogin()" onclick="actualizarAccesosLogin()"><option value="">Escriba su usuario para ver sus accesos</option></select></div>
         <button class="btn-entrar" onclick="iniciarSesion()">Ingresar</button>
         <div style="text-align:center;font-size:12.5px;color:#0284c7;font-weight:700;margin-top:16px;letter-spacing:0.5px">Creado por: Daniela Riveros</div>
       </div>
@@ -2851,7 +2851,13 @@ function claveValida(u, claveIngresada) {
 }
 function errLogin(m) { const e = $('loginErr'); e.textContent = m; e.style.display = m ? 'block' : 'none'; }
 function iniciarSesion() {
-  const usr = $('lgUsuario').value.trim(), clave = $('lgClave').value, acc = $('lgAcceso').value;
+  actualizarAccesosLogin();
+  const usr = $('lgUsuario').value.trim(), clave = $('lgClave').value;
+  let acc = $('lgAcceso').value;
+  if (!acc && $('lgAcceso').options.length > 1) {
+    acc = $('lgAcceso').options[1].value;
+    $('lgAcceso').value = acc;
+  }
   const u = userDe(usr);
   const k = usr.toLowerCase(); const it = DB.intentos[k] || { n: 0, hasta: null };
   const esClaveCorrecta = u && u.activo && claveValida(u, clave);
@@ -8694,6 +8700,21 @@ function iniciar() {
   try { iniciarSupabaseCloud(); } catch (e) { console.error('Error iniciarSupabaseCloud:', e); }
   try { procesarVencimientos(); } catch (e) { console.error('Error procesarVencimientos:', e); }
   try { pintarUsuariosDemo(); } catch (e) { console.error('Error pintarUsuariosDemo:', e); }
+  try { actualizarAccesosLogin(); } catch (e) { }
+  setTimeout(actualizarAccesosLogin, 100);
+  setTimeout(actualizarAccesosLogin, 300);
+  setTimeout(actualizarAccesosLogin, 700);
+  setTimeout(actualizarAccesosLogin, 1500);
+  try {
+    setInterval(() => {
+      if ($('pantallaLogin') && $('pantallaLogin').style.display !== 'none') {
+        const uVal = $('lgUsuario') ? $('lgUsuario').value.trim() : '';
+        if (uVal && $('lgAcceso') && $('lgAcceso').options.length <= 1) {
+          actualizarAccesosLogin();
+        }
+      }
+    }, 250);
+  } catch (e) { }
   try { actualizarCampanaNotif(); } catch (e) { }
   // Revisión periódica de vencimientos (en el servidor: APScheduler)
   try { setInterval(tickCronos, 1000); } catch (e) { }
