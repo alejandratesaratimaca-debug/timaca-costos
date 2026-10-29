@@ -2495,10 +2495,34 @@ function semilla() {
 /* =====================================================================
    COMPONENTES DE INTERFAZ
    ===================================================================== */
+function formatoDestinoUbicacion(cod) {
+  if (!cod) return '—';
+  if (typeof DESTINOS_SOLICITUD !== 'undefined' && DESTINOS_SOLICITUD) {
+    for (const lista of Object.values(DESTINOS_SOLICITUD)) {
+      const found = lista.find(d => d.c === cod || d.n === cod);
+      if (found) return found.n;
+    }
+  }
+  if (typeof DB !== 'undefined' && DB && Array.isArray(DB.almacenes)) {
+    const alm = DB.almacenes.find(a => a.c === cod || a.n === cod);
+    if (alm) return alm.n;
+  }
+  if (cod.toUpperCase() === 'ELECTRICO' || cod.toUpperCase() === 'ELÉCTRICO') return 'Almacén Eléctrico';
+  if (cod.toUpperCase() === 'PMH') return 'Almacén PMH';
+  if (cod.toUpperCase() === 'PELLAS') return 'Almacén Pellas';
+  if (cod.toUpperCase() === 'ECO') return 'Almacén Eco';
+  if (cod.toUpperCase() === 'CENTRAL') return 'Almacén Central';
+  return cod;
+}
+
 const limpiaTxt = s => {
   if (s === undefined || s === null) return '—';
   let t = String(s).replace(/[\uFFFD\u0000-\u001F\u007F-\u009F]/g, '').trim();
-  t = t.replace(/cat[\uFFFD]?logo/gi, 'catálogo').replace(/SE[\uFFFD]?ORITA/gi, 'SEÑORITA').replace(/[\uFFFD]?PTIMO/gi, 'ÓPTIMO').replace(/[\?]{2,}/g, '');
+  t = t.replace(/cat[\uFFFD]?logo/gi, 'catálogo');
+  t = t.replace(/SE[\uFFFD]?ORITA/gi, 'SEÑORITA');
+  t = t.replace(/[Ó\uFFFD]+PTIMO/gi, 'ÓPTIMO');
+  t = t.replace(/\bPTIMO\b/gi, 'ÓPTIMO');
+  t = t.replace(/[\?]{2,}/g, '');
   return (!t || t === '—' || t === '-' || t === 'null' || t === 'undefined') ? '—' : t;
 };
 
@@ -2509,7 +2533,11 @@ function deepCleanDB(obj) {
   if (Array.isArray(obj)) return obj.map(deepCleanDB);
   if (obj && typeof obj === 'object') {
     for (const k of Object.keys(obj)) {
-      obj[k] = deepCleanDB(obj[k]);
+      if (k === 'cond' && typeof obj[k] === 'string' && obj[k].includes('PTIMO')) {
+        obj[k] = 'ÓPTIMO';
+      } else {
+        obj[k] = deepCleanDB(obj[k]);
+      }
     }
   }
   return obj;
@@ -4468,7 +4496,7 @@ function pintarFormulario() {
     TRF: F.num ? 'Modifique los datos o ítems de la transferencia antes de que sea aceptada por el almacén receptor.' : 'La transferencia no requiere aprobación. El almacén destino tendrá ' + DB.config.plazoHoras + ' horas para aceptarla; si no lo hace, el material regresa automáticamente.',
     DAN: 'Registre el daño de un ítem del almacén o de uno entregado en préstamo o asignación.', EXT: 'Registre el robo o extravío de un ítem del almacén o de uno entregado en préstamo o asignación.' };
   let cabecera = campo('Tipo de movimiento', `<select id="fTipo" ${bloqueado || F.num || OPC_MOV().length === 1 ? 'disabled' : ''} onchange="cambiarTipoMov(this.value)">${opciones(OPC_MOV(), t)}</select>`)
-    + campo('Almacén origen', `<input value="${esc(almNombre(F.origen).replace('Almacén ', '').toUpperCase())}" readonly>`);
+    + campo('Almacén origen', `<input value="${esc(almNombre(F.origen))}" readonly>`);
   if (t === 'TRF') {
     cabecera += campo('Almacén destino', `<select id="fDestino" ${ro}>${destinosPermitidos(F.origen).map(c => `<option value="${c}" ${c === F.destino ? 'selected' : ''}>${esc(almNombre(c))}</option>`).join('')}</select>`)
       + campo('Realizado por', `<input value="${esc(S.u.nombre)}" readonly>`)
@@ -5510,7 +5538,7 @@ VISTAS.doc = p => {
   else if (esSol && (est === 'FINALIZADO' || est === 'PENDIENTE DE APROBACIÓN' || est === 'POR APROBAR')) franjaDer = 'Por aprobar por el supervisor de ' + esc(almNombre(d.origen));
   const R = (lbl, v) => campo(lbl, `<input value="${esc(v ?? '')}" readonly>`);
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
-    + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', almNombre(d.destino));
+    + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', formatoDestinoUbicacion(d.destino));
   if (t === 'TRF') {
     c += R('Realizado por', d.realizadoPor.nombre);
     if (d.despacha) c += R('Quién despacha', d.despacha);
@@ -6736,7 +6764,7 @@ VISTAS.cVales = p => {
     { t: 'Módulo', v: r => getValeMods(r).map(m => MODULOS[m] || m).join(', '), f: r => getValeMods(r).map(m => `<span class="chip-mod m-${m}" style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">${esc(MODULOS[m] || m)}</span>`).join(' ') },
     { t: 'Fecha', v: r => fFH(r.fecha), s: r => r.fecha },
     { t: 'Origen', v: r => almNombre(r.origen).replace('Almacén ', '') },
-    { t: 'Destino', v: r => almNombre(r.destino).replace('Almacén ', '') },
+    { t: 'Destino', v: r => formatoDestinoUbicacion(r.destino) },
     { t: 'Cuenta Auxiliar', v: r => r.cuenta || '—', f: r => r.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.cuenta)}</span>` : '—' },
     { t: 'Proyecto', v: r => r.proyecto || '—', td: 'wrap' },
     { t: 'Despachado por', v: r => r.despacha || (r.realizadoPor ? (r.realizadoPor.nombre || r.realizadoPor) : '—') },
@@ -6850,7 +6878,7 @@ VISTAS.cValesDet = p => {
     { t: 'Módulo', v: r => MODULOS[r.mod] || r.mod, f: r => `<span class="chip-mod m-${r.mod}" style="font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700">${esc(MODULOS[r.mod] || r.mod)}</span>` },
     { t: 'Fecha y hora', v: r => fFH(r.v.fecha), s: r => r.v.fecha },
     { t: 'Origen', v: r => almNombre(r.v.origen).replace('Almacén ', '') },
-    { t: 'Destino', v: r => almNombre(r.v.destino).replace('Almacén ', '') },
+    { t: 'Destino', v: r => formatoDestinoUbicacion(r.v.destino) },
     { t: 'Cuenta Auxiliar', v: r => r.v.cuenta || '—', f: r => r.v.cuenta ? `<span class="est est-azul" style="font-family:monospace;font-weight:700">${esc(r.v.cuenta)}</span>` : '—' },
     { t: 'Descripción del proyecto', v: r => r.v.proyecto || '—', td: 'wrap' },
     { t: 'Código del ítem', v: r => r.l.cod || r.it.cod || '—', f: r => `<b>${esc(r.l.cod || r.it.cod || '—')}</b>` },
@@ -8206,10 +8234,10 @@ function imprimirVale(n, alm) {
     : `<div><b>Responsable:</b> ${esc(v.resp ? v.resp.nombre : '')}</div><div><b>Cédula:</b> ${esc(v.resp ? v.resp.cedula : '')}</div><div><b>Cargo / Supervisor:</b> ${esc(v.resp ? v.resp.cargo : '')} / ${esc(v.sup)}</div><div><b>Cuenta Auxiliar:</b> ${esc(v.cuenta)}</div>`;
 
   const der = esEnt
-    ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())}</div>`
+    ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen))}</div>`
     : esTrf
-    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor:</b> ${esc(v.sup)}</div>` : ''}${v.salidaTimaca ? `<div><b>N° de salida TIMACA:</b> ${esc(v.salidaTimaca)}</div>` : ''}`
-    : `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div><div><b>Origen → Destino:</b> ${esc(almNombre(v.origen).replace('Almacén ', '').toUpperCase())} → ${esc(almNombre(v.destino).replace('Almacén ', '').toUpperCase())}</div><div><b>Tipo A / Aprobación:</b> ${v.lineas.some(l => item(l.id).tipoA) ? 'SI · N° ' + esc(v.aprobGer || '—') : 'NO'}</div>${v.ref ? `<div><b>Vale de referencia:</b> ${esc(v.ref)}</div>` : ''}`;
+    ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen))} → ${esc(almNombre(v.destino))}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor:</b> ${esc(v.sup)}</div>` : ''}${v.salidaTimaca ? `<div><b>N° de salida TIMACA:</b> ${esc(v.salidaTimaca)}</div>` : ''}`
+    : `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div><div><b>Origen → Destino:</b> ${esc(almNombre(v.origen))} → ${esc(formatoDestinoUbicacion(v.destino))}</div><div><b>Tipo A / Aprobación:</b> ${v.lineas.some(l => item(l.id).tipoA) ? 'SI · N° ' + esc(v.aprobGer || '—') : 'NO'}</div>${v.ref ? `<div><b>Vale de referencia:</b> ${esc(v.ref)}</div>` : ''}`;
 
   let extra = '';
   if (t === 'PRH') extra = `<b>Fecha requerida:</b> ${fF(v.fechaReq)} &nbsp;·&nbsp; <b>Fecha de devolución:</b> ${fF(v.fechaDev)}${v.extensiones ? ` &nbsp;·&nbsp; <b>Extensiones:</b> ${v.extensiones}` : ''}`;
@@ -8300,7 +8328,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V19';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V20';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
