@@ -981,7 +981,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 const doc = String(c.documento || '').trim();
                 const cod = String(c.codigo || '').trim();
                 const k1 = c.recordId;
-                if (k1 && !k1.startsWith('HIST-SERV--')) corrMap.set(String(k1), c);
+                if (k1 && !String(k1).startsWith('HIST-SERV--')) corrMap.set(String(k1), c);
                 if (doc && cod) corrMap.set(`${doc}-${cod}`, c);
                 if (doc) corrMap.set(doc, c);
               }
@@ -1224,13 +1224,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           if (searchMaster) {
             const q = searchMaster.toLowerCase();
             items = items.filter((r: any) => 
-              (r.descripcion && r.descripcion.toLowerCase().includes(q)) ||
-              (r.cuenta_aux && r.cuenta_aux.toLowerCase().includes(q)) ||
-              (r.codigo && r.codigo.toLowerCase().includes(q)) ||
-              (r.numero && r.numero.toLowerCase().includes(q)) ||
-              (r.pedido && r.pedido.toLowerCase().includes(q)) ||
-              (r.solicitante && r.solicitante.toLowerCase().includes(q)) ||
-              (r.motivo && r.motivo.toLowerCase().includes(q))
+              (r.descripcion && String(r.descripcion).toLowerCase().includes(q)) ||
+              (r.cuenta_aux && String(r.cuenta_aux).toLowerCase().includes(q)) ||
+              (r.codigo && String(r.codigo).toLowerCase().includes(q)) ||
+              (r.numero && String(r.numero).toLowerCase().includes(q)) ||
+              (r.pedido && String(r.pedido).toLowerCase().includes(q)) ||
+              (r.solicitante && String(r.solicitante).toLowerCase().includes(q)) ||
+              (r.motivo && String(r.motivo).toLowerCase().includes(q))
             );
           }
 
@@ -2053,13 +2053,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       .filter(c => {
         const q = searchConsumos.toLowerCase().trim();
         const matchesSearch = !q || 
-          c.numero.toLowerCase().includes(q) ||
-          c.codigo.toLowerCase().includes(q) ||
-          c.descripcion.toLowerCase().includes(q) ||
-          (c.cuentaAuxiliar && c.cuentaAuxiliar.toLowerCase().includes(q)) ||
-          (c.motivo && c.motivo.toLowerCase().includes(q)) ||
-          c.solicitante.toLowerCase().includes(q);
-        const matchesCta = filterCtaConsumos === 'TODAS' || c.cuentaAuxiliar.toUpperCase() === filterCtaConsumos.toUpperCase() || c.cuentaAuxiliar.toUpperCase().includes(filterCtaConsumos.toUpperCase());
+          String(c.numero || '').toLowerCase().includes(q) ||
+          String(c.codigo || '').toLowerCase().includes(q) ||
+          String(c.descripcion || '').toLowerCase().includes(q) ||
+          (c.cuentaAuxiliar && String(c.cuentaAuxiliar).toLowerCase().includes(q)) ||
+          (c.motivo && String(c.motivo).toLowerCase().includes(q)) ||
+          String(c.solicitante || '').toLowerCase().includes(q);
+        const ctaStr = String(c.cuentaAuxiliar || '').toUpperCase();
+        const fCta = filterCtaConsumos.toUpperCase();
+        const matchesCta = filterCtaConsumos === 'TODAS' || ctaStr === fCta || ctaStr.includes(fCta);
         return matchesSearch && matchesCta;
       })
       .sort((a, b) => (b.totalUSD || 0) - (a.totalUSD || 0));
@@ -2070,13 +2072,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       .filter(c => {
         const q = searchCompras.toLowerCase().trim();
         const matchesSearch = !q || 
-          c.solicitudCompra.toLowerCase().includes(q) ||
-          (c.ordenCompra && c.ordenCompra.toLowerCase().includes(q)) ||
-          c.codigo.toLowerCase().includes(q) ||
-          c.descripcion.toLowerCase().includes(q) ||
-          (c.cuentaAuxiliar && c.cuentaAuxiliar.toLowerCase().includes(q)) ||
-          (c.motivo && c.motivo.toLowerCase().includes(q)) ||
-          c.proveedor.toLowerCase().includes(q);
+          String(c.solicitudCompra || '').toLowerCase().includes(q) ||
+          (c.ordenCompra && String(c.ordenCompra).toLowerCase().includes(q)) ||
+          String(c.codigo || '').toLowerCase().includes(q) ||
+          String(c.descripcion || '').toLowerCase().includes(q) ||
+          (c.cuentaAuxiliar && String(c.cuentaAuxiliar).toLowerCase().includes(q)) ||
+          (c.motivo && String(c.motivo).toLowerCase().includes(q)) ||
+          String(c.proveedor || '').toLowerCase().includes(q);
         const matchesTipo = filterTipoCompras === 'TODOS' || c.tipo === filterTipoCompras;
         return matchesSearch && matchesTipo;
       })
@@ -2111,10 +2113,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       if (!searchMatriz.trim()) return true;
       const q = searchMatriz.toLowerCase().trim();
       return (
-        p.codigo.toLowerCase().includes(q) ||
-        p.nombre.toLowerCase().includes(q) ||
-        (p.cliente && p.cliente.toLowerCase().includes(q)) ||
-        (p.tipoCosto && p.tipoCosto.toLowerCase().includes(q))
+        String(p.codigo || '').toLowerCase().includes(q) ||
+        String(p.nombre || '').toLowerCase().includes(q) ||
+        (p.cliente && String(p.cliente).toLowerCase().includes(q)) ||
+        (p.tipoCosto && String(p.tipoCosto).toLowerCase().includes(q))
       );
     });
   }, [matrizData, searchMatriz, filterTipoMatriz]);
@@ -2156,18 +2158,18 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   const isPellas1Record = (r: any) => {
     if (!r) return false;
-    const cta = (r.nuevaCuenta || r.cuentaAnterior || '').toUpperCase();
-    const proj = (r.nuevoProyecto || r.proyectoAnterior || '').toLowerCase();
-    const mot = (r.motivo || '').toLowerCase();
+    const cta = String(r.nuevaCuenta || r.cuentaAnterior || '').toUpperCase();
+    const proj = String(r.nuevoProyecto || r.proyectoAnterior || '').toLowerCase();
+    const mot = String(r.motivo || '').toLowerCase();
     const rec = String(r.recordId || '').toUpperCase();
     return cta.includes('0706') || proj.includes('línea 1') || proj.includes('linea 1') || rec.includes('0706') || mot.includes('0706');
   };
 
   const isPellasTotalRecord = (r: any) => {
     if (!r) return false;
-    const cta = (r.nuevaCuenta || r.cuentaAnterior || '').toUpperCase();
-    const proj = (r.nuevoProyecto || r.proyectoAnterior || '').toLowerCase();
-    const mot = (r.motivo || '').toLowerCase();
+    const cta = String(r.nuevaCuenta || r.cuentaAnterior || '').toUpperCase();
+    const proj = String(r.nuevoProyecto || r.proyectoAnterior || '').toLowerCase();
+    const mot = String(r.motivo || '').toLowerCase();
     return cta.includes('0706') || cta.includes('0676') || cta.includes('0640') || cta.includes('0104') || cta.includes('0681') || proj.includes('pella') || mot.includes('pella');
   };
 
@@ -2189,25 +2191,25 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       } else if (filtroTipoHistorial === 'compras') {
         if (r.tipoItem !== 'compra') return false;
       } else if (filtroTipoHistorial === 'rezagadas') {
-        if (!r.nuevoMes && !(r.motivo && r.motivo.toLowerCase().includes('rezagad'))) return false;
+        if (!r.nuevoMes && !(r.motivo && String(r.motivo).toLowerCase().includes('rezagad'))) return false;
       }
 
       // 2. Búsqueda de texto
       if (searchHistorialCorrecciones.trim()) {
         const q = searchHistorialCorrecciones.toLowerCase().trim();
         const match =
-          (r.documento && r.documento.toLowerCase().includes(q)) ||
-          (r.recordId && r.recordId.toLowerCase().includes(q)) ||
-          (r.codigo && r.codigo.toLowerCase().includes(q)) ||
-          (r.descripcion && r.descripcion.toLowerCase().includes(q)) ||
-          (r.cuentaAnterior && r.cuentaAnterior.toLowerCase().includes(q)) ||
-          (r.nuevaCuenta && r.nuevaCuenta.toLowerCase().includes(q)) ||
-          (r.nuevoProyecto && r.nuevoProyecto.toLowerCase().includes(q)) ||
-          (r.nuevoMes && r.nuevoMes.toLowerCase().includes(q)) ||
-          (r.motivo && r.motivo.toLowerCase().includes(q)) ||
-          (r.solicitante && r.solicitante.toLowerCase().includes(q)) ||
-          (r.proveedor && r.proveedor.toLowerCase().includes(q)) ||
-          (r.usuario && r.usuario.toLowerCase().includes(q));
+          (r.documento && String(r.documento).toLowerCase().includes(q)) ||
+          (r.recordId && String(r.recordId).toLowerCase().includes(q)) ||
+          (r.codigo && String(r.codigo).toLowerCase().includes(q)) ||
+          (r.descripcion && String(r.descripcion).toLowerCase().includes(q)) ||
+          (r.cuentaAnterior && String(r.cuentaAnterior).toLowerCase().includes(q)) ||
+          (r.nuevaCuenta && String(r.nuevaCuenta).toLowerCase().includes(q)) ||
+          (r.nuevoProyecto && String(r.nuevoProyecto).toLowerCase().includes(q)) ||
+          (r.nuevoMes && String(r.nuevoMes).toLowerCase().includes(q)) ||
+          (r.motivo && String(r.motivo).toLowerCase().includes(q)) ||
+          (r.solicitante && String(r.solicitante).toLowerCase().includes(q)) ||
+          (r.proveedor && String(r.proveedor).toLowerCase().includes(q)) ||
+          (r.usuario && String(r.usuario).toLowerCase().includes(q));
         if (!match) return false;
       }
       return true;
@@ -5609,7 +5611,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     <option value="valorizaciones_pellas">🏭 Valorizaciones Pellas 1 (Línea 1 · TTE-C-0706) ({reclasificaciones.filter(isPellas1Record).length.toLocaleString()})</option>
                     <option value="pellas_todas">🏗️ Todas las Plantas de Pellas ({reclasificaciones.filter(isPellasTotalRecord).length.toLocaleString()})</option>
                     <option value="historicas">📋 Históricas Anteriores (Correcciones.xlsx) ({reclasificaciones.filter(x => (x.usuario && x.usuario.includes('Correcciones.xlsx')) || (x.recordId && String(x.recordId).startsWith('HIST-'))).length.toLocaleString()})</option>
-                    <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && x.motivo.toLowerCase().includes('rezagad'))).length.toLocaleString()})</option>
+                    <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && String(x.motivo).toLowerCase().includes('rezagad'))).length.toLocaleString()})</option>
                     <option value="recientes">⚡ Recientes Sistema ({reclasificaciones.filter(x => !((x.usuario && x.usuario.includes('Correcciones.xlsx')) || (x.recordId && String(x.recordId).startsWith('HIST-')))).length.toLocaleString()})</option>
                     <option value="consumos">Solo Consumos ({reclasificaciones.filter(x => x.tipoItem === 'consumo').length.toLocaleString()})</option>
                     <option value="compras">Solo Compras / Servicios ({reclasificaciones.filter(x => x.tipoItem === 'compra').length.toLocaleString()})</option>
