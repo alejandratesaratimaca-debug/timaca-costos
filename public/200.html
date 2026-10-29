@@ -1637,15 +1637,51 @@ function aprobarSolicitud(numSol, aprobGer) {
   notificarSistema('Solicitud aprobada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue APROBADA por ${S.u.nombre}. Se generó el vale ${v.num}.`, 'ok', { doc: v.num });
   return v;
 }
-function anularSolicitud(numSol, motivo) {
-  const s = solDe(numSol);
-  if (!s || (s.estatus !== 'PENDIENTE DE APROBACIÓN' && s.estatus !== 'FINALIZADO')) throw new Error('Solo se pueden anular solicitudes pendientes de aprobación.');
-  if (!puede('aprobar', s.origen)) throw new Error('No tiene permiso para anular solicitudes de ' + almNombre(s.origen) + '.');
-  if (s.generadoPor.usuario === S.u.usuario) throw new Error('No puede anular una solicitud generada por usted.');
-  if (!String(motivo || '').trim()) throw new Error('El motivo de anulación es obligatorio.');
-  Object.assign(s, { estatus: 'ANULADA', procesadoPor: quien(), procesadoEn: nowISO(), motivo });
-  bit('SOLICITUD ANULADA', `${s.num}: ${motivo}`); guardar();
+function anularSolicitud(numSol, motivo, alm) {
+  const ctx = alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+  const s = solDe(numSol, ctx);
+  if (!s) throw new Error('Solicitud no encontrada: ' + numSol);
+  if (s.estatus === 'ANULADA' || s.estatus === 'ANULADO') throw new Error('La solicitud ya se encuentra anulada.');
+  motivo = String(motivo || '').trim();
+  if (!motivo) throw new Error('El motivo de anulación es obligatorio.');
+
+  // Si tiene un vale emitido, anular el vale y reintegrar existencias
+  const v = (s.vale ? valeDe(s.vale, s.origen) : null) || valeDe(s.num, s.origen);
+  if (v) {
+    v.estatus = 'ANULADO';
+    v.motivo = motivo;
+    v.anuladoEn = nowISO();
+    v.anuladoPor = quien();
+
+    // Reintegrar stock a existencias del almacén
+    (v.lineas || s.lineas || []).forEach(l => {
+      const e = exi(s.origen, l.id);
+      const cant = Number(l.cant) || 1;
+      e.disp = (e.disp || 0) + cant;
+      if (s.tipo === 'ASI' || v.tipo === 'ASI') {
+        e.asig = Math.max(0, (e.asig || 0) - cant);
+        if (l.consumo || l.mod === 'EPP') e.entregado = Math.max(0, (e.entregado || 0) - cant);
+      } else if (s.tipo === 'PRH' || v.tipo === 'PRH') {
+        e.prest = Math.max(0, (e.prest || 0) - cant);
+      }
+    });
+
+    // Reconciliar almacén para asegurar consistencia matemática exacta
+    reconciliarStockAlmacen(s.origen);
+  }
+
+  // Marcar solicitud como anulada
+  Object.assign(s, {
+    estatus: 'ANULADA',
+    procesadoPor: quien(),
+    procesadoEn: nowISO(),
+    motivo
+  });
+
+  bit('SOLICITUD ANULADA', `${s.num} (${almNombre(s.origen)}): ${motivo}`);
+  guardar();
   notificarSistema('Solicitud anulada', `La solicitud ${s.num} en ${almNombre(s.origen)} fue ANULADA por ${S.u.nombre}. Motivo: ${motivo}.`, 'err', { doc: s.num });
+  toast(`Solicitud ${s.num} anulada y existencias reintegradas al almacén ${almNombre(s.origen)}.`, 'ok');
 }
 
 /* ---------- Configuración de destinos por almacén (Solicitudes y préstamos) ---------- */
@@ -5646,9 +5682,9 @@ function accionesDoc(d, esSol, p) {
   let h = '';
   if (enMaestro()) return esSol ? '' : `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.solicitud || d.vale || d.num}')">✏️ Editar vale</button><button class="btn btn-azul" onclick="imprimirVale('${d.num}', '${d.origen}')">🖨 Imprimir vale</button>`;
   if (esSol) {
-    if ((d.estatus === 'FINALIZADO' || d.estatus === 'PENDIENTE DE APROBACIÓN') && d.origen === S.ctx) {
-      const ok = puede('aprobar', d.origen) && d.generadoPor.usuario !== S.u.usuario;
-      h += `<button class="btn btn-rojo" ${ok ? '' : 'disabled'} onclick="accionAnular('${d.num}')">Anular solicitud</button><button class="btn btn-verde" ${ok ? '' : 'disabled'} onclick="accionAprobar('${d.num}')">Aceptar solicitud</button>`;
+    const esAnuladaDoc = (d.estatus === 'ANULADO' || d.estatus === 'ANULADA');
+    if (!esAnuladaDoc && d.origen === S.ctx) {
+      h += `<button class="btn btn-rojo" onclick="pedirTexto('Anular solicitud ' + esc('${d.num}'), 'Indique el motivo de la anulación (obligatorio):', v => { anularSolicitud('${d.num}', v, '${d.origen}'); refrescar(); }, 'Anular solicitud', 'btn-rojo', true)">🚫 Anular solicitud</button>`;
     }
     h += `<button class="btn btn-ambar" onclick="editarSolicitudVale('${d.num}', '${d.origen}')">✏️ Editar solicitud / vale</button>`;
     if (d.vale && puedeImprimir()) h += `<button class="btn btn-azul" onclick="imprimirVale('${d.vale}', '${d.origen}')">🖨 Imprimir vale</button>`;
@@ -5721,6 +5757,7 @@ VISTAS.sol = p => {
       <button class="btn-sip btn-ambar" id="bEditar" disabled onclick="editarSolicitudVale(selDe('gSol'), S.ctx)">✏️ Editar solicitud / vale</button>
       <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').vale || selDe('gSol').num,alm:selDe('gSol').origen,back:'sol'})">Visualizar vale</button>
       <button class="btn-sip" id="bImp" disabled onclick="imprimirVale(selDe('gSol').vale || selDe('gSol').num, selDe('gSol').origen)">🖨 Imprimir vale</button>
+      <button class="btn-sip btn-rojo" id="bAnular" disabled onclick="accionAnularSol()" title="Anular solicitud seleccionada y reintegrar existencias">🚫 Anular solicitud</button>
       <button class="btn-ayuda" onclick="ayuda('sol')">AYUDA</button>
     </div>`;
   if (p && p.sel) { const g = GR.gSol; const i = g.vis.findIndex(r => r.num === p.sel); if (i >= 0) selGrid('gSol', i); }
@@ -5730,11 +5767,39 @@ function tiraSol(s) {
   if ($('tsCuenta')) $('tsCuenta').textContent = s.cuenta || '—';
   $('tsProy').textContent = s.proyecto;
   $('tsResp').textContent = s.resp ? s.resp.nombre : '';
+  const esAnulada = (s.estatus === 'ANULADA' || s.estatus === 'ANULADO');
   if ($('bVer')) $('bVer').disabled = false;
-  if ($('bEditar')) $('bEditar').disabled = false;
+  if ($('bEditar')) $('bEditar').disabled = esAnulada;
   if ($('bImp')) $('bImp').disabled = !(s.vale || s.num);
-  const info = s.vale ? `Vale oficial ${s.vale} emitido. Listo para imprimir y firmar.` : 'Solicitud registrada.';
-  $('tsInfo').innerHTML = `<div class="franja-est verde" style="margin:10px 0 0"><span>✔ ${esc(info)}</span></div>`;
+  if ($('bAnular')) {
+    $('bAnular').disabled = esAnulada;
+    $('bAnular').title = esAnulada ? 'Esta solicitud ya está anulada' : 'Anular esta solicitud y reintegrar existencias al almacén';
+  }
+  if (esAnulada) {
+    $('tsInfo').innerHTML = `<div class="franja-est rojo" style="margin:10px 0 0"><span>🚫 Solicitud ANULADA${s.motivo ? ` · Motivo: ${esc(s.motivo)}` : ''}${s.procesadoPor ? ` (por ${esc(s.procesadoPor.nombre || s.procesadoPor.usuario)})` : ''}</span></div>`;
+  } else {
+    const info = s.vale ? `Vale oficial ${s.vale} emitido. Listo para imprimir y firmar.` : 'Solicitud registrada.';
+    $('tsInfo').innerHTML = `<div class="franja-est verde" style="margin:10px 0 0"><span>✔ ${esc(info)}</span></div>`;
+  }
+}
+
+function accionAnularSol() {
+  const s = selDe('gSol');
+  if (!s) return toast('Seleccione una solicitud en la tabla para anular.', 'err');
+  if (s.estatus === 'ANULADA' || s.estatus === 'ANULADO') {
+    return toast(`La solicitud ${s.num} ya está anulada.`, 'err');
+  }
+  pedirTexto(
+    `Anular solicitud ${s.num}`,
+    `Indique el motivo de anulación para ${s.num} (las existencias se reintegrarán al inventario de ${almNombre(s.origen)}):`,
+    motivo => {
+      anularSolicitud(s.num, motivo, s.origen);
+      refrescar();
+    },
+    'Anular solicitud',
+    'btn-rojo',
+    true
+  );
 }
 function accionEliminarSol() {
   const s = selDe('gSol');
@@ -8328,7 +8393,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V21';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V22';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
