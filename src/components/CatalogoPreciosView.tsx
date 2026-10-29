@@ -256,9 +256,18 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
       let rawCompras: CompraItem[] = [];
       let rawConsumos: ConsumoItem[] = [];
 
+      const fetchHeaders = {
+        'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      };
+      const queryBuster = `_t=${Date.now()}`;
+
       // A. Intentar endpoint compras
       try {
-        const resComp = await fetch('http://192.168.13.193:3005/api/compras?limit=10000', {
+        const resComp = await fetch(`/api/compras?limit=10000&${queryBuster}`, {
+          cache: 'no-store',
+          headers: fetchHeaders,
           signal: AbortSignal.timeout(3000)
         });
         if (resComp.ok) {
@@ -266,17 +275,24 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           rawCompras = Array.isArray(data) ? data : (data.items || []);
         }
       } catch (err) {
-        // Fallback a compras.json estático
-        const resStatic = await fetch('/data/sip/compras.json');
-        if (resStatic.ok) {
-          const data = await resStatic.json();
-          rawCompras = Array.isArray(data) ? data : (data.items || []);
-        }
+        // Fallback a compras.json estático con neutralización de caché
+        try {
+          const resStatic = await fetch(`/data/sip/compras.json?${queryBuster}`, {
+            cache: 'no-store',
+            headers: fetchHeaders
+          });
+          if (resStatic.ok) {
+            const data = await resStatic.json();
+            rawCompras = Array.isArray(data) ? data : (data.items || []);
+          }
+        } catch {}
       }
 
       // B. Intentar endpoint consumos
       try {
-        const resCons = await fetch('http://192.168.13.193:3005/api/consumos?limit=50000', {
+        const resCons = await fetch(`/api/consumos?limit=50000&${queryBuster}`, {
+          cache: 'no-store',
+          headers: fetchHeaders,
           signal: AbortSignal.timeout(3000)
         });
         if (resCons.ok) {
@@ -284,12 +300,17 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
           rawConsumos = Array.isArray(data) ? data : (data.items || []);
         }
       } catch (err) {
-        // Fallback a consumos.json estático
-        const resStatic = await fetch('/data/sip/consumos.json');
-        if (resStatic.ok) {
-          const data = await resStatic.json();
-          rawConsumos = Array.isArray(data) ? data : (data.items || []);
-        }
+        // Fallback a consumos.json estático con neutralización de caché
+        try {
+          const resStatic = await fetch(`/data/sip/consumos.json?${queryBuster}`, {
+            cache: 'no-store',
+            headers: fetchHeaders
+          });
+          if (resStatic.ok) {
+            const data = await resStatic.json();
+            rawConsumos = Array.isArray(data) ? data : (data.items || []);
+          }
+        } catch {}
       }
 
       setCompras(rawCompras);
@@ -657,7 +678,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
     localStorage.setItem('timaca_precios_manuales_v1', JSON.stringify(updated));
 
     try {
-      fetch('http://192.168.13.193:3005/api/precios-manuales', {
+      fetch('/api/precios-manuales', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -683,7 +704,7 @@ export const CatalogoPreciosView: React.FC<CatalogoPreciosViewProps> = ({
     localStorage.setItem('timaca_precios_manuales_v1', JSON.stringify(updated));
 
     try {
-      fetch(`http://192.168.13.193:3005/api/precios-manuales/${encodeURIComponent(codigo)}`, {
+      fetch(`/api/precios-manuales/${encodeURIComponent(codigo)}`, {
         method: 'DELETE'
       }).catch(() => {});
     } catch (e) {}

@@ -5,6 +5,7 @@
  */
 
 import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual2026';
+import { safeNumber } from '../utils/numericHelpers';
 
 export interface SipItem {
   id: number | string;
@@ -148,14 +149,21 @@ export async function fetchSipProyectos(forceRefresh = false): Promise<{ list: S
     return { list: memoryCache.proyectos, map: memoryCache.proyectosMap };
   }
 
-  const fetchOpts: RequestInit = forceRefresh ? { cache: 'no-store' } : { cache: 'no-cache' };
-  const querySuffix = forceRefresh ? `?_t=${Date.now()}` : '';
+  const fetchOpts: RequestInit = {
+    cache: 'no-store',
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  };
+  const querySuffix = `?_t=${Date.now()}`;
 
   let list: SipProyectoInfo[] = [];
   try {
-    const res = await fetch(`http://192.168.13.193:3005/api/proyectos${querySuffix}`, { 
+    const res = await fetch(`/api/proyectos${querySuffix}`, { 
       ...fetchOpts, 
-      signal: AbortSignal.timeout(1500) 
+      signal: AbortSignal.timeout(2000) 
     });
     if (res.ok) list = await res.json();
   } catch (e) {}
@@ -186,16 +194,23 @@ export async function fetchSipMesItems(mesNum: number, forceRefresh = false): Pr
     return memoryCache.mesesItems.get(cacheKey)!;
   }
 
-  const fetchOpts: RequestInit = forceRefresh ? { cache: 'no-store' } : { cache: 'no-cache' };
-  const querySuffix = forceRefresh ? `?_t=${Date.now()}` : '';
+  const fetchOpts: RequestInit = {
+    cache: 'no-store',
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  };
+  const querySuffix = `?_t=${Date.now()}`;
   let items: SipItem[] = [];
 
   if (mesNum === 10) {
     // Octubre
     try {
-      const res = await fetch(`http://192.168.13.193:3005/api/unificada?ano=2026&mes=octubre&limit=15000&${querySuffix.replace('?', '')}`, { 
+      const res = await fetch(`/api/unificada?ano=2026&mes=octubre&limit=15000&${querySuffix.replace('?', '')}`, { 
         ...fetchOpts, 
-        signal: AbortSignal.timeout(2000) 
+        signal: AbortSignal.timeout(2500) 
       });
       if (res.ok) {
         const d = await res.json();
@@ -214,9 +229,9 @@ export async function fetchSipMesItems(mesNum: number, forceRefresh = false): Pr
   } else if (mesNum === 9) {
     // Septiembre
     try {
-      const res = await fetch(`http://192.168.13.193:3005/api/unificada?ano=2026&mes=septiembre&limit=15000&${querySuffix.replace('?', '')}`, { 
+      const res = await fetch(`/api/unificada?ano=2026&mes=septiembre&limit=15000&${querySuffix.replace('?', '')}`, { 
         ...fetchOpts, 
-        signal: AbortSignal.timeout(2000) 
+        signal: AbortSignal.timeout(2500) 
       });
       if (res.ok) {
         const d = await res.json();
@@ -235,9 +250,9 @@ export async function fetchSipMesItems(mesNum: number, forceRefresh = false): Pr
   } else if (mesNum === 8) {
     // Agosto
     try {
-      const res = await fetch(`http://192.168.13.193:3005/api/unificada?ano=2026&mes=agosto&limit=15000&${querySuffix.replace('?', '')}`, { 
+      const res = await fetch(`/api/unificada?ano=2026&mes=agosto&limit=15000&${querySuffix.replace('?', '')}`, { 
         ...fetchOpts, 
-        signal: AbortSignal.timeout(2000) 
+        signal: AbortSignal.timeout(2500) 
       });
       if (res.ok) {
         const d = await res.json();
@@ -330,7 +345,7 @@ export async function getSipPeriodoData(mesNum: number, forceRefresh = false): P
 
   itemsExternos.forEach(r => {
     const code = (r.cuenta_aux || 'SIN-CUENTA').trim().toUpperCase();
-    const val = Number(r.total_usd) || 0;
+    const val = safeNumber(r.total_usd, 0);
     granTotalPeriodo += val;
 
     if (!ctaMap.has(code)) {
@@ -472,7 +487,7 @@ export async function getSipEvolutivoMensual(cuentaCodigo?: string, forceRefresh
 
     let totalMes = 0;
     itemsFiltrados.forEach(r => {
-      const val = Number(r.total_usd) || 0;
+      const val = safeNumber(r.total_usd, 0);
       totalMes += val;
       const cat = getMacroCategoriaSip(r);
       catMes[cat] = (catMes[cat] || 0) + val;
@@ -783,7 +798,7 @@ export async function getAuditCincoRubrosEvolutivo(cuentaCodigo?: string): Promi
     };
     let octTotal = 0;
     octFiltrados.forEach(r => {
-      const val = Number(r.total_usd) || 0;
+      const val = safeNumber(r.total_usd, 0);
       octTotal += val;
       const cat = getMacroCategoriaSip(r);
       octCatMes[cat] = (octCatMes[cat] || 0) + val;

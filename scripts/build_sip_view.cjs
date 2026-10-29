@@ -11,7 +11,7 @@ code = code.replace(
   /const fetchStatus = async \(\) => {[\s\S]*?if \(res\.ok\) setStatus\(await res\.json\(\)\);[\s\S]*?};/,
   `const fetchStatus = async () => {
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/status', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch('/api/status', { signal: AbortSignal.timeout(2000) });
       if (res.ok) { setStatus(await res.json()); return; }
     } catch (e) {}
     try {
@@ -27,7 +27,7 @@ code = code.replace(
   `const fetchCatalogFiltros = async (targetAno?: string) => {
     try {
       const a = targetAno || selectedAno || '2026';
-      const res = await fetch('http://192.168.13.193:3005/api/filtros?ano=' + encodeURIComponent(a), { signal: AbortSignal.timeout(2000) });
+      const res = await fetch('/api/filtros?ano=' + encodeURIComponent(a), { signal: AbortSignal.timeout(2000) });
       if (res.ok) { setCatalogFiltros(await res.json()); return; }
     } catch (e) {}
     try {
@@ -42,7 +42,7 @@ code = code.replace(
   /const fetchProyectos = async \(\) => {[\s\S]*?const res = await fetch\('\/api\/proyectos'\);[\s\S]*?if \(res\.ok\) setProyectos\(await res\.json\(\)\);[\s\S]*?};/,
   `const fetchProyectos = async () => {
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/proyectos', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch('/api/proyectos', { signal: AbortSignal.timeout(2000) });
       if (res.ok) { setProyectos(await res.json()); return; }
     } catch (e) {}
     try {
@@ -57,7 +57,7 @@ code = code.replace(
   /const fetchMatriz = async \(\) => {[\s\S]*?const res = await fetch\('\/api\/matriz'\);[\s\S]*?if \(res\.ok\) setMatrizData\(await res\.json\(\)\);[\s\S]*?};/,
   `const fetchMatriz = async () => {
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/matriz', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch('/api/matriz', { signal: AbortSignal.timeout(2000) });
       if (res.ok) { setMatrizData(await res.json()); return; }
     } catch (e) {}
     try {
@@ -72,7 +72,7 @@ code = code.replace(
   /const fetchReclasificaciones = async \(\) => {[\s\S]*?const res = await fetch\('\/api\/reclasificaciones'\);[\s\S]*?if \(res\.ok\) setReclasificaciones\(await res\.json\(\)\);[\s\S]*?};/,
   `const fetchReclasificaciones = async () => {
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/reclasificaciones', { signal: AbortSignal.timeout(2000) });
+      const res = await fetch('/api/reclasificaciones', { signal: AbortSignal.timeout(2000) });
       if (res.ok) { setReclasificaciones(await res.json()); return; }
     } catch (e) {}
     try {
@@ -87,7 +87,7 @@ code = code.replace(
   /const res = await fetch\(`\/api\/consumos\?\${params\.toString\(\)}`\);[\s\S]*?if \(res\.ok\) {[\s\S]*?setConsumos\(data\.items \|\| \[\]\);[\s\S]*?}/,
   `let res = null;
       try {
-        res = await fetch('http://192.168.13.193:3005/api/consumos?' + params.toString(), { signal: AbortSignal.timeout(2500) });
+        res = await fetch('/api/consumos?' + params.toString(), { signal: AbortSignal.timeout(2500) });
       } catch (e) {}
       if (res && res.ok) {
         const data = await res.json();
@@ -112,7 +112,7 @@ code = code.replace(
   /const res = await fetch\(`\/api\/compras\?\${params\.toString\(\)}`\);[\s\S]*?if \(res\.ok\) {[\s\S]*?setCompras\(data\.items \|\| \[\]\);[\s\S]*?}/,
   `let res = null;
       try {
-        res = await fetch('http://192.168.13.193:3005/api/compras?' + params.toString(), { signal: AbortSignal.timeout(2500) });
+        res = await fetch('/api/compras?' + params.toString(), { signal: AbortSignal.timeout(2500) });
       } catch (e) {}
       if (res && res.ok) {
         const data = await res.json();
@@ -137,7 +137,7 @@ code = code.replace(
   /const res = await fetch\(`\/api\/unificada\?\${params\.toString\(\)}`\);[\s\S]*?if \(res\.ok\) {[\s\S]*?setMasterRows\(data\.items \|\| \[\]\);[\s\S]*?}/,
   `let res = null;
       try {
-        res = await fetch('http://192.168.13.193:3005/api/unificada?' + params.toString(), { signal: AbortSignal.timeout(3000) });
+        res = await fetch('/api/unificada?' + params.toString(), { signal: AbortSignal.timeout(3000) });
       } catch (e) {}
       if (res && res.ok) {
         const data = await res.json();
@@ -178,25 +178,25 @@ code = code.replace(
 // In handleSyncSIP:
 code = code.replace(
   /const res = await fetch\('\/api\/sip\/sync', {/,
-  "const res = await fetch('http://192.168.13.193:3005/api/sip/sync', {"
+  "const res = await fetch('/api/sip/sync', {"
 );
 
 // In handleAplicarCorreccion:
 code = code.replace(
   /const res = await fetch\('\/api\/reclasificar', {/,
-  "const res = await fetch('http://192.168.13.193:3005/api/reclasificar', {"
+  "const res = await fetch('/api/reclasificar', {"
 );
 
 // In handleRevertirCorreccion:
 code = code.replace(
   /const res = await fetch\('\/api\/reclasificar\/revertir', {/,
-  "const res = await fetch('http://192.168.13.193:3005/api/reclasificar/revertir', {"
+  "const res = await fetch('/api/reclasificar/revertir', {"
 );
 
 // In candidateMovimientos:
 code = code.replace(
   /const res = await fetch\(`\/api\/correcciones\/buscar\?q=\${encodeURIComponent\(q\)}&estado=\${filtroEstadoCorreccion}`\);/,
-  "const res = await fetch('http://192.168.13.193:3005/api/correcciones/buscar?q=' + encodeURIComponent(q) + '&estado=' + filtroEstadoCorreccion);"
+  "const res = await fetch('/api/correcciones/buscar?q=' + encodeURIComponent(q) + '&estado=' + filtroEstadoCorreccion);"
 );
 
 // In handleExportExcel:
@@ -204,7 +204,7 @@ code = code.replace(
   /const res = await fetch\(`\/api\/unificada\/export\?\${params\.toString\(\)}`\);/,
   `let res = null;
       try {
-        res = await fetch('http://192.168.13.193:3005/api/unificada/export?' + params.toString());
+        res = await fetch('/api/unificada/export?' + params.toString());
       } catch (e) {}
       let data = null;
       if (res && res.ok) {

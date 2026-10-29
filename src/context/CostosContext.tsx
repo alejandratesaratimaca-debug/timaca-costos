@@ -12,6 +12,7 @@ import { generateInitialMockCostos, TOTALES_MESES_PPT, TABLA_PPT_DISTRIBUCION_20
 import { MATRIZ_REAL_PROYECTOS_MENSUAL_2026 } from '../data/realProyectosMensual2026';
 import { parseFechaToDetails } from '../utils/dateHelpers';
 import { isNormalizacion } from '../utils/normalizacionFilter';
+import { safeNumber } from '../utils/numericHelpers';
 
 interface CostosContextType {
   salidas: SalidaCosto[];
@@ -194,18 +195,32 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const mesTarget = selectedMes === '8' ? 'agosto' : selectedMes === '10' ? 'octubre' : 'septiembre';
         const fileTarget = `/data/sip/unificada_${mesTarget}.json`;
 
-        // 1. Intentar servidor local de Daniela si está disponible en la red
+        // 1. Intentar API segura interna (HTTPS/Proxy sin Mixed Content)
+        const fetchHeaders = {
+          'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, max-age=0',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        };
+        const querySuffix = `_t=${Date.now()}`;
+
         try {
-          const res = await fetch(`http://192.168.13.193:3005/api/unificada?ano=2026&mes=${mesTarget}&limit=15000`, { signal: AbortSignal.timeout(2000) });
+          const res = await fetch(`/api/unificada?ano=2026&mes=${mesTarget}&limit=15000&${querySuffix}`, { 
+            cache: 'no-store',
+            headers: fetchHeaders,
+            signal: AbortSignal.timeout(2500) 
+          });
           if (res.ok) {
             const data = await res.json();
             if (data.items && data.items.length > 0) items = data.items;
           }
         } catch (e) {}
 
-        // 2. Fallback a los datos reales consolidados precargados
+        // 2. Fallback a los datos reales consolidados precargados con neutralización de caché
         if (items.length === 0) {
-          const resStatic = await fetch(fileTarget);
+          const resStatic = await fetch(`${fileTarget}?${querySuffix}`, {
+            cache: 'no-store',
+            headers: fetchHeaders
+          });
           if (resStatic.ok) {
             const data = await resStatic.json();
             if (data.items) items = data.items;
@@ -221,6 +236,10 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const tipoStr = r.tipo || 'Materiales Directos';
             const cta = r.cuenta_aux || 'SIN-ASIGNAR';
             const isExt = (r.datos_tipo_costo || '').toLowerCase().includes('externo') || cta.startsWith('TTE-');
+            const cant = safeNumber(r.cantidad, 1);
+            const totalVal = safeNumber(r.total_usd ?? r.totalUSD ?? r.totalSIP ?? r.montoTotal, 0);
+            const unitVal = safeNumber(r.precio_final ?? r.precio_dolar ?? r.precioSIP ?? r.costoUnitario, cant > 0 ? totalVal / cant : 0);
+
             return {
               id: `SIP-${r.id || idx}-${r.numero || ''}`,
               codigoSalida: r.numero || `SIP-${r.id || idx}`,
@@ -239,17 +258,17 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               tipo: tipoStr,
               itemDescripcion: r.descripcion || (r.codigo ? `Item [${r.codigo}]` : 'Movimiento SIP'),
               proveedorODestino: r.almacen || r.solicitante || 'Planta TIMACA',
-              cantidad: r.cantidad != null ? Number(r.cantidad) : 1,
+              cantidad: cant,
               unidadMedida: r.unidad || 'UND',
-              montoUnitario: Number(r.precio_final || r.precio_dolar || r.precioSIP || r.costoUnitario || (r.cantidad ? ((r.total_usd ?? r.totalUSD ?? r.totalSIP ?? r.montoTotal ?? 0) / r.cantidad) : 0)),
-              montoTotal: Number((r.total_usd != null && Number(r.total_usd) > 0) ? r.total_usd : (r.totalUSD || r.totalSIP || r.montoTotal || ((r.cantidad || 0) * (r.precio_final || r.precio_dolar || 0)))),
+              montoUnitario: unitVal,
+              montoTotal: totalVal > 0 ? totalVal : (cant * unitVal),
               moneda: 'USD',
               responsable: r.solicitante || 'Almacén Central SIP',
               solicitante: r.solicitante || '',
               motivo: r.motivo || '',
               ajuste: r.ajuste || 'Operativo',
-              precioSIP: Number(r.precio_final || 0),
-              totalSIP: Number(r.total_usd || 0),
+              precioSIP: unitVal,
+              totalSIP: totalVal,
               estado: 'Procesado',
               estadoValidacion: 'Conforme',
               esProyectoExterno: isExt,

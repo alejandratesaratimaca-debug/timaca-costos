@@ -40,6 +40,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { isNormalizacion } from '../utils/normalizacionFilter';
+import { safeNumber, safeFormatUSD, safeFormatQuantity, safePercent } from '../utils/numericHelpers';
 
 interface Proyecto {
   codigo: string;
@@ -495,7 +496,26 @@ let isLanApiAvailable: boolean | null = null;
 let cachedReclasificaciones: any[] | null = null;
 let reclasificacionesLoadingPromise: Promise<any[]> | null = null;
 
-export async function getReclasificacionesData(): Promise<any[]> {
+const ANTI_CACHE_HEADERS = {
+  'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, max-age=0',
+  'Pragma': 'no-cache',
+  'Expires': '0'
+};
+
+export function clearReclasificacionesCache() {
+  cachedReclasificaciones = null;
+  reclasificacionesLoadingPromise = null;
+}
+
+export function clearMasterStaticCache() {
+  masterStaticCache.clear();
+  clearReclasificacionesCache();
+}
+
+export async function getReclasificacionesData(forceRefresh = false): Promise<any[]> {
+  if (forceRefresh) {
+    clearReclasificacionesCache();
+  }
   if (cachedReclasificaciones && cachedReclasificaciones.length > 0) {
     return cachedReclasificaciones;
   }
@@ -504,7 +524,10 @@ export async function getReclasificacionesData(): Promise<any[]> {
   }
   reclasificacionesLoadingPromise = (async () => {
     try {
-      const res = await fetch('/data/sip/reclasificaciones.json');
+      const res = await fetch(`/data/sip/reclasificaciones.json?_t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS
+      });
       if (res.ok) {
         cachedReclasificaciones = await res.json();
         return cachedReclasificaciones || [];
@@ -519,17 +542,24 @@ export async function getReclasificacionesData(): Promise<any[]> {
   return reclasificacionesLoadingPromise;
 }
 
-export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoricos: boolean): Promise<any[]> {
+export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoricos: boolean, forceRefresh = false): Promise<any[]> {
   const cacheKey = `${mesKey || 'todos'}_${isVerAjustesHistoricos}`;
-  if (masterStaticCache.has(cacheKey)) {
+  if (forceRefresh) {
+    masterStaticCache.delete(cacheKey);
+  }
+  if (masterStaticCache.has(cacheKey) && !forceRefresh) {
     return [...masterStaticCache.get(cacheKey)!];
   }
 
   let items: any[] = [];
   const lowerMes = (mesKey || 'todos').toLowerCase();
+  const querySuffix = `_t=${Date.now()}`;
 
   if (isVerAjustesHistoricos) {
-    const res = await fetch('/data/sip/ajustes_historicos_2026.json');
+    const res = await fetch(`/data/sip/ajustes_historicos_2026.json?${querySuffix}`, {
+      cache: 'no-store',
+      headers: ANTI_CACHE_HEADERS
+    });
     if (res.ok) {
       const d = await res.json();
       items = d.items || [];
@@ -541,11 +571,17 @@ export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoric
     // CARGAR Y CONSOLIDAR REGISTROS OPERATIVOS DE TODOS LOS MESES
     try {
       const mesesConsolidados = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-      const responses = await Promise.all(mesesConsolidados.map(m => fetch(`/data/sip/unificada_${m}.json`)));
+      const responses = await Promise.all(mesesConsolidados.map(m => fetch(`/data/sip/unificada_${m}.json?${querySuffix}`, {
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS
+      })));
       const dataSets = await Promise.all(responses.map(r => r.ok ? r.json() : { items: [] }));
       items = dataSets.flatMap(d => d.items || []);
     } catch (e) {
-      const resFallback = await fetch('/data/sip/unificada_septiembre.json');
+      const resFallback = await fetch(`/data/sip/unificada_septiembre.json?${querySuffix}`, {
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS
+      });
       if (resFallback.ok) {
         const d = await resFallback.json();
         items = d.items || [];
@@ -554,19 +590,28 @@ export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoric
   } else {
     // CARGAR ARCHIVO DEDICADO DEL MES SELECCIONADO (Ene, Feb, Mar, Abr, May, Jun, Jul, Ago, Sep, Oct, Nov, Dic)
     try {
-      const res = await fetch(`/data/sip/unificada_${lowerMes}.json`);
+      const res = await fetch(`/data/sip/unificada_${lowerMes}.json?${querySuffix}`, {
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS
+      });
       if (res.ok) {
         const d = await res.json();
         items = d.items || [];
       } else {
-        const resFallback = await fetch('/data/sip/unificada_septiembre.json');
+        const resFallback = await fetch(`/data/sip/unificada_septiembre.json?${querySuffix}`, {
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS
+        });
         if (resFallback.ok) {
           const d = await resFallback.json();
           items = d.items || [];
         }
       }
     } catch (e) {
-      const resFallback = await fetch('/data/sip/unificada_septiembre.json');
+      const resFallback = await fetch(`/data/sip/unificada_septiembre.json?${querySuffix}`, {
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS
+      });
       if (resFallback.ok) {
         const d = await resFallback.json();
         items = d.items || [];
@@ -946,13 +991,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   const fetchStatus = async () => {
     let st: any = null;
+    const queryBuster = `_t=${Date.now()}`;
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/status', { signal: AbortSignal.timeout(400) });
+      const res = await fetch(`/api/status?${queryBuster}`, { 
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS,
+        signal: AbortSignal.timeout(1500) 
+      });
       if (res.ok) st = await res.json();
     } catch (e) {}
     if (!st) {
       try {
-        const res = await fetch('/data/sip/status.json?v=' + Date.now(), { cache: 'no-store' });
+        const res = await fetch(`/data/sip/status.json?${queryBuster}`, { 
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS
+        });
         if (res.ok) st = await res.json();
       } catch (e) {}
     }
@@ -963,13 +1016,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   };
 
   const fetchCatalogFiltros = async (targetAno?: string) => {
+    const a = targetAno || selectedAno || '2026';
+    const queryBuster = `_t=${Date.now()}`;
     try {
-      const a = targetAno || selectedAno || '2026';
-      const res = await fetch('http://192.168.13.193:3005/api/filtros?ano=' + encodeURIComponent(a), { signal: AbortSignal.timeout(2000) });
+      const res = await fetch(`/api/filtros?ano=${encodeURIComponent(a)}&${queryBuster}`, { 
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS,
+        signal: AbortSignal.timeout(2000) 
+      });
       if (res.ok) { setCatalogFiltros(await res.json()); return; }
     } catch (e) {}
     try {
-      const res = await fetch('/data/sip/filtros_2026.json');
+      const res = await fetch(`/data/sip/filtros_2026.json?${queryBuster}`, {
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS
+      });
       if (res.ok) setCatalogFiltros(await res.json());
     } catch (e) {}
   };
@@ -990,14 +1051,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         sort_by: sortMasterBy,
         order: sortMasterOrder,
         page: pageMaster.toString(),
-        limit: limitMaster.toString()
+        limit: limitMaster.toString(),
+        _t: Date.now().toString()
       });
       if (fechaDesde) params.set('fecha_desde', fechaDesde);
       if (fechaHasta) params.set('fecha_hasta', fechaHasta);
       let res = null;
       if (isLanApiAvailable !== false) {
         try {
-          res = await fetch('http://192.168.13.193:3005/api/unificada?' + params.toString(), { signal: AbortSignal.timeout(400) });
+          res = await fetch('/api/unificada?' + params.toString(), { 
+            cache: 'no-store',
+            headers: ANTI_CACHE_HEADERS,
+            signal: AbortSignal.timeout(2000) 
+          });
           if (!res.ok) isLanApiAvailable = false;
         } catch (e) {
           isLanApiAvailable = false;
@@ -1010,7 +1076,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         if (data.top_cuentas) setTopCuentas(data.top_cuentas);
       } else {
         const isVerAjustesHistoricos = filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas';
-        let items: any[] = await loadStaticMasterItems(selectedMes, isVerAjustesHistoricos);
+        let items: any[] = await loadStaticMasterItems(selectedMes, isVerAjustesHistoricos, true);
 
           // Si estamos revisando Ajustes Históricos (2.553 registros de Enero a Julio), filtrar por mes si se seleccionó uno
           if (isVerAjustesHistoricos) {
@@ -1125,7 +1191,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   // Traer registros de Septiembre si no están en memoria para reconstruir las columnas oficiales
                   let sepMap = new Map<string, any>();
                   try {
-                    const resSep = await fetch('/data/sip/unificada_septiembre.json');
+                    const resSep = await fetch(`/data/sip/unificada_septiembre.json?_t=${Date.now()}`, {
+                      cache: 'no-store',
+                      headers: ANTI_CACHE_HEADERS
+                    });
                     if (resSep.ok) {
                       const dSep = await resSep.json();
                       for (const s of (dSep.items || [])) {
@@ -1466,16 +1535,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       });
       if (fechaDesde) params.set('fecha_desde', fechaDesde);
       if (fechaHasta) params.set('fecha_hasta', fechaHasta);
+      const isVerAjustesHistoricos = filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas';
       let res = null;
       try {
-        res = await fetch('http://192.168.13.193:3005/api/unificada/export?' + params.toString());
+        res = await fetch('/api/unificada/export?' + params.toString(), {
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS
+        });
       } catch (e) {}
       let data = null;
       if (res && res.ok) {
         data = await res.json();
       } else {
-        const isVerAjustesHistoricos = filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas';
-        data = { items: await loadStaticMasterItems(selectedMes, isVerAjustesHistoricos) };
+        data = { items: await loadStaticMasterItems(selectedMes, isVerAjustesHistoricos, true) };
       }
       let rows = data?.items || [];
 
@@ -1490,7 +1562,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       try {
         let baseList: any[] = [];
         try {
-          const resBase = await fetch('/data/sip/reclasificaciones.json?v=' + Date.now(), { cache: 'no-store' });
+          const resBase = await fetch(`/data/sip/reclasificaciones.json?_t=${Date.now()}`, { 
+            cache: 'no-store',
+            headers: ANTI_CACHE_HEADERS 
+          });
           if (resBase.ok) baseList = await resBase.json();
         } catch (e) {}
 
@@ -1675,29 +1750,46 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   };
 
   const fetchProyectos = async () => {
+    const qBuster = `_t=${Date.now()}`;
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/proyectos', { signal: AbortSignal.timeout(400) });
+      const res = await fetch(`/api/proyectos?${qBuster}`, { 
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS,
+        signal: AbortSignal.timeout(2000) 
+      });
       if (res.ok) { setProyectos(await res.json()); return; }
     } catch (e) {}
     try {
-      const res = await fetch('/data/sip/proyectos.json?v=' + Date.now(), { cache: 'no-store' });
+      const res = await fetch(`/data/sip/proyectos.json?${qBuster}`, { 
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS 
+      });
       if (res.ok) setProyectos(await res.json());
     } catch (e) {}
   };
 
   const fetchMatriz = async () => {
+    const qBuster = `_t=${Date.now()}`;
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/matriz', { signal: AbortSignal.timeout(400) });
+      const res = await fetch(`/api/matriz?${qBuster}`, { 
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS,
+        signal: AbortSignal.timeout(2000) 
+      });
       if (res.ok) { setMatrizData(await res.json()); return; }
     } catch (e) {}
     try {
-      const res = await fetch('/data/sip/matriz.json?v=' + Date.now(), { cache: 'no-store' });
+      const res = await fetch(`/data/sip/matriz.json?${qBuster}`, { 
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS 
+      });
       if (res.ok) setMatrizData(await res.json());
     } catch (e) {}
   };
 
   const fetchConsumos = async () => {
     setIsLoadingConsumos(true);
+    const qBuster = `_t=${Date.now()}`;
     try {
       const params = new URLSearchParams({
         ano: '2026',
@@ -1706,13 +1798,18 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         search: searchConsumos,
         cta: filterCtaConsumos,
         page: pageConsumos.toString(),
-        limit: '100'
+        limit: '100',
+        _t: Date.now().toString()
       });
       if (fechaDesde) params.set('fecha_desde', fechaDesde);
       if (fechaHasta) params.set('fecha_hasta', fechaHasta);
       let res = null;
       try {
-        res = await fetch('http://192.168.13.193:3005/api/consumos?' + params.toString(), { signal: AbortSignal.timeout(2500) });
+        res = await fetch(`/api/consumos?${params.toString()}`, { 
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS,
+          signal: AbortSignal.timeout(2500) 
+        });
       } catch (e) {}
       if (res && res.ok) {
         const data = await res.json();
@@ -1720,13 +1817,16 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         setTotalConsumosCount(data.totalCount || 0);
         setTotalConsumosUSD(data.totalMontoUSD || 0);
       } else {
-        const resStatic = await fetch('/data/sip/consumos.json');
+        const resStatic = await fetch(`/data/sip/consumos.json?${qBuster}`, {
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS
+        });
         if (resStatic.ok) {
           const all = await resStatic.json();
           const items = Array.isArray(all) ? all : (all.items || []);
           setConsumos(items.slice(0, 500));
           setTotalConsumosCount(items.length);
-          const sum = items.reduce((acc: number, x: any) => acc + (x.totalUSD || 0), 0);
+          const sum = items.reduce((acc: number, x: any) => acc + safeNumber(x.totalUSD, 0), 0);
           setTotalConsumosUSD(sum);
         }
       }
@@ -1739,6 +1839,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   const fetchCompras = async () => {
     setIsLoadingCompras(true);
+    const qBuster = `_t=${Date.now()}`;
     try {
       const params = new URLSearchParams({
         ano: '2026',
@@ -1747,13 +1848,18 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         search: searchCompras,
         tipo: filterTipoCompras,
         page: pageCompras.toString(),
-        limit: '100'
+        limit: '100',
+        _t: Date.now().toString()
       });
       if (fechaDesde) params.set('fecha_desde', fechaDesde);
       if (fechaHasta) params.set('fecha_hasta', fechaHasta);
       let res = null;
       try {
-        res = await fetch('http://192.168.13.193:3005/api/compras?' + params.toString(), { signal: AbortSignal.timeout(2500) });
+        res = await fetch(`/api/compras?${params.toString()}`, { 
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS,
+          signal: AbortSignal.timeout(2500) 
+        });
       } catch (e) {}
       if (res && res.ok) {
         const data = await res.json();
@@ -1761,13 +1867,16 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         setTotalComprasCount(data.totalCount || 0);
         setTotalComprasUSD(data.totalMontoUSD || 0);
       } else {
-        const resStatic = await fetch('/data/sip/compras.json');
+        const resStatic = await fetch(`/data/sip/compras.json?${qBuster}`, {
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS
+        });
         if (resStatic.ok) {
           const all = await resStatic.json();
           const items = Array.isArray(all) ? all : (all.items || []);
           setCompras(items.slice(0, 500));
           setTotalComprasCount(items.length);
-          const sum = items.reduce((acc: number, x: any) => acc + (x.totalUSD || 0), 0);
+          const sum = items.reduce((acc: number, x: any) => acc + safeNumber(x.totalUSD, 0), 0);
           setTotalComprasUSD(sum);
         }
       }
@@ -1779,11 +1888,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   };
 
   const fetchReclasificaciones = async () => {
-    const staticList: any[] = await getReclasificacionesData();
+    const staticList: any[] = await getReclasificacionesData(true);
 
     let lanList: any[] = [];
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/reclasificaciones', { signal: AbortSignal.timeout(400) });
+      const res = await fetch(`/api/reclasificaciones?_t=${Date.now()}`, { 
+        cache: 'no-store',
+        headers: ANTI_CACHE_HEADERS,
+        signal: AbortSignal.timeout(2000) 
+      });
       if (res.ok) lanList = await res.json();
     } catch (e) {}
 
@@ -1823,14 +1936,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
     setSyncMessage(`Conectando a SIP para corte mensual del ${inicio} al ${hasta} (Cierre al ${m.lastDay} de ${m.nombre})...`);
     try {
-      const res = await fetch('http://192.168.13.193:3005/api/sip/sync', {
+      const res = await fetch('/api/sip/sync', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...ANTI_CACHE_HEADERS },
         body: JSON.stringify({ inicio, hasta })
       });
       const data = await res.json();
       if (data.success) {
-        setSyncMessage(`✓ Sincronización exitosa con corte al ${hasta}: ${data.consumos.total} consumos y ${data.compras.total} compras registrados.`);
+        setSyncMessage(`✓ Sincronización exitosa con corte al ${hasta}: ${data.consumos?.total || 0} consumos y ${data.compras?.total || 0} compras registrados.`);
         fetchStatus();
         fetchMatriz();
         if (activeTab === 'consumos') fetchConsumos();
@@ -1858,7 +1971,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     const timer = setTimeout(async () => {
       setIsSearchingMovimientos(true);
       try {
-        const res = await fetch('http://192.168.13.193:3005/api/correcciones/buscar?q=' + encodeURIComponent(q) + '&estado=' + filtroEstadoCorreccion);
+        const res = await fetch('/api/correcciones/buscar?q=' + encodeURIComponent(q) + '&estado=' + filtroEstadoCorreccion + '&_t=' + Date.now(), {
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS
+        });
         if (res.ok) {
           const data = await res.json();
           setCandidateMovimientos(data);
@@ -2018,11 +2134,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       }
     } catch (e) {}
 
-    // Intentar también en API LAN si estuviera activa
+    // Intentar también en API interna si estuviera activa
     try {
-      await fetch('http://192.168.13.193:3005/api/reclasificar', {
+      await fetch('/api/reclasificar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...ANTI_CACHE_HEADERS },
         body: JSON.stringify({
           recordId: selectedMovimiento.id,
           nuevaCuenta: correccionNuevaCuenta.trim().toUpperCase(),
@@ -2033,7 +2149,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           codigo: selectedMovimiento.codigo || '',
           usuario: currentUser?.username || 'atesara'
         }),
-        signal: AbortSignal.timeout(1500)
+        signal: AbortSignal.timeout(2000)
       });
     } catch (e) {}
 
@@ -2065,7 +2181,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     let itemsToProcess = targetItems;
     if (!itemsToProcess || itemsToProcess.length === 0) {
       try {
-        const resStatic = await fetch('/data/sip/unificada_septiembre.json');
+        const resStatic = await fetch(`/data/sip/unificada_septiembre.json?_t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: ANTI_CACHE_HEADERS
+        });
         if (resStatic.ok) {
           const data = await resStatic.json();
           let allItems = (data.items || []).filter((r: any) => clasificarNormalizacion(r) === 'rezagada');
@@ -2108,11 +2227,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             documento: item.numero || item.dp || '',
             codigo: item.codigo || '',
             descripcion: item.descripcion || '',
-            cantidad: item.cantidad != null ? item.cantidad : 1,
+            cantidad: safeNumber(item.cantidad, 1),
             unidad: item.unidad || 'UND',
-            costoUnitario: item.precio_final || item.costoUnitario || item.precio_dolar || (item.cantidad ? (Number(item.total_usd) / item.cantidad) : 0),
-            precio_final: item.precio_final || item.costoUnitario || item.precio_dolar || (item.cantidad ? (Number(item.total_usd) / item.cantidad) : 0),
-            totalUSD: Number(item.total_usd) || 0,
+            costoUnitario: safeNumber(item.precio_final || item.costoUnitario || item.precio_dolar, 0),
+            precio_final: safeNumber(item.precio_final || item.costoUnitario || item.precio_dolar, 0),
+            totalUSD: safeNumber(item.total_usd, 0),
             fechaMovimiento: item.fecha || '',
             cuentaAnterior: item.cuenta_aux || '',
             proyectoAnterior: item.datos_descripcion || '',
@@ -2159,11 +2278,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     } catch (e) {}
 
     try {
-      await fetch('http://192.168.13.193:3005/api/reclasificar/revertir', {
+      await fetch('/api/reclasificar/revertir', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...ANTI_CACHE_HEADERS },
         body: JSON.stringify({ recordId }),
-        signal: AbortSignal.timeout(1500)
+        signal: AbortSignal.timeout(2000)
       });
     } catch (e) {}
 
@@ -2446,12 +2565,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     return formatFechaDDMMAAAA(f);
   };
 
-  const formatUSD = (val: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val || 0);
+  const formatUSD = (val: any) => {
+    return safeFormatUSD(val);
   };
 
-  const formatNumber = (val: number) => {
-    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(val || 0);
+  const formatNumber = (val: any) => {
+    return safeFormatQuantity(val);
   };
 
   const totalPagesMaster = Math.ceil((masterTotales.total_count || 0) / limitMaster) || 1;
@@ -2834,7 +2953,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
             </span>
-            <span className="text-slate-600">SIP En Vivo (192.168.10.147):</span>
+            <span className="text-slate-600">SIP En Vivo (sip.timaca.com):</span>
             <strong className="text-emerald-700 font-semibold">{status?.totalConsumos || 3976} Consumos</strong>
             <span className="text-slate-300">|</span>
             <strong className="text-blue-700 font-semibold">{status?.totalCompras || 1594} Compras</strong>
@@ -3575,9 +3694,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     {formatUSD(masterTotales.mat_total)}
                   </div>
                   <div className="text-[10px] text-slate-500">
-                    {masterTotales.gran_total > 0 
-                      ? `${((masterTotales.mat_total / masterTotales.gran_total) * 100).toFixed(1)}% del total` 
-                      : '0%'}
+                    {safePercent(masterTotales.mat_total, masterTotales.gran_total)} del total
                   </div>
                 </div>
 
@@ -3591,9 +3708,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     {formatUSD(masterTotales.serv_total)}
                   </div>
                   <div className="text-[10px] text-slate-500">
-                    {masterTotales.gran_total > 0 
-                      ? `${((masterTotales.serv_total / masterTotales.gran_total) * 100).toFixed(1)}% del total` 
-                      : '0%'}
+                    {safePercent(masterTotales.serv_total, masterTotales.gran_total)} del total
                   </div>
                 </div>
 
@@ -3607,9 +3722,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     {formatUSD(masterTotales.mdo_total)}
                   </div>
                   <div className="text-[10px] text-slate-500">
-                    {masterTotales.gran_total > 0 
-                      ? `${((masterTotales.mdo_total / masterTotales.gran_total) * 100).toFixed(1)}% del total` 
-                      : '0%'}
+                    {safePercent(masterTotales.mdo_total, masterTotales.gran_total)} del total
                   </div>
                 </div>
 
@@ -3623,9 +3736,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     {formatUSD(masterTotales.hm_total)}
                   </div>
                   <div className="text-[10px] text-slate-500">
-                    {masterTotales.gran_total > 0 
-                      ? `${((masterTotales.hm_total / masterTotales.gran_total) * 100).toFixed(1)}% del total` 
-                      : '0%'}
+                    {safePercent(masterTotales.hm_total, masterTotales.gran_total)} del total
                   </div>
                 </div>
               </div>
@@ -3642,9 +3753,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     {formatUSD(masterTotales.ext_total || 0)}
                   </div>
                   <div className="text-[10px] text-slate-500">
-                    {masterTotales.gran_total > 0 
-                      ? `${(((masterTotales.ext_total || 0) / masterTotales.gran_total) * 100).toFixed(1)}% facturable a clientes` 
-                      : '0%'}
+                    {safePercent(masterTotales.ext_total, masterTotales.gran_total)} facturable a clientes
                   </div>
                 </div>
 

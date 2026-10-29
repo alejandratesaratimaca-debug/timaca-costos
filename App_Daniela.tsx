@@ -1214,7 +1214,7 @@ export default function App() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
             </span>
-            <span className="text-slate-600">SIP En Vivo (192.168.10.147):</span>
+            <span className="text-slate-600">SIP En Vivo (sip.timaca.com):</span>
             <strong className="text-emerald-700 font-semibold">{status?.totalConsumos || 3976} Consumos</strong>
             <span className="text-slate-300">|</span>
             <strong className="text-blue-700 font-semibold">{status?.totalCompras || 1594} Compras</strong>
