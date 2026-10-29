@@ -62,9 +62,9 @@ export const BandejaAlertasSipView: React.FC = () => {
   const filteredRecords = useMemo(() => {
     return records.filter(r => {
       if (selectedMonth !== 'TODOS' && r.mes !== selectedMonth) return false;
-      if (selectedAlertType === 'UM' && !r.tipo_alerta.includes('Conflicto UM')) return false;
-      if (selectedAlertType === 'PRECIO' && !r.tipo_alerta.includes('Desfase Precio')) return false;
-      if (selectedAlertType === 'SIN_OC' && !r.tipo_alerta.includes('Sin OC')) return false;
+      if (selectedAlertType === 'UM' && r.categoria_alerta !== 'UM') return false;
+      if (selectedAlertType === 'PRECIO' && r.categoria_alerta !== 'PRECIO') return false;
+      if (selectedAlertType === 'SIN_OC' && r.categoria_alerta !== 'SIN_OC') return false;
 
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase();
@@ -221,16 +221,16 @@ export const BandejaAlertasSipView: React.FC = () => {
         <div className="bg-white p-4 rounded-xl border border-red-200 shadow-xs bg-red-50/20">
           <div className="text-[11px] font-semibold text-red-700 uppercase tracking-wider flex items-center gap-1">
             <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
-            Conflictos de Medida (UM)
+            1. Errores de Unidad / Factor
           </div>
           <div className="text-2xl font-bold text-red-700 mt-1">{kpiStats.umConflicts.toLocaleString('es-ES')}</div>
-          <div className="text-xs text-red-600 mt-1">Despacho ≠ Compra (M3 vs Ton / Kg vs Plancha)</div>
+          <div className="text-xs text-red-600 mt-1">Planchas vs Kg · Barras vs M · Sacos vs Kg</div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-amber-200 shadow-xs bg-amber-50/20">
-          <div className="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">Desfases de Precio (&gt; 5%)</div>
+          <div className="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">2. Desfases Comerciales (5% - 200%)</div>
           <div className="text-2xl font-bold text-amber-900 mt-1">{kpiStats.desfasePrecio.toLocaleString('es-ES')}</div>
-          <div className="text-xs text-amber-700 mt-1">Precio DP retenido a valor SIP</div>
+          <div className="text-xs text-amber-700 mt-1">Grava, Pinturas, Insumos y Consumibles</div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
@@ -263,9 +263,9 @@ export const BandejaAlertasSipView: React.FC = () => {
             className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="TODAS">Todas las Alertas</option>
-            <option value="UM">🚨 Conflicto de UM</option>
-            <option value="PRECIO">⚠️ Desfase de Precio</option>
-            <option value="SIN_OC">ℹ️ Sin OC Reciente</option>
+            <option value="UM">🚨 1. Errores de Unidad / Factor (7.642 casos - Planchas, Perfiles)</option>
+            <option value="PRECIO">⚠️ 2. Desfases Comerciales 5%-200% (39.378 casos - Grava, Insumos)</option>
+            <option value="SIN_OC">ℹ️ 3. Sin OC / Faltantes (1.060 casos)</option>
           </select>
 
           <button
@@ -322,7 +322,7 @@ export const BandejaAlertasSipView: React.FC = () => {
                 </tr>
               ) : (
                 paginatedData.map(r => {
-                  const isUmConflict = r.tipo_alerta.includes('Conflicto UM');
+                  const isUmConflict = r.categoria_alerta === 'UM';
                   const isAprobado = r.estatus.includes('APROBADO');
 
                   return (
@@ -375,7 +375,7 @@ export const BandejaAlertasSipView: React.FC = () => {
                         <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
                           isUmConflict 
                             ? 'bg-red-100 text-red-800 border border-red-300' 
-                            : r.tipo_alerta.includes('Sin OC')
+                            : r.categoria_alerta === 'SIN_OC'
                             ? 'bg-indigo-100 text-indigo-800 border border-indigo-200'
                             : 'bg-amber-100 text-amber-800 border border-amber-300'
                         }`}>
