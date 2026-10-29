@@ -38,6 +38,7 @@ export const BandejaAlertasSipView: React.FC = () => {
     let totalCasos = 0;
     let umConflicts = 0;
     let desfasePrecio = 0;
+    let sinOC = 0;
     let impactoUSD = 0;
 
     if (selectedMonth === 'TODOS') {
@@ -45,6 +46,7 @@ export const BandejaAlertasSipView: React.FC = () => {
         totalCasos += k.total_casos;
         umConflicts += k.um_conflicts;
         desfasePrecio += k.desfase_precio;
+        sinOC += k.sin_oc;
         impactoUSD += k.impacto_total_usd;
       });
     } else if (ALERTAS_MONTHLY_KPIS[selectedMonth]) {
@@ -52,10 +54,11 @@ export const BandejaAlertasSipView: React.FC = () => {
       totalCasos = k.total_casos;
       umConflicts = k.um_conflicts;
       desfasePrecio = k.desfase_precio;
+      sinOC = k.sin_oc;
       impactoUSD = k.impacto_total_usd;
     }
 
-    return { totalCasos, umConflicts, desfasePrecio, impactoUSD };
+    return { totalCasos, umConflicts, desfasePrecio, sinOC, impactoUSD };
   }, [selectedMonth]);
 
   // Filtrado de registros
@@ -207,38 +210,82 @@ export const BandejaAlertasSipView: React.FC = () => {
         </div>
       </div>
 
-      {/* KPI CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Total Casos en Revisión</div>
+      {/* KPI CARDS (FILTROS RÁPIDOS INTERACTIVOS) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+        {/* TOTAL */}
+        <div 
+          onClick={() => { setSelectedAlertType('TODAS'); setCurrentPage(1); }}
+          className={`bg-white p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs hover:shadow-md ${
+            selectedAlertType === 'TODAS' ? 'ring-2 ring-slate-800 border-slate-800' : 'border-slate-200'
+          }`}
+        >
+          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Total en Revisión</div>
           <div className="text-2xl font-bold text-slate-900 mt-1">{kpiStats.totalCasos.toLocaleString('es-ES')}</div>
-          <div className="text-xs text-amber-700 font-bold mt-1 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-            Pendiente de Corrección / Aprobación
+          <div className="text-[11px] text-amber-700 font-bold mt-1 flex items-center gap-1.5 truncate">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+            Pendiente Corrección/Aprobación
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-red-200 shadow-xs bg-red-50/20">
+        {/* 1. FACTOR / UNIDAD */}
+        <div 
+          onClick={() => { setSelectedAlertType('UM'); setCurrentPage(1); }}
+          className={`p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs hover:shadow-md bg-red-50/30 ${
+            selectedAlertType === 'UM' ? 'ring-2 ring-red-600 border-red-500' : 'border-red-200'
+          }`}
+        >
           <div className="text-[11px] font-semibold text-red-700 uppercase tracking-wider flex items-center gap-1">
-            <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
-            1. Errores de Unidad / Factor
+            <AlertTriangle className="w-3.5 h-3.5 text-red-600 shrink-0" />
+            1. Factor / Unidad
           </div>
           <div className="text-2xl font-bold text-red-700 mt-1">{kpiStats.umConflicts.toLocaleString('es-ES')}</div>
-          <div className="text-xs text-red-600 mt-1">Planchas vs Kg · Barras vs M · Sacos vs Kg</div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-amber-200 shadow-xs bg-amber-50/20">
-          <div className="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">2. Desfases Comerciales (5% - 200%)</div>
-          <div className="text-2xl font-bold text-amber-900 mt-1">{kpiStats.desfasePrecio.toLocaleString('es-ES')}</div>
-          <div className="text-xs text-amber-700 mt-1">Grava, Pinturas, Insumos y Consumibles</div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Impacto Financiero Neto</div>
-          <div className="text-2xl font-bold text-slate-900 mt-1">
-            ${Math.abs(kpiStats.impactoUSD).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+          <div className="text-[11px] text-red-600 mt-1 truncate" title="Planchas vs Kg · Barras vs M">
+            Planchas vs Kg · Barras vs M
           </div>
-          <div className="text-xs text-slate-500 mt-1">Brecha acumulada entre SIP y OC</div>
+        </div>
+
+        {/* 2. DESFASES COMERCIALES */}
+        <div 
+          onClick={() => { setSelectedAlertType('PRECIO'); setCurrentPage(1); }}
+          className={`p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs hover:shadow-md bg-amber-50/30 ${
+            selectedAlertType === 'PRECIO' ? 'ring-2 ring-amber-600 border-amber-500' : 'border-amber-200'
+          }`}
+        >
+          <div className="text-[11px] font-semibold text-amber-800 uppercase tracking-wider truncate">
+            2. Desfase Comercial
+          </div>
+          <div className="text-2xl font-bold text-amber-900 mt-1">{kpiStats.desfasePrecio.toLocaleString('es-ES')}</div>
+          <div className="text-[11px] text-amber-700 mt-1 truncate" title="Grava, Pinturas, Insumos">
+            5% - 200% (Grava, Insumos)
+          </div>
+        </div>
+
+        {/* 3. SIN OC / FALTANTES (NUEVA TARJETA) */}
+        <div 
+          onClick={() => { setSelectedAlertType('SIN_OC'); setCurrentPage(1); }}
+          className={`p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs hover:shadow-md bg-indigo-50/30 ${
+            selectedAlertType === 'SIN_OC' ? 'ring-2 ring-indigo-600 border-indigo-500' : 'border-indigo-200'
+          }`}
+        >
+          <div className="text-[11px] font-semibold text-indigo-700 uppercase tracking-wider flex items-center gap-1">
+            <Info className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+            3. Sin OC / Faltantes
+          </div>
+          <div className="text-2xl font-bold text-indigo-800 mt-1">{kpiStats.sinOC.toLocaleString('es-ES')}</div>
+          <div className="text-[11px] text-indigo-600 mt-1 truncate" title="Sin OC en 2026 o Costo $0">
+            Sin OC 2026 o Costo $0
+          </div>
+        </div>
+
+        {/* IMPACTO FINANCIERO */}
+        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
+          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Impacto Financiero</div>
+          <div className="text-xl font-bold text-slate-900 mt-1.5 truncate">
+            ${Math.abs(kpiStats.impactoUSD).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USD
+          </div>
+          <div className="text-[11px] text-slate-500 mt-1 truncate" title="Brecha acumulada entre SIP y OC">
+            Brecha total SIP vs OC
+          </div>
         </div>
       </div>
 
