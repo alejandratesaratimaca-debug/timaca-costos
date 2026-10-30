@@ -1166,6 +1166,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     datos_descripcion: targetDesc,
                     datos_tipo_costo: targetTipoCosto,
                     nombre_mes: targetMes,
+                    precio_final: (match.precio_final ?? match.costoUnitario) != null ? Number(match.precio_final ?? match.costoUnitario) : r.precio_final,
+                    total_usd: (match.precio_final ?? match.costoUnitario) != null ? (Number(match.precio_final ?? match.costoUnitario) * (Number(r.cantidad) || 1)) : r.total_usd,
                     ajuste: 'CORREGIDO',
                     infoReclasificacion: match
                   };

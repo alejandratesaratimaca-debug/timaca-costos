@@ -302,6 +302,23 @@ export const BandejaAlertasSipView: React.FC = () => {
         updatedAt: new Date().toISOString()
       };
       localStorage.setItem(STORAGE_KEY_MATERIALES, JSON.stringify(matDecs));
+
+      // Sincronizar con el Master Unificado y los reportes de gastos
+      const rawLocal = localStorage.getItem('timaca_correcciones_locales') || '[]';
+      const localList = JSON.parse(rawLocal);
+      const filtered = localList.filter((x: any) => x.codigo !== modalMaterial.codigo);
+      filtered.push({
+        recordId: `ALERTA-PRECIO-${modalMaterial.codigo}`,
+        tipoItem: 'consumo',
+        codigo: modalMaterial.codigo,
+        descripcion: modalMaterial.descripcion,
+        costoUnitario: newPrice,
+        precio_final: newPrice,
+        motivo: `Precio validado en Bandeja de Alertas: ${newStatus}`,
+        fecha: new Date().toISOString(),
+        usuario: 'atesara'
+      });
+      localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
     } catch (e) {
       console.warn('Error saving material decision', e);
     }
@@ -374,9 +391,30 @@ export const BandejaAlertasSipView: React.FC = () => {
         return m;
       }));
 
-      // Guardar en localStorage
+      // Guardar en localStorage y sincronizar con Master Unificado
       try {
         localStorage.setItem(STORAGE_KEY_MATERIALES, JSON.stringify(matDecs));
+
+        const rawLocal = localStorage.getItem('timaca_correcciones_locales') || '[]';
+        const localList = JSON.parse(rawLocal);
+        const codeSet = new Set(Object.keys(acordados));
+        const filtered = localList.filter((x: any) => !codeSet.has(x.codigo));
+        for (const [cod, inf] of Object.entries(acordados)) {
+          if (inf.precio > 0) {
+            filtered.push({
+              recordId: `ALERTA-PRECIO-${cod}`,
+              tipoItem: 'consumo',
+              codigo: cod,
+              descripcion: inf.descripcion,
+              costoUnitario: inf.precio,
+              precio_final: inf.precio,
+              motivo: `Precio acordado Compras: ${inf.obs || 'Validado'}`,
+              fecha: new Date().toISOString(),
+              usuario: 'atesara'
+            });
+          }
+        }
+        localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
       } catch (e) {
         console.warn('Error guardando en localStorage', e);
       }
