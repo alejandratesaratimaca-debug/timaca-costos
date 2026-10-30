@@ -122,6 +122,7 @@ td.col-cajas{background:#F5F3FF;color:#6D28D9;font-weight:800;text-align:center!
 td.col-vac{background:#ECFEFF;color:#0E7490;font-weight:800;text-align:center!important}
 td.col-prest{background:#FFFBEB;color:#B45309;font-weight:800;text-align:center!important}
 td.col-asig{background:#EFF6FF;color:#1D4ED8;font-weight:800;text-align:center!important}
+td.col-pend{background:#FFFBEB;color:#D97706;font-weight:800;text-align:center!important}
 td.col-dan{background:#FEF2F2;color:#B91C1C;font-weight:800;text-align:center!important}
 td.col-tall{background:#FFF7ED;color:#C2410C;font-weight:800;text-align:center!important}
 td.col-ext{background:#FAF5FF;color:#6B21A8;font-weight:800;text-align:center!important}
@@ -2223,6 +2224,7 @@ function estadoCatalogo(e, it) {
   if (e.vacio > 0) return 'VACÍO';
   if (e.prest + e.asig + (e.cajas || 0) > 0) return 'SIN DISPONIBILIDAD';
   if (e.dan + e.rep + e.ext > 0) return 'FUERA DE SERVICIO';
+  if ((e.pend || 0) > 0) return 'PENDIENTE DE RECEPCIÓN';
   return 'SIN EXISTENCIA';
 }
 
@@ -6435,7 +6437,7 @@ VISTAS.cCatAlm = p => {
           r.pend += (e.pend || 0);
         }
       });
-      r.total = r.disp + r.vacio + r.prest + r.asig + r.dan + r.rep + r.ext;
+      r.total = r.disp + r.vacio + r.prest + r.asig + r.dan + r.rep + r.ext + r.pend;
       r.estado = estadoCatalogo(r, r.it);
       return r;
     }).filter(r => (!mod || r.it.mod === mod) && (!cat || r.it.cat === cat));
@@ -6450,7 +6452,8 @@ VISTAS.cCatAlm = p => {
       const e = (DB.exi[S.ctx] && DB.exi[S.ctx][id]) ? Object.assign({}, DB.exi[S.ctx][id]) : { disp: 0, prest: 0, asig: 0, vacio: 0, dan: 0, rep: 0, ext: 0, pend: 0, entregado: 0 };
       const r = Object.assign({ it }, e);
       r.asig = (e.asig || 0);
-      r.total = (r.disp || 0) + (r.vacio || 0) + (r.prest || 0) + (r.asig || 0) + (r.dan || 0) + (r.rep || 0) + (r.ext || 0);
+      r.pend = (e.pend || 0);
+      r.total = (r.disp || 0) + (r.vacio || 0) + (r.prest || 0) + (r.asig || 0) + (r.dan || 0) + (r.rep || 0) + (r.ext || 0) + (r.pend || 0);
       r.estado = estadoCatalogo(r, r.it);
       return r;
     }).filter(r => r.it && (!mod || r.it.mod === mod) && (!cat || r.it.cat === cat));
@@ -6469,6 +6472,7 @@ VISTAS.cCatAlm = p => {
     { t: 'Disponibles', k: 'disp', cls: 'cen', td: 'col-disp', sum: true },
     { t: 'Prestados', k: 'prest', cls: 'cen', td: 'col-prest', sum: true },
     { t: 'Asignados', k: 'asig', cls: 'cen', td: 'col-asig', sum: true },
+    { t: 'En transf.', k: 'pend', cls: 'cen', td: 'col-pend', sum: true },
     { t: 'Dañados', k: 'dan', cls: 'cen', td: 'col-dan', sum: true },
     { t: 'En taller', k: 'rep', cls: 'cen', td: 'col-tall', sum: true },
     { t: 'Extraviados', k: 'ext', cls: 'cen', td: 'col-ext', sum: true },
@@ -6485,13 +6489,13 @@ VISTAS.cCatAlm = p => {
     + (pendRec ? `<div class="franja-est naranja"><span>Tiene <b>${pendRec}</b> transferencia(s) por aceptar. Su material se sumará al catálogo al aceptarlas.</span><button class="btn btn-navy btn-mini" onclick="ir('trfRec')">Ver transferencias recibidas</button></div>` : '')
     + `<div class="fila-filtros">${campo('Módulo', `<select id="caMod" onchange="${rec}"><option value="">Todos</option>${opciones(Object.entries(MODULOS), mod)}</select>`)}
       ${campo('Categoría', `<select id="caCat" onchange="${rec}"><option value="">Todas</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
-      ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO', 'SIN DISPONIBILIDAD', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
+      ${campo('Estado', `<select id="caEst" onchange="${rec}"><option value="">Todos</option>${opciones(['DISPONIBLE', 'VACÍO', 'SIN DISPONIBILIDAD', 'PENDIENTE DE RECEPCIÓN', 'FUERA DE SERVICIO', 'SIN EXISTENCIA'], est)}</select>`)}
       <label style="font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center;padding-bottom:9px"><input type="checkbox" id="caTod" ${todos ? 'checked' : ''} onchange="${rec}"> Incluir ítems sin existencia</label>
       ${buscador('gCatA', 'Buscar código, descripción, marca, serial…')}</div>`
     + grid('gCatA', cols, rows, { pag: 50, totales: true, compacto: true, onSel: r => { $('caKdx').disabled = false; if ($('caEdit')) $('caEdit').disabled = false; $('caTit').textContent = `${r.it.cod} · ${r.it.desc} · ${r.it.marca} / ${r.it.modelo}${r.it.serial ? ' · ' + r.it.serial : ''}`; }, vacio: enMaestro() ? 'No hay ítems registrados en el catálogo TIMACA.' : 'No hay ítems con existencia en este almacén.' })
     + `<div class="sel-strip"><span class="lbl">Ítem seleccionado</span><span class="box" id="caTit" style="flex:1"></span></div>
     <div class="barra-btn"><button class="btn-sip" onclick="ir('ent')">➕ Entrada de ítems</button><button class="btn-sip" id="caEdit" disabled onclick="const r=selDe('gCatA');if(r)editarItem(r.it)">✏️ Editar datos / categoría</button><button class="btn-sip" id="caKdx" disabled onclick="const r=selDe('gCatA');ir('cKardex',{q:r.it.serial||r.it.cod})">📜 Ver kardex del ítem</button></div>
-    <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · Sin disponibilidad = todas están prestadas o asignadas · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
+    <p class="ayuda-txt" style="margin-top:10px"><b>Estado:</b> Disponible = hay unidades para despachar · En transf. = unidades enviadas pendientes por recibir · Sin disponibilidad = todas están prestadas o asignadas · Fuera de servicio = solo quedan dañadas, en taller o extraviadas. Los totales suman todas las páginas.</p>`;
 };
 VISTAS.cExist = p => VISTAS.cCatAlm(p);
 
