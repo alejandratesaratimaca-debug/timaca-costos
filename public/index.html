@@ -1219,6 +1219,7 @@ function cargarDatos() {
         asegurarPlanificacionCajas();
         asegurarCategoriasOficiales();
         asegurarEstatusSolicitudes();
+        if (typeof reconciliarStockAlmacen === 'function') reconciliarStockAlmacen('TODOS');
         guardarLocalSolo();
         return;
       }
@@ -1233,6 +1234,7 @@ function cargarDatos() {
   asegurarPlanificacionCajas();
   asegurarCategoriasOficiales();
   asegurarEstatusSolicitudes();
+  if (typeof reconciliarStockAlmacen === 'function') reconciliarStockAlmacen('TODOS');
   guardarLocalSolo();
 }
 function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')) {
@@ -2194,7 +2196,8 @@ function registrarEntrada(d) {
   const v = nuevoVale('ENT', { origen: d.origen, destino: d.origen, obs: d.obs || '', ref: '', extra: { obs: d.obs || '' }, lineas: [] });
   d.lineas.forEach(l => {
     const lSerial = tieneSerial(l.serial) ? l.serial.trim() : '—';
-    let it = DB.catalogo.find(x => x.cod === l.cod &&
+    const idsAlm = new Set(Object.keys(DB.exi[d.origen] || {}).map(Number));
+    let it = DB.catalogo.find(x => idsAlm.has(x.id) && x.cod === l.cod &&
       normTexto(x.marca || '') === normTexto(l.marca || '') &&
       normTexto(x.modelo || '') === normTexto(l.modelo || '') &&
       serialsCoinciden(x.serial, lSerial)
@@ -5369,10 +5372,11 @@ function pintarEntrada() {
       q = q.trim().toLowerCase();
       if (q.length < 2) return [];
       const g = {};
-      DB.catalogo.filter(i => (i.cod + ' ' + i.desc).toLowerCase().includes(q)).forEach(i => g[i.cod] = g[i.cod] || i);
+      const idsAlm = new Set(Object.keys(DB.exi[S.ctx] || {}).map(Number));
+      DB.catalogo.filter(i => idsAlm.has(i.id) && (i.cod + ' ' + i.desc).toLowerCase().includes(q)).forEach(i => g[i.cod] = g[i.cod] || i);
       return Object.values(g).slice(0, 15).map(i => ({
         val: i,
-        html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(MODULOS[i.mod])} · ${esc(i.cat)} · código existente</small>`
+        html: `<b>${esc(i.cod)}</b> · ${esc(i.desc)}<small>${esc(MODULOS[i.mod])} · ${esc(i.cat)} · código en ${esc(almNombre(S.ctx))}</small>`
       }));
     }, i => {
       E.base = i;
@@ -5473,10 +5477,11 @@ function agregarEntrada() {
   run(() => {
     const cod = $('eCod').value.trim().toUpperCase(), desc = $('eDesc').value.trim(), serial = $('eSerial').value.trim().toUpperCase(), cant = Number($('eCant').value);
     if (!cod || !desc) throw new Error('Código y descripción son obligatorios.');
-    const existente = DB.catalogo.find(i => i.cod === cod);
+    const idsAlm = new Set(Object.keys(DB.exi[S.ctx] || {}).map(Number));
+    const existente = DB.catalogo.find(i => idsAlm.has(i.id) && i.cod === cod);
     if (existente && !E.base && existente.desc.toLowerCase() !== desc.toLowerCase()) {
-      // Si el código ya existe con otra redacción, actualizar o adoptar sin bloquear
-      if (confirm(`El código ${cod} ya existe en el catálogo corporativo como "${existente.desc}".\n\n¿Desea usar la descripción oficial existente ("${existente.desc}")?\n(Cancelar para conservar su descripción nueva: "${desc}")`)) {
+      // Si el código ya existe en este almacén con otra redacción, sugerir sin bloquear
+      if (confirm(`El código ${cod} ya existe en el catálogo de ${almNombre(S.ctx)} como "${existente.desc}".\n\n¿Desea usar esa descripción?\n(Cancelar para conservar su descripción nueva: "${desc}")`)) {
         $('eDesc').value = existente.desc;
       }
     }
@@ -6444,9 +6449,6 @@ VISTAS.cCatAlm = p => {
     if (!todos) rows = rows.filter(r => r.total > 0);
   } else {
     let ids = new Set(Object.keys(DB.exi[S.ctx] || {}).map(Number));
-    if (todos) {
-      (DB.catalogo || []).forEach(it => ids.add(it.id));
-    }
     rows = Array.from(ids).map(id => {
       const it = item(id);
       const e = (DB.exi[S.ctx] && DB.exi[S.ctx][id]) ? Object.assign({}, DB.exi[S.ctx][id]) : { disp: 0, prest: 0, asig: 0, vacio: 0, dan: 0, rep: 0, ext: 0, pend: 0, entregado: 0 };
@@ -8685,6 +8687,7 @@ function descargarDeNube(cloudDB) {
   if (typeof asegurarProyectosOficiales === 'function') asegurarProyectosOficiales();
   asegurarCategoriasOficiales();
   asegurarEstatusSolicitudes();
+  if (typeof reconciliarStockAlmacen === 'function') reconciliarStockAlmacen('TODOS');
   guardarLocalSolo();
 
   if (typeof refrescar === 'function' && typeof S !== 'undefined' && S && S.u) {
