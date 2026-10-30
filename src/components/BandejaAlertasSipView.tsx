@@ -21,10 +21,89 @@ import { ALERTAS_MONTHLY_KPIS, ALERTAS_SIP_RECORDS, AlertaItem } from '../data/a
 import { ALERTAS_MATERIALES_CONSOLIDADOS, MaterialConsolidadoItem } from '../data/alertasMaterialesData';
 import * as XLSX from 'xlsx';
 
+const STORAGE_KEY_MATERIALES = 'TIMACA_ALERTAS_DECISIONES_MATERIALES';
+const STORAGE_KEY_RECORDS = 'TIMACA_ALERTAS_DECISIONES_RECORDS';
+
+interface PersistedDecision {
+  precio_sip: number;
+  estatus: string;
+  var_pct: number;
+  updatedAt: string;
+}
+
+function getPersistedMaterialDecisions(): Record<string, PersistedDecision> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_MATERIALES);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function getPersistedRecordDecisions(): Record<string | number, PersistedDecision> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_RECORDS);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
 export const BandejaAlertasSipView: React.FC = () => {
   const [viewMode, setViewMode] = useState<'MATERIALES' | 'TRANSACCIONES'>('MATERIALES');
-  const [records, setRecords] = useState<AlertaItem[]>(ALERTAS_SIP_RECORDS);
-  const [materials, setMaterials] = useState<MaterialConsolidadoItem[]>(ALERTAS_MATERIALES_CONSOLIDADOS);
+  
+  const [records, setRecords] = useState<AlertaItem[]>(() => {
+    const decs = getPersistedRecordDecisions();
+    const matDecs = getPersistedMaterialDecisions();
+    if (Object.keys(decs).length === 0 && Object.keys(matDecs).length === 0) {
+      return ALERTAS_SIP_RECORDS;
+    }
+    return ALERTAS_SIP_RECORDS.map(r => {
+      if (decs[r.id]) {
+        const d = decs[r.id];
+        return {
+          ...r,
+          precio_sip: d.precio_sip,
+          var_pct: d.var_pct,
+          impacto_usd: (d.precio_sip - r.precio_oc) * r.cant,
+          estatus: d.estatus
+        };
+      }
+      if (matDecs[r.codigo]) {
+        const d = matDecs[r.codigo];
+        return {
+          ...r,
+          precio_sip: d.precio_sip,
+          var_pct: d.var_pct,
+          impacto_usd: (d.precio_sip - r.precio_oc) * r.cant,
+          estatus: d.estatus
+        };
+      }
+      return r;
+    });
+  });
+
+  const [materials, setMaterials] = useState<MaterialConsolidadoItem[]>(() => {
+    const matDecs = getPersistedMaterialDecisions();
+    if (Object.keys(matDecs).length === 0) {
+      return ALERTAS_MATERIALES_CONSOLIDADOS;
+    }
+    return ALERTAS_MATERIALES_CONSOLIDADOS.map(m => {
+      if (matDecs[m.codigo]) {
+        const d = matDecs[m.codigo];
+        return {
+          ...m,
+          precio_sip: d.precio_sip,
+          var_pct: d.var_pct,
+          impacto_total_usd: (d.precio_sip - m.precio_oc) * m.total_cant,
+          estatus: d.estatus
+        };
+      }
+      return m;
+    });
+  });
   const [selectedMonth, setSelectedMonth] = useState<string>('TODOS');
   const [selectedAlertType, setSelectedAlertType] = useState<string>('TODAS');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -147,16 +226,45 @@ export const BandejaAlertasSipView: React.FC = () => {
   const handleSaveDecision = () => {
     if (!modalItem) return;
 
+    let newPrice = modalItem.precio_sip;
+    let newStatus = 'APROBADO (Precio SIP)';
+    let newVarPct = modalItem.var_pct;
+
+    if (decisionType === 'MANTENER_SIP') {
+      newPrice = modalItem.precio_sip;
+      newStatus = 'APROBADO (Precio SIP)';
+    } else if (decisionType === 'APROBAR_OC') {
+      newPrice = modalItem.precio_oc;
+      newStatus = 'APROBADO (Precio OC)';
+      newVarPct = 0;
+    } else if (decisionType === 'MANUAL') {
+      newPrice = parseFloat(manualPrice) || modalItem.precio_sip;
+      newStatus = `APROBADO (Manual $${newPrice.toFixed(2)})`;
+      newVarPct = modalItem.precio_oc > 0 ? ((newPrice - modalItem.precio_oc) / modalItem.precio_oc) * 100 : 0;
+    }
+
+    try {
+      const decs = getPersistedRecordDecisions();
+      decs[modalItem.id] = {
+        precio_sip: newPrice,
+        estatus: newStatus,
+        var_pct: newVarPct,
+        updatedAt: new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(decs));
+    } catch (e) {
+      console.warn('Error saving record decision', e);
+    }
+
     setRecords(prev => prev.map(r => {
       if (r.id === modalItem.id) {
-        if (decisionType === 'MANTENER_SIP') {
-          return { ...r, estatus: 'APROBADO (Precio SIP)' };
-        } else if (decisionType === 'APROBAR_OC') {
-          return { ...r, precio_sip: r.precio_oc, var_pct: 0, estatus: 'APROBADO (Precio OC)' };
-        } else if (decisionType === 'MANUAL') {
-          const val = parseFloat(manualPrice) || r.precio_sip;
-          return { ...r, precio_sip: val, estatus: `APROBADO (Manual $${val.toFixed(2)})` };
-        }
+        return {
+          ...r,
+          precio_sip: newPrice,
+          var_pct: newVarPct,
+          impacto_usd: (newPrice - r.precio_oc) * r.cant,
+          estatus: newStatus
+        };
       }
       return r;
     }));
@@ -169,6 +277,7 @@ export const BandejaAlertasSipView: React.FC = () => {
 
     let newPrice = modalMaterial.precio_sip;
     let newStatus = 'APROBADO (Precio SIP)';
+    let newVarPct = modalMaterial.var_pct;
 
     if (decisionType === 'MANTENER_SIP') {
       newPrice = modalMaterial.precio_sip;
@@ -176,9 +285,24 @@ export const BandejaAlertasSipView: React.FC = () => {
     } else if (decisionType === 'APROBAR_OC') {
       newPrice = modalMaterial.precio_oc;
       newStatus = 'APROBADO (Precio OC)';
+      newVarPct = 0;
     } else if (decisionType === 'MANUAL') {
       newPrice = parseFloat(manualPrice) || modalMaterial.precio_sip;
       newStatus = `VALIDADO CON COMPRAS ($${newPrice.toFixed(2)})`;
+      newVarPct = modalMaterial.precio_oc > 0 ? ((newPrice - modalMaterial.precio_oc) / modalMaterial.precio_oc) * 100 : 0;
+    }
+
+    try {
+      const matDecs = getPersistedMaterialDecisions();
+      matDecs[modalMaterial.codigo] = {
+        precio_sip: newPrice,
+        estatus: newStatus,
+        var_pct: newVarPct,
+        updatedAt: new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEY_MATERIALES, JSON.stringify(matDecs));
+    } catch (e) {
+      console.warn('Error saving material decision', e);
     }
 
     // Actualizar material consolidado
@@ -187,7 +311,7 @@ export const BandejaAlertasSipView: React.FC = () => {
         return {
           ...m,
           precio_sip: newPrice,
-          var_pct: m.precio_oc > 0 ? ((newPrice - m.precio_oc) / m.precio_oc) * 100 : 0,
+          var_pct: newVarPct,
           impacto_total_usd: (newPrice - m.precio_oc) * m.total_cant,
           estatus: newStatus
         };
@@ -201,7 +325,7 @@ export const BandejaAlertasSipView: React.FC = () => {
         return {
           ...r,
           precio_sip: newPrice,
-          var_pct: r.precio_oc > 0 ? ((newPrice - r.precio_oc) / r.precio_oc) * 100 : 0,
+          var_pct: newVarPct,
           impacto_usd: (newPrice - r.precio_oc) * r.cant,
           estatus: newStatus
         };
