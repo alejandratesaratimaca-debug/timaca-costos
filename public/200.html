@@ -357,60 +357,113 @@ table.grid tbody tr.sel td{background:#DBEAFE!important;color:#1E3A8A!important;
 .rep-tabla td{padding:4px 5px;border:1px solid #E2E8F0}
 
 @media print{
-  @page{size:letter portrait;margin:0}
-  html, body{
-    margin:0!important;
-    padding:0!important;
-    height:auto!important;
-    min-height:0!important;
-    background:#fff!important;
-    overflow:visible!important;
+  @page{
+    size: letter portrait;
+    margin: 8mm 10mm 8mm 10mm;
   }
-  body *{visibility:hidden}
+  html, body{
+    margin: 0!important;
+    padding: 0!important;
+    width: 100%!important;
+    height: auto!important;
+    min-height: 0!important;
+    background: #fff!important;
+    overflow: visible!important;
+  }
+  body *{
+    visibility: hidden;
+  }
   #pantallaLogin, #pantallaApp, #modalFondo, #bannerTrf, #toast, .vi-barra{
-    display:none!important;
+    display: none!important;
+    visibility: hidden!important;
+    height: 0!important;
+    margin: 0!important;
+    padding: 0!important;
   }
   #vistaImpresion{
-    display:block!important;
-    position:static!important;
-    inset:auto!important;
-    width:100%!important;
-    height:auto!important;
-    min-height:0!important;
-    margin:0!important;
-    padding:0!important;
-    background:#fff!important;
-    overflow:visible!important;
+    display: block!important;
+    visibility: visible!important;
+    position: static!important;
+    inset: auto!important;
+    width: 100%!important;
+    height: auto!important;
+    min-height: 0!important;
+    margin: 0!important;
+    padding: 0!important;
+    background: #fff!important;
+    overflow: visible!important;
+    page-break-after: avoid!important;
+    break-after: avoid!important;
   }
   #hojaImpresion{
-    display:block!important;
-    position:static!important;
-    margin:0!important;
-    padding:14mm 13mm 0 13mm!important;
-    box-shadow:none!important;
-    width:100%!important;
-    height:auto!important;
-    min-height:0!important;
-    background:#fff!important;
-    color:#111!important;
-    overflow:visible!important;
+    display: block!important;
+    visibility: visible!important;
+    position: static!important;
+    margin: 0!important;
+    padding: 0!important;
+    box-shadow: none!important;
+    width: 100%!important;
+    height: auto!important;
+    min-height: 0!important;
+    background: #fff!important;
+    color: #111!important;
+    overflow: visible!important;
+    page-break-after: avoid!important;
+    break-after: avoid!important;
   }
   #hojaImpresion, #hojaImpresion *{
-    visibility:visible!important;
+    visibility: visible!important;
   }
-  .vale-enc, .vale-datos{
-    page-break-inside:avoid;
-    break-inside:avoid;
+  #hojaImpresion > *:last-child{
+    margin-bottom: 0!important;
+    padding-bottom: 0!important;
+    page-break-after: avoid!important;
+    break-after: avoid!important;
   }
-  table.vale-items tfoot{display:none!important}
+  .vale-enc{
+    display: flex!important;
+    justify-content: space-between!important;
+    align-items: center!important;
+    gap: 16px!important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .vale-datos{
+    display: flex!important;
+    justify-content: space-between!important;
+    gap: 20px!important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .vale-datos > div{
+    flex: 1!important;
+  }
+  table.vale-items{
+    page-break-inside: auto;
+  }
+  table.vale-items tfoot{
+    display: none!important;
+  }
   table.vale-items tr, table.rep-tabla tr, tr.fila-total-piezas{
-    page-break-inside:avoid;
-    break-inside:avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   .vale-firmas{
-    page-break-inside:avoid;
-    break-inside:avoid;
-    margin-bottom:0!important;
+    display: flex!important;
+    justify-content: space-between!important;
+    align-items: flex-start!important;
+    gap: 24px!important;
+    margin-top: 28px!important;
+    margin-bottom: 0!important;
+    padding-bottom: 0!important;
+    page-break-inside: avoid!important;
+    break-inside: avoid!important;
+    page-break-after: avoid!important;
+    break-after: avoid!important;
+  }
+  .vale-firmas > div{
+    flex: 1!important;
+    margin-bottom: 0!important;
   }
 }
 @media (max-width:1100px){.captura{grid-template-columns:repeat(4,1fr)}.captura .c-desc{grid-column:span 3}}
