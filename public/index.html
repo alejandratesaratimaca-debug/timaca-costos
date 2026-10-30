@@ -1399,6 +1399,20 @@ function nuevoVale(tipo, datos) {
 
 
 /* ----------------------------- Normalización y Cédula ----------------------------- */
+function tieneSerial(s) {
+  if (!s || typeof s !== 'string') return false;
+  const t = s.trim();
+  if (!t || t === '—' || t === '-' || t === '–') return false;
+  const up = t.toUpperCase();
+  return up !== 'S/S' && up !== 'SIN SERIAL' && up !== 'S/N' && up !== 'SIN S/N' && up !== 'NULL' && up !== 'UNDEFINED';
+}
+function serialsCoinciden(s1, s2) {
+  const t1 = tieneSerial(s1);
+  const t2 = tieneSerial(s2);
+  if (!t1 && !t2) return true;
+  if (t1 !== t2) return false;
+  return String(s1).trim().toUpperCase() === String(s2).trim().toUpperCase();
+}
 function normTexto(s) {
   return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 }
@@ -2132,9 +2146,14 @@ function registrarEntrada(d) {
   if (!d.lineas.length) throw new Error('Agregue al menos un ítem a la entrada.');
   const v = nuevoVale('ENT', { origen: d.origen, destino: d.origen, obs: d.obs || '', ref: '', extra: { obs: d.obs || '' }, lineas: [] });
   d.lineas.forEach(l => {
-    let it = DB.catalogo.find(x => x.cod === l.cod && x.marca === l.marca && x.modelo === l.modelo && (x.serial || '') === (l.serial || ''));
+    const lSerial = tieneSerial(l.serial) ? l.serial.trim() : '—';
+    let it = DB.catalogo.find(x => x.cod === l.cod &&
+      normTexto(x.marca || '') === normTexto(l.marca || '') &&
+      normTexto(x.modelo || '') === normTexto(l.modelo || '') &&
+      serialsCoinciden(x.serial, lSerial)
+    );
     if (!it) {
-      it = { id: Math.max(0, ...DB.catalogo.map(x => x.id)) + 1, cod: l.cod, desc: l.desc, mod: l.mod, cat: l.cat, marca: l.marca, modelo: l.modelo, serial: l.serial || '', umb: l.umb, costo: 0, tipoA: false, talla: l.talla || '', vida: Number(l.vida) || 0, activo: true };
+      it = { id: Math.max(0, ...DB.catalogo.map(x => x.id)) + 1, cod: l.cod, desc: l.desc, mod: l.mod, cat: l.cat, marca: l.marca || 'SIN MARCA', modelo: l.modelo || '—', serial: lSerial, umb: l.umb || 'UND', costo: 0, tipoA: false, talla: l.talla || '', vida: Number(l.vida) || 0, activo: true };
       DB.catalogo.push(it);
     } else {
       if (l.cat) it.cat = l.cat;
@@ -4746,7 +4765,7 @@ function bindCaptura() {
 function buscarPorCodigo() {
   const q = $('cCod').value.trim().toUpperCase(); if (!q) return;
   const disp = itemsBuscables();
-  const porSerial = disp.find(it => it.serial && it.serial.toUpperCase() === q);
+  const porSerial = disp.find(it => tieneSerial(it.serial) && it.serial.toUpperCase() === q);
   if (porSerial) return elegirGrupo(porSerial.cod, porSerial.id);
   if (disp.some(it => it.cod.toUpperCase() === q)) return elegirGrupo(disp.find(it => it.cod.toUpperCase() === q).cod);
   const parciales = gruposDisponibles(q);
@@ -4773,8 +4792,8 @@ function alCambiarMarca(idPreferido) {
   if (!vars.length) {
     vars = DB.catalogo.filter(it => it.cod === F.grp && `${it.marca || '—'} / ${it.modelo || '—'}` === m);
   }
-  $('cSerial').innerHTML = vars.map(it => `<option value="${it.id}">${esc(it.serial || 'Sin serial')}${it.serial ? '' : ` (${dispTotalItem(it)} disp.)`}</option>`).join('');
-  $('cSerial').disabled = vars.length <= 1 && !vars.some(it => it.serial);
+  $('cSerial').innerHTML = vars.map(it => `<option value="${it.id}">${esc(tieneSerial(it.serial) ? it.serial : 'Sin serial')}${tieneSerial(it.serial) ? '' : ` (${dispTotalItem(it)} disp.)`}</option>`).join('');
+  $('cSerial').disabled = vars.length <= 1 && !vars.some(it => tieneSerial(it.serial));
   if (idPreferido) $('cSerial').value = idPreferido;
   alCambiarSerial();
 }
@@ -4795,7 +4814,8 @@ function alCambiarSerial() {
     }
   } else cond.innerHTML = opciones(it.mod === 'EPP' ? ['NUEVO', 'ÓPTIMO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']);
   if (F.tipo === 'DAN') cond.value = 'DAÑADO';
-  $('cCant').value = 1; $('cCant').readOnly = !!it.serial; $('cCant').title = it.serial ? 'Ítem con serial único: cantidad 1. Presione Enter o Salvar.' : '';
+  const ser = tieneSerial(it.serial);
+  $('cCant').value = 1; $('cCant').readOnly = ser; $('cCant').title = ser ? 'Ítem con serial único: cantidad 1. Presione Enter o Salvar.' : '';
   actualizarDispCaptura();
   setTimeout(() => { $('cCant').focus(); $('cCant').select(); }, 0);
 }
@@ -4867,9 +4887,9 @@ function cargarParaEditarLineaSol(i) {
       serialList.unshift({ id: it.id || l.id, serial: serialVal });
     }
     if (!serialList.length) serialList = [{ id: it.id || l.id, serial: serialVal }];
-    $('cSerial').innerHTML = serialList.map(x => `<option value="${x.id}">${esc(x.serial || 'Sin serial')}</option>`).join('');
+    $('cSerial').innerHTML = serialList.map(x => `<option value="${x.id}">${esc(tieneSerial(x.serial) ? x.serial : 'Sin serial')}</option>`).join('');
     $('cSerial').value = it.id || l.id;
-    $('cSerial').disabled = serialList.length <= 1 && !serialList.some(x => x.serial);
+    $('cSerial').disabled = serialList.length <= 1 && !serialList.some(x => tieneSerial(x.serial));
   }
 
   // Condición
@@ -4889,7 +4909,7 @@ function cargarParaEditarLineaSol(i) {
 
   if ($('cCant')) {
     $('cCant').value = l.cant;
-    $('cCant').readOnly = !!(it.serial || l.serial);
+    $('cCant').readOnly = tieneSerial(it.serial || l.serial);
   }
 
   // botón Salvar permanece con texto Salvar
@@ -4902,7 +4922,7 @@ function salvarLinea(confirmado) {
   const it = F.cap; if (!it) { toast('Busque un ítem por código (Enter) o haga clic en la descripción para elegirlo.', 'err'); $('cCod').focus(); return; }
   const cond = $('cCond').value; const cant = Number($('cCant').value);
   if (!Number.isInteger(cant) || cant <= 0) return toast('La cantidad debe ser un número entero mayor que cero.', 'err');
-  if (it.serial && cant !== 1) return toast('Los ítems con serial único solo permiten cantidad 1.', 'err');
+  if (tieneSerial(it.serial) && cant !== 1) return toast('Los ítems con serial único solo permiten cantidad 1.', 'err');
   const est = estDe(it, cond);
   const editIdx = (typeof F.editandoLineaIdx === 'number' && F.editandoLineaIdx >= 0) ? F.editandoLineaIdx : -1;
   const lineaEditando = editIdx >= 0 ? F.lineas[editIdx] : null;
@@ -4914,7 +4934,7 @@ function salvarLinea(confirmado) {
   if (cant > disp) return toast(`La cantidad supera el stock disponible (${disp}).`, 'err');
   if (cond === 'DAÑADO' && F.tipo !== 'DAN' && !confirmado) return confirmar(`Va a agregar <b>${esc(it.cod)} · ${esc(it.desc)}</b> con condición <b>DAÑADO</b>. ¿Desea continuar?`, () => salvarLinea(true), 'Agregar línea');
   if (existente && confirmado !== 'sumar') {
-    if (it.serial) return toast('Este ítem con serial ya está en la grilla.', 'err');
+    if (tieneSerial(it.serial)) return toast('Este ítem con serial ya está en la grilla.', 'err');
     return confirmar(`El ítem <b>${esc(it.cod)}</b> (${esc(it.marca)} / ${esc(it.modelo)}) ya está en la grilla con ${existente.cant} ${esc(it.umb)}. ¿Desea sumar ${cant} a esa línea?`, () => { existente.cant += cant; existente.cond = cond; limpiarCaptura(); pintarLineas(); $('cCod').focus(); }, 'Sumar cantidad');
   }
 
@@ -5002,7 +5022,7 @@ function pintarLineas() {
           : `<select style="padding:2px 4px;font-size:11px;font-weight:700;border-radius:4px" onchange="cambiarCondLinea(${i}, this.value)" title="Cambiar condición de este ítem">${opciones((l.mod === 'CILINDRO' ? ['LLENO', 'VACÍO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']), l.cond)}</select>`
         }
       </td>
-      <td class="cen" onclick="event.stopPropagation()">${bloqueado || l.serial ? `<b>${l.cant}</b>` : `<input type="number" min="1" max="${dispItem(F.origen, l.id, l.est) + (F.lineasOriginales ? ((F.lineasOriginales.find(x => x.id === l.id && x.est === l.est) || {}).cant || l.cant) : l.cant)}" value="${l.cant}" style="width:60px;padding:3px;text-align:center;font-weight:700" onchange="cambiarCantLinea(${i}, this.value)">`}</td>
+      <td class="cen" onclick="event.stopPropagation()">${bloqueado || tieneSerial(l.serial) ? `<b>${l.cant}</b>` : `<input type="number" min="1" max="${dispItem(F.origen, l.id, l.est) + (F.lineasOriginales ? ((F.lineasOriginales.find(x => x.id === l.id && x.est === l.est) || {}).cant || l.cant) : l.cant)}" value="${l.cant}" style="width:60px;padding:3px;text-align:center;font-weight:700" onchange="cambiarCantLinea(${i}, this.value)">`}</td>
       </tr>`).join('');
   const th = conRef ? '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Unidad</th><th class="cen">Saldo</th><th class="cen">Cantidad</th>'
     : '<th>Código</th><th>Descripción</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Unidad</th><th>Condición</th><th class="cen">Cantidad</th>';
@@ -5380,7 +5400,7 @@ function guardarEntradaDirecta() {
     const cod = $('eCod').value.trim().toUpperCase(), desc = $('eDesc').value.trim(), serial = $('eSerial').value.trim().toUpperCase(), cant = Number($('eCant').value);
     if (!cod || !desc) throw new Error('Código y descripción son obligatorios.');
     if (!Number.isInteger(cant) || cant <= 0) throw new Error('La cantidad debe ser un número entero mayor que cero.');
-    if (serial && cant !== 1) throw new Error('Un ítem con serial único solo admite cantidad 1.');
+    if (tieneSerial(serial) && cant !== 1) throw new Error('Un ítem con serial único solo admite cantidad 1.');
 
     const l = {
       cod,
@@ -5390,7 +5410,7 @@ function guardarEntradaDirecta() {
       umb: $('eUmb').value.trim() || 'UND',
       marca: $('eMarca').value.trim().toUpperCase() || 'SIN MARCA',
       modelo: $('eModelo').value.trim() || '—',
-      serial,
+      serial: tieneSerial(serial) ? serial : '—',
       cond: $('eCond').value,
       cant
     };
@@ -5413,11 +5433,11 @@ function agregarEntrada() {
       }
     }
     if (!Number.isInteger(cant) || cant <= 0) throw new Error('La cantidad debe ser un número entero mayor que cero.');
-    if (serial) {
+    if (tieneSerial(serial)) {
       if (cant !== 1) throw new Error('Un ítem con serial único solo admite cantidad 1.');
-      const it = DB.catalogo.find(i => (i.serial || '').toUpperCase() === serial);
+      const it = DB.catalogo.find(i => tieneSerial(i.serial) && i.serial.toUpperCase() === serial);
       if (it && DB.almacenes.some(a => DB.exi[a.c] && DB.exi[a.c][it.id] && totalExi(DB.exi[a.c][it.id]) > 0)) throw new Error(`El serial ${serial} ya existe con existencia en el sistema.`);
-      if (E.lineas.some(l => l.serial === serial)) throw new Error('Ese serial ya está en la entrada.');
+      if (E.lineas.some(l => tieneSerial(l.serial) && l.serial.toUpperCase() === serial)) throw new Error('Ese serial ya está en la entrada.');
     }
     const base = E.base || existente;
     const l = {
@@ -5428,11 +5448,11 @@ function agregarEntrada() {
       umb: $('eUmb').value.trim() || 'UND',
       marca: $('eMarca').value.trim().toUpperCase() || 'SIN MARCA',
       modelo: $('eModelo').value.trim() || '—',
-      serial,
+      serial: tieneSerial(serial) ? serial : '—',
       cond: $('eCond').value,
       cant
     };
-    const dup = E.lineas.find(x => !serial && x.cod === l.cod && x.marca === l.marca && x.modelo === l.modelo && x.cond === l.cond && x.cat === l.cat);
+    const dup = E.lineas.find(x => !tieneSerial(x.serial) && !tieneSerial(serial) && x.cod === l.cod && x.marca === l.marca && x.modelo === l.modelo && x.cond === l.cond && x.cat === l.cat);
     if (dup) dup.cant += cant; else E.lineas.push(l);
 
     limpiarFormularioEntrada();
@@ -5485,11 +5505,11 @@ function guardarEdicionEntrada() {
     if (!cod || !desc) throw new Error('Código y descripción son obligatorios.');
     if (!Number.isInteger(cant) || cant <= 0) throw new Error('La cantidad debe ser un número entero mayor que cero.');
 
-    if (serial) {
+    if (tieneSerial(serial)) {
       if (cant !== 1) throw new Error('Un ítem con serial único solo admite cantidad 1.');
-      const it = DB.catalogo.find(i => (i.serial || '').toUpperCase() === serial);
+      const it = DB.catalogo.find(i => tieneSerial(i.serial) && i.serial.toUpperCase() === serial);
       if (it && DB.almacenes.some(a => DB.exi[a.c] && DB.exi[a.c][it.id] && totalExi(DB.exi[a.c][it.id]) > 0)) throw new Error(`El serial ${serial} ya existe con existencia en el sistema.`);
-      if (E.lineas.some((l, idx) => idx !== E.editIdx && l.serial === serial)) throw new Error('Ese serial ya está en otra línea de la entrada.');
+      if (E.lineas.some((l, idx) => idx !== E.editIdx && tieneSerial(l.serial) && l.serial.toUpperCase() === serial)) throw new Error('Ese serial ya está en otra línea de la entrada.');
     }
 
     E.lineas[E.editIdx] = {
@@ -5500,7 +5520,7 @@ function guardarEdicionEntrada() {
       umb: $('eUmb').value.trim() || 'UND',
       marca: $('eMarca').value.trim().toUpperCase() || 'SIN MARCA',
       modelo: $('eModelo').value.trim() || '—',
-      serial,
+      serial: tieneSerial(serial) ? serial : '—',
       cond: $('eCond').value,
       cant
     };
@@ -8078,8 +8098,8 @@ function editarItem(it) {
     [{ t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal }, { t: 'Guardar', cls: 'btn-verde', fn: () => run(() => {
       const cod = $('ciCod').value.trim().toUpperCase(), serial = $('ciSer').value.trim();
       if (!cod || !$('ciDesc').value.trim()) throw new Error('Código y descripción son obligatorios.');
-      if (DB.catalogo.some(x => x !== it && x.cod === cod && x.serial === serial)) throw new Error('Ya existe un ítem con ese código y serial.');
-      Object.assign(it, { cod, desc: $('ciDesc').value.trim(), mod: $('ciMod').value, cat: $('ciCat').value.trim(), marca: $('ciMar').value.trim().toUpperCase() || 'SIN MARCA', modelo: $('ciMod2').value.trim() || '—', serial, umb: $('ciUmb').value.trim() || 'UND', tipoA: $('ciTA').value === '1', talla: $('ciTal').value.trim(), vida: Number($('ciVid').value) || 0, activo: $('ciAct').value === '1' });
+      if (tieneSerial(serial) && DB.catalogo.some(x => x !== it && x.cod === cod && serialsCoinciden(x.serial, serial))) throw new Error('Ya existe un ítem con ese código y serial.');
+      Object.assign(it, { cod, desc: $('ciDesc').value.trim(), mod: $('ciMod').value, cat: $('ciCat').value.trim(), marca: $('ciMar').value.trim().toUpperCase() || 'SIN MARCA', modelo: $('ciMod2').value.trim() || '—', serial: tieneSerial(serial) ? serial : '—', umb: $('ciUmb').value.trim() || 'UND', tipoA: $('ciTA').value === '1', talla: $('ciTal').value.trim(), vida: Number($('ciVid').value) || 0, activo: $('ciAct').value === '1' });
       if (n) { it.id = Math.max(0, ...DB.catalogo.map(x => x.id)) + 1; DB.catalogo.push(it); }
       bit(n ? 'ÍTEM CREADO' : 'ÍTEM MODIFICADO', cod + (serial ? ' ' + serial : '')); guardar(); cerrarModal(); toast('Ítem guardado.', 'ok'); refrescar();
     }) }], true);
@@ -8147,7 +8167,7 @@ VISTAS.aIni = () => {
     $('iniSel').value = `${i.cod} · ${i.desc}${i.serial ? ' · ' + i.serial : ''}`;
     $('iniIt').value = '';
     if ($('iniCat')) $('iniCat').value = i.cat || 'Herramientas manuales';
-    if (i.serial) $('iniCant').value = 1;
+    if (tieneSerial(i.serial)) $('iniCant').value = 1;
   });
 };
 
@@ -8302,7 +8322,7 @@ function accionIni() {
     }
 
     // MODO NUEVO REGISTRO
-    if (it.serial && (cant !== 1 || DB.almacenes.some(a => DB.exi[a.c] && DB.exi[a.c][it.id] && totalExi(DB.exi[a.c][it.id]) > 0))) {
+    if (tieneSerial(it.serial) && (cant !== 1 || DB.almacenes.some(a => DB.exi[a.c] && DB.exi[a.c][it.id] && totalExi(DB.exi[a.c][it.id]) > 0))) {
       throw new Error('El ítem con serial ya tiene existencia registrada o la cantidad no es 1.');
     }
 
