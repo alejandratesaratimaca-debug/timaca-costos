@@ -85,21 +85,36 @@ export const BandejaAlertasSipView: React.FC = () => {
     });
   }, [records, selectedMonth, selectedAlertType, searchTerm]);
 
-  // Filtrado de materiales consolidados (para compras)
+  // Filtrado de materiales consolidados (para compras) con totales acordes al mes seleccionado
   const filteredMaterials = useMemo(() => {
-    return materials.filter(m => {
-      if (selectedMonth !== 'TODOS' && !m.meses.includes(selectedMonth)) return false;
-      if (selectedAlertType === 'UM' && m.categoria_alerta !== 'UM') return false;
-      if (selectedAlertType === 'PRECIO' && m.categoria_alerta !== 'PRECIO') return false;
-      if (selectedAlertType === 'SIN_OC' && m.categoria_alerta !== 'SIN_OC') return false;
+    return materials
+      .filter(m => {
+        if (selectedMonth !== 'TODOS' && !m.meses.includes(selectedMonth)) return false;
+        if (selectedAlertType === 'UM' && m.categoria_alerta !== 'UM') return false;
+        if (selectedAlertType === 'PRECIO' && m.categoria_alerta !== 'PRECIO') return false;
+        if (selectedAlertType === 'SIN_OC' && m.categoria_alerta !== 'SIN_OC') return false;
 
-      if (searchTerm.trim()) {
-        const query = searchTerm.toLowerCase();
-        const haystack = `${m.codigo} ${m.descripcion} ${m.proveedor} ${m.ultima_oc}`.toLowerCase();
-        if (!haystack.includes(query)) return false;
-      }
-      return true;
-    });
+        if (searchTerm.trim()) {
+          const query = searchTerm.toLowerCase();
+          const haystack = `${m.codigo} ${m.descripcion} ${m.proveedor} ${m.ultima_oc}`.toLowerCase();
+          if (!haystack.includes(query)) return false;
+        }
+        return true;
+      })
+      .map(m => {
+        if (selectedMonth !== 'TODOS') {
+          const dps = (m.dps_por_mes && m.dps_por_mes[selectedMonth] !== undefined) ? m.dps_por_mes[selectedMonth] : m.total_dps;
+          const cant = (m.cant_por_mes && m.cant_por_mes[selectedMonth] !== undefined) ? m.cant_por_mes[selectedMonth] : m.total_cant;
+          const impacto = (m.impacto_por_mes && m.impacto_por_mes[selectedMonth] !== undefined) ? m.impacto_por_mes[selectedMonth] : m.impacto_total_usd;
+          return {
+            ...m,
+            total_dps: dps,
+            total_cant: cant,
+            impacto_total_usd: impacto
+          };
+        }
+        return m;
+      });
   }, [materials, selectedMonth, selectedAlertType, searchTerm]);
 
   // Paginación dinámica según el modo de vista
@@ -370,7 +385,7 @@ export const BandejaAlertasSipView: React.FC = () => {
           </div>
         </div>
 
-        {/* 3. SIN OC / FALTANTES (NUEVA TARJETA) */}
+        {/* 3. STOCK ALMACÉN / SIN OC DIRECTA */}
         <div 
           onClick={() => { setSelectedAlertType('SIN_OC'); setCurrentPage(1); }}
           className={`p-3.5 rounded-xl border transition-all cursor-pointer shadow-xs hover:shadow-md bg-indigo-50/30 ${
@@ -378,12 +393,12 @@ export const BandejaAlertasSipView: React.FC = () => {
           }`}
         >
           <div className="text-[11px] font-semibold text-indigo-700 uppercase tracking-wider flex items-center gap-1">
-            <Info className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-            3. Sin OC / Faltantes
+            <Boxes className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+            3. Stock Almacén / Inv. Previo
           </div>
           <div className="text-2xl font-bold text-indigo-800 mt-1">{kpiStats.sinOC.toLocaleString('es-ES')}</div>
-          <div className="text-[11px] text-indigo-600 mt-1 truncate" title="Sin OC en 2026 o Costo $0">
-            Sin OC 2026 o Costo $0
+          <div className="text-[11px] text-indigo-600 mt-1 truncate" title="Consumos de inventario existente sin OC directa en 2026">
+            Salidas de existencias en almacén
           </div>
         </div>
 
@@ -460,7 +475,7 @@ export const BandejaAlertasSipView: React.FC = () => {
             <option value="TODAS">Todas las Alertas ({kpiStats.totalCasos.toLocaleString('es-ES')})</option>
             <option value="UM">🚨 1. Errores de Unidad / Factor ({kpiStats.umConflicts.toLocaleString('es-ES')} casos - Planchas, Perfiles)</option>
             <option value="PRECIO">⚠️ 2. Desfases Comerciales 5%-200% ({kpiStats.desfasePrecio.toLocaleString('es-ES')} casos - Grava, Insumos)</option>
-            <option value="SIN_OC">ℹ️ 3. Sin OC / Faltantes ({kpiStats.sinOC.toLocaleString('es-ES')} casos)</option>
+            <option value="SIN_OC">📦 3. Stock Almacén / Inv. Previo ({kpiStats.sinOC.toLocaleString('es-ES')} casos)</option>
           </select>
 
           <button
@@ -576,22 +591,48 @@ export const BandejaAlertasSipView: React.FC = () => {
                         <td className="py-2.5 px-3.5 text-right font-bold text-slate-900 whitespace-nowrap">
                           ${m.precio_sip.toFixed(2)}
                         </td>
-                        <td className="py-2.5 px-3.5 text-right font-bold text-blue-700 whitespace-nowrap">
-                          ${m.precio_oc.toFixed(2)}
+                        <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
+                          {m.categoria_alerta === 'SIN_OC' ? (
+                            <div>
+                              <span className="font-bold text-slate-700">${m.precio_sip.toFixed(2)}</span>
+                              <span className="ml-1 text-[10px] text-indigo-700 bg-indigo-50 px-1 py-0.5 rounded font-medium">Stock</span>
+                            </div>
+                          ) : (
+                            <span className="font-bold text-blue-700">${m.precio_oc.toFixed(2)}</span>
+                          )}
                         </td>
                         <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
-                          <span className={`font-bold text-xs ${m.var_pct < 0 ? 'text-red-600' : 'text-emerald-700'}`}>
-                            {m.var_pct > 0 ? '+' : ''}{m.var_pct}%
-                          </span>
+                          {m.categoria_alerta === 'SIN_OC' ? (
+                            <span className="font-semibold text-slate-500 text-[11px] bg-slate-100 px-2 py-0.5 rounded">
+                              Costo Base
+                            </span>
+                          ) : (
+                            <span className={`font-bold text-xs ${m.var_pct < 0 ? 'text-red-600' : 'text-emerald-700'}`}>
+                              {m.var_pct > 0 ? '+' : ''}{m.var_pct}%
+                            </span>
+                          )}
                         </td>
                         <td className="py-2.5 px-3.5 text-right font-bold text-slate-900 whitespace-nowrap">
                           ${Math.abs(m.impacto_total_usd).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                         <td className="py-2.5 px-3.5 whitespace-nowrap">
-                          <div className="font-bold text-slate-800">{m.ultima_oc}</div>
-                          <div className="text-[11px] text-slate-500 max-w-[130px] truncate" title={m.proveedor}>
-                            {m.proveedor}
-                          </div>
+                          {m.categoria_alerta === 'SIN_OC' ? (
+                            <div>
+                              <span className="font-semibold text-indigo-900 text-[11px] bg-indigo-50 px-1.5 py-0.5 rounded">
+                                📦 Stock Almacén
+                              </span>
+                              <div className="text-[10px] text-slate-500 mt-0.5">
+                                Inv. Previo (Sin OC 2026)
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="font-bold text-slate-800">{m.ultima_oc}</div>
+                              <div className="text-[11px] text-slate-500 max-w-[130px] truncate" title={m.proveedor}>
+                                {m.proveedor}
+                              </div>
+                            </div>
+                          )}
                         </td>
                         <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
                           <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-tight inline-block ${
@@ -683,16 +724,26 @@ export const BandejaAlertasSipView: React.FC = () => {
                         <td className="py-2.5 px-3.5 text-right font-bold text-slate-900">
                           ${r.precio_sip.toFixed(2)}
                         </td>
-                        <td className="py-2.5 px-3.5 text-right font-bold text-blue-700">
-                          ${r.precio_oc.toFixed(2)}
+                        <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
+                          {r.categoria_alerta === 'SIN_OC' ? (
+                            <span className="font-bold text-slate-700">${r.precio_oc.toFixed(2)} <span className="text-[10px] text-indigo-700 bg-indigo-50 px-1 py-0.5 rounded font-medium">Stock</span></span>
+                          ) : (
+                            <span className="font-bold text-blue-700">${r.precio_oc.toFixed(2)}</span>
+                          )}
                         </td>
                         <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
-                          <span className={`font-bold text-xs ${r.var_pct < 0 ? 'text-red-600' : 'text-emerald-700'}`}>
-                            {r.var_pct > 0 ? '+' : ''}{r.var_pct}%
-                          </span>
-                          <div className="text-[10px] text-slate-400">
-                            (${Math.abs(r.impacto_usd).toLocaleString('es-ES', { maximumFractionDigits: 0 })})
-                          </div>
+                          {r.categoria_alerta === 'SIN_OC' ? (
+                            <span className="font-semibold text-slate-500 text-[11px] bg-slate-100 px-1.5 py-0.5 rounded">Costo Base</span>
+                          ) : (
+                            <>
+                              <span className={`font-bold text-xs ${r.var_pct < 0 ? 'text-red-600' : 'text-emerald-700'}`}>
+                                {r.var_pct > 0 ? '+' : ''}{r.var_pct}%
+                              </span>
+                              <div className="text-[10px] text-slate-400">
+                                (${Math.abs(r.impacto_usd).toLocaleString('es-ES', { maximumFractionDigits: 0 })})
+                              </div>
+                            </>
+                          )}
                         </td>
                         <td className="py-2.5 px-3.5 whitespace-nowrap">
                           <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
@@ -889,8 +940,12 @@ export const BandejaAlertasSipView: React.FC = () => {
                 <span className="font-bold text-amber-700">${modalMaterial.precio_sip.toFixed(2)} USD ({modalMaterial.um_salida || 'N/D'})</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-medium">Último Precio Compra OC:</span>
-                <span className="font-bold text-blue-700">${modalMaterial.precio_oc.toFixed(2)} USD ({modalMaterial.um_compra || 'N/D'})</span>
+                <span className="text-slate-500 font-medium">
+                  {modalMaterial.categoria_alerta === 'SIN_OC' ? 'Costo Base de Inventario:' : 'Último Precio Compra OC:'}
+                </span>
+                <span className="font-bold text-blue-700">
+                  ${modalMaterial.precio_oc.toFixed(2)} USD {modalMaterial.categoria_alerta === 'SIN_OC' ? '(Stock Almacén)' : `(${modalMaterial.um_compra || 'N/D'})`}
+                </span>
               </div>
             </div>
 
@@ -924,8 +979,16 @@ export const BandejaAlertasSipView: React.FC = () => {
                   className="mt-0.5 text-blue-600 focus:ring-blue-500"
                 />
                 <div>
-                  <div className="text-xs font-bold text-slate-800">2. Aprobar Precio de Orden de Compra (${modalMaterial.precio_oc.toFixed(2)})</div>
-                  <div className="text-[11px] text-slate-500">Actualizar todas las salidas de este material al costo negociado en OC.</div>
+                  <div className="text-xs font-bold text-slate-800">
+                    {modalMaterial.categoria_alerta === 'SIN_OC'
+                      ? `2. Ratificar Costo Base de Almacén ($${modalMaterial.precio_sip.toFixed(2)})`
+                      : `2. Aprobar Precio de Orden de Compra ($${modalMaterial.precio_oc.toFixed(2)})`}
+                  </div>
+                  <div className="text-[11px] text-slate-500">
+                    {modalMaterial.categoria_alerta === 'SIN_OC'
+                      ? 'Inventario en existencias sin OC directa en 2026. Mantener valoración de inventario actual.'
+                      : 'Actualizar todas las salidas de este material al costo negociado en OC.'}
+                  </div>
                 </div>
               </label>
 
