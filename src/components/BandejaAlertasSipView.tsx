@@ -116,6 +116,7 @@ export const BandejaAlertasSipView: React.FC = () => {
   const [modalMaterial, setModalMaterial] = useState<MaterialConsolidadoItem | null>(null);
   const [decisionType, setDecisionType] = useState<'MANTENER_SIP' | 'APROBAR_OC' | 'MANUAL'>('MANTENER_SIP');
   const [manualPrice, setManualPrice] = useState<string>('');
+  const [isApplyingAgreed, setIsApplyingAgreed] = useState<boolean>(false);
 
   const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'];
 
@@ -334,6 +335,77 @@ export const BandejaAlertasSipView: React.FC = () => {
     }));
 
     setModalMaterial(null);
+  };
+
+  const handleAplicarPreciosAcordados = async () => {
+    setIsApplyingAgreed(true);
+    try {
+      const res = await fetch(`/data/sip/precios_acordados_compras.json?_t=${Date.now()}`);
+      if (!res.ok) throw new Error('No se pudo cargar la matriz de precios acordados');
+      const acordados: Record<string, { precio: number; obs: string; descripcion: string }> = await res.json();
+
+      const matDecs = getPersistedMaterialDecisions();
+      let countUpdated = 0;
+
+      // Actualizar materiales consolidados
+      setMaterials(prev => prev.map(m => {
+        const info = acordados[m.codigo];
+        if (info && info.precio > 0) {
+          countUpdated++;
+          const newPrice = info.precio;
+          const newStatus = `VALIDADO CON COMPRAS ($${newPrice.toFixed(2)})`;
+          const newVarPct = m.precio_oc > 0 ? ((newPrice - m.precio_oc) / m.precio_oc) * 100 : 0;
+
+          matDecs[m.codigo] = {
+            precio_sip: newPrice,
+            estatus: newStatus,
+            var_pct: newVarPct,
+            updatedAt: new Date().toISOString()
+          };
+
+          return {
+            ...m,
+            precio_sip: newPrice,
+            var_pct: newVarPct,
+            impacto_total_usd: (newPrice - m.precio_oc) * m.total_cant,
+            estatus: newStatus
+          };
+        }
+        return m;
+      }));
+
+      // Guardar en localStorage
+      try {
+        localStorage.setItem(STORAGE_KEY_MATERIALES, JSON.stringify(matDecs));
+      } catch (e) {
+        console.warn('Error guardando en localStorage', e);
+      }
+
+      // Actualizar transacciones
+      setRecords(prev => prev.map(r => {
+        const info = acordados[r.codigo];
+        if (info && info.precio > 0) {
+          const newPrice = info.precio;
+          const newStatus = `VALIDADO CON COMPRAS ($${newPrice.toFixed(2)})`;
+          const newVarPct = r.precio_oc > 0 ? ((newPrice - r.precio_oc) / r.precio_oc) * 100 : 0;
+          return {
+            ...r,
+            precio_sip: newPrice,
+            var_pct: newVarPct,
+            impacto_usd: (newPrice - r.precio_oc) * r.cant,
+            estatus: newStatus
+          };
+        }
+        return r;
+      }));
+
+      alert(`¡Se aplicaron y guardaron permanentemente los precios acordados con Compras para ${countUpdated.toLocaleString('es-ES')} materiales!`);
+    } catch (err) {
+      console.error(err);
+      alert('Error al aplicar los precios acordados con Compras.');
+    } finally {
+      setIsApplyingAgreed(false);
+    }
   };
 
   const handleExportExcel = () => {
@@ -565,15 +637,27 @@ export const BandejaAlertasSipView: React.FC = () => {
           </button>
         </div>
 
-        <a
-          href="/TIMACA_Matriz_Precios_Para_Compras_2026.xlsx"
-          download="TIMACA_Matriz_Precios_Para_Compras_2026.xlsx"
-          className="w-full sm:w-auto text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-3.5 py-2 rounded-lg flex items-center justify-center gap-1.5 transition shadow-xs whitespace-nowrap"
-          title="Descarga la planilla Excel condensada de 5.111 materiales con columnas resaltadas en verde para llevar a Compras"
-        >
-          <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-200" />
-          Descargar Matriz Excel para Compras (.xlsx)
-        </a>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleAplicarPreciosAcordados}
+            disabled={isApplyingAgreed}
+            className="w-full sm:w-auto text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2 rounded-lg flex items-center justify-center gap-1.5 transition shadow-xs whitespace-nowrap cursor-pointer disabled:opacity-75"
+            title="Aplica automáticamente los precios sugeridos y acordados con Compras de la matriz oficial a todos los materiales correspondientes"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+            {isApplyingAgreed ? 'Aplicando precios...' : '🪄 Aplicar Precios Acordados de Compras'}
+          </button>
+          <a
+            href="/TIMACA_Matriz_Precios_Para_Compras_2026.xlsx"
+            download="TIMACA_Matriz_Precios_Para_Compras_2026.xlsx"
+            className="w-full sm:w-auto text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-3.5 py-2 rounded-lg flex items-center justify-center gap-1.5 transition shadow-xs whitespace-nowrap"
+            title="Descarga la planilla Excel condensada de 5.111 materiales con columnas resaltadas en verde para llevar a Compras"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-200" />
+            Descargar Matriz Excel para Compras (.xlsx)
+          </a>
+        </div>
       </div>
 
       {/* CONTROLES Y BUSCADOR */}
