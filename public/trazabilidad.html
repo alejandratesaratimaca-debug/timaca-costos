@@ -1700,7 +1700,10 @@ const DESTINOS_SOLICITUD = {
     { c: 'Coordinación Logística', n: 'Coordinación Logística' },
     { c: 'Servicios Generales', n: 'Servicios Generales' },
     { c: 'Taller / Mantto', n: 'Taller / Mantto' },
-    { c: 'Seguridad Industrial', n: 'Seguridad Industrial' }
+    { c: 'Seguridad Industrial', n: 'Seguridad Industrial' },
+    { c: 'Coordinación de Instrumentación', n: 'Coordinación de Instrumentación' },
+    { c: 'Control de Calidad', n: 'Control de Calidad' },
+    { c: 'Coordinación de Refractarios', n: 'Coordinación de Refractarios' }
   ],
   ECO: [
     { c: 'ECO', n: 'Almacén Eco' }
@@ -2537,8 +2540,10 @@ function semilla() {
 function formatoDestinoUbicacion(cod) {
   if (!cod) return '—';
   if (typeof DESTINOS_SOLICITUD !== 'undefined' && DESTINOS_SOLICITUD) {
+    const norm = s => String(s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\bde\b\s*/g, '');
+    const q = norm(cod);
     for (const lista of Object.values(DESTINOS_SOLICITUD)) {
-      const found = lista.find(d => d.c === cod || d.n === cod);
+      const found = lista.find(d => norm(d.c) === q || norm(d.n) === q);
       if (found) return found.n;
     }
   }
@@ -4598,7 +4603,7 @@ function pintarFormulario() {
       + campo('Supervisor', `<input id="fSup" autocomplete="off" ${ro} placeholder="Nombre del supervisor" value="${esc(F.sup)}">`)
       + campo('N° de salida TIMACA (opcional)', `<input id="fSalidaTimaca" ${ro} placeholder="Opcional" value="${esc(F.salidaTimaca || '')}">`);
   } else if (t === 'PRH' || t === 'ASI') {
-    cabecera += campo('Destino / Área solicitante', selectorDestinoSol(F.origen, F.destino, ro));
+    cabecera += campo('Ubicación / Destino solicitante', selectorDestinoSol(F.origen, F.destino, ro));
   } else {
     const vales = valesConSaldo(F.origen);
     cabecera += campo('Vale de referencia (opcional)', `<select id="fValeRef" ${ro} onchange="elegirValeRef(this.value)"><option value="">Ítem en existencia del almacén</option>${vales.map(v => `<option value="${v.num}" ${v.num === F.valeRef ? 'selected' : ''}>${v.num} · ${esc(v.resp.nombre)}</option>`).join('')}</select>`);
@@ -5096,7 +5101,7 @@ function pintarSolicitud() {
       ${L('Supervisor')}<div class="vl"><input id="fSup" autocomplete="off" placeholder="Nombre del supervisor" value="${esc(F.sup)}"></div>
       ${fechas}
       ${L('Almacén origen')}<div class="vl"><input value="${esc(almNombre(F.origen))}" readonly></div>
-      ${L('Destino / Área solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
+      ${L('Ubicación / Destino solicitante')}<div class="vl">${selectorDestinoSol(F.origen, F.destino)}</div>
       ${L('Estatus')}<div class="vl">${estB(est)}</div>
     </div>
     <div class="carga" style="margin-top:14px"><div class="carga-h">CARGA DE MATERIAL</div>${filaCaptura()}<div id="fLineas"></div></div>
@@ -5627,7 +5632,7 @@ VISTAS.doc = p => {
   else if (esSol && (est === 'FINALIZADO' || est === 'PENDIENTE DE APROBACIÓN' || est === 'POR APROBAR')) franjaDer = 'Por aprobar por el supervisor de ' + esc(almNombre(d.origen));
   const R = (lbl, v) => campo(lbl, `<input value="${esc(v ?? '')}" readonly>`);
   let c = R('Tipo de movimiento', `${t} - ${TIPOS[t].n}`) + R('N° ' + (esSol ? 'solicitud' : 'vale'), d.num) + R('Fecha y hora', fFH(d.fecha))
-    + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Destino / Área solicitante', formatoDestinoUbicacion(d.destino));
+    + R('Almacén origen', almNombre(d.origen)) + R(t === 'TRF' ? 'Almacén destino' : 'Ubicación / Destino solicitante', formatoDestinoUbicacion(d.destino));
   if (t === 'TRF') {
     c += R('Realizado por', d.realizadoPor.nombre);
     if (d.despacha) c += R('Quién despacha', d.despacha);
@@ -6481,7 +6486,7 @@ function vistaPrestamos(tit, sub, p) {
     const respCargo = (v.resp && v.resp.cargo) ? v.resp.cargo : 'Trabajador';
     const personaDB = (DB.personal || []).find(x => (x.cedula && respCI !== 'S/C' && digitosCI(x.cedula) === digitosCI(respCI)) || normTexto(x.nombre) === normTexto(respNom));
     const depto = personaDB ? (personaDB.departamento || personaDB.depto || personaDB.cargo || 'Operaciones') : 'Operaciones';
-    const ubicacion = v.destino ? almNombre(v.destino).replace('Almacén ', '') : almNombre(v.origen).replace('Almacén ', '');
+    const ubicacion = v.destino ? formatoDestinoUbicacion(v.destino).replace('Almacén ', '') : almNombre(v.origen).replace('Almacén ', '');
 
     if (resp && respNom !== resp && respCI !== resp) return;
     if (ciFiltro) {
