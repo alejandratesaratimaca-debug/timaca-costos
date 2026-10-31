@@ -141,6 +141,7 @@ td.col-usd{font-weight:800;color:#0F172A;text-align:right!important}
 .chip-mod.m-HERRAMIENTA{background:#E0F2FE;color:#0369A1}
 .chip-mod.m-CILINDRO{background:#CFFAFE;color:#0E7490}
 .chip-mod.m-EPP{background:#DCFCE7;color:#166534}
+.chip-mod.m-MISCELANEO{background:#FEF3C7;color:#92400E}
 
 /* Barra de selección y botones */
 .sel-strip{display:flex;align-items:center;gap:6px;margin:12px 0 0;flex-wrap:wrap}
@@ -605,7 +606,7 @@ const TIPOS = {
   ENT: { n: 'Entrada al catálogo', titulo: 'VALE DE ENTRADA' },
   INI: { n: 'Inventario inicial', titulo: 'INVENTARIO INICIAL' },
 };
-const MODULOS = { HERRAMIENTA: 'Herramientas', CILINDRO: 'Cilindros y gases', EPP: 'EPP' };
+const MODULOS = { HERRAMIENTA: 'Herramientas', CILINDRO: 'Cilindros y gases', EPP: 'EPP', MISCELANEO: 'Misceláneos' };
 const CATEGORIAS_OFICIALES = [
   'Herramientas mayores',
   'Herramientas manuales',
@@ -616,7 +617,8 @@ const CATEGORIAS_OFICIALES = [
   'EPP',
   'Equipos e instrumentos de medición',
   'Herramientas neumáticas e hidráulicas',
-  'Herramientas de fabricación'
+  'Herramientas de fabricación',
+  'Otros'
 ];
 const UMBS_OFICIALES = [
   'UND',
@@ -1167,6 +1169,7 @@ function asegurarCategoriasOficiales() {
     if (CATEGORIAS_OFICIALES.includes(it.cat)) {
       if (it.cat === 'Cilindros y gases') it.mod = 'CILINDRO';
       else if (it.cat === 'EPP') it.mod = 'EPP';
+      else if (it.cat === 'Otros') it.mod = 'MISCELANEO';
       else it.mod = 'HERRAMIENTA';
       return;
     }
@@ -4845,8 +4848,8 @@ function filaCaptura() {
   return `<div class="captura">
     ${campo('Código', `<input id="cCod" autocomplete="off" placeholder="Código o serial + Enter">`)}
     ${campo('Descripción', `<input id="cDesc" autocomplete="off" placeholder="Clic para ver los ítems disponibles…">`, 'c-desc')}
-    ${campo('Marca / Modelo', `<select id="cMarca" disabled onchange="alCambiarMarca()"><option value="">—</option></select>`)}
-    ${campo('Serial', `<select id="cSerial" disabled onchange="alCambiarSerial()"><option value="">—</option></select>`)}
+    ${campo('Marca / Modelo', `<input id="cMarca" autocomplete="off" placeholder="Escriba para filtrar…" disabled>`)}
+    ${campo('Serial', `<input id="cSerial" autocomplete="off" placeholder="Escriba serial…" disabled>`)}
     ${campo('Categoría', `<input id="cCat" class="ro" readonly>`)}
     ${campo('Unidad', `<input id="cUmb" class="ro" readonly placeholder="UMB">`)}
     ${campo('Stock disp.', `<input id="cDisp" class="ro" readonly placeholder="Stock">`)}
@@ -4899,8 +4902,80 @@ let AC_COD = null;
 function bindCaptura() {
   AC_COD = bindAC('cCod', null, cod => elegirGrupo(cod), { enter: buscarPorCodigo });
   bindAC('cDesc', (q, foco) => gruposDisponibles(foco && F.cap ? '' : q), cod => elegirGrupo(cod), { alFoco: true });
+
+  // Autocompletado para Marca / Modelo: escribir para filtrar o clic
+  bindAC('cMarca', (q, foco) => {
+    if (!F.grp) return [];
+    q = String(q || '').trim().toLowerCase();
+    const vars = itemsBuscables().filter(it => it.cod === F.grp);
+    const marcas = [...new Set(vars.map(it => `${it.marca || '—'} / ${it.modelo || '—'}`))];
+    return marcas.filter(m => !q || m.toLowerCase().includes(q)).map(m => {
+      const n = vars.filter(it => `${it.marca || '—'} / ${it.modelo || '—'}` === m).reduce((a, it) => a + dispTotalItem(it), 0);
+      return { val: m, html: `<b>${esc(m)}</b> <span class="disp" style="float:right;font-weight:700">Stock ${n}</span>` };
+    });
+  }, m => {
+    if ($('cMarca')) $('cMarca').value = m;
+    alCambiarMarca();
+    if ($('cSerial') && !$('cSerial').disabled) $('cSerial').focus();
+  }, { alFoco: true });
+
+  // Autocompletado para Serial: escribir para filtrar o clic
+  bindAC('cSerial', (q, foco) => {
+    if (!F.grp) return [];
+    q = String(q || '').trim().toLowerCase();
+    const curMarca = $('cMarca') ? $('cMarca').value : '';
+    let vars = itemsBuscables().filter(it => it.cod === F.grp && (!curMarca || `${it.marca || '—'} / ${it.modelo || '—'}` === curMarca));
+    if (!vars.length) vars = DB.catalogo.filter(it => it.cod === F.grp && (!curMarca || `${it.marca || '—'} / ${it.modelo || '—'}` === curMarca));
+    if (!vars.length) vars = itemsBuscables().filter(it => it.cod === F.grp);
+    return vars.filter(it => {
+      if (!q) return true;
+      const s = String(it.serial || '').toLowerCase();
+      const m = String(it.marca || '').toLowerCase();
+      const mod = String(it.modelo || '').toLowerCase();
+      return s.includes(q) || m.includes(q) || mod.includes(q);
+    }).map(it => {
+      const serTxt = tieneSerial(it.serial) ? it.serial : 'Sin serial';
+      return { val: it, html: `<b>${esc(serTxt)}</b> <small style="margin-left:6px">${esc(it.marca || '—')} / ${esc(it.modelo || '—')}</small> <span class="disp" style="float:right;font-weight:700">Stock ${dispTotalItem(it)}</span>` };
+    });
+  }, it => {
+    if ($('cSerial')) $('cSerial').value = tieneSerial(it.serial) ? it.serial : 'Sin serial';
+    alCambiarSerial(it.id);
+    if ($('cCant')) { $('cCant').focus(); $('cCant').select(); }
+  }, { alFoco: true });
+
   $('cCant').addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); salvarLinea(); } });
   $('cCod').addEventListener('input', () => { if (F.cap) limpiarCaptura(true); });
+
+  if ($('cMarca')) {
+    $('cMarca').addEventListener('change', () => {
+      const val = $('cMarca').value.trim().toLowerCase();
+      if (!val || !F.grp) return;
+      const vars = itemsBuscables().filter(it => it.cod === F.grp);
+      const marcas = [...new Set(vars.map(it => `${it.marca || '—'} / ${it.modelo || '—'}`))];
+      const match = marcas.find(m => m.toLowerCase().includes(val));
+      if (match) {
+        $('cMarca').value = match;
+        alCambiarMarca();
+      }
+    });
+  }
+
+  if ($('cSerial')) {
+    $('cSerial').addEventListener('change', () => {
+      const val = $('cSerial').value.trim().toUpperCase();
+      if (!val || !F.grp) return;
+      const curMarca = $('cMarca') ? $('cMarca').value : '';
+      let vars = itemsBuscables().filter(it => it.cod === F.grp && (!curMarca || `${it.marca || '—'} / ${it.modelo || '—'}` === curMarca));
+      if (!vars.length) vars = DB.catalogo.filter(it => it.cod === F.grp);
+      const match = vars.find(it => tieneSerial(it.serial) && it.serial.toUpperCase() === val)
+        || vars.find(it => tieneSerial(it.serial) && it.serial.toUpperCase().includes(val));
+      if (match) {
+        $('cSerial').value = match.serial;
+        alCambiarSerial(match.id);
+      }
+    });
+  }
+
   setTimeout(() => $('cCod') && $('cCod').focus(), 30);
 }
 function buscarPorCodigo() {
@@ -4920,43 +4995,79 @@ function elegirGrupo(cod, idPreferido) {
   if (!vars.length) return;
   F.grp = cod; const b = vars[0];
   $('cCod').value = cod; $('cDesc').value = b.desc; $('cCat').value = b.cat; $('cUmb').value = b.umb;
-  const marcas = [...new Set(vars.map(it => `${it.marca} / ${it.modelo}`))];
+  const marcas = [...new Set(vars.map(it => `${it.marca || '—'} / ${it.modelo || '—'}`))];
   const pref = idPreferido ? item(idPreferido) : null;
-  $('cMarca').innerHTML = marcas.map(m => { const n = vars.filter(it => `${it.marca} / ${it.modelo}` === m).reduce((a, it) => a + dispTotalItem(it), 0); return `<option value="${esc(m)}">${esc(m)} (${n} disp.)</option>`; }).join('');
-  $('cMarca').disabled = marcas.length < 1;
-  if (pref) $('cMarca').value = `${pref.marca} / ${pref.modelo}`;
+  const marcaElegida = pref ? `${pref.marca || '—'} / ${pref.modelo || '—'}` : (marcas[0] || '—');
+  if ($('cMarca')) {
+    $('cMarca').value = marcaElegida;
+    $('cMarca').disabled = false;
+  }
   alCambiarMarca(idPreferido);
 }
 function alCambiarMarca(idPreferido) {
-  const m = $('cMarca').value;
+  const m = $('cMarca') ? $('cMarca').value : '';
   let vars = itemsBuscables().filter(it => it.cod === F.grp && `${it.marca || '—'} / ${it.modelo || '—'}` === m);
   if (!vars.length) {
     vars = DB.catalogo.filter(it => it.cod === F.grp && `${it.marca || '—'} / ${it.modelo || '—'}` === m);
   }
-  $('cSerial').innerHTML = vars.map(it => `<option value="${it.id}">${esc(tieneSerial(it.serial) ? it.serial : 'Sin serial')}${tieneSerial(it.serial) ? '' : ` (${dispTotalItem(it)} disp.)`}</option>`).join('');
-  $('cSerial').disabled = vars.length <= 1 && !vars.some(it => tieneSerial(it.serial));
-  if (idPreferido) $('cSerial').value = idPreferido;
-  alCambiarSerial();
-}
-function alCambiarSerial() {
-  const it = item(Number($('cSerial').value)); if (!it) return;
-  F.cap = it;
-  const cond = $('cCond');
-  if (it.mod === 'CILINDRO') {
-    if (F.tipo === 'PRH' || F.tipo === 'ASI') cond.innerHTML = '<option>LLENO</option>';
-    else {
-      const e = exi(F.origen, it.id);
-      const opcs = [];
-      if (e.disp > 0) opcs.push('LLENO');
-      if (e.vacio > 0) opcs.push('VACÍO');
-      if (e.dan > 0 || F.tipo === 'TRF' || F.tipo === 'DAN') opcs.push('DAÑADO');
-      if (!opcs.length) opcs.push('LLENO', 'VACÍO', 'DAÑADO');
-      cond.innerHTML = opciones(opcs);
+  if (!vars.length) {
+    vars = itemsBuscables().filter(it => it.cod === F.grp);
+  }
+  const tieneSerials = vars.some(it => tieneSerial(it.serial));
+  if ($('cSerial')) {
+    if (tieneSerials) {
+      $('cSerial').disabled = false;
+      if (idPreferido) {
+        const pref = item(idPreferido);
+        $('cSerial').value = (pref && tieneSerial(pref.serial)) ? pref.serial : (vars[0].serial || 'Sin serial');
+      } else {
+        const primerConSerial = vars.find(it => tieneSerial(it.serial)) || vars[0];
+        $('cSerial').value = primerConSerial.serial || 'Sin serial';
+      }
+    } else {
+      $('cSerial').value = 'Sin serial';
+      $('cSerial').disabled = true;
     }
-  } else cond.innerHTML = opciones(it.mod === 'EPP' ? ['NUEVO', 'ÓPTIMO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']);
-  if (F.tipo === 'DAN') cond.value = 'DAÑADO';
+  }
+  alCambiarSerial(idPreferido || (vars[0] ? vars[0].id : null));
+}
+function alCambiarSerial(forcedId) {
+  let it = forcedId ? item(forcedId) : null;
+  if (!it && $('cSerial')) {
+    const sVal = $('cSerial').value.trim().toUpperCase();
+    const curMarca = $('cMarca') ? $('cMarca').value : '';
+    let vars = itemsBuscables().filter(x => x.cod === F.grp && (!curMarca || `${x.marca || '—'} / ${x.modelo || '—'}` === curMarca));
+    if (!vars.length) vars = DB.catalogo.filter(x => x.cod === F.grp && (!curMarca || `${x.marca || '—'} / ${x.modelo || '—'}` === curMarca));
+    if (!vars.length) vars = itemsBuscables().filter(x => x.cod === F.grp);
+    it = vars.find(x => tieneSerial(x.serial) && x.serial.toUpperCase() === sVal)
+      || vars.find(x => !tieneSerial(x.serial) && (sVal === 'SIN SERIAL' || sVal === '—' || !sVal))
+      || vars[0];
+  }
+  if (!it) return;
+  F.cap = it;
+  if ($('cSerial')) $('cSerial').value = tieneSerial(it.serial) ? it.serial : 'Sin serial';
+  const cond = $('cCond');
+  if (cond) {
+    if (it.mod === 'CILINDRO') {
+      if (F.tipo === 'PRH' || F.tipo === 'ASI') cond.innerHTML = '<option>LLENO</option>';
+      else {
+        const e = exi(F.origen, it.id);
+        const opcs = [];
+        if (e.disp > 0) opcs.push('LLENO');
+        if (e.vacio > 0) opcs.push('VACÍO');
+        if (e.dan > 0 || F.tipo === 'TRF' || F.tipo === 'DAN') opcs.push('DAÑADO');
+        if (!opcs.length) opcs.push('LLENO', 'VACÍO', 'DAÑADO');
+        cond.innerHTML = opciones(opcs);
+      }
+    } else cond.innerHTML = opciones(it.mod === 'EPP' ? ['NUEVO', 'ÓPTIMO', 'DAÑADO'] : ['ÓPTIMO', 'NUEVO', 'DAÑADO']);
+    if (F.tipo === 'DAN') cond.value = 'DAÑADO';
+  }
   const ser = tieneSerial(it.serial);
-  $('cCant').value = 1; $('cCant').readOnly = ser; $('cCant').title = ser ? 'Ítem con serial único: cantidad 1. Presione Enter o Salvar.' : '';
+  if ($('cCant')) {
+    $('cCant').value = 1;
+    $('cCant').readOnly = ser;
+    $('cCant').title = ser ? 'Ítem con serial único: cantidad 1. Presione Enter o Salvar.' : '';
+  }
   actualizarDispCaptura();
   setTimeout(() => { $('cCant').focus(); $('cCant').select(); }, 0);
 }
@@ -4972,12 +5083,12 @@ function actualizarDispCaptura() {
 }
 function limpiarCaptura(mantenerCod) {
   F.cap = null; F.grp = null; F.editandoLineaIdx = -1; F.sel = -1;
-  ['cDesc', 'cCat', 'cUmb', 'cDisp'].forEach(i => $(i).value = '');
-  $('cMarca').innerHTML = '<option value="">—</option>'; $('cMarca').disabled = true;
-  $('cSerial').innerHTML = '<option value="">—</option>'; $('cSerial').disabled = true;
-  if (!mantenerCod) $('cCod').value = '';
-  $('cCant').value = 1; $('cCant').readOnly = false; $('cCant').title = '';
-  $('cCond').innerHTML = '<option>ÓPTIMO</option><option>NUEVO</option><option>DAÑADO</option>';
+  ['cDesc', 'cCat', 'cUmb', 'cDisp', 'cMarca', 'cSerial'].forEach(i => $(i) && ($(i).value = ''));
+  if ($('cMarca')) $('cMarca').disabled = true;
+  if ($('cSerial')) $('cSerial').disabled = true;
+  if (!mantenerCod && $('cCod')) $('cCod').value = '';
+  if ($('cCant')) { $('cCant').value = 1; $('cCant').readOnly = false; $('cCant').title = ''; }
+  if ($('cCond')) $('cCond').innerHTML = '<option>ÓPTIMO</option><option>NUEVO</option><option>DAÑADO</option>';
   // botón Salvar permanece con texto Salvar
 }
 function cargarParaEditarLineaSol(i) {
@@ -5010,27 +5121,16 @@ function cargarParaEditarLineaSol(i) {
 
   // Marca / modelo
   const marcaMod = `${l.marca || it.marca || '—'} / ${l.modelo || it.modelo || '—'}`;
-  const vars = DB.catalogo.filter(x => x.cod === l.cod);
-  const marcasList = [...new Set(vars.map(x => `${x.marca || '—'} / ${x.modelo || '—'}`).concat([marcaMod]))];
   if ($('cMarca')) {
-    $('cMarca').innerHTML = marcasList.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
     $('cMarca').value = marcaMod;
-    $('cMarca').disabled = marcasList.length <= 1;
+    $('cMarca').disabled = false;
   }
 
   // Serial
   const serialVal = l.serial || it.serial || '';
   if ($('cSerial')) {
-    const curMarca = $('cMarca') ? $('cMarca').value : marcaMod;
-    const varsMarca = vars.filter(x => `${x.marca || '—'} / ${x.modelo || '—'}` === curMarca);
-    let serialList = varsMarca.map(x => ({ id: x.id, serial: x.serial }));
-    if (serialVal && !serialList.some(x => x.serial === serialVal)) {
-      serialList.unshift({ id: it.id || l.id, serial: serialVal });
-    }
-    if (!serialList.length) serialList = [{ id: it.id || l.id, serial: serialVal }];
-    $('cSerial').innerHTML = serialList.map(x => `<option value="${x.id}">${esc(tieneSerial(x.serial) ? x.serial : 'Sin serial')}</option>`).join('');
-    $('cSerial').value = it.id || l.id;
-    $('cSerial').disabled = serialList.length <= 1 && !serialList.some(x => tieneSerial(x.serial));
+    $('cSerial').value = tieneSerial(serialVal) ? serialVal : 'Sin serial';
+    $('cSerial').disabled = false;
   }
 
   // Condición
@@ -5517,6 +5617,8 @@ function cambioCatEntrada() {
     $('eMod').value = 'CILINDRO';
   } else if (cat === 'EPP') {
     $('eMod').value = 'EPP';
+  } else if (cat === 'Otros') {
+    $('eMod').value = 'MISCELANEO';
   } else {
     $('eMod').value = 'HERRAMIENTA';
   }
@@ -5529,8 +5631,10 @@ function cambioModEntrada() {
     $('eCat').value = 'Cilindros y gases';
   } else if (mod === 'EPP') {
     $('eCat').value = 'EPP';
+  } else if (mod === 'MISCELANEO') {
+    $('eCat').value = 'Otros';
   } else {
-    if ($('eCat').value === 'Cilindros y gases' || $('eCat').value === 'EPP') {
+    if ($('eCat').value === 'Cilindros y gases' || $('eCat').value === 'EPP' || $('eCat').value === 'Otros') {
       $('eCat').value = 'Herramientas manuales';
     }
   }
@@ -7077,7 +7181,7 @@ VISTAS.cVales = p => {
         ${campo('N° de Vale', `<input id="vVale" value="${esc(vale)}" placeholder="Ej. PRH-000001" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Almacén', `<select id="vAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
         ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
-        ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
+        ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación'], ['MISCELANEO', '📦 Misceláneos']], mod)}</select>`)}
         ${campo('Categoría', `<select id="vCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
         ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
         ${campo('Desde', `<input type="date" id="vDesde" value="${esc(desde)}" onchange="${recargar}">`)}
@@ -7200,7 +7304,7 @@ VISTAS.cValesDet = p => {
         ${campo('Código / Serial / Ítem', `<input id="vdItemIn" value="${esc(itemFiltro)}" placeholder="Código, serial..." style="max-width:140px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Almacén', `<select id="vdAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
         ${campo('Tipo de movimiento', `<select id="vdTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
-        ${campo('Módulo', `<select id="vdMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación']], mod)}</select>`)}
+        ${campo('Módulo', `<select id="vdMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación'], ['MISCELANEO', '📦 Misceláneos']], mod)}</select>`)}
         ${campo('Categoría', `<select id="vdCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(listaCategoriasVales, cat)}</select>`)}
         ${campo('Proyecto / Cuenta', `<select id="vdProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
         ${campo('Desde', `<input type="date" id="vdDesde" value="${esc(desde)}" onchange="${recargar}">`)}
@@ -8421,7 +8525,7 @@ function accionIni() {
     // Si se cambió la categoría en el selector, actualizarla en el catálogo
     if (catSel && it.cat !== catSel) {
       it.cat = catSel;
-      it.mod = (catSel === 'Cilindros y gases' ? 'CILINDRO' : (catSel === 'EPP' ? 'EPP' : 'HERRAMIENTA'));
+      it.mod = (catSel === 'Cilindros y gases' ? 'CILINDRO' : (catSel === 'EPP' ? 'EPP' : (catSel === 'Otros' ? 'MISCELANEO' : 'HERRAMIENTA')));
     }
 
     if (window.__iniEditMov) {
