@@ -1296,6 +1296,7 @@ function cargarDatos() {
         asegurarCategoriasOficiales();
         asegurarEstatusSolicitudes();
         if (typeof reconciliarStockAlmacen === 'function') reconciliarStockAlmacen('TODOS');
+        if (typeof asegurarMovimientosVales === 'function') asegurarMovimientosVales();
         guardarLocalSolo();
         return;
       }
@@ -1311,6 +1312,7 @@ function cargarDatos() {
   asegurarCategoriasOficiales();
   asegurarEstatusSolicitudes();
   if (typeof reconciliarStockAlmacen === 'function') reconciliarStockAlmacen('TODOS');
+  if (typeof asegurarMovimientosVales === 'function') asegurarMovimientosVales();
   guardarLocalSolo();
 }
 function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')) {
@@ -1373,6 +1375,52 @@ function exi(alm, id) {
 }
 /* Total físico bajo responsabilidad del almacén (no incluye bajas ni EPP entregado) */
 const totalExi = e => e.disp + e.prest + e.asig + e.dan + e.rep + e.ext + e.vacio + e.pend;
+
+function asegurarMovimientosVales() {
+  if (!DB || !Array.isArray(DB.vales) || !Array.isArray(DB.movs)) return;
+  let cambios = false;
+  DB.vales.forEach(v => {
+    // Si ya existen movimientos para este vale y almacén origen, no hacer nada
+    const tieneMovs = DB.movs.some(m => m.doc === v.num && m.origen === v.origen);
+    if (tieneMovs) return;
+
+    let destinoEst = 'DISPONIBLE';
+    if (v.tipo === 'ASI') destinoEst = 'ASIGNADO';
+    else if (v.tipo === 'PRH') destinoEst = 'EN PRÉSTAMO';
+    else if (v.tipo === 'TRF') destinoEst = 'EN TRÁNSITO';
+    else if (v.tipo === 'DEV') destinoEst = 'DISPONIBLE';
+
+    (v.lineas || []).forEach(l => {
+      const it = (l.id ? item(l.id) : null) || (l.cod ? DB.catalogo.find(i => i.cod === l.cod) : null) || {};
+      DB.seq = DB.seq || {};
+      DB.seq.mov = (DB.seq.mov || 0) + 1;
+      DB.movs.push({
+        n: DB.seq.mov,
+        fecha: v.fecha || nowISO(),
+        doc: v.num,
+        tipo: v.tipo,
+        id: l.id || it.id || 0,
+        cod: l.cod || it.cod || '',
+        desc: l.desc || it.desc || '',
+        serial: l.serial || it.serial || '—',
+        mod: l.mod || it.mod || 'HERRAMIENTA',
+        cant: Number(l.cant) || 1,
+        origen: v.origen,
+        destino: v.destino || v.origen,
+        estAnt: v.tipo === 'DEV' ? (v.tipoRef === 'PRH' ? 'EN PRÉSTAMO' : 'ASIGNADO') : 'DISPONIBLE',
+        estNue: destinoEst,
+        resp: v.resp ? (v.resp.nombre || v.resp) : '',
+        cedula: (v.resp && v.resp.cedula) ? v.resp.cedula : '',
+        obs: v.proyecto || v.obs || '',
+        usr: v.realizadoPor ? (v.realizadoPor.usuario || v.realizadoPor.nombre || 'SISTEMA') : 'SISTEMA'
+      });
+      cambios = true;
+    });
+  });
+  if (cambios) {
+    console.log('✅ Movimientos de vales sincronizados y asegurados.');
+  }
+}
 
 function reconciliarStockAlmacen(alm) {
   if (!alm || alm === 'TODOS' || alm === 'MAESTRO') {
@@ -1652,7 +1700,7 @@ function emitirValeDirecto(d) {
   }
 
   if (editando && oldNum) {
-    DB.movs = DB.movs.filter(m => m.doc !== oldNum);
+    DB.movs = DB.movs.filter(m => !(m.doc === oldNum && m.origen === d.origen));
   }
 
   if (!s) {
@@ -1684,7 +1732,7 @@ function emitirValeDirecto(d) {
       v.num = nuevoNumVale;
       v.tipo = s.tipo;
       s.vale = nuevoNumVale;
-      DB.movs = DB.movs.filter(m => m.doc !== oldNum && m.doc !== nuevoNumVale);
+      DB.movs = DB.movs.filter(m => !((m.doc === oldNum || m.doc === nuevoNumVale) && m.origen === s.origen));
     } else {
       v.tipo = s.tipo;
     }
@@ -6650,8 +6698,28 @@ VISTAS.dash = p => {
   ].join('');
   // Movimientos de los últimos 30 días por tipo (documentos)
   const desde = new Date(ahora().getTime() - 30 * 86400000).toISOString();
-  const docs = {}; DB.movs.filter(m => (m.origen === c || m.destino === c) && m.fecha >= desde && m.tipo !== 'INI' && (!mod || m.mod === mod))
-    .forEach(m => { docs[m.tipo] = docs[m.tipo] || new Set(); docs[m.tipo].add(m.doc); });
+  const docs = {};
+
+  // 1. Contar desde DB.vales (Vales emitidos en origen o transferencias recibidas en destino)
+  (DB.vales || []).filter(v => (v.origen === c || (v.tipo === 'TRF' && v.destino === c)) && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
+    .forEach(v => {
+      docs[v.tipo] = docs[v.tipo] || new Set();
+      docs[v.tipo].add(v.num);
+    });
+
+  // 2. Contar desde DB.movs (movimientos registrados)
+  (DB.movs || []).filter(m => (m.origen === c || m.destino === c) && (m.fecha || '') >= desde && m.tipo !== 'INI' && (!mod || m.mod === mod))
+    .forEach(m => {
+      docs[m.tipo] = docs[m.tipo] || new Set();
+      if (m.doc) docs[m.tipo].add(m.doc);
+    });
+
+  // 3. Contar desde DB.incid (incidencias de daño / extravío)
+  (DB.incid || []).filter(i => i.alm === c && (i.fecha || '') >= desde && (!mod || ((item(i.id) && item(i.id).mod === mod))))
+    .forEach(i => {
+      docs[i.tipo] = docs[i.tipo] || new Set();
+      if (i.valeRef) docs[i.tipo].add(i.valeRef);
+    });
   const tiposMov = ['PRH', 'ASI', 'TRF', 'ENT', 'DEV', 'DAN', 'EXT', 'PLZ'];
   const dona = gDonut([
     { l: 'Disponible', v: t.disp, c: COL.verde }, { l: 'Cilindros vacíos', v: t.vacio, c: COL.cian }, { l: 'En préstamo', v: t.prest, c: COL.ambar },
