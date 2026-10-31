@@ -4819,7 +4819,7 @@ function pintarFormulario() {
   }
   pintarLineas();
 }
-function valesConSaldo(alm) { return DB.vales.filter(v => (v.tipo === 'PRH' || v.tipo === 'ASI') && v.origen === alm && saldoVale(v) > 0).sort((a, b) => b.fecha.localeCompare(a.fecha)); }
+function valesConSaldo(alm) { return DB.vales.filter(v => (v.tipo === 'PRH' || v.tipo === 'ASI') && v.origen === alm && saldoVale(v) > 0).sort((a, b) => a.fecha.localeCompare(b.fecha) || (a.num || '').localeCompare(b.num || '')); }
 function leerCabecera() {
   const g = id => $(id) ? $(id).value : undefined;
   if (g('fDestino') !== undefined) F.destino = g('fDestino');
@@ -6236,7 +6236,7 @@ VISTAS.trfRec = p => {
     else if (f.est === 'RECHAZADAS' || f.est === 'RECHAZADA') rows = rows.filter(v => v.estatus === 'RECHAZADA');
     else rows = rows.filter(v => v.estatus === f.est);
   }
-  rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
+  rows.sort((a, b) => a.fecha.localeCompare(b.fecha) || (a.num || '').localeCompare(b.num || ''));
   const perm = puede('recibir', S.ctx);
   const recarga = `ir('trfRec',{f:$('frEst').value,desde:$('frDesde').value,hasta:$('frHasta').value})`;
   $('area').innerHTML = cab('Transferencias recibidas', `Transferencias enviadas a ${esc(almNombre(S.ctx))}. Tiene ${DB.config.plazoHoras} horas para aceptar o rechazar cada una; si no, el material regresa al almacén de origen.`, botonesExport('gRec', 'Transferencias recibidas ' + almNombre(S.ctx)))
@@ -6310,7 +6310,7 @@ VISTAS.trfEnv = p => {
   let rows = DB.vales.filter(v => v.tipo === 'TRF' && v.origen === S.ctx && fechaLocal(new Date(v.fecha)) >= f.desde && fechaLocal(new Date(v.fecha)) <= f.hasta);
   if (f.dest) rows = rows.filter(v => v.destino === f.dest);
   if (f.est !== 'TODAS') rows = rows.filter(v => v.estatus === f.est);
-  rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
+  rows.sort((a, b) => a.fecha.localeCompare(b.fecha) || (a.num || '').localeCompare(b.num || ''));
   const cuenta = e => rows.filter(v => v.estatus === e).length;
   const resumen = `Creadas: <b>${rows.length}</b> · Recibidas: <b>${cuenta('RECIBIDA')}</b> · Rechazadas: <b>${cuenta('RECHAZADA')}</b> · Vencidas: <b>${cuenta('VENCIDA')}</b> · Por aceptar: <b>${cuenta('PENDIENTE DE RECEPCIÓN')}</b>`;
   const recarga = `ir('trfEnv',{dest:$('feDest').value,est:$('feEst').value,desde:$('feDesde').value,hasta:$('feHasta').value})`;
@@ -6408,7 +6408,7 @@ VISTAS.aprobarPlz = () => {
     return;
   }
   DB.extSol = DB.extSol || [];
-  const pendientes = DB.extSol.filter(x => x.alm === S.ctx && x.estatus === 'PENDIENTE');
+  const pendientes = DB.extSol.filter(x => x.alm === S.ctx && x.estatus === 'PENDIENTE').sort((a, b) => (a.fecha || '').localeCompare(b.fecha || '') || (a.id || '').localeCompare(b.id || ''));
 
   const cols = [
     { t: 'N° Solicitud', k: 'id', f: r => `<b>${esc(r.id)}</b>` },
@@ -6831,7 +6831,7 @@ function vistaPrestamos(tit, sub, p) {
     });
   });
 
-  rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha) || a.respNom.localeCompare(b.respNom));
+  rows.sort((a, b) => a.v.fecha.localeCompare(b.v.fecha) || (a.v.num || '').localeCompare(b.v.num || '') || a.respNom.localeCompare(b.respNom));
 
   const cols = [
     { t: 'N° de vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
@@ -7380,7 +7380,7 @@ VISTAS.mRes = () => {
   const valBaja = bajas.reduce((a, m) => a + valorMov(m), 0);
   const sol = DB.solicitudes.filter(s => (!MF.alm || s.origen === MF.alm) && enRango(s.fecha, MF.desde, MF.hasta));
   const cs = e => sol.filter(s => s.estatus === e).length;
-  const pendTrf = DB.vales.filter(x => x.tipo === 'TRF' && x.estatus === 'PENDIENTE DE RECEPCIÓN' && (!MF.alm || x.origen === MF.alm || x.destino === MF.alm));
+  const pendTrf = DB.vales.filter(x => x.tipo === 'TRF' && x.estatus === 'PENDIENTE DE RECEPCIÓN' && (!MF.alm || x.origen === MF.alm || x.destino === MF.alm)).sort((a, b) => a.fecha.localeCompare(b.fecha) || (a.num || '').localeCompare(b.num || ''));
   const donaValor = gDonut([{ l: 'En almacén', v: v.almacen, c: COL.verde }, { l: 'Fuera (prestado + asignado)', v: v.fuera, c: COL.ambar }, { l: 'Dañado / en taller', v: v.dan, c: COL.rojo }, { l: 'Extraviado', v: v.ext, c: COL.morado }, { l: 'Pendiente de recepción', v: v.total - v.almacen - v.fuera - v.dan - v.ext, c: COL.gris }],
     usd(v.total), 'valor total', x => usd(x));
   const almsG = DB.almacenes.filter(a => !MF.alm || a.c === MF.alm);
