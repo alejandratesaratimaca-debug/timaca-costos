@@ -2960,6 +2960,69 @@ const fuenteProyectos = q => {
   return DB.proyectos.filter(p => p.activo !== false && (!nq || normTexto(p.nombre).includes(nq) || normTexto(p.cuenta).includes(nq))).slice(0, 50)
     .map(p => ({ val: p, html: `<span class="disp">${esc(p.cuenta)}</span><b>${esc(p.nombre)}</b><small>Cuenta auxiliar: ${esc(p.cuenta)}</small>` }));
 };
+function matchProyecto(v, q) {
+  if (!q) return true;
+  const qNorm = normTexto(String(q).trim());
+  if (!qNorm) return true;
+  const pNorm = normTexto(v.proyecto || '');
+  const cNorm = normTexto(v.cuenta || '');
+  if (pNorm.includes(qNorm) || cNorm.includes(qNorm)) return true;
+  if (String(q).includes('·')) {
+    const partes = String(q).split('·').map(s => normTexto(s.trim())).filter(Boolean);
+    if (partes.some(p => pNorm.includes(p) || cNorm.includes(p))) return true;
+  }
+  const found = (DB.proyectos || []).find(p => normTexto(p.cuenta) === qNorm || normTexto(p.nombre) === qNorm);
+  if (found) {
+    if (found.cuenta && cNorm.includes(normTexto(found.cuenta))) return true;
+    if (found.nombre && pNorm.includes(normTexto(found.nombre))) return true;
+  }
+  return false;
+}
+
+const fuenteProyectosFiltro = (q, foco) => {
+  const nq = normTexto(q || '');
+  const list = [];
+  const vistas = new Set();
+
+  if (!nq) {
+    list.push({
+      val: { cuenta: '', nombre: '' },
+      html: '<b>Todos los proyectos</b><small style="color:var(--texto-3)">Mostrar todos los proyectos / OTs</small>'
+    });
+  }
+
+  (DB.proyectos || []).filter(p => p.activo !== false).forEach(p => {
+    const cta = (p.cuenta || '').toUpperCase();
+    const nom = p.nombre || '';
+    if (!nq || normTexto(nom).includes(nq) || normTexto(cta).includes(nq)) {
+      vistas.add(cta);
+      vistas.add(normTexto(nom));
+      list.push({
+        val: p,
+        html: `<span class="disp" style="color:var(--azul);font-weight:700">${esc(p.cuenta)}</span><b>${esc(p.nombre)}</b>`
+      });
+    }
+  });
+
+  (DB.vales || []).forEach(v => {
+    if (!v.proyecto) return;
+    const cta = (v.cuenta || '').toUpperCase();
+    const nom = v.proyecto.trim();
+    if (cta && vistas.has(cta)) return;
+    if (vistas.has(normTexto(nom))) return;
+    if (!nq || normTexto(nom).includes(nq) || (cta && normTexto(cta).includes(nq))) {
+      vistas.add(normTexto(nom));
+      if (cta) vistas.add(cta);
+      list.push({
+        val: { cuenta: v.cuenta || '', nombre: nom },
+        html: `${v.cuenta ? `<span class="disp" style="color:var(--azul);font-weight:700">${esc(v.cuenta)}</span>` : ''}<b>${esc(nom)}</b>`
+      });
+    }
+  });
+
+  return list.slice(0, 50);
+};
+
 const datalistPersonal = () => '';
 
 /* ---------- Impresión ---------- */
@@ -6733,7 +6796,7 @@ function vistaPrestamos(tit, sub, p) {
   const hasta = p.hasta || '';
   const itemFiltro = (p.item || '').trim().toUpperCase();
 
-  let rows = [];
+  let allRows = [];
   (DB.vales || []).forEach(v => {
     // Filtrar por almacén / ubicación
     if (alm && alm !== 'TODOS') {
@@ -6762,12 +6825,6 @@ function vistaPrestamos(tit, sub, p) {
       if (!ciMatch && !nomMatch) return;
     }
 
-    // Proyecto
-    if (proy) {
-      const matchP = (v.proyecto || '').toUpperCase().includes(proy.toUpperCase());
-      const matchC = (v.cuenta || '').toUpperCase() === proy.toUpperCase();
-      if (!matchP && !matchC) return;
-    }
     // Cuenta auxiliar
     if (cuenta) {
       if (!(v.cuenta || '').toUpperCase().includes(cuenta.toUpperCase().trim())) return;
@@ -6810,7 +6867,7 @@ function vistaPrestamos(tit, sub, p) {
       const diasEnPoder = diasEntre(v.fecha, hoy());
       const diasAtraso = (v.tipo === 'PRH' && v.fechaDev && v.fechaDev < hoy() && saldo > 0) ? diasEntre(v.fechaDev, hoy()) : 0;
 
-      rows.push({
+      allRows.push({
         v,
         l,
         it,
@@ -6831,7 +6888,8 @@ function vistaPrestamos(tit, sub, p) {
     });
   });
 
-  rows.sort((a, b) => a.v.fecha.localeCompare(b.v.fecha) || (a.v.num || '').localeCompare(b.v.num || '') || a.respNom.localeCompare(b.respNom));
+  allRows.sort((a, b) => a.v.fecha.localeCompare(b.v.fecha) || (a.v.num || '').localeCompare(b.v.num || '') || a.respNom.localeCompare(b.respNom));
+  let rows = proy ? allRows.filter(r => matchProyecto(r.v, proy)) : allRows.slice();
 
   const cols = [
     { t: 'N° de vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
@@ -6861,7 +6919,10 @@ function vistaPrestamos(tit, sub, p) {
 
   const listaCategoriasPrestamos = [...new Set((DB.catalogo || []).map(i => i.cat).concat(CATEGORIAS_OFICIALES).filter(Boolean))].sort();
 
-  const recargar = `ir('cPrest',{tipo:$('pTipo').value,est:$('pEst').value,alm:$('pAlm').value,ci:$('pCi').value,cat:$('pCat').value,proy:$('pProy').value,cuenta:$('pCuenta').value,desde:$('pDesde').value,hasta:$('pHasta').value})`;
+  const proyObj = (DB.proyectos || []).find(x => (x.cuenta && x.cuenta.toUpperCase() === (proy || '').toUpperCase()) || (x.nombre && x.nombre.toUpperCase() === (proy || '').toUpperCase()));
+  const proyTexto = proyObj ? `${proyObj.cuenta} · ${proyObj.nombre}` : (proy || '');
+
+  const recargar = `ir('${id}',{tipo:$('pTipo').value,est:$('pEst').value,alm:$('pAlm').value,ci:$('pCi').value,cat:$('pCat').value,proy:$('pProy').value,cuenta:$('pCuenta').value,desde:$('pDesde').value,hasta:$('pHasta').value})`;
   const hayFiltros = Boolean(tipo || (estado && estado !== 'ABIERTOS') || (alm && alm !== 'TODOS' && alm !== S.ctx) || ciFiltro || cat || proy || cuenta || desde || hasta);
 
   $('area').innerHTML = cab(tit, sub, botonesExport('gPr', tit + ' ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm))))
@@ -6885,28 +6946,70 @@ function vistaPrestamos(tit, sub, p) {
         </select>`)}
         ${campo('Persona / Cédula', `<input id="pCi" value="${esc(ciFiltro || resp)}" placeholder="Cédula o nombre..." style="max-width:140px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Categoría', `<select id="pCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(listaCategoriasPrestamos, cat)}</select>`)}
-        ${campo('Proyecto', `<select id="pProy" onchange="${recargar}" style="max-width:180px">
-          <option value="">Todos los proyectos</option>
-          ${opciones(DB.proyectos.map(pr => [pr.cuenta, `${pr.cuenta} · ${(pr.nombre.length > 25 ? pr.nombre.slice(0, 25) + '…' : pr.nombre)}`]), proy)}
-        </select>`)}
+        ${campo('Proyecto', `<input id="pProy" value="${esc(proyTexto)}" placeholder="Escriba proyecto o cuenta…" style="max-width:210px" autocomplete="off" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Cuenta aux.', `<input id="pCuenta" value="${esc(cuenta)}" placeholder="Ej. 10.01.05" style="max-width:110px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Desde', `<input type="date" id="pDesde" value="${esc(desde)}" onchange="${recargar}">`)}
         ${campo('Hasta', `<input type="date" id="pHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
-        ${hayFiltros ? `<button class="btn btn-claro" onclick="ir('cPrest')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${hayFiltros ? `<button class="btn btn-claro" onclick="ir('${id}')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
         ${buscador('gPr', 'Buscar responsable, cédula, código, serial, descripción, categoría, vale…')}
       </div>`
     + grid('gPr', cols, rows, { pag: 25, onSel: r => tiraPr(r) })
     + `<div class="sel-strip"><span class="lbl">Renglón seleccionado</span><span class="box" id="tpNum"></span><span class="box" id="tpInfo" style="flex:1"></span></div>
     <div class="barra-btn">
-      <button class="btn-sip" id="pVer" disabled onclick="ir('doc',{num:selDe('gPr').v.num,back:'cPrest'})">Visualizar vale</button>
+      <button class="btn-sip" id="pVer" disabled onclick="ir('doc',{num:selDe('gPr').v.num,back:'${id}'})">Visualizar vale</button>
       <button class="btn-sip" id="pImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gPr').v.num)">Imprimir vale</button>
       <button class="btn-sip" id="pDev" disabled onclick="ir('dev',{vale:selDe('gPr').v.num})">Registrar devolución</button>
       <button class="btn-sip" id="pPlz" disabled onclick="ir('plz',{vale:selDe('gPr').v.num})">Extender plazo</button>
       <button class="btn-sip" id="pKdx" disabled onclick="ir('cKardex',{q:selDe('gPr').l.serial || selDe('gPr').l.cod || selDe('gPr').it.cod})">Ver Kardex del ítem</button>
     </div>`;
+
+  if (GR['gPr']) {
+    GR['gPr'].baseRows = allRows;
+  }
+
+  if ($('pProy')) {
+    bindAC('pProy', fuenteProyectosFiltro, p => {
+      const val = p.cuenta ? (p.nombre ? `${p.cuenta} · ${p.nombre}` : p.cuenta) : (p.nombre || '');
+      $('pProy').value = val;
+      if (GR['gPr'] && GR['gPr'].baseRows) {
+        GR['gPr'].rows = val ? GR['gPr'].baseRows.filter(r => matchProyecto(r.v, val)) : GR['gPr'].baseRows.slice();
+        GR['gPr'].pag = 0;
+        rGrid('gPr');
+      }
+      ir(id, {
+        tipo: $('pTipo').value,
+        est: $('pEst').value,
+        alm: $('pAlm').value,
+        ci: $('pCi').value,
+        cat: $('pCat').value,
+        proy: val,
+        cuenta: $('pCuenta').value,
+        desde: $('pDesde').value,
+        hasta: $('pHasta').value
+      });
+    }, { alFoco: true });
+
+    $('pProy').addEventListener('input', () => {
+      const q = $('pProy').value.trim();
+      if (GR['gPr'] && GR['gPr'].baseRows) {
+        GR['gPr'].rows = q ? GR['gPr'].baseRows.filter(r => matchProyecto(r.v, q)) : GR['gPr'].baseRows.slice();
+        GR['gPr'].pag = 0;
+        rGrid('gPr');
+      }
+    });
+  }
 }
 function tiraPr(r) {
-  if (!r) return;
+  if (!r) {
+    if ($('tpNum')) $('tpNum').textContent = '';
+    if ($('tpInfo')) $('tpInfo').textContent = '';
+    if ($('pVer')) $('pVer').disabled = true;
+    if ($('pImp')) $('pImp').disabled = true;
+    if ($('pDev')) $('pDev').disabled = true;
+    if ($('pPlz')) $('pPlz').disabled = true;
+    if ($('pKdx')) $('pKdx').disabled = true;
+    return;
+  }
   const v = r.v;
   $('tpNum').textContent = v.num;
   const itTxt = `${r.respNom} (${r.respCI}) · ${r.l.cod || r.it.cod || ''} · ${r.it.desc || r.l.desc || ''}${r.l.serial ? ' (SN: ' + r.l.serial + ')' : ''} · Saldo: ${r.saldo} · Ubic: ${r.ubicacion}`;
