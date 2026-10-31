@@ -1242,6 +1242,26 @@ function asegurarEstatusSolicitudes() {
     if (s.estatus === 'APROBADO') s.estatus = 'APROBADA';
     else if (s.estatus === 'ANULADO') s.estatus = 'ANULADA';
     else if (s.estatus === 'FINALIZADO' || s.estatus === 'NO FINALIZADO') s.estatus = 'PENDIENTE DE APROBACIÓN';
+
+    if (s.vale && s.tipo) {
+      const v = (DB.vales || []).find(x => x.num === s.vale || x.solicitud === s.num);
+      if (v) {
+        if (v.tipo !== s.tipo) v.tipo = s.tipo;
+        if (s.vale.startsWith('PRH-') && s.tipo === 'ASI') {
+          const oldNum = v.num;
+          const newNum = s.num ? s.num.replace('SOL-', 'ASI-') : s.vale.replace('PRH-', 'ASI-');
+          v.num = newNum;
+          s.vale = newNum;
+          (DB.movs || []).forEach(m => {
+            if (m.doc === oldNum) {
+              m.doc = newNum;
+              m.tipo = 'ASI';
+              m.estNue = 'ASIGNADO';
+            }
+          });
+        }
+      }
+    }
   });
 }
 
@@ -1586,6 +1606,8 @@ function emitirValeDirecto(d) {
   let s = d.num ? solDe(d.num, d.origen) : null;
   let v = (s && s.vale) ? valeDe(s.vale, d.origen) : (d.valeId ? valeDe(d.valeId, d.origen) : null);
   const editando = !!(v || (s && s.vale));
+  const oldNum = v ? v.num : (s ? s.vale : null);
+  const oldTipo = v ? v.tipo : (s ? s.tipo : null);
 
   // 1. Si estamos editando un vale existente, revertir temporalmente el inventario anterior para validar
   if (editando && v) {
@@ -1626,8 +1648,8 @@ function emitirValeDirecto(d) {
     throw err;
   }
 
-  if (editando && v) {
-    DB.movs = DB.movs.filter(m => m.doc !== v.num);
+  if (editando && oldNum) {
+    DB.movs = DB.movs.filter(m => m.doc !== oldNum);
   }
 
   if (!s) {
@@ -1648,8 +1670,23 @@ function emitirValeDirecto(d) {
   const lineas = s.lineas.map(l => Object.assign({}, l, { dev: 0 }));
 
   if (editando && v) {
+    if (oldTipo && s.tipo !== oldTipo) {
+      if (DB.corrAlm && DB.corrAlm[s.origen] && DB.corrAlm[s.origen][oldTipo]) {
+        const lastOldNum = `${oldTipo}-${String(DB.corrAlm[s.origen][oldTipo]).padStart(7, '0')}`;
+        if (oldNum === lastOldNum) {
+          DB.corrAlm[s.origen][oldTipo] = Math.max(0, DB.corrAlm[s.origen][oldTipo] - 1);
+        }
+      }
+      const nuevoNumVale = sigNum(s.tipo, s.origen);
+      v.num = nuevoNumVale;
+      v.tipo = s.tipo;
+      s.vale = nuevoNumVale;
+      DB.movs = DB.movs.filter(m => m.doc !== oldNum && m.doc !== nuevoNumVale);
+    } else {
+      v.tipo = s.tipo;
+    }
     Object.assign(v, {
-      origen: s.origen, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, obs: s.obs,
+      tipo: s.tipo, origen: s.origen, destino: s.destino, resp: s.resp, sup: s.sup, proyecto: s.proyecto, cuenta: s.cuenta, obs: s.obs,
       fechaReq: s.fechaReq, fechaDev: s.fechaDev, fechaAsig: s.fechaAsig, solicitud: s.num, lineas
     });
   } else {
@@ -5915,7 +5952,7 @@ VISTAS.sol = p => {
     else if (filtro === 'ANULADA') rows = rows.filter(s => s.estatus === 'ANULADO' || s.estatus === 'ANULADA');
     else rows = rows.filter(s => s.estatus === filtro);
   }
-  rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
+  rows.sort((a, b) => a.fecha.localeCompare(b.fecha) || (a.num || '').localeCompare(b.num || ''));
   const cols = [
     { t: 'Número', k: 'num', f: r => {
       const docNum = r.vale || r.num;
@@ -6001,7 +6038,7 @@ VISTAS.aprobar = p => {
   if (filtro === 'PENDIENTE DE APROBACIÓN') rows = rows.filter(s => s.estatus !== 'APROBADO' && s.estatus !== 'APROBADA' && s.estatus !== 'ANULADO' && s.estatus !== 'ANULADA');
   else if (filtro === 'APROBADA') rows = rows.filter(s => s.estatus === 'APROBADO' || s.estatus === 'APROBADA');
   else if (filtro === 'ANULADA') rows = rows.filter(s => s.estatus === 'ANULADO' || s.estatus === 'ANULADA');
-  rows.sort((a, b) => (b.finalizadaEn || b.fecha).localeCompare(a.finalizadaEn || a.fecha));
+  rows.sort((a, b) => (a.finalizadaEn || a.fecha).localeCompare(b.finalizadaEn || b.fecha) || (a.num || '').localeCompare(b.num || ''));
   const cols = [
     { t: 'Número', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
     { t: 'Fecha', v: r => fFH(r.finalizadaEn || r.fecha), s: r => r.finalizadaEn || r.fecha },
