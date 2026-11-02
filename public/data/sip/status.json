@@ -1,10 +1,1 @@
-{
-  "sipConnected": true,
-  "sipHost": "192.168.10.147",
-  "sipUser": "drivero",
-  "lastSync": "2026-10-28T17:40:40.028883",
-  "totalConsumos": 5315,
-  "totalCompras": 2106,
-  "totalProyectos": 1579,
-  "totalReclasificaciones": 36685
-}
+{"sipConnected":true,"sipHost":"192.168.11.168:8087 (Nuevo SIP NÚCLEO)","sipUser":"drivero","lastSync":"2026-11-02T14:01:34.653Z","totalConsumos":3021,"totalCompras":2255,"totalProyectos":1579,"totalReclasificaciones":36685}

@@ -24,7 +24,7 @@ app.get('/api/status', (req, res) => {
   const store = db.loadStore();
   res.json({
     sipConnected: true,
-    sipHost: '192.168.10.147',
+    sipHost: '192.168.11.168:8087 (Nuevo SIP NÚCLEO)',
     sipUser: 'drivero',
     lastSync: store.lastSync,
     totalConsumos: store.consumos.length,

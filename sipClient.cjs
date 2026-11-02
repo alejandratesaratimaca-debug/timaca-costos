@@ -1,18 +1,34 @@
 const http = require('http');
 
-const SIP_HOST = 'sip.timaca.com';
-const SIP_IP = '192.168.10.147';
+/**
+ * Cliente Oficial de Integración SIGMA ➔ Nuevo SIP (NÚCLEO)
+ * Grupo TIMACA - Gerencia de Costos
+ * Elimina la dependencia de archivos Excel y conecta en tiempo real vía REST API.
+ */
+
+const SIP_HOST = '192.168.11.168';
+const SIP_PORT = 8087;
 const SIP_USER = 'drivero';
 const SIP_PASS = '070717';
 
 let cachedCookie = null;
 
-function requestSip(path, payload = null) {
+function toISODate(dStr) {
+  if (!dStr) return '';
+  if (dStr.includes('-')) return dStr;
+  const parts = dStr.split('/');
+  if (parts.length === 3) {
+    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+  }
+  return dStr;
+}
+
+function request(path, method = 'GET', payload = null) {
   return new Promise((resolve, reject) => {
     const dataString = payload ? JSON.stringify(payload) : null;
     const headers = {
-      'Host': SIP_HOST,
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) TIMACA Costos System',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) TIMACA SIGMA Realtime Client',
+      'Accept': 'application/json'
     };
 
     if (payload) {
@@ -24,33 +40,31 @@ function requestSip(path, payload = null) {
     }
 
     const options = {
-      hostname: SIP_IP,
-      port: 80,
+      hostname: SIP_HOST,
+      port: SIP_PORT,
       path: path,
-      method: payload ? 'POST' : 'GET',
+      method: method,
       headers: headers,
-      timeout: 30000
+      timeout: 35000
     };
 
     const req = http.request(options, (res) => {
-      // Capture set-cookie
       const setCookies = res.headers['set-cookie'];
       if (setCookies && setCookies.length > 0) {
         cachedCookie = setCookies.map(c => c.split(';')[0]).join('; ');
       }
 
       let body = '';
-      res.on('data', (chunk) => body += chunk);
+      res.on('data', chunk => body += chunk);
       res.on('end', () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           try {
-            const parsed = JSON.parse(body);
-            resolve(parsed.d !== undefined ? parsed.d : parsed);
+            resolve(JSON.parse(body));
           } catch (e) {
             resolve(body);
           }
         } else {
-          reject(new Error(`SIP Error [${res.statusCode}]: ${body.slice(0, 300)}`));
+          reject(new Error(`Nuevo SIP Error [${res.statusCode}]: ${body.slice(0, 300)}`));
         }
       });
     });
@@ -58,79 +72,130 @@ function requestSip(path, payload = null) {
     req.on('error', reject);
     req.on('timeout', () => {
       req.destroy();
-      reject(new Error('SIP Timeout after 30s'));
+      reject(new Error('Nuevo SIP Timeout (35s)'));
     });
 
-    if (dataString) {
-      req.write(dataString);
-    }
+    if (dataString) req.write(dataString);
     req.end();
   });
 }
 
 async function login() {
-  console.log(`[SIP] Iniciando sesión para usuario: ${SIP_USER}...`);
-  // 1. Validar
-  const resVal = await requestSip('/catalogo/Materiales.aspx/Validar', {
-    usuario: SIP_USER,
-    passwd: SIP_PASS
+  console.log(`[Nuevo SIP API] Autenticando en ${SIP_HOST}:${SIP_PORT} como: ${SIP_USER}...`);
+  const resLogin = await request('/api/acceso/entrar', 'POST', {
+    login: SIP_USER,
+    clave: SIP_PASS
   });
-  
-  if (!resVal || (Array.isArray(resVal) && resVal[0]?.estatus !== 'OK')) {
-    throw new Error('Credenciales inválidas en SIP');
+
+  if (!resLogin.ok) {
+    throw new Error(`Credenciales o acceso rechazado en Nuevo SIP: ${resLogin.mensaje}`);
   }
 
-  // 2. Actualizar Session
-  await requestSip('/catalogo/Materiales.aspx/actualizasession', { usuario: SIP_USER });
-  console.log('[SIP] Sesión activa exitosamente.');
+  // Configurar Almacén Central ALMCE
+  await request('/api/acceso/almacen/ALMCE', 'PUT');
+  console.log(`[Nuevo SIP API] Sesión activa exitosamente: ${resLogin.sesion.nombre}`);
   return true;
 }
 
-async function getConsumos(inicio = '01/10/2026', hasta = '31/10/2026') {
+async function getConsumos(inicio = '01/10/2026', hasta = '31/10/2026', almacen = 'ALMCE') {
   await login();
-  console.log(`[SIP] Obteniendo consumos del ${inicio} al ${hasta}...`);
-  const payload = {
-    inicio: inicio,
-    hasta: hasta,
-    almacen: '%',
-    codigo: '%',
-    descripcion: '%',
-    cuenta: '%'
-  };
-  const data = await requestSip('/Consultas/ConsultasSer.aspx/GetConsultaSalidas', payload);
-  return Array.isArray(data) ? data : [];
+  const desde = toISODate(inicio);
+  const al = toISODate(hasta);
+  console.log(`[Nuevo SIP API] Obteniendo consumos / salidas de ${desde} al ${al} (Almacén: ${almacen})...`);
+
+  const rawData = await request(`/api/movimientos/salidas?desde=${desde}&hasta=${al}&almacen=${encodeURIComponent(almacen)}`);
+  if (!Array.isArray(rawData)) return [];
+
+  return rawData.map(r => ({
+    almacen: r.almacen || almacen,
+    numero: r.numero || '',
+    fecha: r.fecha || '',
+    codigo: r.material || r.codigo || '',
+    material: r.material || r.codigo || '',
+    descripcion: r.descripcion || '',
+    cantidad: typeof r.cantidad === 'number' ? r.cantidad : parseFloat(r.cantidad || 0),
+    unidad: r.cuentaGasto || r.ctagasto || r.unidad || 'UND',
+    ctaauxi: r.cuentaAuxiliar || r.ctaauxi || '',
+    cuentaAuxiliar: r.cuentaAuxiliar || r.ctaauxi || '',
+    ceco: r.centroCosto || r.ceco || '',
+    centroCosto: r.centroCosto || r.ceco || '',
+    costoDolar: typeof r.costoDolar === 'number' ? r.costoDolar : parseFloat(r.costoDolar || 0),
+    costoprom: r.costoPromedio || r.costoprom || 0,
+    solicitante: r.solicitante || '',
+    motivo: r.motivo || '',
+    pedido: r.pedido || '',
+    estatus: r.estatus || 'FINALIZADO',
+    descripcionCuenta: r.descripcionCuenta || ''
+  }));
 }
 
 async function getCompras(inicio = '01/10/2026', hasta = '31/10/2026') {
   await login();
-  console.log(`[SIP] Obteniendo compras del ${inicio} al ${hasta}...`);
-  const payload = {
-    inicio: inicio,
-    hasta: hasta,
-    almacen: '%',
-    comprador: '%',
-    cuenta: '%',
-    OC: '%'
-  };
-  const data = await requestSip('/consultas/ConsultasSer.aspx/GetConsultaCompras', payload);
-  return Array.isArray(data) ? data : [];
+  const desde = toISODate(inicio);
+  const al = toISODate(hasta);
+  console.log(`[Nuevo SIP API] Obteniendo compras y órdenes de ${desde} al ${al}...`);
+
+  const rawData = await request(`/api/ordenes/renglones?desde=${desde}&hasta=${al}`);
+  if (!Array.isArray(rawData)) return [];
+
+  return rawData.map(r => ({
+    SC: r.solicitud || r.SC || '',
+    solicitud: r.solicitud || r.SC || '',
+    OC: r.numero || r.OC || '',
+    numero: r.numero || r.OC || '',
+    fecha: r.fecha || '',
+    posicion: r.posicion || 1,
+    renglon: (r.renglon || '1').toString(),
+    codigo: r.material || r.codigo || '',
+    material: r.material || r.codigo || '',
+    descripcion: r.descripcion || '',
+    cantidad: typeof r.cantidad === 'number' ? r.cantidad : parseFloat(r.cantidad || 0),
+    cantOC: typeof r.cantidad === 'number' ? r.cantidad : parseFloat(r.cantidad || 0),
+    precioBs: typeof r.precio === 'number' ? r.precio : parseFloat(r.precio || 0),
+    precio: typeof r.precio === 'number' ? r.precio : parseFloat(r.precio || 0),
+    TotalD: typeof r.total === 'number' ? r.total : parseFloat(r.total || 0),
+    total: typeof r.total === 'number' ? r.total : parseFloat(r.total || 0),
+    proveedor: r.nombreProveedor || r.proveedor || '',
+    codigoProveedor: r.proveedor || '',
+    comprador: r.comprador || '',
+    condicion: r.condicion || '',
+    estatus: r.siglas || '',
+    estatusOC: r.siglas || '',
+    siglas: r.siglas || '',
+    descripcionCuenta: r.descripcionCuenta || '',
+    cuenta: r.descripcionCuenta || '',
+    tipo: r.tipo || 'NACIONAL'
+  }));
 }
 
 async function getServicios(inicio = '01/10/2026', hasta = '31/10/2026') {
+  const compras = await getCompras(inicio, hasta);
+  return compras.filter(c => {
+    const desc = (c.descripcion || '').toUpperCase();
+    const cod = (c.codigo || '').toUpperCase();
+    return cod.startsWith('SE') || desc.includes('SERVICIO') || desc.includes('ALQUILER') || desc.includes('MANTENIMIENTO');
+  });
+}
+
+async function getDevoluciones(inicio = '01/10/2026', hasta = '31/10/2026', almacen = 'ALMCE') {
   await login();
-  console.log(`[SIP] Obteniendo servicios ejecutados del ${inicio} al ${hasta}...`);
-  const payload = {
-    fi: inicio,
-    ff: hasta,
-    descripcion: '%'
+  const desde = toISODate(inicio);
+  const al = toISODate(hasta);
+  console.log(`[Nuevo SIP API] Obteniendo devoluciones de ${desde} al ${al}...`);
+
+  const rawMat = await request(`/api/devoluciones-consulta/material?desde=${desde}&hasta=${al}&almacen=${encodeURIComponent(almacen)}`);
+  const rawOC = await request(`/api/devoluciones-consulta/orden-compra?desde=${desde}&hasta=${al}&almacen=${encodeURIComponent(almacen)}`);
+
+  return {
+    material: Array.isArray(rawMat) ? rawMat : [],
+    ordenCompra: Array.isArray(rawOC) ? rawOC : []
   };
-  const data = await requestSip('/servicios/ServiciosSer.aspx/GetConsServicios', payload);
-  return Array.isArray(data) ? data : [];
 }
 
 module.exports = {
   login,
   getConsumos,
   getCompras,
-  getServicios
+  getServicios,
+  getDevoluciones
 };

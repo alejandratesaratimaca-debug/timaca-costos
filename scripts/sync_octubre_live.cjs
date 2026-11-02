@@ -103,7 +103,7 @@ async function runSync() {
   const hasta = '31/10/2026';
 
   // 1. Fetch live data from SIP
-  console.log(`\n1. Conectando a SIP (192.168.10.147)...`);
+  console.log(`\n1. Conectando a Nuevo SIP (192.168.11.168:8087)...`);
   const rawConsumos = await sipClient.getConsumos(inicio, hasta);
   console.log(`[SIP] Consumos obtenidos: ${rawConsumos.length}`);
 
@@ -477,13 +477,13 @@ async function runSync() {
   const nowIso = new Date().toISOString();
   const statusPayload = {
     sipConnected: true,
-    sipHost: '192.168.10.147',
+    sipHost: '192.168.11.168:8087 (Nuevo SIP NÚCLEO)',
     sipUser: 'drivero',
     lastSync: nowIso,
     totalConsumos: rawConsumos.length,
     totalCompras: rawCompras.length,
     totalProyectos: proyectos.length,
-    totalReclasificaciones: Object.keys(reclasificaciones).length
+    totalReclasificaciones: reclasificacionesRaw.length
   };
   fs.writeFileSync(statusFile, JSON.stringify(statusPayload), 'utf8');
   console.log(`[OK] Guardado: ${statusFile}`);
@@ -555,7 +555,7 @@ async function runSync() {
     granTotal: Math.round(granTotal * 100) / 100,
     proyectos: matrizProyectos
   };
-  fs.writeFileSync(matrizFile, JSON.stringify(matrizPayload), 'utf8');
+  fs.writeFileSync(matrizFile, JSON.stringify(matrizPayload, null, 2), 'utf8');
   console.log(`[OK] Guardado: ${matrizFile}`);
 
   // 11. Specifically inspect Pellas (TTE-C-0706)
