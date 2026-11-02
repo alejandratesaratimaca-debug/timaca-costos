@@ -4785,6 +4785,42 @@ function draftKeyTrf(ctx) {
   return 'TIMACA_DRAFT_TRF_' + (ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL'));
 }
 
+function limpiarBorradorYFormulario(tipo, alm) {
+  const ctx = alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  const listaAlm = ['CENTRAL', 'FABRICACION', 'TALADRO', 'MORICHAL', 'PELLAS', ctx, (typeof F !== 'undefined' && F && F.origen), (typeof F !== 'undefined' && F && F.destino), (typeof S !== 'undefined' && S && S.ctx)].filter(Boolean);
+  const unicos = [...new Set(listaAlm)];
+  if (tipo === 'PRH' || tipo === 'ASI' || tipo === 'SOL') {
+    unicos.forEach(c => {
+      if (typeof BORRADORES !== 'undefined' && BORRADORES.sol) delete BORRADORES.sol[c];
+      try { localStorage.removeItem(draftKeySol(c)); } catch(e) {}
+    });
+    if (typeof F !== 'undefined' && F) {
+      F.hecho = true; F.lineas = []; F.resp = null; F.obs = ''; F.proyecto = ''; F.sup = ''; F.cap = null; F.grp = null; F._capDraft = null;
+    }
+    F = nuevoF(tipo === 'ASI' ? 'ASI' : 'PRH');
+    F.hecho = true;
+  } else if (tipo === 'TRF') {
+    unicos.forEach(c => {
+      if (typeof BORRADORES !== 'undefined' && BORRADORES.trf) delete BORRADORES.trf[c];
+      try { localStorage.removeItem(draftKeyTrf(c)); } catch(e) {}
+    });
+    if (typeof F !== 'undefined' && F) {
+      F.hecho = true; F.lineas = []; F.resp = null; F.obs = ''; F.proyecto = ''; F.sup = ''; F.cap = null; F.grp = null; F._capDraft = null;
+    }
+    F = nuevoF('TRF');
+    F.hecho = true;
+  } else if (tipo === 'ENT') {
+    unicos.forEach(c => {
+      if (typeof BORRADORES !== 'undefined' && BORRADORES.ent) delete BORRADORES.ent[c];
+      try { localStorage.removeItem(typeof draftKeyEnt === 'function' ? draftKeyEnt(c) : ('TIMACA_DRAFT_ENT_' + c)); } catch(e) {}
+    });
+    if (typeof E !== 'undefined' && E) {
+      E.hecho = true; E.lineas = []; E.obs = ''; E.base = null; E._capDraft = null;
+    }
+    E = { lineas: [], obs: '', sel: -1, editIdx: -1, hecho: true, base: null };
+  }
+}
+
 function tieneBorradorSol(ctx) {
   ctx = ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
   const mem = BORRADORES.sol[ctx];
@@ -4869,10 +4905,10 @@ function guardarBorradorSol() {
 
 function descartarBorradorSol() {
   if (!confirm('¿Desea descartar y limpiar el borrador de esta solicitud?')) return;
+  const tipoActual = (F && F.tipo === 'ASI') ? 'ASI' : 'PRH';
   const ctx = (F && F.origen) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
-  delete BORRADORES.sol[ctx];
-  try { localStorage.removeItem(draftKeySol(ctx)); } catch(e) {}
-  F = nuevoF('ASI');
+  limpiarBorradorYFormulario(tipoActual, ctx);
+  F.hecho = null;
   toast('Borrador descartado.', 'info');
   refrescar();
 }
@@ -4921,9 +4957,8 @@ function guardarBorradorTrf() {
 function descartarBorradorTrf() {
   if (!confirm('¿Desea descartar y limpiar el borrador de esta transferencia?')) return;
   const ctx = (F && F.origen) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
-  delete BORRADORES.trf[ctx];
-  try { localStorage.removeItem(draftKeyTrf(ctx)); } catch(e) {}
-  F = nuevoF('TRF');
+  limpiarBorradorYFormulario('TRF', ctx);
+  F.hecho = null;
   toast('Borrador de transferencia descartado.', 'info');
   refrescar();
 }
@@ -5004,9 +5039,23 @@ VISTAS.solNueva = p => {
         if (dStr) draft = JSON.parse(dStr);
       } catch(e) {}
     }
+    if (draft && draft.lineas && draft.lineas.length > 0) {
+      const yaEmitido = (DB.vales || []).some(v =>
+        (v.origen === ctx || v.origen === draft.origen) &&
+        v.tipo === draft.tipo &&
+        v.resp && draft.resp && normTexto(v.resp.nombre) === normTexto(draft.resp.nombre) &&
+        Array.isArray(v.lineas) && v.lineas.length === draft.lineas.length &&
+        v.lineas.every((l, idx) => l.cod === draft.lineas[idx]?.cod && Number(l.cant) === Number(draft.lineas[idx]?.cant))
+      );
+      if (yaEmitido) {
+        limpiarBorradorYFormulario(draft.tipo || 'PRH', ctx);
+        draft = null;
+      }
+    }
     if (draft) {
       F = nuevoF(draft.tipo || (p && p.tipo === 'ASI' ? 'ASI' : 'PRH'), draft);
       F._capDraft = draft.cap || null;
+      F.hecho = null;
     } else {
       F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
     }
@@ -5048,11 +5097,25 @@ VISTAS.trfNueva = p => {
         if (dStr) draft = JSON.parse(dStr);
       } catch(e) {}
     }
+    if (draft && draft.lineas && draft.lineas.length > 0) {
+      const yaEmitido = (DB.vales || []).some(v =>
+        v.tipo === 'TRF' &&
+        (v.origen === ctx || v.origen === draft.origen) &&
+        v.destino === draft.destino &&
+        Array.isArray(v.lineas) && v.lineas.length === draft.lineas.length &&
+        v.lineas.every((l, idx) => l.cod === draft.lineas[idx]?.cod && Number(l.cant) === Number(draft.lineas[idx]?.cant))
+      );
+      if (yaEmitido) {
+        limpiarBorradorYFormulario('TRF', ctx);
+        draft = null;
+      }
+    }
     if (draft) {
       F = nuevoF('TRF', draft);
       F.despacha = draft.despacha || S.u.nombre;
       F.salidaTimaca = draft.salidaTimaca || '';
       F._capDraft = draft.cap || null;
+      F.hecho = null;
     } else {
       F = nuevoF('TRF');
     }
@@ -5644,10 +5707,11 @@ function finalizarFormulario(finalizar) {
     const t = F.tipo;
     if (t === 'PRH' || t === 'ASI') {
       const res = emitirValeDirecto({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas });
-      toast(`Vale ${res.vale.num} emitido exitosamente. Listo para imprimir y firmar.`, 'ok');
-      if (typeof BORRADORES !== 'undefined' && BORRADORES.sol) delete BORRADORES.sol[F.origen || S.ctx];
-      try { localStorage.removeItem(draftKeySol(F.origen || S.ctx)); } catch(e) {}
-      ir('doc', { num: res.vale.num, alm: res.vale.origen, back: 'sol' });
+      const valeNum = res.vale.num;
+      const valeAlm = res.vale.origen;
+      toast(`Vale ${valeNum} emitido exitosamente. Listo para imprimir y firmar.`, 'ok');
+      limpiarBorradorYFormulario(t, valeAlm);
+      ir('doc', { num: valeNum, alm: valeAlm, back: 'sol' });
     } else if (t === 'TRF') {
       if (F.num) {
         const v = actualizarTransferencia(F.num, {
@@ -5663,6 +5727,7 @@ function finalizarFormulario(finalizar) {
           lineas: F.lineas
         });
         toast(`Transferencia ${v.num} actualizada exitosamente.`, 'ok');
+        limpiarBorradorYFormulario('TRF', F.origen);
         ir('trfEnv', { sel: v.num });
       } else {
         const v = crearTransferencia({
@@ -5677,9 +5742,13 @@ function finalizarFormulario(finalizar) {
           obs: F.obs,
           lineas: F.lineas
         });
-        if (typeof BORRADORES !== 'undefined' && BORRADORES.trf) delete BORRADORES.trf[F.origen || S.ctx];
-        try { localStorage.removeItem(draftKeyTrf(F.origen || S.ctx)); } catch(e) {}
-        F.hecho = v.num; toast(`Transferencia ${v.num} registrada. Pendiente de recepción en ${almNombre(v.destino)}.`, 'ok'); pintarMenu(); pintarFormulario();
+        const numTrf = v.num;
+        const destTrf = v.destino;
+        limpiarBorradorYFormulario('TRF', F.origen);
+        F.hecho = numTrf;
+        toast(`Transferencia ${numTrf} registrada. Pendiente de recepción en ${almNombre(destTrf)}.`, 'ok');
+        pintarMenu();
+        pintarFormulario();
       }
     } else {
       const lineas = F.valeRef ? F.lineas.filter(l => l.cant > 0) : F.lineas;
@@ -5931,9 +6000,8 @@ function guardarBorradorEntrada() {
 function descartarBorradorEntrada() {
   if (!confirm('¿Desea descartar y limpiar todos los datos y líneas de este borrador de entrada?')) return;
   const ctx = typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL';
-  delete BORRADORES.ent[ctx];
-  try { localStorage.removeItem(draftKeyEnt(ctx)); } catch(e) {}
-  E = { lineas: [], obs: '', sel: -1, editIdx: -1, hecho: null, base: null };
+  limpiarBorradorYFormulario('ENT', ctx);
+  E.hecho = null;
   toast('Borrador descartado.', 'info');
   refrescar();
 }
@@ -5947,6 +6015,18 @@ VISTAS.ent = () => {
       const dStr = localStorage.getItem(draftKeyEnt(ctx));
       if (dStr) draft = JSON.parse(dStr);
     } catch(e) {}
+  }
+  if (draft && draft.lineas && draft.lineas.length > 0) {
+    const yaEmitido = (DB.vales || []).some(v =>
+      v.tipo === 'ENT' &&
+      v.origen === ctx &&
+      Array.isArray(v.lineas) && v.lineas.length === draft.lineas.length &&
+      v.lineas.every((l, idx) => l.cod === draft.lineas[idx]?.cod && Number(l.cant) === Number(draft.lineas[idx]?.cant))
+    );
+    if (yaEmitido) {
+      limpiarBorradorYFormulario('ENT', ctx);
+      draft = null;
+    }
   }
   if (draft) {
     E = {
@@ -6352,8 +6432,7 @@ function registrarEntradaUI() {
     }
     if (!E.lineas.length) throw new Error('Agregue al menos un ítem a la entrada.');
     const v = registrarEntrada({ origen: S.ctx, lineas: E.lineas, obs: $('enObs') ? $('enObs').value.trim() : '' });
-    if (typeof BORRADORES !== 'undefined' && BORRADORES.ent) delete BORRADORES.ent[S.ctx];
-    try { localStorage.removeItem(draftKeyEnt(S.ctx)); } catch(e) {}
+    limpiarBorradorYFormulario('ENT', S.ctx);
     E.hecho = v.num;
     toast(`✅ Entrada ${v.num} registrada en ${almNombre(S.ctx)} con ${v.lineas.length} ítem(s).`, 'ok');
     pintarEntrada();
