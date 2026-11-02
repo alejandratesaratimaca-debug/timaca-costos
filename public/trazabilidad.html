@@ -3193,6 +3193,7 @@ function iniciarSesion() {
   entrarContexto(acc);
 }
 function entrarContexto(ctx) {
+  if (typeof guardarEstadoVistaActual === 'function') guardarEstadoVistaActual();
   if (ctx === 'MAESTRO' && !puedeMaestro(S.u)) { bit('ACCESO DENEGADO MAESTRO', 'Intento de ingreso sin autorización'); guardar(); toast('Acceso no autorizado al Maestro.', 'err'); return; }
   S.ctx = ctx;
   if (ctx === 'MAESTRO') bit('ACCESO MAESTRO', 'Ingreso a vista consolidada');
@@ -4657,6 +4658,7 @@ VISTAS.mCajas = p => {
 
 function ir(id, param) {
   if (!S.u) return;
+  if (typeof guardarEstadoVistaActual === 'function') guardarEstadoVistaActual();
   procesarVencimientos();
   const esMaestro = ['mRes', 'mKpi', 'mComp', 'mExp', 'mTraz', 'mAlert', 'mCajas', 'mCost', 'mAcc'].includes(id);
   if (esMaestro && !enMaestro()) { toast('Esta opción pertenece al Maestro.', 'err'); return; }
@@ -4724,42 +4726,186 @@ function editarSolicitudVale(param, alm) {
 }
 
 
+/* =====================================================================
+   SISTEMA INTEGRAL DE BORRADORES (SOLICITUDES, TRANSFERENCIAS Y ENTRADAS)
+   Preserva los datos en memoria y localStorage al cambiar de módulo o recargar
+   ===================================================================== */
+const BORRADORES = {
+  sol: {},
+  trf: {},
+  ent: {}
+};
+
 function draftKeySol(ctx) {
   return 'TIMACA_DRAFT_SOL_' + (ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL'));
 }
 
+function draftKeyTrf(ctx) {
+  return 'TIMACA_DRAFT_TRF_' + (ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL'));
+}
+
+function tieneBorradorSol(ctx) {
+  ctx = ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  const mem = BORRADORES.sol[ctx];
+  if (mem && ((mem.lineas && mem.lineas.length > 0) || (mem.resp && mem.resp.nombre) || (mem.sup && mem.sup.trim()) || (mem.proyecto && mem.proyecto.trim()) || (mem.obs && mem.obs.trim()) || (mem.cap && (mem.cap.cod || mem.cap.desc || mem.cap.serial)))) return true;
+  try {
+    const s = localStorage.getItem(draftKeySol(ctx));
+    if (s) {
+      const p = JSON.parse(s);
+      return (p.lineas && p.lineas.length > 0) || (p.resp && p.resp.nombre) || (p.sup && p.sup.trim()) || (p.proyecto && p.proyecto.trim()) || (p.obs && p.obs.trim()) || (p.cap && (p.cap.cod || p.cap.desc || p.cap.serial));
+    }
+  } catch(e) {}
+  return false;
+}
+
+function tieneBorradorTrf(ctx) {
+  ctx = ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  const mem = BORRADORES.trf[ctx];
+  if (mem && ((mem.lineas && mem.lineas.length > 0) || (mem.resp && mem.resp.nombre) || (mem.sup && mem.sup.trim()) || (mem.proyecto && mem.proyecto.trim()) || (mem.despacha && mem.despacha.trim() && mem.despacha !== (S && S.u ? S.u.nombre : '')) || (mem.salidaTimaca && mem.salidaTimaca.trim()) || (mem.obs && mem.obs.trim()) || (mem.cap && (mem.cap.cod || mem.cap.desc || mem.cap.serial)))) return true;
+  try {
+    const s = localStorage.getItem(draftKeyTrf(ctx));
+    if (s) {
+      const p = JSON.parse(s);
+      return (p.lineas && p.lineas.length > 0) || (p.resp && p.resp.nombre) || (p.sup && p.sup.trim()) || (p.proyecto && p.proyecto.trim()) || (p.despacha && p.despacha.trim() && p.despacha !== (S && S.u ? S.u.nombre : '')) || (p.salidaTimaca && p.salidaTimaca.trim()) || (p.obs && p.obs.trim()) || (p.cap && (p.cap.cod || p.cap.desc || p.cap.serial));
+    }
+  } catch(e) {}
+  return false;
+}
+
+function leerCapturaSolTrf() {
+  return {
+    cod: $('cCod') ? $('cCod').value.trim() : '',
+    desc: $('cDesc') ? $('cDesc').value.trim() : '',
+    marca: $('cMarca') ? $('cMarca').value.trim() : '',
+    serial: $('cSerial') ? $('cSerial').value.trim() : '',
+    cond: $('cCond') ? $('cCond').value : 'ÓPTIMO',
+    cant: $('cCant') ? $('cCant').value : '1',
+    grp: (typeof F !== 'undefined' && F && F.grp) ? F.grp : null,
+    capObj: (typeof F !== 'undefined' && F && F.cap) ? F.cap : null,
+    editandoLineaIdx: (typeof F !== 'undefined' && F && typeof F.editandoLineaIdx === 'number') ? F.editandoLineaIdx : -1
+  };
+}
+
 function guardarBorradorSol() {
   try {
-    if (F && !F.num && Array.isArray(F.lineas) && F.lineas.length > 0) {
-      const k = draftKeySol(F.origen || S.ctx);
-      leerCabecera();
-      localStorage.setItem(k, JSON.stringify({
-        tipo: F.tipo,
-        origen: F.origen,
-        destino: F.destino,
-        resp: F.resp,
-        sup: F.sup,
-        proyecto: F.proyecto,
-        cuenta: F.cuenta,
-        fechaReq: F.fechaReq,
-        fechaDev: F.fechaDev,
-        fechaAsig: F.fechaAsig,
+    if (!F || F.num || F.tipo === 'TRF' || F.hecho) return;
+    leerCabecera();
+    const ctx = F.origen || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+    const cap = leerCapturaSolTrf();
+    const tieneDatos = (F.lineas && F.lineas.length > 0) ||
+      (F.resp && F.resp.nombre) ||
+      (F.sup && F.sup.trim()) ||
+      (F.proyecto && F.proyecto.trim()) ||
+      (F.obs && F.obs.trim()) ||
+      (cap.cod || cap.desc || cap.serial);
+
+    const k = draftKeySol(ctx);
+    if (tieneDatos) {
+      const payload = {
+        tipo: F.tipo || 'PRH',
+        origen: F.origen || ctx,
+        destino: F.destino || ctx,
+        resp: F.resp || null,
+        sup: F.sup || '',
+        proyecto: F.proyecto || '',
+        cuenta: F.cuenta || '',
+        fechaReq: F.fechaReq || hoy(),
+        fechaDev: F.fechaDev || sumarDias(hoy(), 7),
+        fechaAsig: F.fechaAsig || hoy(),
         obs: F.obs || '',
-        lineas: F.lineas,
+        lineas: F.lineas || [],
+        cap: cap,
         fecha: nowISO()
-      }));
-    } else if (F && !F.num) {
-      localStorage.removeItem(draftKeySol(F.origen || S.ctx));
+      };
+      BORRADORES.sol[ctx] = payload;
+      localStorage.setItem(k, JSON.stringify(payload));
+    } else {
+      delete BORRADORES.sol[ctx];
+      localStorage.removeItem(k);
     }
   } catch(e) {}
 }
 
 function descartarBorradorSol() {
   if (!confirm('¿Desea descartar y limpiar el borrador de esta solicitud?')) return;
-  try { localStorage.removeItem(draftKeySol(S.ctx)); } catch(e) {}
+  const ctx = (F && F.origen) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  delete BORRADORES.sol[ctx];
+  try { localStorage.removeItem(draftKeySol(ctx)); } catch(e) {}
   F = nuevoF('ASI');
   toast('Borrador descartado.', 'info');
   refrescar();
+}
+
+function guardarBorradorTrf() {
+  try {
+    if (!F || F.num || F.tipo !== 'TRF' || F.hecho) return;
+    leerCabecera();
+    const ctx = F.origen || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+    const cap = leerCapturaSolTrf();
+    const tieneDatos = (F.lineas && F.lineas.length > 0) ||
+      (F.resp && F.resp.nombre) ||
+      (F.sup && F.sup.trim()) ||
+      (F.proyecto && F.proyecto.trim()) ||
+      (F.despacha && F.despacha.trim() && F.despacha !== (S && S.u ? S.u.nombre : '')) ||
+      (F.salidaTimaca && F.salidaTimaca.trim()) ||
+      (F.obs && F.obs.trim()) ||
+      (cap.cod || cap.desc || cap.serial);
+
+    const k = draftKeyTrf(ctx);
+    if (tieneDatos) {
+      const payload = {
+        tipo: 'TRF',
+        origen: F.origen || ctx,
+        destino: F.destino || '',
+        resp: F.resp || null,
+        sup: F.sup || '',
+        proyecto: F.proyecto || '',
+        cuenta: F.cuenta || '',
+        despacha: F.despacha || (S && S.u ? S.u.nombre : ''),
+        salidaTimaca: F.salidaTimaca || '',
+        obs: F.obs || '',
+        lineas: F.lineas || [],
+        cap: cap,
+        fecha: nowISO()
+      };
+      BORRADORES.trf[ctx] = payload;
+      localStorage.setItem(k, JSON.stringify(payload));
+    } else {
+      delete BORRADORES.trf[ctx];
+      localStorage.removeItem(k);
+    }
+  } catch(e) {}
+}
+
+function descartarBorradorTrf() {
+  if (!confirm('¿Desea descartar y limpiar el borrador de esta transferencia?')) return;
+  const ctx = (F && F.origen) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  delete BORRADORES.trf[ctx];
+  try { localStorage.removeItem(draftKeyTrf(ctx)); } catch(e) {}
+  F = nuevoF('TRF');
+  toast('Borrador de transferencia descartado.', 'info');
+  refrescar();
+}
+
+function guardarBorradorFormularioActivo() {
+  if (!F || F.num || F.hecho) return;
+  if (F.tipo === 'TRF') guardarBorradorTrf();
+  else if (F.tipo === 'PRH' || F.tipo === 'ASI') guardarBorradorSol();
+}
+
+function guardarEstadoVistaActual() {
+  if (!S || !S.vista) return;
+  try {
+    if (S.vista === 'solNueva') {
+      guardarBorradorSol();
+    } else if (S.vista === 'trfNueva') {
+      guardarBorradorTrf();
+    } else if (S.vista === 'ent') {
+      guardarBorradorEntrada();
+    }
+  } catch(e) {
+    console.warn('Error guardando estado de vista actual:', e);
+  }
 }
 
 VISTAS.solNueva = p => {
@@ -4809,18 +4955,24 @@ VISTAS.solNueva = p => {
     F.lineasOriginales = lineasCopiadas.map(l => Object.assign({}, l));
   } else {
     let draft = null;
-    try {
-      const dStr = localStorage.getItem(draftKeySol(S.ctx));
-      if (dStr) draft = JSON.parse(dStr);
-    } catch(e) {}
-    if (draft && Array.isArray(draft.lineas) && draft.lineas.length > 0) {
+    const ctx = typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL';
+    if (BORRADORES.sol[ctx]) draft = BORRADORES.sol[ctx];
+    else {
+      try {
+        const dStr = localStorage.getItem(draftKeySol(ctx));
+        if (dStr) draft = JSON.parse(dStr);
+      } catch(e) {}
+    }
+    if (draft) {
       F = nuevoF(draft.tipo || (p && p.tipo === 'ASI' ? 'ASI' : 'PRH'), draft);
+      F._capDraft = draft.cap || null;
     } else {
       F = nuevoF(p && p.tipo === 'ASI' ? 'ASI' : 'PRH');
     }
   }
   pintarSolicitud();
 };
+
 VISTAS.trfNueva = p => {
   if (!puede('transferir', S.ctx)) { $('area').innerHTML = cab('Nueva transferencia') + avisoSinPermiso('Su usuario no tiene permiso para registrar transferencias desde este almacén.'); return; }
   if (p && p.num) {
@@ -4846,7 +4998,23 @@ VISTAS.trfNueva = p => {
       lineasOriginales: v.lineas.map(l => Object.assign({}, l))
     });
   } else {
-    F = nuevoF('TRF');
+    let draft = null;
+    const ctx = typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL';
+    if (BORRADORES.trf[ctx]) draft = BORRADORES.trf[ctx];
+    else {
+      try {
+        const dStr = localStorage.getItem(draftKeyTrf(ctx));
+        if (dStr) draft = JSON.parse(dStr);
+      } catch(e) {}
+    }
+    if (draft) {
+      F = nuevoF('TRF', draft);
+      F.despacha = draft.despacha || S.u.nombre;
+      F.salidaTimaca = draft.salidaTimaca || '';
+      F._capDraft = draft.cap || null;
+    } else {
+      F = nuevoF('TRF');
+    }
   }
   pintarFormulario();
 };
@@ -4900,6 +5068,8 @@ function pintarFormulario() {
     ? `<div class="franja-est verde"><span><b>${esc(F.hecho)}</b> registrado correctamente${t === 'TRF' ? ' · Pendiente de recepción en ' + esc(almNombre(F.destino)) : ''}.</span><span>Puede imprimir el vale o iniciar un nuevo registro.</span></div>`
     : (F.valeId || F.num)
     ? `<div class="franja-est ambar"><span>⚠️ <b>MODO EDICIÓN:</b> Modificando ${F.valeId ? 'Vale ' + esc(F.valeId) : ''} ${F.num ? '(Solicitud ' + esc(F.num) + ')' : ''}. Puede cambiar custodio, proyecto, supervisor o ajustar las herramientas cargadas.</span></div>`
+    : (t === 'TRF' && tieneBorradorTrf(F.origen))
+    ? `<div class="franja-est naranja" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span>💾 <b>Borrador en curso:</b> Tiene datos cargados en esta transferencia en ${esc(almNombre(F.origen))}${F.lineas && F.lineas.length ? ` (${F.lineas.length} ítem(s))` : ''}. Puede ir a otros módulos y regresar sin perder información.</span><span><button class="btn btn-claro btn-mini" onclick="descartarBorradorTrf()">🗑️ Descartar borrador</button></span></div>`
     : '';
   const permAviso = (t === 'PRH' || t === 'ASI') ? '' : '';
   $('area').innerHTML = cab(titulos[t], subt[t]) + estadoTxt + permAviso + `
@@ -4927,6 +5097,34 @@ function pintarFormulario() {
       bindResponsableProyecto();
     }
     if (!F.valeRef) bindCaptura();
+    if (t === 'TRF') {
+      if (F._capDraft) {
+        const cd = F._capDraft;
+        if (cd.grp) {
+          elegirGrupo(cd.grp, cd.capObj ? cd.capObj.id : null);
+        } else if (cd.cod) {
+          if ($('cCod')) $('cCod').value = cd.cod;
+          if ($('cDesc')) $('cDesc').value = cd.desc || '';
+        }
+        if (cd.cant && $('cCant')) $('cCant').value = cd.cant;
+        if (cd.cond && $('cCond')) $('cCond').value = cd.cond;
+        F._capDraft = null;
+      }
+      ['fDestino', 'fDespacha', 'fSup', 'fSalidaTimaca', 'fObs'].forEach(id => {
+        const el = $(id);
+        if (el) {
+          el.addEventListener('input', guardarBorradorTrf);
+          el.addEventListener('change', guardarBorradorTrf);
+        }
+      });
+      ['cCod', 'cCant', 'cCond'].forEach(id => {
+        const el = $(id);
+        if (el) {
+          el.addEventListener('input', guardarBorradorTrf);
+          el.addEventListener('change', guardarBorradorTrf);
+        }
+      });
+    }
   }
   pintarLineas();
 }
@@ -5200,7 +5398,7 @@ function limpiarCaptura(mantenerCod) {
   if (!mantenerCod && $('cCod')) $('cCod').value = '';
   if ($('cCant')) { $('cCant').value = 1; $('cCant').readOnly = false; $('cCant').title = ''; }
   if ($('cCond')) $('cCond').innerHTML = '<option>ÓPTIMO</option><option>NUEVO</option><option>DAÑADO</option>';
-  // botón Salvar permanece con texto Salvar
+  if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
 }
 function cargarParaEditarLineaSol(i) {
   if (F.hecho || F.valeRef) return;
@@ -5298,7 +5496,7 @@ function salvarLinea(confirmado) {
     F.lineas.push(nueva);
     toast(`Línea agregada (${nueva.cod}).`, 'ok');
   }
-  limpiarCaptura(); guardarBorradorSol(); pintarLineas(); if ($('cCod')) $('cCod').focus();
+  limpiarCaptura(); guardarBorradorFormularioActivo(); pintarLineas(); if ($('cCod')) $('cCod').focus();
 }
 function cambiarCantLinea(i, val) {
   const l = F.lineas[i];
@@ -5321,6 +5519,7 @@ function cambiarCantLinea(i, val) {
     return;
   }
   l.cant = c;
+  guardarBorradorFormularioActivo();
   pintarTotales();
 }
 function cambiarCondLinea(i, cond) {
@@ -5329,6 +5528,7 @@ function cambiarCondLinea(i, cond) {
   if (!l) return;
   l.cond = cond;
   l.est = estDe(l.id ? item(l.id) : l, cond);
+  guardarBorradorFormularioActivo();
   pintarTotales();
   toast(`Condición de ${l.cod} actualizada a ${cond}.`, 'ok');
 }
@@ -5350,7 +5550,7 @@ function eliminarLineaSeleccionada() {
     const l = F.lineas[i];
     F.lineas.splice(i, 1);
     limpiarCaptura();
-    guardarBorradorSol();
+    guardarBorradorFormularioActivo();
     pintarLineas();
     toast(`Línea eliminada (${l.cod}).`, 'info');
   } else {
@@ -5391,6 +5591,7 @@ function eliminarLinea(i) {
   confirmar(`¿Eliminar la línea <b>${esc(l.cod)} · ${esc(l.desc)}</b> (${l.cant} ${esc(l.umb)})?`, () => {
     F.lineas.splice(i, 1);
     F.sel = -1;
+    guardarBorradorFormularioActivo();
     pintarLineas();
     if ($('cCod')) $('cCod').focus();
     toast('Ítem eliminado de la solicitud.', 'ok');
@@ -5403,6 +5604,7 @@ function finalizarFormulario(finalizar) {
     if (t === 'PRH' || t === 'ASI') {
       const res = emitirValeDirecto({ num: F.num, tipo: t, origen: F.origen, destino: F.destino, resp: F.resp, sup: F.sup, proyecto: F.proyecto, cuenta: F.cuenta, fechaReq: F.fechaReq, fechaDev: F.fechaDev, fechaAsig: F.fechaAsig, obs: F.obs, lineas: F.lineas });
       toast(`Vale ${res.vale.num} emitido exitosamente. Listo para imprimir y firmar.`, 'ok');
+      if (typeof BORRADORES !== 'undefined' && BORRADORES.sol) delete BORRADORES.sol[F.origen || S.ctx];
       try { localStorage.removeItem(draftKeySol(F.origen || S.ctx)); } catch(e) {}
       ir('doc', { num: res.vale.num, alm: res.vale.origen, back: 'sol' });
     } else if (t === 'TRF') {
@@ -5434,6 +5636,8 @@ function finalizarFormulario(finalizar) {
           obs: F.obs,
           lineas: F.lineas
         });
+        if (typeof BORRADORES !== 'undefined' && BORRADORES.trf) delete BORRADORES.trf[F.origen || S.ctx];
+        try { localStorage.removeItem(draftKeyTrf(F.origen || S.ctx)); } catch(e) {}
         F.hecho = v.num; toast(`Transferencia ${v.num} registrada. Pendiente de recepción en ${almNombre(v.destino)}.`, 'ok'); pintarMenu(); pintarFormulario();
       }
     } else {
@@ -5456,7 +5660,7 @@ function pintarSolicitud() {
     ? L('Fecha requerida') + `<div class="vl"><input type="date" id="fFReq" value="${F.fechaReq}"></div>` + L('Fecha de devolución') + `<div class="vl"><input type="date" id="fFDev" value="${F.fechaDev}"></div>`
     : L('Fecha de asignación') + `<div class="vl"><input type="date" id="fFAsig" value="${F.fechaAsig}"></div><div class="vacio"></div>`;
   $('area').innerHTML = cab(F.num ? '📝 Solicitud ' + F.num : '📝 Creación de solicitudes', 'Préstamos (tiempo definido) y asignaciones (tiempo indefinido). Al guardar se genera inmediatamente el vale para imprimir y firmar.', `<button class="btn btn-claro" onclick="ir('sol')">Volver a solicitudes</button>`)
-    + (!F.num && F.lineas && F.lineas.length > 0 ? `<div class="franja-est naranja" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span>💾 <b>Borrador en curso:</b> Tiene <b>${F.lineas.length} ítem(s)</b> cargados en esta solicitud en ${esc(almNombre(F.origen))}. Puede ir a otros módulos y regresar sin perder información.</span><span><button class="btn btn-claro btn-mini" onclick="descartarBorradorSol()">🗑️ Descartar borrador</button></span></div>` : '')
+    + (!F.num && tieneBorradorSol(F.origen) ? `<div class="franja-est naranja" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span>💾 <b>Borrador en curso:</b> Tiene datos cargados en esta solicitud en ${esc(almNombre(F.origen))}${F.lineas && F.lineas.length ? ` (${F.lineas.length} ítem(s))` : ''}. Puede ir a otros módulos y regresar sin perder información.</span><span><button class="btn btn-claro btn-mini" onclick="descartarBorradorSol()">🗑️ Descartar borrador</button></span></div>` : '')
     + `<div class="form-reg"><div class="sipf">
       ${L('Empresa')}<div class="vl"><input value="TIMACA" readonly></div>
       ${L('Número')}<div class="vl"><input id="sNum" value="${esc(F.num || '')}" placeholder="Se asigna al salvar" readonly></div>
@@ -5484,10 +5688,37 @@ function pintarSolicitud() {
     </div></div></div>${datalistPersonal()}`;
   bindResponsableProyecto();
   bindCaptura();
+  if (F._capDraft) {
+    const cd = F._capDraft;
+    if (cd.grp) {
+      elegirGrupo(cd.grp, cd.capObj ? cd.capObj.id : null);
+    } else if (cd.cod) {
+      if ($('cCod')) $('cCod').value = cd.cod;
+      if ($('cDesc')) $('cDesc').value = cd.desc || '';
+    }
+    if (cd.cant && $('cCant')) $('cCant').value = cd.cant;
+    if (cd.cond && $('cCond')) $('cCond').value = cd.cond;
+    F._capDraft = null;
+  }
+  ['fObs', 'fDestino', 'fFReq', 'fFDev', 'fFAsig', 'fTipo', 'fTA'].forEach(id => {
+    const el = $(id);
+    if (el) {
+      el.addEventListener('input', guardarBorradorSol);
+      el.addEventListener('change', guardarBorradorSol);
+    }
+  });
+  ['cCod', 'cCant', 'cCond'].forEach(id => {
+    const el = $(id);
+    if (el) {
+      el.addEventListener('input', guardarBorradorSol);
+      el.addEventListener('change', guardarBorradorSol);
+    }
+  });
   pintarLineas();
 }
 function cambiarTipoSol(t) {
   leerCabecera(); F.tipo = t;
+  guardarBorradorSol();
   if (t === 'PRH' && F.lineas.some(l => l.mod === 'EPP')) { F.lineas = F.lineas.filter(l => l.mod !== 'EPP'); toast('Se retiraron las líneas de EPP: el EPP no se presta, se registra como asignación.', 'err'); }
   pintarSolicitud();
 }
@@ -5498,6 +5729,7 @@ function bindResponsableProyecto() {
   if ($('fResp')) {
     bindAC('fResp', fuentePersonal, p => {
       F.resp = { nombre: p.nombre, cedula: p.cedula, cargo: p.cargo };
+      if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
       $('fResp').value = p.nombre;
       if ($('fCed')) $('fCed').value = p.cedula || 'S/C';
       if ($('fCargo')) $('fCargo').value = p.cargo;
@@ -5507,6 +5739,7 @@ function bindResponsableProyecto() {
       const val = $('fResp').value.trim();
       if (!val) {
         F.resp = null;
+        if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
         if ($('fCed')) $('fCed').value = '';
         if ($('fCargo')) $('fCargo').value = '';
         return;
@@ -5516,6 +5749,7 @@ function bindResponsableProyecto() {
         (normTexto(p.nombre) === normTexto(val) || (digitosCI(val).length >= 5 && digitosCI(p.cedula) === digitosCI(val))));
       if (match) {
         F.resp = { nombre: match.nombre, cedula: match.cedula, cargo: match.cargo };
+        if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
         $('fResp').value = match.nombre;
         if ($('fCed')) $('fCed').value = match.cedula || 'S/C';
         if ($('fCargo')) $('fCargo').value = match.cargo;
@@ -5531,6 +5765,7 @@ function bindResponsableProyecto() {
   if ($('fSup')) {
     bindAC('fSup', fuenteSupervisores, p => {
       F.sup = p.nombre;
+      if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
       $('fSup').value = p.nombre;
     }, { alFoco: true });
 
@@ -5538,6 +5773,7 @@ function bindResponsableProyecto() {
       const val = $('fSup').value.trim();
       if (!val) {
         F.sup = '';
+        if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
         return;
       }
       const supMatch = DB.personal.find(p => p.activo !== false && (p.tipo || []).includes('SUPERVISOR') &&
@@ -5545,6 +5781,7 @@ function bindResponsableProyecto() {
         normTexto(p.nombre) === normTexto(val));
       if (supMatch) {
         F.sup = supMatch.nombre;
+        if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
         $('fSup').value = supMatch.nombre;
       } else {
         F.sup = '';
@@ -5557,6 +5794,7 @@ function bindResponsableProyecto() {
     bindAC('fProy', fuenteProyectos, p => {
       F.proyecto = p.nombre;
       F.cuenta = p.cuenta;
+      if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
       $('fProy').value = p.nombre;
       if ($('fCuenta')) $('fCuenta').value = p.cuenta;
     }, { alFoco: true });
@@ -5571,6 +5809,7 @@ function bindResponsableProyecto() {
       if (p) {
         F.proyecto = p.nombre;
         F.cuenta = p.cuenta;
+        if (typeof guardarBorradorFormularioActivo === 'function') guardarBorradorFormularioActivo();
         $('fProy').value = p.nombre;
       } else {
         F.proyecto = '';
@@ -5590,40 +5829,97 @@ function draftKeyEnt(ctx) {
   return 'TIMACA_DRAFT_ENT_' + (ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL'));
 }
 
+function tieneBorradorEnt(ctx) {
+  ctx = ctx || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  const mem = BORRADORES.ent[ctx];
+  if (mem && ((mem.lineas && mem.lineas.length > 0) || (mem.obs && mem.obs.trim()) || (mem.cap && (mem.cap.cod || mem.cap.desc || mem.cap.serial)))) return true;
+  try {
+    const s = localStorage.getItem(draftKeyEnt(ctx));
+    if (s) {
+      const p = JSON.parse(s);
+      return (p.lineas && p.lineas.length > 0) || (p.obs && p.obs.trim()) || (p.cap && (p.cap.cod || p.cap.desc || p.cap.serial));
+    }
+  } catch(e) {}
+  return false;
+}
+
 function guardarBorradorEntrada() {
   try {
-    if (E && Array.isArray(E.lineas) && E.lineas.length > 0) {
-      const k = draftKeyEnt(S.ctx);
-      const obs = $('enObs') ? $('enObs').value : (E.obs || '');
-      localStorage.setItem(k, JSON.stringify({ lineas: E.lineas, obs, fecha: nowISO() }));
+    if (!E || E.hecho) return;
+    const ctx = typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL';
+    const obs = $('enObs') ? $('enObs').value : (E.obs || '');
+    E.obs = obs;
+    const cap = {
+      cod: $('eCod') ? $('eCod').value.trim() : '',
+      desc: $('eDesc') ? $('eDesc').value.trim() : '',
+      mod: $('eMod') ? $('eMod').value : 'HERRAMIENTA',
+      cat: $('eCat') ? $('eCat').value : 'Herramientas manuales',
+      umb: $('eUmb') ? $('eUmb').value : 'UND',
+      marca: $('eMarca') ? $('eMarca').value.trim() : '',
+      modelo: $('eModelo') ? $('eModelo').value.trim() : '',
+      serial: $('eSerial') ? $('eSerial').value.trim() : '',
+      cond: $('eCond') ? $('eCond').value : 'ÓPTIMO',
+      cant: $('eCant') ? $('eCant').value : '1',
+      base: E.base || null,
+      editIdx: (typeof E.editIdx === 'number') ? E.editIdx : -1
+    };
+
+    const tieneDatos = (E.lineas && E.lineas.length > 0) ||
+      obs.trim().length > 0 ||
+      cap.cod.length > 0 ||
+      cap.desc.length > 0 ||
+      cap.serial.length > 0;
+
+    const k = draftKeyEnt(ctx);
+    if (tieneDatos) {
+      const payload = {
+        lineas: E.lineas || [],
+        obs: obs,
+        cap: cap,
+        fecha: nowISO()
+      };
+      BORRADORES.ent[ctx] = payload;
+      localStorage.setItem(k, JSON.stringify(payload));
     } else {
-      localStorage.removeItem(draftKeyEnt(S.ctx));
+      delete BORRADORES.ent[ctx];
+      localStorage.removeItem(k);
     }
   } catch(e) {}
 }
 
 function descartarBorradorEntrada() {
-  if (!confirm('¿Desea descartar y limpiar todos los ítems agregados en este borrador?')) return;
-  try { localStorage.removeItem(draftKeyEnt(S.ctx)); } catch(e) {}
+  if (!confirm('¿Desea descartar y limpiar todos los datos y líneas de este borrador de entrada?')) return;
+  const ctx = typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL';
+  delete BORRADORES.ent[ctx];
+  try { localStorage.removeItem(draftKeyEnt(ctx)); } catch(e) {}
   E = { lineas: [], obs: '', sel: -1, editIdx: -1, hecho: null, base: null };
   toast('Borrador descartado.', 'info');
   refrescar();
 }
 
 VISTAS.ent = () => {
-  let draftLineas = [];
-  let draftObs = '';
-  try {
-    const dStr = localStorage.getItem(draftKeyEnt(S.ctx));
-    if (dStr) {
-      const parsed = JSON.parse(dStr);
-      if (Array.isArray(parsed.lineas) && parsed.lineas.length > 0) {
-        draftLineas = parsed.lineas;
-      }
-      if (parsed.obs) draftObs = parsed.obs;
-    }
-  } catch(e) {}
-  E = { lineas: draftLineas, obs: draftObs, sel: -1, editIdx: -1, hecho: null, base: null };
+  let draft = null;
+  const ctx = typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL';
+  if (BORRADORES.ent[ctx]) draft = BORRADORES.ent[ctx];
+  else {
+    try {
+      const dStr = localStorage.getItem(draftKeyEnt(ctx));
+      if (dStr) draft = JSON.parse(dStr);
+    } catch(e) {}
+  }
+  if (draft) {
+    E = {
+      lineas: draft.lineas || [],
+      obs: draft.obs || '',
+      sel: -1,
+      editIdx: (draft.cap && typeof draft.cap.editIdx === 'number') ? draft.cap.editIdx : -1,
+      hecho: null,
+      base: (draft.cap && draft.cap.base) ? draft.cap.base : null,
+      _capDraft: draft.cap || null
+    };
+  } else {
+    E = { lineas: [], obs: '', sel: -1, editIdx: -1, hecho: null, base: null };
+  }
   pintarEntrada();
 };
 
@@ -5635,7 +5931,7 @@ function pintarEntrada() {
 
   $('area').innerHTML = cab('➕ Entrada de ítems al catálogo', 'Registre herramientas, cilindros o EPP que ingresan al almacén. Si el código ya existe se suma la cantidad; si es nuevo, se crea en el catálogo. Cada vez que inserte un registro, los cuadros se limpian automáticamente para el siguiente.')
     + (E.hecho ? `<div class="franja-est verde"><span>Entrada <b>${E.hecho}</b> registrada. Los ítems ya aparecen en el catálogo de ${esc(almNombre(S.ctx))}.</span><span><button class="btn btn-claro btn-mini" onclick="ir('cCatAlm')">Ver catálogo</button></span></div>` : '')
-    + (!E.hecho && E.lineas.length > 0 ? `<div class="franja-est naranja" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span>💾 <b>Borrador protegido:</b> Tiene <b>${E.lineas.length} ítem(s)</b> cargados en curso en ${esc(almNombre(S.ctx))}. No se perderán si recarga la página.</span><span><button class="btn btn-claro btn-mini" onclick="descartarBorradorEntrada()">🗑️ Descartar borrador</button></span></div>` : '')
+    + (!E.hecho && tieneBorradorEnt(S.ctx) ? `<div class="franja-est naranja" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between"><span>💾 <b>Borrador protegido:</b> Tiene datos cargados en curso en ${esc(almNombre(S.ctx))}${E.lineas && E.lineas.length ? ` (${E.lineas.length} ítem(s))` : ''}. No se perderán si navega a otros módulos o recarga la página.</span><span><button class="btn btn-claro btn-mini" onclick="descartarBorradorEntrada()">🗑️ Descartar borrador</button></span></div>` : '')
     + `<div class="form-reg"><div class="f3">
       ${campo('Almacén', `<input value="${esc(almNombre(S.ctx))}" readonly>`)}${campo('Fecha', `<input value="${fF(nowISO())}" readonly>`)}${campo('Registrado por', `<input value="${esc(S.u.nombre)}" readonly>`)}
       ${campo('Observación', `<input id="enObs" ${ro} placeholder="Opcional" value="${esc((E && E.obs) || '')}" oninput="if(E){E.obs=this.value;guardarBorradorEntrada();}">`)}
@@ -5710,6 +6006,30 @@ function pintarEntrada() {
     condEntrada();
     $('eCond').value = linEd.cond;
     $('eCant').value = linEd.cant;
+  } else if (E && E._capDraft && !bloq) {
+    const cd = E._capDraft;
+    if (cd.cod && $('eCod')) $('eCod').value = cd.cod;
+    if (cd.desc && $('eDesc')) $('eDesc').value = cd.desc;
+    if (cd.mod && $('eMod')) $('eMod').value = cd.mod;
+    if (cd.cat && $('eCat')) $('eCat').value = cd.cat;
+    if (cd.umb && $('eUmb')) $('eUmb').value = cd.umb;
+    if (cd.marca && $('eMarca')) $('eMarca').value = cd.marca;
+    if (cd.modelo && $('eModelo')) $('eModelo').value = cd.modelo;
+    if (cd.serial && $('eSerial')) $('eSerial').value = cd.serial;
+    condEntrada();
+    if (cd.cond && $('eCond')) $('eCond').value = cd.cond;
+    if (cd.cant && $('eCant')) $('eCant').value = cd.cant;
+    E._capDraft = null;
+  }
+
+  if (!bloq) {
+    ['eCod', 'eDesc', 'eMod', 'eCat', 'eUmb', 'eMarca', 'eModelo', 'eSerial', 'eCond', 'eCant', 'enObs'].forEach(id => {
+      const el = $(id);
+      if (el) {
+        el.addEventListener('input', guardarBorradorEntrada);
+        el.addEventListener('change', guardarBorradorEntrada);
+      }
+    });
   }
 
   pintarLineasEntrada();
@@ -5814,6 +6134,7 @@ function agregarEntrada() {
     if (dup) dup.cant += cant; else E.lineas.push(l);
 
     limpiarFormularioEntrada();
+    guardarBorradorEntrada();
     pintarLineasEntrada();
     toast('Ítem agregado a la entrada.', 'ok');
   });
@@ -5884,6 +6205,7 @@ function guardarEdicionEntrada() {
     };
 
     limpiarFormularioEntrada();
+    guardarBorradorEntrada();
     pintarLineasEntrada();
     toast('Ítem actualizado con éxito.', 'ok');
   });
@@ -5899,6 +6221,7 @@ function eliminarLineaEntrada(i) {
   E.lineas.splice(i, 1);
   if (E.editIdx === i) limpiarFormularioEntrada();
   else if (E.editIdx > i) E.editIdx--;
+  guardarBorradorEntrada();
   pintarLineasEntrada();
   toast('Línea eliminada.', 'info');
 }
@@ -5927,6 +6250,7 @@ function limpiarFormularioEntrada() {
     btnArea.innerHTML = `<label>&nbsp;</label><div style="display:flex;gap:8px"><button type="button" class="btn btn-sip-salvar" onclick="salvarLineaEntrada()">Salvar</button><button type="button" class="btn btn-sip-eliminar" onclick="eliminarLineaEntradaSeleccionada()">Eliminar</button></div>`;
   }
 
+  if (typeof guardarBorradorEntrada === 'function') guardarBorradorEntrada();
   if ($('eCod')) $('eCod').focus();
 }
 
@@ -5987,6 +6311,8 @@ function registrarEntradaUI() {
     }
     if (!E.lineas.length) throw new Error('Agregue al menos un ítem a la entrada.');
     const v = registrarEntrada({ origen: S.ctx, lineas: E.lineas, obs: $('enObs') ? $('enObs').value.trim() : '' });
+    if (typeof BORRADORES !== 'undefined' && BORRADORES.ent) delete BORRADORES.ent[S.ctx];
+    try { localStorage.removeItem(draftKeyEnt(S.ctx)); } catch(e) {}
     E.hecho = v.num;
     toast(`✅ Entrada ${v.num} registrada en ${almNombre(S.ctx)} con ${v.lineas.length} ítem(s).`, 'ok');
     pintarEntrada();
@@ -9056,16 +9382,11 @@ function descargarDeNube(cloudDB) {
   guardarLocalSolo();
 
   if (typeof refrescar === 'function' && typeof S !== 'undefined' && S && S.u) {
-    if (S.vista === 'ent' && E && Array.isArray(E.lineas) && E.lineas.length > 0) {
-      console.log('☁️ Sincronización en segundo plano: se preservan los renglones en captura de entrada.');
-      return;
-    }
-    if (S.vista === 'solNueva' && F && Array.isArray(F.lineas) && F.lineas.length > 0) {
-      console.log('☁️ Sincronización en segundo plano: se preservan las líneas de solicitud en curso.');
-      return;
-    }
-    if (S.vista === 'trfNueva' && F && Array.isArray(F.lineas) && F.lineas.length > 0) {
-      console.log('☁️ Sincronización en segundo plano: se preservan las líneas de transferencia en curso.');
+    const hayBorradorActivo = (S.vista === 'ent' && typeof tieneBorradorEnt === 'function' && tieneBorradorEnt(S.ctx)) ||
+      (S.vista === 'solNueva' && typeof tieneBorradorSol === 'function' && tieneBorradorSol(S.ctx)) ||
+      (S.vista === 'trfNueva' && typeof tieneBorradorTrf === 'function' && tieneBorradorTrf(S.ctx));
+    if (hayBorradorActivo) {
+      console.log('☁️ Sincronización en segundo plano: se preserva la vista y el borrador en curso.');
       return;
     }
     refrescar();
@@ -9180,6 +9501,7 @@ function iniciar() {
   try { setInterval(tickCronos, 1000); } catch (e) { }
   try { setInterval(() => { if (procesarVencimientos() && S.u) { toast('Una transferencia venció y su material regresó al almacén de origen.'); pintarMenu(); } }, 60000); } catch (e) { }
   try { document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('vistaImpresion').style.display === 'block') cerrarImpresion(); else cerrarModal(); } }); } catch (e) { }
+  try { window.addEventListener('beforeunload', () => { if (typeof guardarEstadoVistaActual === 'function') guardarEstadoVistaActual(); }); } catch (e) { }
 }
 iniciar();
 
