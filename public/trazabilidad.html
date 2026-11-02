@@ -1317,19 +1317,18 @@ function cargarDatos() {
 }
 function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')) {
   if (!alm || alm === 'TODOS' || alm === 'MAESTRO') alm = 'CENTRAL';
-  const esGlobal = (pref === 'TRF');
   DB.corr = DB.corr || {};
   DB.corrAlm = DB.corrAlm || {};
   DB.corrAlm[alm] = DB.corrAlm[alm] || {};
 
-  let cur = esGlobal ? (DB.corr[pref] || 0) : (DB.corrAlm[alm][pref] || 0);
+  let cur = DB.corrAlm[alm][pref] || 0;
 
   const regex = new RegExp(`^${pref}-(\\d+)$`);
   const checkNum = (n, o) => {
     if (!n) return;
     const m = String(n).trim().match(regex);
     if (m) {
-      if (esGlobal || !o || o === alm) {
+      if (!o || o === alm) {
         const val = parseInt(m[1], 10);
         if (val > cur) cur = val;
       }
@@ -1344,13 +1343,8 @@ function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'C
   (DB.movs || []).forEach(m => checkNum(m.doc, m.origen));
 
   const next = cur + 1;
-  if (esGlobal) {
-    DB.corr[pref] = next;
-    DB.corrAlm[alm][pref] = next;
-  } else {
-    DB.corrAlm[alm][pref] = next;
-    DB.corr[pref] = Math.max(DB.corr[pref] || 0, next);
-  }
+  DB.corrAlm[alm][pref] = next;
+  DB.corr[pref] = Math.max(DB.corr[pref] || 0, next);
   return `${pref}-${String(next).padStart(7, '0')}`;
 }
 function sigNum5(pref) { DB.corr = DB.corr || {}; DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(5, '0')}`; }
@@ -2158,14 +2152,14 @@ function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
     notificarSistema('Transferencia Rechazada', `La transferencia ${v.num} (${almNombre(v.origen)} → ${almNombre(v.destino)}) fue RECHAZADA por ${S.u.nombre}. Motivo: ${motivo}.`, 'err', { doc: v.num });
   }
 }
-function aceptarTransferencia(n) {
-  const v = valeDe(n);
+function aceptarTransferencia(n, origen) {
+  const v = (typeof n === 'object' && n.num) ? n : valeDe(n, null, null, origen);
   if (!v || v.estatus !== 'PENDIENTE DE RECEPCIÓN') throw new Error('La transferencia ya no está pendiente.');
   if (!puede('recibir', v.destino)) throw new Error('No tiene permiso para recibir transferencias en ' + almNombre(v.destino) + '.');
   cerrarTransferencia(v, true); bit('TRANSFERENCIA ACEPTADA', v.num); guardar();
 }
-function rechazarTransferencia(n, motivo) {
-  const v = valeDe(n);
+function rechazarTransferencia(n, motivo, origen) {
+  const v = (typeof n === 'object' && n.num) ? n : valeDe(n, null, null, origen);
   if (!v || v.estatus !== 'PENDIENTE DE RECEPCIÓN') throw new Error('La transferencia ya no está pendiente.');
   if (!puede('recibir', v.destino)) throw new Error('No tiene permiso para recibir transferencias en ' + almNombre(v.destino) + '.');
   if (!String(motivo || '').trim()) throw new Error('El motivo de rechazo es obligatorio.');
@@ -6498,10 +6492,10 @@ function accionesDoc(d, esSol, p) {
   }
   if (d.tipo === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN') {
     if (d.destino === S.ctx && puede('recibir', d.destino)) {
-      h += `<button class="btn btn-rojo" onclick="accionRechazarTrf('${d.num}')">Rechazar transferencia</button><button class="btn btn-verde" onclick="accionAceptarTrf('${d.num}')">Aceptar transferencia</button>`;
+      h += `<button class="btn btn-rojo" onclick="accionRechazarTrf('${d.num}','${d.origen}')">Rechazar transferencia</button><button class="btn btn-verde" onclick="accionAceptarTrf('${d.num}','${d.origen}')">Aceptar transferencia</button>`;
     }
     if (d.origen === S.ctx && puede('transferir', d.origen)) {
-      h += `<button class="btn btn-claro" onclick="editarTransferencia('${d.num}')">✏️ Editar transferencia</button>`;
+      h += `<button class="btn btn-claro" onclick="editarTransferencia('${d.num}','${d.origen}')">✏️ Editar transferencia</button>`;
     }
   }
   if ((d.tipo === 'PRH' || d.tipo === 'ASI') && d.origen === S.ctx) {
@@ -6731,10 +6725,10 @@ VISTAS.trfRec = p => {
     + grid('gRec', colsTrf(true), rows, { onSel: v => tiraTrf(v, 'r'), pag: 15, vacio: 'No hay transferencias para mostrar.' })
     + `<div class="sel-strip"><span class="lbl">Transferencia seleccionada</span><span class="box" id="trNum"></span><span class="box" id="trInfo" style="flex:1"></span></div>
     <div class="barra-btn">
-      <button class="btn-sip" id="rVer" disabled onclick="ir('doc',{num:selDe('gRec').num,back:'trfRec'})">Visualizar transferencia</button>
-      <button class="btn-sip" id="rOk" disabled onclick="accionAceptarTrf(selDe('gRec').num)">Aceptar transferencia</button>
-      <button class="btn-sip" id="rNo" disabled onclick="accionRechazarTrf(selDe('gRec').num)">Rechazar transferencia</button>
-      <button class="btn-sip" id="rImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gRec').num, selDe('gRec').origen)">Imprimir vale</button>
+      <button class="btn-sip" id="rVer" disabled onclick="ir('doc',{num:selDe('gRec').num,alm:selDe('gRec').destino,origen:selDe('gRec').origen,back:'trfRec'})">Visualizar transferencia</button>
+      <button class="btn-sip" id="rOk" disabled onclick="accionAceptarTrf(selDe('gRec').num, selDe('gRec').origen)">Aceptar transferencia</button>
+      <button class="btn-sip" id="rNo" disabled onclick="accionRechazarTrf(selDe('gRec').num, selDe('gRec').origen)">Rechazar transferencia</button>
+      <button class="btn-sip" id="rImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gRec').num, selDe('gRec').origen, null, selDe('gRec').origen)">Imprimir vale</button>
       <button class="btn-ayuda" onclick="ayuda('trf')">AYUDA</button>
     </div>`;
 };
@@ -6760,22 +6754,30 @@ function tiraTrf(v, k) {
     ['eVer', 'eImp', 'eHist'].forEach(i => $(i).disabled = false);
   }
 }
-function accionAceptarTrf(n) {
-  const v = valeDe(n);
-  const nDan = v.lineas.filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
-  const nDisp = v.lineas.filter(l => l.cond !== 'DAÑADO' && l.est !== 'DAN' && l.est !== 'VACIO').reduce((a, l) => a + l.cant, 0);
-  const nVac = v.lineas.filter(l => l.est === 'VACIO').reduce((a, l) => a + l.cant, 0);
+function accionAceptarTrf(n, origen) {
+  const v = (typeof n === 'object' && n.num) ? n : valeDe(n, null, null, origen);
+  if (!v) return toast('Transferencia no encontrada.', 'err');
+  const nDan = (v.lineas || []).filter(l => l.cond === 'DAÑADO' || l.est === 'DAN').reduce((a, l) => a + l.cant, 0);
+  const nDisp = (v.lineas || []).filter(l => l.cond !== 'DAÑADO' && l.est !== 'DAN' && l.est !== 'VACIO').reduce((a, l) => a + l.cant, 0);
+  const nVac = (v.lineas || []).filter(l => l.est === 'VACIO').reduce((a, l) => a + l.cant, 0);
   const det = [];
   if (nDisp > 0) det.push(`<b>${nDisp}</b> disponibles`);
   if (nVac > 0) det.push(`<b>${nVac}</b> vacíos`);
   if (nDan > 0) det.push(`<b style="color:var(--rojo)">${nDan} DAÑADOS</b> (ingresarán a Dañados / En taller)`);
-  confirmar(`¿Aceptar la transferencia <b>${n}</b> desde ${esc(almNombre(v.origen))}?<br><br>Carga: ${det.join(', ')} en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(n); toast(`Transferencia ${n} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
+  confirmar(`¿Aceptar la transferencia <b>${v.num}</b> desde ${esc(almNombre(v.origen))}?<br><br>Carga: ${det.join(', ')} en ${esc(almNombre(v.destino))}.`, () => { aceptarTransferencia(v.num, v.origen); toast(`Transferencia ${v.num} recibida.`, 'ok'); pintarMenu(); refrescar(); }, 'Aceptar transferencia');
 }
-function accionRechazarTrf(n) { pedirTexto('Rechazar transferencia ' + n, 'Motivo del rechazo (obligatorio)', v => { rechazarTransferencia(n, v); toast(`Transferencia ${n} rechazada. El material regresó al almacén de origen.`, 'ok'); pintarMenu(); refrescar(); }, 'Rechazar transferencia', 'btn-rojo', true); }
+function accionRechazarTrf(n, origen) {
+  pedirTexto('Rechazar transferencia ' + n, 'Motivo del rechazo (obligatorio)', motivo => {
+    rechazarTransferencia(n, motivo, origen);
+    toast(`Transferencia ${n} rechazada. El material regresó al almacén de origen.`, 'ok');
+    pintarMenu();
+    refrescar();
+  }, 'Rechazar transferencia', 'btn-rojo', true);
+}
 function editarTransferencia(n, alm) {
   if (!n) return;
   const ctx = alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
-  const v = valeDe(n, ctx);
+  const v = valeDe(n, ctx, null, ctx);
   if (!v) return toast('Transferencia no encontrada.', 'err');
   if (v.estatus !== 'PENDIENTE DE RECEPCIÓN') {
     return toast(`La transferencia ${v.num} ya fue ${v.estatus}. Por regla estricta: si ya aceptaron la transferencia no hay vuelta atrás.`, 'err');
@@ -9158,12 +9160,12 @@ function restaurarRespaldo() {
 /* =====================================================================
    IMPRESIÓN DEL VALE (todos los movimientos)
    ===================================================================== */
-function imprimirVale(n, alm, solNum) {
+function imprimirVale(n, alm, solNum, origen) {
   if (!n && !solNum) return toast('El vale aún no tiene número asignado.', 'err');
-  let v = valeDe(n, alm, solNum);
+  let v = valeDe(n, alm, solNum, origen);
   if (!v && String(n).startsWith('SOL-')) {
     const s = solDe(n, alm);
-    if (s && s.vale) v = valeDe(s.vale, alm || s.origen, s.num);
+    if (s && s.vale) v = valeDe(s.vale, alm || s.origen, s.num, origen);
   }
   if (!v) return toast('Vale no encontrado.', 'err');
   const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT';
