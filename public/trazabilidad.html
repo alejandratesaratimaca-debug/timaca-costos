@@ -1316,21 +1316,48 @@ function cargarDatos() {
   guardarLocalSolo();
 }
 function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')) {
+  if (!alm || alm === 'TODOS' || alm === 'MAESTRO') alm = 'CENTRAL';
   DB.corrAlm = DB.corrAlm || {};
   DB.corrAlm[alm] = DB.corrAlm[alm] || {};
-  DB.corrAlm[alm][pref] = (DB.corrAlm[alm][pref] || 0) + 1;
+  let cur = DB.corrAlm[alm][pref] || 0;
+
+  const regex = new RegExp(`^${pref}-(\\d+)$`);
+  const checkNum = (n, o) => {
+    if (!n) return;
+    const m = String(n).trim().match(regex);
+    if (m) {
+      if (!o || o === alm) {
+        const val = parseInt(m[1], 10);
+        if (val > cur) cur = val;
+      }
+    }
+  };
+
+  (DB.vales || []).forEach(v => checkNum(v.num, v.origen));
+  (DB.solicitudes || []).forEach(s => {
+    if (pref === 'SOL') checkNum(s.num, s.origen);
+    if (s.vale) checkNum(s.vale, s.origen);
+  });
+  (DB.movs || []).forEach(m => checkNum(m.doc, m.origen));
+
+  const next = cur + 1;
+  DB.corrAlm[alm][pref] = next;
   DB.corr = DB.corr || {};
-  DB.corr[pref] = Math.max(DB.corr[pref] || 0, DB.corrAlm[alm][pref]);
-  return `${pref}-${String(DB.corrAlm[alm][pref]).padStart(7, '0')}`;
+  DB.corr[pref] = Math.max(DB.corr[pref] || 0, next);
+  return `${pref}-${String(next).padStart(7, '0')}`;
 }
 function sigNum5(pref) { DB.corr = DB.corr || {}; DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(5, '0')}`; }
 
 /* ----------------------------- Accesores ----------------------------- */
 const almNombre = c => (DB.almacenes.find(a => a.c === c) || { n: c }).n;
 const item = id => DB.catalogo.find(i => i.id === id);
-const valeDe = (n, alm) => {
-  if (!n) return null;
+const valeDe = (n, alm, solNum) => {
+  if (!n && !solNum) return null;
   const ctx = alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
+  if (solNum) {
+    const matchSol = (DB.vales || []).find(v => v.solicitud === solNum && (!ctx || ctx === 'TODOS' || ctx === 'MAESTRO' || v.origen === ctx || v.destino === ctx));
+    if (matchSol) return matchSol;
+  }
   if (ctx && ctx !== 'TODOS' && ctx !== 'MAESTRO') {
     const match = (DB.vales || []).find(v => v.num === n && (v.origen === ctx || v.destino === ctx));
     if (match) return match;
@@ -1558,11 +1585,15 @@ function estadoVale(v) {
 }
 function saldoVale(v) { return v.lineas.reduce((a, l) => a + saldoLinea(l), 0); }
 function nuevoVale(tipo, datos) {
+  const alm = (datos && (datos.origen || datos.alm)) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  const num = (datos && datos.num) ? datos.num : sigNum(tipo, alm);
   const v = Object.assign({
-    num: sigNum(tipo), tipo, fecha: nowISO(), origen: '', destino: '', resp: null, sup: '', proyecto: '', cuenta: '', obs: '',
+    num, tipo, fecha: nowISO(), origen: alm, destino: '', resp: null, sup: '', proyecto: '', cuenta: '', obs: '',
     lineas: [], realizadoPor: quien(), aprobadoPor: null, estatus: null, extensiones: 0, aprobGer: '', ref: '', extra: {}, hist: [], impresiones: 0
   }, datos);
-  DB.vales.push(v);
+  if (!DB.vales.some(x => x === v || (x.num === v.num && x.origen === v.origen))) {
+    DB.vales.push(v);
+  }
   return v;
 }
 
@@ -1704,7 +1735,7 @@ function emitirValeDirecto(d) {
   }
 
   if (!s) {
-    s = { num: sigNum('SOL'), fecha: nowISO(), generadoPor: quien(), estatus: 'FINALIZADA' };
+    s = { num: sigNum('SOL', d.origen || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')), fecha: nowISO(), generadoPor: quien(), estatus: 'FINALIZADA' };
     DB.solicitudes.push(s);
   }
 
@@ -6323,9 +6354,9 @@ function registrarEntradaUI() {
    VISTA DE SOLO LECTURA (igual al formulario) PARA SOLICITUDES Y VALES
    ===================================================================== */
 VISTAS.doc = p => {
-  const esSol = p.num.startsWith('SOL-');
+  const esSol = p.num && p.num.startsWith('SOL-');
   const alm = p.alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
-  const d = esSol ? solDe(p.num, alm) : valeDe(p.num, alm);
+  const d = esSol ? solDe(p.num, alm) : (valeDe(p.num, alm, p.sol) || (p.sol ? solDe(p.sol, alm) : null));
   if (!d) { $('area').innerHTML = cab('Documento no encontrado'); return; }
   if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
   const t = d.tipo, est = esSol ? formatoEstSol(d.estatus) : (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : estadoVale(d));
@@ -6517,8 +6548,8 @@ VISTAS.sol = p => {
     <div class="barra-btn">
       <button class="btn-sip" onclick="ir('solNueva')">Nueva solicitud</button>
       <button class="btn-sip btn-ambar" id="bEditar" disabled onclick="editarSolicitudVale(selDe('gSol'), S.ctx)">✏️ Editar solicitud / vale</button>
-      <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').vale || selDe('gSol').num,alm:selDe('gSol').origen,back:'sol'})">Visualizar vale</button>
-      <button class="btn-sip" id="bImp" disabled onclick="imprimirVale(selDe('gSol').vale || selDe('gSol').num, selDe('gSol').origen)">🖨 Imprimir vale</button>
+      <button class="btn-sip" id="bVer" disabled onclick="ir('doc',{num:selDe('gSol').vale || selDe('gSol').num,alm:selDe('gSol').origen,sol:selDe('gSol').num,back:'sol'})">Visualizar vale</button>
+      <button class="btn-sip" id="bImp" disabled onclick="imprimirVale(selDe('gSol').vale || selDe('gSol').num, selDe('gSol').origen, selDe('gSol').num)">🖨 Imprimir vale</button>
       <button class="btn-sip btn-rojo" id="bAnular" disabled onclick="accionAnularSol()" title="Anular solicitud seleccionada y reintegrar existencias">🚫 Anular solicitud</button>
       <button class="btn-ayuda" onclick="ayuda('sol')">AYUDA</button>
     </div>`;
@@ -9114,12 +9145,12 @@ function restaurarRespaldo() {
 /* =====================================================================
    IMPRESIÓN DEL VALE (todos los movimientos)
    ===================================================================== */
-function imprimirVale(n, alm) {
-  if (!n) return toast('El vale aún no tiene número asignado.', 'err');
-  let v = valeDe(n, alm);
+function imprimirVale(n, alm, solNum) {
+  if (!n && !solNum) return toast('El vale aún no tiene número asignado.', 'err');
+  let v = valeDe(n, alm, solNum);
   if (!v && String(n).startsWith('SOL-')) {
     const s = solDe(n, alm);
-    if (s && s.vale) v = valeDe(s.vale, alm || s.origen);
+    if (s && s.vale) v = valeDe(s.vale, alm || s.origen, s.num);
   }
   if (!v) return toast('Vale no encontrado.', 'err');
   const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT';
