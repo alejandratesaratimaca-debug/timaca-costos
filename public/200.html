@@ -1317,16 +1317,19 @@ function cargarDatos() {
 }
 function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')) {
   if (!alm || alm === 'TODOS' || alm === 'MAESTRO') alm = 'CENTRAL';
+  const esGlobal = (pref === 'TRF');
+  DB.corr = DB.corr || {};
   DB.corrAlm = DB.corrAlm || {};
   DB.corrAlm[alm] = DB.corrAlm[alm] || {};
-  let cur = DB.corrAlm[alm][pref] || 0;
+
+  let cur = esGlobal ? (DB.corr[pref] || 0) : (DB.corrAlm[alm][pref] || 0);
 
   const regex = new RegExp(`^${pref}-(\\d+)$`);
   const checkNum = (n, o) => {
     if (!n) return;
     const m = String(n).trim().match(regex);
     if (m) {
-      if (!o || o === alm) {
+      if (esGlobal || !o || o === alm) {
         const val = parseInt(m[1], 10);
         if (val > cur) cur = val;
       }
@@ -1341,9 +1344,13 @@ function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'C
   (DB.movs || []).forEach(m => checkNum(m.doc, m.origen));
 
   const next = cur + 1;
-  DB.corrAlm[alm][pref] = next;
-  DB.corr = DB.corr || {};
-  DB.corr[pref] = Math.max(DB.corr[pref] || 0, next);
+  if (esGlobal) {
+    DB.corr[pref] = next;
+    DB.corrAlm[alm][pref] = next;
+  } else {
+    DB.corrAlm[alm][pref] = next;
+    DB.corr[pref] = Math.max(DB.corr[pref] || 0, next);
+  }
   return `${pref}-${String(next).padStart(7, '0')}`;
 }
 function sigNum5(pref) { DB.corr = DB.corr || {}; DB.corr[pref] = (DB.corr[pref] || 0) + 1; return `${pref}-${String(DB.corr[pref]).padStart(5, '0')}`; }
@@ -1351,16 +1358,22 @@ function sigNum5(pref) { DB.corr = DB.corr || {}; DB.corr[pref] = (DB.corr[pref]
 /* ----------------------------- Accesores ----------------------------- */
 const almNombre = c => (DB.almacenes.find(a => a.c === c) || { n: c }).n;
 const item = id => DB.catalogo.find(i => i.id === id);
-const valeDe = (n, alm, solNum) => {
+const valeDe = (n, alm, solNum, origen) => {
   if (!n && !solNum) return null;
   const ctx = alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
   if (solNum) {
     const matchSol = (DB.vales || []).find(v => v.solicitud === solNum && (!ctx || ctx === 'TODOS' || ctx === 'MAESTRO' || v.origen === ctx || v.destino === ctx));
     if (matchSol) return matchSol;
   }
+  if (origen) {
+    const matchOrig = (DB.vales || []).find(v => v.num === n && v.origen === origen);
+    if (matchOrig) return matchOrig;
+  }
   if (ctx && ctx !== 'TODOS' && ctx !== 'MAESTRO') {
-    const match = (DB.vales || []).find(v => v.num === n && (v.origen === ctx || v.destino === ctx));
-    if (match) return match;
+    const matchOrig = (DB.vales || []).find(v => v.num === n && v.origen === ctx);
+    if (matchOrig) return matchOrig;
+    const matchDest = (DB.vales || []).find(v => v.num === n && v.destino === ctx);
+    if (matchDest) return matchDest;
   }
   return (DB.vales || []).find(v => v.num === n);
 };
@@ -6356,7 +6369,7 @@ function registrarEntradaUI() {
 VISTAS.doc = p => {
   const esSol = p.num && p.num.startsWith('SOL-');
   const alm = p.alm || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : null);
-  const d = esSol ? solDe(p.num, alm) : (valeDe(p.num, alm, p.sol) || (p.sol ? solDe(p.sol, alm) : null));
+  const d = esSol ? solDe(p.num, alm) : (valeDe(p.num, alm, p.sol, p.origen) || (p.sol ? solDe(p.sol, alm) : null));
   if (!d) { $('area').innerHTML = cab('Documento no encontrado'); return; }
   if (!enMaestro() && !S.u.admin && d.origen !== S.ctx && d.destino !== S.ctx) { $('area').innerHTML = cab('Acceso no permitido') + avisoSinPermiso('Este documento pertenece a otro almacén.'); return; }
   const t = d.tipo, est = esSol ? formatoEstSol(d.estatus) : (t === 'TRF' && d.estatus === 'PENDIENTE DE RECEPCIÓN' ? 'POR ACEPTAR' : estadoVale(d));
@@ -6792,13 +6805,13 @@ VISTAS.trfEnv = p => {
     <div class="barra-btn">
       ${puede('transferir', S.ctx) ? `<button class="btn-sip" onclick="ir('trfNueva')">Nueva transferencia</button>` : ''}
       <button class="btn-sip" id="eEdit" disabled onclick="editarTransferencia(selDe('gEnv').num, selDe('gEnv').origen)">Editar transferencia</button>
-      <button class="btn-sip" id="eVer" disabled onclick="ir('doc',{num:selDe('gEnv').num,back:'trfEnv'})">Visualizar transferencia</button>
+      <button class="btn-sip" id="eVer" disabled onclick="ir('doc',{num:selDe('gEnv').num,alm:selDe('gEnv').origen,origen:selDe('gEnv').origen,back:'trfEnv'})">Visualizar transferencia</button>
       <button class="btn-sip" id="eImp" ${puedeImprimir() ? '' : 'style="display:none"'} disabled onclick="imprimirVale(selDe('gEnv').num, selDe('gEnv').origen)">Imprimir vale</button>
       <button class="btn-sip" id="eHist" disabled onclick="verHistorial(selDe('gEnv').num, selDe('gEnv').origen)">Ver historial</button>
       <button class="btn-ayuda" onclick="ayuda('trf')">AYUDA</button>
     </div>`;
 };
-function verHistorial(n) { const v = valeDe(n); abrirModal('Historial de ' + n, `<p class="ayuda-txt" style="margin-bottom:12px">${esc(almNombre(v.origen))} → ${esc(almNombre(v.destino))} · ${estB(v.estatus)}</p>${timeline(v)}`); }
+function verHistorial(n, alm) { const v = valeDe(n, alm); if (!v) return; abrirModal('Historial de ' + n, `<p class="ayuda-txt" style="margin-bottom:12px">${esc(almNombre(v.origen))} → ${esc(almNombre(v.destino))} · ${estB(v.estatus)}</p>${timeline(v)}`); }
 
 /* =====================================================================
    DEVOLUCIÓN Y EXTENSIÓN DE PLAZO
@@ -7057,15 +7070,15 @@ VISTAS.dash = p => {
   const desde = new Date(ahora().getTime() - 30 * 86400000).toISOString();
   const docs = {};
 
-  // 1. Contar desde DB.vales (Vales emitidos en origen o transferencias recibidas en destino)
-  (DB.vales || []).filter(v => (v.origen === c || (v.tipo === 'TRF' && v.destino === c)) && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
+  // 1. Contar desde DB.vales (Vales emitidos en origen: transferencias hechas por este almacén)
+  (DB.vales || []).filter(v => v.origen === c && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
     .forEach(v => {
       docs[v.tipo] = docs[v.tipo] || new Set();
       docs[v.tipo].add(v.num);
     });
 
-  // 2. Contar desde DB.movs (movimientos registrados)
-  (DB.movs || []).filter(m => (m.origen === c || m.destino === c) && (m.fecha || '') >= desde && m.tipo !== 'INI' && (!mod || m.mod === mod))
+  // 2. Contar desde DB.movs (movimientos realizados por este almacén)
+  (DB.movs || []).filter(m => m.origen === c && (m.fecha || '') >= desde && m.tipo !== 'INI' && (!mod || m.mod === mod))
     .forEach(m => {
       docs[m.tipo] = docs[m.tipo] || new Set();
       if (m.doc) docs[m.tipo].add(m.doc);
