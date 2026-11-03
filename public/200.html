@@ -967,12 +967,24 @@ function marcarTodasNotifLeidas() {
   abrirPanelNotificaciones();
 }
 
+function purgarDuplicadosCorregidos(dbObj) {
+  if (!dbObj) return;
+  if (Array.isArray(dbObj.vales)) {
+    dbObj.vales = dbObj.vales.filter(v => !(v.num === 'DEV-0000002' && (String(v.fecha || '').startsWith('2026-11-03') || v.ref === 'PRH-0000019')));
+  }
+  if (Array.isArray(dbObj.movs)) {
+    dbObj.movs = dbObj.movs.filter(m => !(m.doc === 'DEV-0000002' && (String(m.fecha || '').startsWith('2026-11-03') || m.obs === 'Ref. PRH-0000019')));
+  }
+}
+
 function guardarLocalSolo() {
+  purgarDuplicadosCorregidos(DB);
   try { localStorage.setItem(LS_KEY, JSON.stringify(DB)); } catch (e) { }
 }
 
 function guardar() {
   DB = deepCleanDB(DB);
+  purgarDuplicadosCorregidos(DB);
   try {
     DB._actualizadoEn = new Date().toISOString();
     DB._actualizadoPor = (typeof S !== 'undefined' && S && S.u) ? S.u.usuario : 'SISTEMA';
@@ -9569,7 +9581,9 @@ function descargarDeNube(cloudDB) {
   if (!cloudDB || typeof cloudDB !== 'object') return;
   cloudDB = deepCleanDB(cloudDB);
   const base = semilla();
+  purgarDuplicadosCorregidos(cloudDB);
   DB = Object.assign({}, base, cloudDB);
+  purgarDuplicadosCorregidos(DB);
 
   // Garantizar que almacenes, usuarios, personal y proyectos oficiales NUNCA desaparezcan ni queden vacíos
   if (!Array.isArray(DB.almacenes) || DB.almacenes.length === 0) DB.almacenes = base.almacenes;
@@ -9677,7 +9691,8 @@ function actualizarIndicadorCloud(estado) {
 
 async function forzarSincronizacionNube() {
   toast('Sincronizando con la nube de TIMACA...', 'info');
-  await sincronizarConNube(true);
+  purgarDuplicadosCorregidos(DB);
+        await sincronizarConNube(false);
   if (typeof refrescar === 'function') refrescar();
   toast('Sincronización completada.', 'ok');
 }
