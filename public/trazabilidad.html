@@ -1320,6 +1320,9 @@ function cargarDatos() {
   guardarLocalSolo();
 }
 function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')) {
+  if (pref === 'DEV' && typeof S !== 'undefined' && S && S.ctx && S.ctx !== 'MAESTRO') {
+    alm = S.ctx;
+  }
   if (!alm || alm === 'TODOS' || alm === 'MAESTRO') alm = 'CENTRAL';
   DB.corr = DB.corr || {};
   DB.corrAlm = DB.corrAlm || {};
@@ -1328,23 +1331,24 @@ function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'C
   let cur = DB.corrAlm[alm][pref] || 0;
 
   const regex = new RegExp(`^${pref}-(\\d+)$`);
-  const checkNum = (n, o) => {
+  const checkNum = (n, o, d) => {
     if (!n) return;
     const m = String(n).trim().match(regex);
     if (m) {
-      if (!o || o === alm) {
+      const matchAlm = (pref === 'DEV') ? (!d || d === alm || !o || o === alm) : (!o || o === alm);
+      if (matchAlm) {
         const val = parseInt(m[1], 10);
         if (val > cur) cur = val;
       }
     }
   };
 
-  (DB.vales || []).forEach(v => checkNum(v.num, v.origen));
+  (DB.vales || []).forEach(v => checkNum(v.num, v.origen, v.destino));
   (DB.solicitudes || []).forEach(s => {
-    if (pref === 'SOL') checkNum(s.num, s.origen);
-    if (s.vale) checkNum(s.vale, s.origen);
+    if (pref === 'SOL') checkNum(s.num, s.origen, s.destino);
+    if (s.vale) checkNum(s.vale, s.origen, s.destino);
   });
-  (DB.movs || []).forEach(m => checkNum(m.doc, m.origen));
+  (DB.movs || []).forEach(m => checkNum(m.doc, m.origen, m.destino));
 
   const next = cur + 1;
   DB.corrAlm[alm][pref] = next;
@@ -1597,7 +1601,7 @@ function validarStock(alm, lineas) {
   lineas.forEach(l => { const k = l.id + '|' + l.est; req[k] = (req[k] || 0) + Number(l.cant); });
   Object.keys(req).forEach(k => {
     const [id, est] = k.split('|'); const e = exi(alm, +id); const it = item(+id);
-    const d = est === 'VACIO' ? e.vacio : (est === 'DAN' ? e.dan : e.disp);
+    const d = est === 'VACIO' ? (e.vacio || 0) : (est === 'DAN' ? ((e.dan || 0) + (e.rep || 0)) : (e.disp || 0));
     if (req[k] > d) throw new Error(`Existencia insuficiente en ${almNombre(alm)} para ${it.cod} · ${it.desc}${it.serial ? ' (' + it.serial + ')' : ''} [${nomBucket[est] || est}]: disponible ${d}, requerido ${req[k]}.`);
   });
 }
@@ -1615,7 +1619,10 @@ function estadoVale(v) {
 }
 function saldoVale(v) { return v.lineas.reduce((a, l) => a + saldoLinea(l), 0); }
 function nuevoVale(tipo, datos) {
-  const alm = (datos && (datos.origen || datos.alm)) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  let alm = (datos && (datos.origen || datos.alm)) || (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL');
+  if (tipo === 'DEV' && datos && (datos.destino || datos.alm)) {
+    alm = datos.destino || datos.alm;
+  }
   const num = (datos && datos.num) ? datos.num : sigNum(tipo, alm);
   const v = Object.assign({
     num, tipo, fecha: nowISO(), origen: alm, destino: '', resp: null, sup: '', proyecto: '', cuenta: '', obs: '',
@@ -2038,8 +2045,14 @@ function crearTransferencia(d) {
     const e = exi(d.origen, l.id);
     if (l.est === 'VACIO') e.vacio -= l.cant;
     else if (l.est === 'DAN') {
-      e.dan -= l.cant;
-      const incOrigen = (DB.incid || []).find(i => i.alm === d.origen && i.id === l.id && i.estado === 'DAÑADO');
+      if ((e.dan || 0) >= l.cant) {
+        e.dan -= l.cant;
+      } else {
+        const resto = l.cant - (e.dan || 0);
+        e.dan = 0;
+        e.rep = Math.max(0, (e.rep || 0) - resto);
+      }
+      const incOrigen = (DB.incid || []).find(i => i.alm === d.origen && i.id === l.id && ['DAÑADO', 'EN TALLER'].includes(i.estado));
       if (incOrigen) {
         incOrigen.hist.push({ ev: 'EN TRÁNSITO', fecha: v.fecha, usr: S.u.nombre, det: `Enviado a ${almNombre(d.destino)} mediante transferencia ${v.num}` });
       }
@@ -5294,8 +5307,13 @@ function filaCaptura() {
     </div>
   </div>`;
 }
-function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO' ? e.vacio : (est === 'DAN' ? e.dan : e.disp); }
-const estDe = (it, cond) => cond === 'DAÑADO' ? 'DAN' : (it.mod === 'CILINDRO' && cond === 'VACÍO' ? 'VACIO' : 'DISP');
+function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO' ? (e.vacio || 0) : (est === 'DAN' ? ((e.dan || 0) + (e.rep || 0)) : (e.disp || 0)); }
+const estDe = (it, cond) => {
+  if (typeof F !== 'undefined' && F && (F.tipo === 'DAN' || F.tipo === 'EXT')) {
+    return (it && it.mod === 'CILINDRO' && (cond === 'VACÍO' || cond === 'VACIO')) ? 'VACIO' : 'DISP';
+  }
+  return cond === 'DAÑADO' ? 'DAN' : (it && it.mod === 'CILINDRO' && (cond === 'VACÍO' || cond === 'VACIO') ? 'VACIO' : 'DISP');
+};
 function dispCaptura(it, cond) {
   const est = estDe(it, cond);
   let extra = 0;
@@ -5307,39 +5325,83 @@ function dispCaptura(it, cond) {
   return (dispItem(F.origen, it.id, est) + extra) - usado;
 }
 const aceptaVacios = () => F.tipo === 'TRF' || F.tipo === 'DAN' || F.tipo === 'EXT';
-const aceptaDañados = () => F.tipo === 'TRF' || F.tipo === 'DAN';
+const aceptaDañados = () => F.tipo === 'TRF';
 function dispTotalItem(it) {
   const e = exi(F.origen, it.id);
   let extra = 0;
   if (F.lineasOriginales) {
     extra = F.lineasOriginales.filter(l => l.id === it.id).reduce((a, l) => a + l.cant, 0);
   }
-  return e.disp + (it.mod === 'CILINDRO' && aceptaVacios() ? e.vacio : 0) + (aceptaDañados() ? e.dan : 0) + extra;
+  const stockDan = aceptaDañados() ? ((e.dan || 0) + (e.rep || 0)) : 0;
+  return (e.disp || 0) + (it.mod === 'CILINDRO' && aceptaVacios() ? (e.vacio || 0) : 0) + stockDan + extra;
 }
 function itemsBuscables() {
   return DB.catalogo.filter(it => it.activo && !(F.tipo === 'PRH' && it.mod === 'EPP')).filter(it => dispTotalItem(it) > 0);
 }
-/* Agrupa por código: una opción por código con el total disponible y sus variantes (marcas / seriales) */
+/* Agrupa por código y permite elegir cada variante/serial directamente */
 function gruposDisponibles(q) {
   q = String(q || '').trim().toLowerCase();
-  const g = {};
-  itemsBuscables().forEach(it => {
-    if (q && !(`${it.cod} ${it.desc} ${it.marca} ${it.modelo} ${it.serial} ${it.cat}`.toLowerCase().includes(q))) return;
-    g[it.cod] = g[it.cod] || { cod: it.cod, desc: it.desc, cat: it.cat, mod: it.mod, umb: it.umb, disp: 0, variantes: 0, marcas: new Set() };
-    g[it.cod].disp += dispTotalItem(it); g[it.cod].variantes++; g[it.cod].marcas.add(it.marca);
+  const tokens = q.split(/\s+/).filter(Boolean);
+  const items = itemsBuscables().filter(it => {
+    if (!tokens.length) return true;
+    const str = `${it.cod} ${it.desc} ${it.marca || ''} ${it.modelo || ''} ${it.serial || ''} ${it.cat || ''}`.toLowerCase();
+    return tokens.every(t => str.includes(t));
   });
-  return Object.values(g).sort((a, b) => a.desc.localeCompare(b.desc)).slice(0, 40).map(x => ({ val: x.cod,
-    html: `<span class="disp">Stock ${x.disp}</span><b>${esc(x.cod)}</b> · ${esc(x.desc)}<small>${esc(MODULOS[x.mod])} · ${esc(x.cat)} · ${x.variantes} variante(s): ${esc([...x.marcas].join(', '))}</small>` }));
+
+  const g = {};
+  items.forEach(it => {
+    g[it.cod] = g[it.cod] || { cod: it.cod, desc: it.desc, cat: it.cat, mod: it.mod, umb: it.umb, disp: 0, variantes: 0, marcas: new Set(), items: [] };
+    g[it.cod].disp += dispTotalItem(it);
+    g[it.cod].variantes++;
+    if (it.marca) g[it.cod].marcas.add(it.marca);
+    g[it.cod].items.push(it);
+  });
+
+  const res = [];
+  Object.values(g).sort((a, b) => a.desc.localeCompare(b.desc)).slice(0, 40).forEach(x => {
+    if (x.items.length === 1) {
+      const it = x.items[0];
+      const serTxt = (it.serial && it.serial !== '—') ? ` · Serial: <b>${esc(it.serial)}</b>` : '';
+      const marcaTxt = (it.marca && it.marca !== '—' && it.marca !== 'SIN MARCA') ? ` · ${esc(it.marca)}` : '';
+      res.push({
+        val: it,
+        html: `<span class="disp">Stock ${x.disp}</span><b>${esc(x.cod)}</b> · ${esc(x.desc)}<small>${esc(MODULOS[x.mod] || x.mod)} · ${esc(x.cat)}${marcaTxt}${serTxt}</small>`
+      });
+    } else {
+      res.push({
+        val: x.cod,
+        html: `<span class="disp">Stock ${x.disp}</span><b>${esc(x.cod)}</b> · ${esc(x.desc)}<small>${esc(MODULOS[x.mod] || x.mod)} · ${esc(x.cat)} · <b>${x.variantes} variante(s):</b> ${esc([...x.marcas].join(', '))}</small>`
+      });
+      if (tokens.length > 0) {
+        x.items.forEach(it => {
+          const serTxt = (it.serial && it.serial !== '—') ? ` · Serial: <b>${esc(it.serial)}</b>` : '';
+          const marcaTxt = (it.marca && it.marca !== '—' && it.marca !== 'SIN MARCA') ? ` · ${esc(it.marca)}` : '';
+          res.push({
+            val: it,
+            html: `<div style="padding-left:14px;border-left:3px solid #2563eb"><span class="disp">Stock ${dispTotalItem(it)}</span>↳ ${esc(it.desc)}<small>${marcaTxt}${serTxt}</small></div>`
+          });
+        });
+      }
+    }
+  });
+  return res.slice(0, 50);
 }
 let AC_COD = null;
 function bindCaptura() {
-  AC_COD = bindAC('cCod', null, cod => elegirGrupo(cod), { enter: buscarPorCodigo });
-  bindAC('cDesc', (q, foco) => gruposDisponibles(foco && F.cap ? '' : q), cod => elegirGrupo(cod), { alFoco: true });
+  AC_COD = bindAC('cCod', null, sel => {
+    if (typeof sel === 'object' && sel && sel.cod) elegirGrupo(sel.cod, sel.id);
+    else elegirGrupo(sel);
+  }, { enter: buscarPorCodigo });
+  bindAC('cDesc', (q, foco) => gruposDisponibles(foco && F.cap ? '' : q), sel => {
+    if (typeof sel === 'object' && sel && sel.cod) elegirGrupo(sel.cod, sel.id);
+    else elegirGrupo(sel);
+  }, { alFoco: true });
 
-  // Autocompletado para Marca / Modelo: escribir para filtrar o clic
+  // Autocompletado para Marca / Modelo: clic muestra todas las marcas
   bindAC('cMarca', (q, foco) => {
     if (!F.grp) return [];
-    q = String(q || '').trim().toLowerCase();
+    if (foco) q = '';
+    else q = String(q || '').trim().toLowerCase();
     const vars = itemsBuscables().filter(it => it.cod === F.grp);
     const marcas = [...new Set(vars.map(it => `${it.marca || '—'} / ${it.modelo || '—'}`))];
     return marcas.filter(m => !q || m.toLowerCase().includes(q)).map(m => {
@@ -5352,10 +5414,11 @@ function bindCaptura() {
     if ($('cSerial') && !$('cSerial').disabled) $('cSerial').focus();
   }, { alFoco: true });
 
-  // Autocompletado para Serial: escribir para filtrar o clic
+  // Autocompletado para Serial: clic muestra todos los seriales de la variante
   bindAC('cSerial', (q, foco) => {
     if (!F.grp) return [];
-    q = String(q || '').trim().toLowerCase();
+    if (foco) q = '';
+    else q = String(q || '').trim().toLowerCase();
     const curMarca = $('cMarca') ? $('cMarca').value : '';
     let vars = itemsBuscables().filter(it => it.cod === F.grp && (!curMarca || `${it.marca || '—'} / ${it.modelo || '—'}` === curMarca));
     if (!vars.length) vars = DB.catalogo.filter(it => it.cod === F.grp && (!curMarca || `${it.marca || '—'} / ${it.modelo || '—'}` === curMarca));
