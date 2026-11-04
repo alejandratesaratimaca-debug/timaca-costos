@@ -9576,9 +9576,15 @@ function fusionarBasesDeDatos(cloudDB, localDB) {
       const existing = valesMap.get(k);
       const exHist = (existing.hist || []).length;
       const locHist = (v.hist || []).length;
-      if (locHist > exHist || (v.fecha && v.fecha > (existing.fecha || ''))) {
-        valesMap.set(k, Object.assign({}, existing, v));
+      let ganador = (locHist > exHist || (v.fecha && v.fecha > (existing.fecha || ''))) ? Object.assign({}, existing, v) : Object.assign({}, v, existing);
+      // REGLA INMUTABLE: Si una transferencia fue RECIBIDA o ACEPTADA, JAMÁS se revierte a PENDIENTE ni a VENCIDA
+      if (existing.estatus === 'RECIBIDA' || v.estatus === 'RECIBIDA') {
+        ganador.estatus = 'RECIBIDA';
       }
+      if (existing.estatus === 'FINALIZADA' || v.estatus === 'FINALIZADA') {
+        ganador.estatus = 'FINALIZADA';
+      }
+      valesMap.set(k, ganador);
     }
   });
   const vales = Array.from(valesMap.values());
