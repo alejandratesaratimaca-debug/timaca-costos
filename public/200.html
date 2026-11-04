@@ -6770,7 +6770,7 @@ VISTAS.sol = p => {
   $('area').innerHTML = cab('Solicitudes del almacén', 'Préstamos y asignaciones de ' + esc(almNombre(S.ctx)) + '. Al crear una solicitud, se emite de inmediato el vale para imprimir y firmar.')
     + `<div class="tabs"><button class="tab ${tab === 'alm' ? 'activo' : ''}" onclick="ir('sol',{tab:'alm',f:'${filtro}'})">Solicitudes del almacén</button><button class="tab ${tab === 'mias' ? 'activo' : ''}" onclick="ir('sol',{tab:'mias',f:'${filtro}'})">Mis solicitudes</button></div>
     <div class="fila-filtros">${campo('Estatus', `<select onchange="ir('sol',{tab:'${tab}',f:this.value})">${opciones([['TODAS', 'Todas'], ['FINALIZADA', 'Finalizadas (con vale)'], ['ANULADA', 'Anuladas']], filtro)}</select>`)}${buscador('gSol', 'Buscar número, cuenta auxiliar, proyecto, responsable…')}</div>`
-    + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 15 })
+    + grid('gSol', cols, rows, { onSel: s => tiraSol(s), pag: 30 })
     + `<div class="sel-strip"><span class="lbl">Solicitud seleccionada</span><span class="box" id="tsNum"></span><span class="box" id="tsCuenta"></span><span class="box" id="tsProy" style="flex:1"></span><span class="box" id="tsResp" style="flex:1"></span></div><div id="tsInfo"></div>
     <div class="barra-btn">
       <button class="btn-sip" onclick="ir('solNueva')">Nueva solicitud</button>
