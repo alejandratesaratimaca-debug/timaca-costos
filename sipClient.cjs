@@ -3,15 +3,15 @@ const http = require('http');
 /**
  * Cliente Oficial de Integración SIGMA ➔ Nuevo SIP (NÚCLEO)
  * Grupo TIMACA - Gerencia de Costos
- * Elimina la dependencia de archivos Excel y conecta en tiempo real vía REST API.
+ * Conexión en tiempo real directa vía REST API y SSO Núcleo ERP.
  */
 
-const SIP_HOST = '192.168.11.168';
-const SIP_PORT = 8087;
-const SIP_USER = 'drivero';
-const SIP_PASS = '070717';
+const SIP_HOST = 'sip.timaca.com';
+const SIP_PORT = 80;
+const NUCLEO_TOKEN = 'eyJhbGciOiJFUzI1NiIsImtpZCI6Ijk4MzgyZTNhLTZlZWQtNDU0OC05ZTY2LTM1NmRiNTM2Y2E2OSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Fra3p2bXBjeHdsaXFndXhybG9tLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkZDQ5NDVjMy0zYTAzLTRlZjctYTcwYS02NTAwMTA2N2Q4NzYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzkzODMwNTU0LCJpYXQiOjE3OTM4MjY5NTQsImVtYWlsIjoiYWxlamFuZHJhdGVzYXJhQHRpbWFjYS5jb20udmUiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7fSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc5MzgyNjk1NH1dLCJzZXNzaW9uX2lkIjoiNGQyYjVjNDktYzZmOS00YmQxLWJjZWEtMGVkNWFjNzQ0OGVjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.c993lFi4MyGXHjLI_toTlozjvhFfAfFooNDP93CSsn-MyRaDgdXDA3MaIOolNavFbtAOu-VkvujWvAPb45LK2g';
 
 let cachedCookie = null;
+let lastLoginTime = 0;
 
 function toISODate(dStr) {
   if (!dStr) return '';
@@ -29,7 +29,8 @@ function request(path, method = 'GET', payload = null) {
     const dataString = payload ? JSON.stringify(payload) : null;
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) TIMACA SIGMA Realtime Client',
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      'Host': 'sip.timaca.com'
     };
 
     if (payload) {
@@ -82,23 +83,52 @@ function request(path, method = 'GET', payload = null) {
 }
 
 async function login() {
-  console.log(`[Nuevo SIP API] Autenticando en ${SIP_HOST}:${SIP_PORT} como: ${SIP_USER}...`);
-  const resLogin = await request('/api/acceso/entrar', 'POST', {
-    login: SIP_USER,
-    clave: SIP_PASS
-  });
-
-  if (!resLogin.ok) {
-    throw new Error(`Credenciales o acceso rechazado en Nuevo SIP: ${resLogin.mensaje}`);
+  const now = Date.now();
+  if (cachedCookie && (now - lastLoginTime) < 15 * 60 * 1000) {
+    return true; // Cookie still fresh (under 15 min)
   }
 
-  // Configurar Almacén Central ALMCE
-  await request('/api/acceso/almacen/ALMCE', 'PUT');
-  console.log(`[Nuevo SIP API] Sesión activa exitosamente: ${resLogin.sesion.nombre}`);
-  return true;
+  console.log(`[Nuevo SIP API] Autenticando vía SSO Núcleo ERP en ${SIP_HOST}:${SIP_PORT}...`);
+  try {
+    const valeRes = await fetch('https://nucleo-erp-alpha.vercel.app/api/sip-vale', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${NUCLEO_TOKEN}` }
+    });
+    const valeData = await valeRes.json();
+    if (!valeData.vale) throw new Error('No se recibió vale de Núcleo ERP');
+
+    const formBody = new URLSearchParams();
+    formBody.append('vale', valeData.vale);
+
+    const sipRes = await fetch('http://sip.timaca.com/entrar-por-nucleo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Host': 'sip.timaca.com' },
+      body: formBody.toString(),
+      redirect: 'manual'
+    });
+
+    const setCookies = sipRes.headers.get('set-cookie');
+    if (!setCookies) throw new Error('No se recibió cookie de sesión de sip.timaca.com');
+    cachedCookie = setCookies.split(';')[0];
+    lastLoginTime = Date.now();
+    console.log(`[Nuevo SIP API] Sesión activa exitosamente como Alejandra Tesara (AT)`);
+    return true;
+  } catch (err) {
+    console.warn(`[Nuevo SIP API] Aviso: fallo en SSO Núcleo (${err.message}). Reintentando conexión directa...`);
+    // Fallback direct login
+    const resLogin = await request('/api/acceso/entrar', 'POST', {
+      login: 'drivero',
+      clave: '070717'
+    });
+    if (resLogin.ok) {
+      lastLoginTime = Date.now();
+      return true;
+    }
+    throw err;
+  }
 }
 
-async function getConsumos(inicio = '01/10/2026', hasta = '31/10/2026', almacen = 'ALMCE') {
+async function getConsumos(inicio = '01/10/2026', hasta = '31/10/2026', almacen = '%') {
   await login();
   const desde = toISODate(inicio);
   const al = toISODate(hasta);
@@ -178,7 +208,7 @@ async function getServicios(inicio = '01/10/2026', hasta = '31/10/2026') {
   });
 }
 
-async function getDevoluciones(inicio = '01/10/2026', hasta = '31/10/2026', almacen = 'ALMCE') {
+async function getDevoluciones(inicio = '01/10/2026', hasta = '31/10/2026', almacen = '%') {
   await login();
   const desde = toISODate(inicio);
   const al = toISODate(hasta);
