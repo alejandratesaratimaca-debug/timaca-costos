@@ -520,9 +520,9 @@ table.grid tbody tr.sel td{background:#DBEAFE!important;color:#1E3A8A!important;
     </div>
     <div class="tb-der">
       <span class="tb-bienv">Bienvenido, <b id="tbUsuario"></b> <span id="tbRol"></span></span>
-      <span id="btnCloudSync" onclick="forzarSincronizacionNube()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);user-select:none" title="Estado de la base de datos central en la nube. Haga clic para sincronizar ahora">
+      <span id="btnCloudSync" onclick="forzarSincronizacionNube()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);user-select:none" title="Auto-guardado activo cada 60 segundos y fusión continua entre todos los almacenes. Haga clic para sincronizar ya.">
         <span id="dotCloud" style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span>
-        <span id="txtCloud">☁️ Nube conectada</span>
+        <span id="txtCloud">☁️ Auto-guardado (1 min) · Al día</span>
       </span>
       <button class="btn-tb" id="btnNotif" onclick="abrirPanelNotificaciones()" style="position:relative;background:#0f172a;border-color:#334155;cursor:pointer" title="Notificaciones del Sistema">
         🔔 <span id="badgeNotif" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px;font-weight:900">0</span>
@@ -9458,7 +9458,7 @@ function ayuda(k) {
 const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
 const SYNC_DOC_ID = 'TIMACA_TRAZABILIDAD_V1_SYNC';
-const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V24';
+const REINICIO_ID = 'TIMACA_FORCE_RESTORE_V25';
 
 let supabaseClient = null;
 let cloudSyncEnProgreso = false;
@@ -9541,6 +9541,27 @@ async function sincronizarConNube(forzar = false) {
 async function subirANube() {
   if (!supabaseClient || !DB) return;
   try {
+    // ESCUDO DE DATOS: Antes de subir, verificar que no estemos destruyendo datos de la nube
+    const { data: checkData } = await supabaseClient
+      .from('herramientas_vales')
+      .select('lineas')
+      .eq('numero', SYNC_DOC_ID)
+      .maybeSingle();
+
+    if (checkData && checkData.lineas) {
+      const cloudData = checkData.lineas;
+      const cloudCat = (cloudData.catalogo || []).length;
+      const localCat = (DB.catalogo || []).length;
+      const cloudVales = (cloudData.vales || []).length;
+      const localVales = (DB.vales || []).length;
+
+      if (cloudCat > localCat || cloudVales > localVales) {
+        console.warn(`🛡️ ESCUDO DE DATOS: La nube tiene ${cloudCat} ítems y ${cloudVales} vales (local: ${localCat} ítems, ${localVales} vales). Bloqueando sobreescritura y adoptando datos de la nube.`);
+        descargarDeNube(cloudData);
+        return;
+      }
+    }
+
     DB._actualizadoEn = new Date().toISOString();
     DB._actualizadoPor = (typeof S !== 'undefined' && S && S.u) ? S.u.usuario : 'SISTEMA';
     DB._reinicioId = REINICIO_ID;
@@ -9656,6 +9677,21 @@ function activarRealtimeSupabase() {
   setInterval(() => {
     if (!cloudSyncEnProgreso) sincronizarConNube();
   }, 15000);
+
+  // AUTO-GUARDADO ACTIVO CADA MINUTO (60 SEGUNDOS) - CERO PÉRDIDA DE DATOS
+  setInterval(async () => {
+    try {
+      if (typeof guardarBorradorEntrada === 'function') guardarBorradorEntrada();
+      if (typeof guardarBorradorFormulario === 'function') guardarBorradorFormulario();
+      if (typeof guardarLocalSolo === 'function') guardarLocalSolo();
+      if (supabaseClient && !cloudSyncEnProgreso) {
+        console.log('⏰ [AUTO-GUARDADO 1 MIN] Sincronizando y fusionando con la nube...');
+        await sincronizarConNube(false);
+      }
+    } catch (eAuto) {
+      console.warn('Advertencia en autoguardado minuto a minuto:', eAuto);
+    }
+  }, 60000);
 }
 
 function actualizarIndicadorCloud(estado) {
@@ -9676,7 +9712,7 @@ function actualizarIndicadorCloud(estado) {
     btn.style.background = 'rgba(16,185,129,0.12)';
     dot.style.background = '#10b981';
     const numIt = (DB && Array.isArray(DB.catalogo)) ? DB.catalogo.length : 0;
-    txt.textContent = '☁️ Nube conectada';
+    txt.textContent = '☁️ Auto-guardado (1 min) · Al día';
   } else if (estado === 'error') {
     btn.style.borderColor = 'rgba(239,68,68,0.4)';
     btn.style.color = '#ef4444';
@@ -9709,7 +9745,6 @@ function iniciar() {
   } catch (e) { }
   try { cargarDatos(); } catch (e) { console.error('Error cargarDatos:', e); }
   try { iniciarSupabaseCloud(); } catch (e) { console.error('Error iniciarSupabaseCloud:', e); }
-  try { procesarVencimientos(); } catch (e) { console.error('Error procesarVencimientos:', e); }
   try { pintarUsuariosDemo(); } catch (e) { console.error('Error pintarUsuariosDemo:', e); }
   try { actualizarAccesosLogin(); } catch (e) { }
   setTimeout(actualizarAccesosLogin, 100);
