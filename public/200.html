@@ -2889,6 +2889,17 @@ function deepCleanDB(obj) {
         obj[k] = deepCleanDB(obj[k]);
       }
     }
+    // Saneamiento de integridad: un ítem con unidades en taller (rep) no debe duplicarse en dan
+    if (obj.exi && typeof obj.exi === 'object') {
+      for (const alm of Object.keys(obj.exi)) {
+        for (const id of Object.keys(obj.exi[alm] || {})) {
+          const e = obj.exi[alm][id];
+          if (e && e.dan > 0 && e.rep > 0) {
+            e.dan = Math.max(0, e.dan - e.rep);
+          }
+        }
+      }
+    }
   }
   return obj;
 }
