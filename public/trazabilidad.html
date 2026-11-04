@@ -2781,7 +2781,7 @@ function semilla() {
   const D = dias => fechaLocal(new Date(base + dias * 86400000));
   DB = {
     version: 2, corr: {}, seq: { mov: 0, inc: 0 }, exi: {}, solicitudes: [], vales: [], movs: [], incid: [], bit: [], costosHist: [], intentos: {},
-    config: { empresa: 'TALLER INDUSTRIAL METALÚRGICO ANTONIO, C.A.', direccion: 'AV. NORTE SUR CALLE PORVENIR EDIF. GALPÓN, TIMACA, PUERTO ORDAZ', rif: 'J095003159', plazoHoras: 12 },
+    config: { empresa: 'TALLER INDUSTRIAL METALÚRGICO ANTONIO, C.A.', direccion: 'AV. NORTE SUR CALLE PORVENIR EDIF. GALPÓN, TIMACA, PUERTO ORDAZ', rif: 'J095003159', plazoHoras: 72 },
     almacenes: [
       { c: 'CENTRAL', n: 'Almacén Central', t: 'CENTRAL' },
       { c: 'PELLAS', n: 'Almacén Pellas', t: 'SATÉLITE' },
@@ -6851,7 +6851,7 @@ const colsTrf = (recibidas) => [
   { t: 'N° vale', k: 'num', f: r => (!recibidas && r.estatus === 'PENDIENTE DE RECEPCIÓN') ? `<a href="javascript:void(0)" onclick="event.stopPropagation();editarTransferencia('${r.num}', '${r.origen}')" style="color:var(--azul);font-weight:800;text-decoration:underline" title="Haga clic para editar la transferencia ${r.num}">${esc(r.num)}</a>` : `<b>${esc(r.num)}</b>` },
   { t: 'Fecha y hora', v: r => fFH(r.fecha), s: r => r.fecha },
   recibidas ? { t: 'Origen', v: r => almNombre(r.origen) } : { t: 'Destino', v: r => almNombre(r.destino) },
-  { t: 'Tiempo restante (12 h)', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
+  { t: 'Tiempo restante', v: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? restante(r.vence) : '—', s: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? r.vence : 'z', f: r => r.estatus === 'PENDIENTE DE RECEPCIÓN' ? cronoHTML(r) : '—' },
   { t: 'Estatus', k: 'estatus', f: r => {
     if (r.estatus === 'PENDIENTE DE RECEPCIÓN') return `<span class="est est-naranja">⏱ POR ACEPTAR</span>`;
     if (r.estatus === 'RECIBIDA') return `<span class="est est-verde">ACEPTADA</span>`;
