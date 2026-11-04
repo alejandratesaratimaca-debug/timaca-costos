@@ -1518,7 +1518,9 @@ function reconciliarStockAlmacen(alm) {
   (DB.vales || []).filter(v => v.tipo === 'TRF' && v.destino === alm && v.estatus === 'RECIBIDA').forEach(v => {
     (v.lineas || []).forEach(l => {
       init(l.id);
-      if (l.est === 'DAN' || l.cond === 'DAÑADO') nuevoExi[l.id].dan += (Number(l.cant) || 0);
+      if (l.est === 'DAN' || l.cond === 'DAÑADO') {
+        // Los ítems dañados recibidos generan incidencia y se computan exclusivamente en el paso 5 para evitar doble conteo
+      }
       else if (l.est === 'VACIO' || l.cond === 'VACÍO') nuevoExi[l.id].vacio += (Number(l.cant) || 0);
       else nuevoExi[l.id].disp += (Number(l.cant) || 0);
     });
@@ -1532,9 +1534,9 @@ function reconciliarStockAlmacen(alm) {
       if (l.cond === 'VACÍO' || l.cond === 'VACIO' || l.est === 'VACIO') {
         nuevoExi[l.id].vacio += c;
       } else if (l.cond === 'DAÑADO' || l.est === 'DAN') {
-        nuevoExi[l.id].dan += c;
+        // Las devoluciones recibidas con daño generan incidencia y se computan exclusivamente en el paso 5
       } else if (l.cond === 'EXTRAVIADO' || l.est === 'EXT') {
-        nuevoExi[l.id].ext += c;
+        // Las devoluciones con extravío generan incidencia y se computan exclusivamente en el paso 5
       } else {
         nuevoExi[l.id].disp += c;
       }
@@ -2187,12 +2189,13 @@ function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
       resp: sistema ? 'SISTEMA' : S.u.nombre, cedula: sistema ? '' : S.u.cedula, usr: sistema ? 'SISTEMA' : S.u.usuario,
       obs: aceptar ? ('Transferencia aceptada' + (l.est === 'DAN' ? ' (DAÑADO)' : '')) : (sistema ? 'Vencida: sin respuesta en ' + DB.config.plazoHoras + ' h' : 'Rechazada: ' + motivo) });
     if (l.est === 'DAN' || l.cond === 'DAÑADO') {
-      const incOrigen = (DB.incid || []).find(i => i.alm === v.origen && i.id === l.id && ['DAÑADO', 'EN TALLER'].includes(i.estado));
+      const incOrigen = (DB.incid || []).find(i => i.alm === v.origen && (i.id === l.id || (i.serial && i.serial === l.serial) || (i.cod && i.cod === l.cod)) && ['DAÑADO', 'EN TALLER', 'EN TRÁNSITO'].includes(i.estado));
       if (aceptar) {
         if (incOrigen) {
           incOrigen.estado = 'TRANSFERIDO';
           incOrigen.destinoTrf = v.destino;
           incOrigen.trfRef = v.num;
+          incOrigen.hist = incOrigen.hist || [];
           incOrigen.hist.push({
             ev: 'TRANSFERIDO',
             fecha,
@@ -2201,15 +2204,19 @@ function cerrarTransferencia(v, aceptar, motivo, sistema, fechaEv) {
           });
         }
         nuevaIncidencia('DAN', v.destino, l, l.cant, 'DAÑADO', {
-          valeRef: v.num,
+          valeRef: (incOrigen && incOrigen.valeRef) ? incOrigen.valeRef : v.num,
+          trfRef: v.num,
           origenTrf: v.origen,
-          detalle: `Recibido con daño por transferencia ${v.num} desde ${almNombre(v.origen)}${v.obs ? ' · Obs: ' + v.obs : ''}`,
-          malUso: 'NO',
+          detalle: (incOrigen && incOrigen.detalle) ? incOrigen.detalle : `Recibido con daño por transferencia ${v.num} desde ${almNombre(v.origen)}${v.obs ? ' · Obs: ' + v.obs : ''}`,
+          imputacion: (incOrigen && incOrigen.imputacion) ? incOrigen.imputacion : (v.proyecto || ''),
+          malUso: (incOrigen && incOrigen.malUso) ? incOrigen.malUso : 'NO',
           tipoA: !!(item(l.id) || {}).tipoA,
-          resp: v.resp ? v.resp.nombre : (v.despacha || v.realizadoPor.nombre)
+          resp: (incOrigen && incOrigen.resp) ? incOrigen.resp : (v.resp ? v.resp.nombre : (v.despacha || (v.realizadoPor && v.realizadoPor.nombre) || ''))
         });
       } else {
         if (incOrigen) {
+          incOrigen.estado = 'DAÑADO';
+          incOrigen.hist = incOrigen.hist || [];
           incOrigen.hist.push({
             ev: 'REINTEGRADO',
             fecha,
@@ -2296,8 +2303,8 @@ function registrarDevolucion(valeNum, items, recibe, obs, salidaTimaca) {
     l.dev = (l.dev || 0) + c;
     let estNue = 'DISPONIBLE';
     if (cond === 'VACÍO') { e.vacio += c; estNue = 'VACÍO'; }
-    else if (cond === 'DAÑADO') { e.dan += c; estNue = 'DAÑADO'; nuevaIncidencia('DAN', v.origen, l, c, 'DAÑADO', { valeRef: dv.num, detalle: 'Devuelto con daño (' + v.num + ')' }); }
-    else if (cond === 'EXTRAVIADO') { e.ext += c; estNue = 'EXTRAVIADO'; nuevaIncidencia('EXT', v.origen, l, c, 'EN INVESTIGACIÓN', { valeRef: dv.num, detalle: 'Reportado extraviado en devolución (' + v.num + ')' }); }
+    else if (cond === 'DAÑADO') { e.dan += c; estNue = 'DAÑADO'; nuevaIncidencia('DAN', v.origen, l, c, 'DAÑADO', { valeRef: dv.num, detalle: 'Devuelto con daño (' + v.num + ')' + (obs ? ': ' + obs : ''), resp: v.resp ? v.resp.nombre : '', imputacion: v.proyecto || '' }); }
+    else if (cond === 'EXTRAVIADO') { e.ext += c; estNue = 'EXTRAVIADO'; nuevaIncidencia('EXT', v.origen, l, c, 'EN INVESTIGACIÓN', { valeRef: dv.num, detalle: 'Reportado extraviado en devolución (' + v.num + ')' + (obs ? ': ' + obs : ''), resp: v.resp ? v.resp.nombre : '', imputacion: v.proyecto || '' }); }
     else { e.disp += c; }
     const ld = Object.assign({}, l, { cant: c, dev: 0, cond, condRet: cond });
     delete ld.consumo;
@@ -2341,7 +2348,7 @@ function registrarIncidencia(tipo, d) {
     else if (dictamen === 'REPARABLE') { e.rep += l.cant; estado = 'EN TALLER'; estNue = 'EN TALLER'; }
     else if (dictamen === 'NO REPARABLE') { e.baja += l.cant; estado = 'BAJA'; estNue = 'BAJA'; }
     else { e.dan += l.cant; estado = 'DAÑADO'; estNue = 'DAÑADO'; }
-    nuevaIncidencia(tipo, d.origen, l, l.cant, estado, { valeRef: v.num, detalle: d.detalle, malUso: d.malUso || 'NO', tipoA: !!item(l.id).tipoA, resp: d.resp ? d.resp.nombre : '' });
+    nuevaIncidencia(tipo, d.origen, l, l.cant, estado, { valeRef: v.num, detalle: d.detalle, malUso: d.malUso || 'NO', tipoA: !!item(l.id).tipoA, resp: d.resp ? d.resp.nombre : '', imputacion: d.proyecto || (vRef ? vRef.proyecto : '') });
     mov({ doc: v.num, tipo, id: l.id, cant: l.cant, origen: d.origen, destino: d.origen, estAnt, estNue, resp: d.resp ? d.resp.nombre : '', cedula: d.resp ? d.resp.cedula : '', obs: d.detalle });
   });
   if (vRef) vRef.hist.push({ ev: TIPOS[tipo].n + ' ' + v.num, fecha: nowISO(), usr: S.u.nombre, color: 'rojo' });
@@ -2359,9 +2366,18 @@ function accionIncidencia(nInc, accion, nota) {
   else throw new Error('Acción no válida para el estado actual.');
   e[de] -= inc.cant; e[a] += inc.cant;
   const ant = inc.estado; inc.estado = estado;
+  inc.hist = inc.hist || [];
   inc.hist.push({ ev: estado, fecha: nowISO(), usr: S.u.nombre, det: nota || '' });
-  mov({ doc: inc.valeRef, tipo: inc.tipo, id: inc.id, cant: inc.cant, origen: inc.alm, destino: inc.alm, estAnt: ant, estNue: estado === 'REPARADO' || estado === 'RECUPERADO' ? 'DISPONIBLE' : estado, resp: S.u.nombre, cedula: S.u.cedula, obs: nota || estado });
-  bit('INCIDENCIA ' + estado, inc.valeRef + ' · ' + inc.cod); guardar();
+  if (inc.origenTrf) {
+    const incOrig = (DB.incid || []).find(i => i.alm === inc.origenTrf && (i.id === inc.id || (i.serial && i.serial === inc.serial) || (i.cod && i.cod === inc.cod)) && i.n !== inc.n);
+    if (incOrig) {
+      incOrig.estadoTaller = estado;
+      incOrig.hist = incOrig.hist || [];
+      incOrig.hist.push({ ev: `${estado} (en Central)`, fecha: nowISO(), usr: S.u.nombre, det: nota || '' });
+    }
+  }
+  mov({ doc: inc.trfRef || inc.valeRef || ('INC-' + inc.n), tipo: (accion === 'REPARABLE' ? 'DAN' : (accion === 'REPARADO' ? 'ENT' : 'BAJA')), id: inc.id, cant: inc.cant, origen: inc.alm, destino: (accion === 'REPARABLE' ? 'TALLER' : inc.alm), estAnt: ant, estNue: estado === 'REPARADO' || estado === 'RECUPERADO' ? 'DISPONIBLE' : estado, resp: inc.resp || S.u.nombre, cedula: S.u.cedula, obs: nota ? `${accion}: ${nota}` : `Gestión de incidencia: ${estado}` });
+  bit('INCIDENCIA ' + estado, (inc.trfRef || inc.valeRef) + ' · ' + inc.cod); guardar();
 }
 
 /* ---------- Extensión de plazo ---------- */
@@ -7701,65 +7717,205 @@ VISTAS.cAsig = p => VISTAS.cPrest(Object.assign({ tipo: 'ASI', est: '' }, p || {
 
 VISTAS.cIncid = p => {
   p = p || {};
-  const f = p.f || 'ABIERTAS';
+  const f = p.f || 'DAN'; // Por defecto mostrar herramientas dañadas
   const alm = p.alm || (enMaestro() ? 'TODOS' : S.ctx);
   const cat = p.cat || '';
-  let rows = DB.incid || [];
-  if (alm !== 'TODOS') rows = rows.filter(i => i.alm === alm || i.origenTrf === alm || i.destinoTrf === alm);
-  if (f === 'ABIERTAS') rows = rows.filter(i => ['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN', 'EN TRÁNSITO', 'TRANSFERIDO'].includes(i.estado));
-  else if (f === 'TRF') rows = rows.filter(i => i.origenTrf || i.destinoTrf || i.trfRef || i.estado === 'EN TRÁNSITO' || i.estado === 'TRANSFERIDO');
-  else if (f !== 'TODAS') rows = rows.filter(i => i.tipo === f);
-  if (cat) rows = rows.filter(r => (r.cat || (r.id && item(r.id) ? item(r.id).cat : '') || (DB.catalogo.find(i => i.cod === r.cod) || {}).cat || 'General') === cat);
-  rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+  const allInc = DB.incid || [];
+  let rows = [];
+
+  // Filtrado por almacén:
+  if (alm === 'CENTRAL') {
+    // En Central: ver todas las herramientas dañadas que están en Central (incluye las transferidas a Central)
+    rows = allInc.filter(i => i.alm === 'CENTRAL');
+  } else if (alm !== 'TODOS') {
+    // En almacén origen (ej. Fabricación, Pellas):
+    // Ver los ítems originados en este almacén (los que siguen allí y los transferidos a Central)
+    // Para que el almacén origen siempre vea todas sus herramientas dañadas
+    rows = allInc.filter(i => i.alm === alm || i.origenTrf === alm);
+    // Evitar filas duplicadas si existe tanto el registro de origen como el de destino
+    const vistos = new Set();
+    rows = rows.filter(i => {
+      const k = `${i.id}_${i.serial || i.cod}`;
+      if (vistos.has(k)) return false;
+      vistos.add(k);
+      return true;
+    });
+  } else {
+    // En Consolidado (TODOS):
+    // Evitar duplicados de herramientas transferidas: si ya está en Central (destino), no repetir la de origen
+    const enDestino = new Set(allInc.filter(i => i.origenTrf && i.estado !== 'TRANSFERIDO').map(i => `${i.id}_${i.serial || i.cod}`));
+    rows = allInc.filter(i => {
+      if (i.estado === 'TRANSFERIDO') {
+        const k = `${i.id}_${i.serial || i.cod}`;
+        if (enDestino.has(k)) return false;
+      }
+      return true;
+    });
+  }
+
+  // Filtrado por tipo / condición:
+  if (f === 'DAN') {
+    rows = rows.filter(i => i.tipo === 'DAN');
+  } else if (f === 'EXT') {
+    rows = rows.filter(i => i.tipo === 'EXT');
+  } else if (f === 'ABIERTAS') {
+    rows = rows.filter(i => ['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN', 'EN TRÁNSITO'].includes(i.estado));
+  } else if (f === 'TRF') {
+    rows = rows.filter(i => i.origenTrf || i.destinoTrf || i.trfRef || i.estado === 'EN TRÁNSITO' || i.estado === 'TRANSFERIDO');
+  }
+
+  if (cat) {
+    rows = rows.filter(r => (r.cat || (r.id && item(r.id) ? item(r.id).cat : '') || (DB.catalogo.find(i => i.cod === r.cod) || {}).cat || 'General') === cat);
+  }
+
+  rows.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+
   const cols = [
-    { t: 'Documento', v: r => ((r.origenTrf && (r.alm === S.ctx || S.ctx === 'CENTRAL')) ? (r.trfRef || r.valeRef) : r.valeRef), f: r => {
-      const doc = ((r.origenTrf && (r.alm === S.ctx || S.ctx === 'CENTRAL')) ? (r.trfRef || r.valeRef) : r.valeRef);
-      const extra = (r.trfRef && r.trfRef !== doc) ? `<br><small style="color:var(--texto-3)">Trf: ${esc(r.trfRef)}</small>` : ((r.valeRef && r.valeRef !== doc) ? `<br><small style="color:var(--texto-3)">Vale orig: ${esc(r.valeRef)}</small>` : '');
-      return `<b>${esc(doc)}</b>${extra}`;
-    }},
-    { t: 'Tipo', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo },
-    { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
-    { t: 'Almacén origen', v: r => almNombre(r.origenTrf || r.alm).replace('Almacén ', ''), f: r => `<b>${esc(almNombre(r.origenTrf || r.alm).replace('Almacén ', ''))}</b>` },
-    { t: 'Almacén destino', v: r => r.destinoTrf ? almNombre(r.destinoTrf).replace('Almacén ', '') : (r.origenTrf ? almNombre(r.alm).replace('Almacén ', '') : '—'), f: r => (r.destinoTrf || r.origenTrf) ? `<span class="est est-azul">${esc(almNombre(r.destinoTrf || r.alm).replace('Almacén ', ''))}${r.trfRef ? ` <small>(${esc(r.trfRef)})</small>` : ''}</span>` : '<span style="color:#64748b">—</span>' },
-    { t: 'Código', k: 'cod', f: r => `<b>${esc(r.cod)}</b>` },
-    { t: 'Descripción', k: 'desc', td: 'wrap' },
-    { t: 'Serial', k: 'serial', f: r => r.serial ? `<span style="font-family:monospace;font-weight:700">${esc(r.serial)}</span>` : '—' },
-    { t: 'Categoría', v: r => r.cat || (r.id && item(r.id) ? item(r.id).cat : '') || (DB.catalogo.find(i => i.cod === r.cod) || {}).cat || 'General' },
-    { t: 'Cant.', k: 'cant', cls: 'num' },
-    { t: 'Responsable', v: r => r.resp || '—' },
-    { t: 'Mal uso', v: r => r.tipo === 'DAN' ? (r.malUso || 'NO') : '—' },
-    { t: 'Detalle', v: r => r.detalle || '', td: 'wrap' },
-    { t: 'Estado', k: 'estado', f: r => estB(r.estado) }
+    {
+      t: 'Fecha y hora',
+      v: r => r.fecha ? `${fF(r.fecha)} ${r.fecha.substring(11, 16)}` : '—',
+      s: r => r.fecha,
+      f: r => `<b>${fF(r.fecha)}</b> <small style="color:var(--texto-3)">${r.fecha ? r.fecha.substring(11, 16) : ''}</small>`
+    },
+    {
+      t: 'Almacén origen',
+      v: r => almNombre(r.origenTrf || r.alm).replace('Almacén ', ''),
+      f: r => `<b>${esc(almNombre(r.origenTrf || r.alm).replace('Almacén ', ''))}</b>`
+    },
+    {
+      t: 'Código',
+      k: 'cod',
+      f: r => `<b>${esc(r.cod)}</b>`
+    },
+    {
+      t: 'Descripción',
+      k: 'desc',
+      td: 'wrap'
+    },
+    {
+      t: 'Marca / Modelo',
+      v: r => {
+        const it = r.id ? item(r.id) : (DB.catalogo.find(i => i.cod === r.cod) || {});
+        return it.marca || r.marca || '—';
+      },
+      f: r => {
+        const it = r.id ? item(r.id) : (DB.catalogo.find(i => i.cod === r.cod) || {});
+        const m = it.marca || r.marca;
+        return m ? `<span class="chip-mod m-HERRAMIENTA" style="font-weight:700">${esc(m)}</span>` : '<span style="color:var(--texto-3)">—</span>';
+      }
+    },
+    {
+      t: 'Serial',
+      k: 'serial',
+      f: r => r.serial ? `<span style="font-family:monospace;font-weight:800;color:var(--navy)">${esc(r.serial)}</span>` : '—'
+    },
+    {
+      t: 'Categoría',
+      v: r => r.cat || (r.id && item(r.id) ? item(r.id).cat : '') || (DB.catalogo.find(i => i.cod === r.cod) || {}).cat || 'General'
+    },
+    {
+      t: 'Cant.',
+      k: 'cant',
+      cls: 'num'
+    },
+    {
+      t: 'Responsable',
+      v: r => r.resp || '—',
+      f: r => `<b>${esc(r.resp || '—')}</b>`
+    },
+    {
+      t: 'Imputado a',
+      v: r => r.imputacion || r.proyecto || (r.valeRef && valeDe(r.valeRef) ? valeDe(r.valeRef).proyecto : '') || '—',
+      td: 'wrap'
+    },
+    {
+      t: 'Estado / Ubicación',
+      v: r => r.estado,
+      f: r => {
+        if (r.estado === 'TRANSFERIDO') {
+          return `<span class="est est-azul">TRANSFERIDO A CENTRAL</span>`;
+        }
+        if (r.estado === 'EN TRÁNSITO') {
+          return `<span class="est est-ambar">EN TRÁNSITO A CENTRAL</span>`;
+        }
+        if (r.estado === 'DAÑADO') {
+          const loc = r.alm === 'CENTRAL' ? ' (EN CENTRAL)' : ` (${esc(almNombre(r.alm).replace('Almacén ', ''))})`;
+          return `<span class="est est-rojo">DAÑADO${loc}</span>`;
+        }
+        if (r.estado === 'EN TALLER') {
+          return `<span class="est est-naranja">EN TALLER</span>`;
+        }
+        if (r.estado === 'REPARADO') {
+          return `<span class="est est-verde">REPARADO</span>`;
+        }
+        if (r.estado === 'BAJA') {
+          return `<span class="est est-gris">DADO DE BAJA</span>`;
+        }
+        return estB(r.estado);
+      }
+    },
+    {
+      t: 'Detalle del daño',
+      v: r => r.detalle || '',
+      td: 'wrap'
+    }
   ];
+
   const listaCategoriasIncid = [...new Set((DB.catalogo || []).map(i => i.cat).concat(CATEGORIAS_OFICIALES).filter(Boolean))].sort();
   const recarga = `ir('cIncid',{f:$('inFiltro').value,alm:$('inAlm')?$('inAlm').value:'${alm}',cat:$('inCat')?$('inCat').value:''})`;
-  const hayFiltros = Boolean((f && f !== 'ABIERTAS') || (alm && alm !== (enMaestro() ? 'TODOS' : S.ctx)) || cat);
-  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja). Incluye trazabilidad completa de transferencias de material dañado.',
+  const hayFiltros = Boolean((f && f !== 'DAN') || (alm && alm !== (enMaestro() ? 'TODOS' : S.ctx)) || cat);
+
+  $('area').innerHTML = cab('Daño y extravío', 'Control y seguimiento exclusivo de herramientas dañadas y casos de extravío. Central gestiona la evaluación, envío a taller y baja.',
     `${botonesExport('gInc', 'Dañados y extraviados ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm)))} <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
     + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
-        ${campo('Mostrar', `<select id="inFiltro" onchange="${recarga}">${opciones([['ABIERTAS', 'Casos abiertos'], ['DAN', 'Daños directos'], ['TRF', 'Transferencias (recibidas / enviadas)'], ['EXT', 'Robos / extravíos'], ['TODAS', 'Todos los casos']], f)}</select>`)}
+        ${campo('Mostrar', `<select id="inFiltro" onchange="${recarga}">${opciones([['DAN', '🔴 Herramientas dañadas'], ['ABIERTAS', '⚠️ Casos abiertos / pendientes'], ['TRF', '🔄 Transferencias de material dañado'], ['EXT', '🔍 Robos / Extravíos'], ['TODAS', '📋 Todos los casos registrados']], f)}</select>`)}
         ${campo('Almacén', `<select id="inAlm" onchange="${recarga}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
         ${campo('Categoría', `<select id="inCat" onchange="${recarga}"><option value="">Todas las categorías</option>${opciones(listaCategoriasIncid, cat)}</select>`)}
         ${hayFiltros ? `<button class="btn btn-claro" onclick="ir('cIncid')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
-        ${buscador('gInc', 'Buscar código, descripción, serial, categoría, documento, responsable…')}
+        ${buscador('gInc', 'Buscar código, descripción, serial, marca, categoría, responsable, imputación…')}
       </div>`
     + grid('gInc', cols, rows, { pag: 15, onSel: r => tiraInc(r) })
-    + `<div class="sel-strip"><span class="lbl">Caso seleccionado</span><span class="box" id="tiNum"></span><span class="box" id="tiInfo" style="flex:1"></span></div>
+    + `<div class="sel-strip"><span class="lbl">Herramienta seleccionada</span><span class="box" id="tiNum"></span><span class="box" id="tiInfo" style="flex:1"></span></div>
     <div class="barra-btn">
       <button class="btn-sip" id="iRep" disabled onclick="accInc('REPARABLE')">Enviar a taller</button>
       <button class="btn-sip" id="iOk" disabled onclick="accInc('REPARADO')">Retorno de taller</button>
       <button class="btn-sip" id="iHal" disabled onclick="accInc('RECUPERADO')">Registrar hallazgo</button>
       <button class="btn-sip" id="iBaja" disabled onclick="accInc('BAJA')">Dar de baja</button>
-      <button class="btn-sip" id="iVer" disabled onclick="const r=selDe('gInc'); ir('doc',{num:(r.origenTrf && (r.alm === S.ctx || S.ctx === 'CENTRAL')) ? (r.trfRef || r.valeRef) : r.valeRef, back:'cIncid'})">Visualizar reporte</button>
+      <button class="btn-sip" id="iVer" disabled onclick="const r=selDe('gInc'); ir('doc',{num:(r.origenTrf && (r.alm === S.ctx || S.ctx === 'CENTRAL')) ? (r.trfRef || r.valeRef) : (r.valeRef || r.trfRef), back:'cIncid'})">Visualizar reporte</button>
     </div>`;
 };
+
 function tiraInc(r) {
-  $('tiNum').textContent = (r.origenTrf && (r.alm === S.ctx || S.ctx === 'CENTRAL')) ? (r.trfRef || r.valeRef) : r.valeRef;
-  const origTxt = r.origenTrf ? ` · Desde: ${almNombre(r.origenTrf)}` : '';
-  const destTxt = r.destinoTrf ? ` · Destino: ${almNombre(r.destinoTrf)}${r.trfRef ? ` (${r.trfRef})` : ''}` : '';
-  $('tiInfo').innerHTML = `${esc(r.cod)} · ${esc(r.desc)} · ${estB(r.estado)}${origTxt}${destTxt}`;
-  $('iRep').disabled = r.estado !== 'DAÑADO'; $('iOk').disabled = r.estado !== 'EN TALLER'; $('iHal').disabled = r.estado !== 'EN INVESTIGACIÓN';
-  $('iBaja').disabled = !['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(r.estado); $('iVer').disabled = false;
+  if (!r) {
+    if ($('tiNum')) $('tiNum').textContent = '';
+    if ($('tiInfo')) $('tiInfo').textContent = '';
+    if ($('iRep')) $('iRep').disabled = true;
+    if ($('iOk')) $('iOk').disabled = true;
+    if ($('iHal')) $('iHal').disabled = true;
+    if ($('iBaja')) $('iBaja').disabled = true;
+    if ($('iVer')) $('iVer').disabled = true;
+    return;
+  }
+  const it = r.id ? item(r.id) : (DB.catalogo.find(i => i.cod === r.cod) || {});
+  const marcaTxt = (it.marca || r.marca) ? ` · Marca: ${it.marca || r.marca}` : '';
+  const respTxt = r.resp ? ` · Resp: ${r.resp}` : '';
+  const origTxt = r.origenTrf ? ` · Desde: ${almNombre(r.origenTrf)}` : ` · Origen: ${almNombre(r.alm)}`;
+  const destTxt = (r.estado === 'TRANSFERIDO' || r.destinoTrf) ? ` · En: ${almNombre(r.destinoTrf || 'CENTRAL')}` : (r.alm === 'CENTRAL' ? ' · En: Almacén Central' : '');
+
+  $('tiNum').textContent = r.serial ? `SN: ${r.serial}` : (r.cod || '');
+  $('tiInfo').innerHTML = `<b>${esc(r.cod)}</b> · ${esc(r.desc)}${marcaTxt} · ${estB(r.estado)}${origTxt}${destTxt}${respTxt}`;
+
+  // Permisos para Central y almacén poseedor:
+  const esCentral = S.ctx === 'CENTRAL' || S.u.admin;
+  const estaEnCentral = r.alm === 'CENTRAL' || r.destinoTrf === 'CENTRAL';
+  const puedeGestionar = (r.alm === S.ctx && r.estado !== 'TRANSFERIDO') || (esCentral && estaEnCentral);
+
+  $('iRep').disabled = !puedeGestionar || r.estado !== 'DAÑADO';
+  $('iOk').disabled = !puedeGestionar || r.estado !== 'EN TALLER';
+  $('iHal').disabled = !puedeGestionar || r.estado !== 'EN INVESTIGACIÓN';
+  $('iBaja').disabled = !puedeGestionar || !['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(r.estado);
+  $('iVer').disabled = !(r.valeRef || r.trfRef);
 }
 function accInc(a) {
   const r = selDe('gInc');
