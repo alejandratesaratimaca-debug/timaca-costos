@@ -7023,7 +7023,10 @@ VISTAS.dev = p => {
       <div class="pie-form"><div class="totales">La cantidad propuesta es el saldo completo; ajústela para devoluciones parciales.</div><div class="der"><button class="btn btn-claro" onclick="ir('dev')">Cancelar</button><button class="btn btn-verde" onclick="accionDevolver('${v.num}')">Registrar devolución</button></div></div></div>`;
   }
   $('area').innerHTML = cab('Registrar devolución', 'La devolución se registra en el almacén que prestó o asignó, contra el vale original. Para regresar material a Central, use una transferencia.')
-    + `<div class="panel"><div class="panel-h">Vale a devolver</div><div class="panel-b"><div class="fila-filtros">${campo('Préstamo o asignación con saldo', `<select onchange="ir('dev',{vale:this.value})" style="min-width:420px"><option value="">Seleccione…</option>${vales.map(x => `<option value="${x.num}" ${x.num === sel ? 'selected' : ''}>${x.num} · ${esc(x.resp.nombre)} · ${esc(almNombre(x.destino || x.origen))} · saldo ${saldoVale(x)}</option>`).join('')}</select>`)}</div>
+    + `<div class="panel"><div class="panel-h">Vale a devolver</div><div class="panel-b"><div class="fila-filtros">${campo('Préstamo o asignación con saldo', `<select onchange="ir('dev',{vale:this.value})" style="min-width:480px"><option value="">Seleccione…</option>${vales.map(x => {
+      const itemsTxt = (x.lineas || []).map(l => `${l.desc}${l.serial && l.serial !== '—' ? ' [' + l.serial + ']' : ''}`).join(', ');
+      return `<option value="${x.num}" ${x.num === sel ? 'selected' : ''}>${x.num} · ${esc(x.resp.nombre)} · ${esc(itemsTxt)} · saldo ${saldoVale(x)}</option>`;
+    }).join('')}</select>`)}</div>
     ${vales.length ? '' : '<p class="ayuda-txt">No hay préstamos ni asignaciones con saldo pendiente en este almacén.</p>'}</div></div>` + cuerpo + datalistPersonal();
 };
 function accionDevolver(n) {
