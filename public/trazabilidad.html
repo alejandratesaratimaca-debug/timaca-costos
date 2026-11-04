@@ -1336,6 +1336,9 @@ function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'C
     alm = S.ctx;
   }
   if (!alm || alm === 'TODOS' || alm === 'MAESTRO') alm = 'CENTRAL';
+  const norm = s => String(s || '').trim().toUpperCase();
+  const almNorm = norm(alm);
+
   DB.corr = DB.corr || {};
   DB.corrAlm = DB.corrAlm || {};
   DB.corrAlm[alm] = DB.corrAlm[alm] || {};
@@ -1347,7 +1350,7 @@ function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'C
     if (!n) return;
     const m = String(n).trim().match(regex);
     if (m) {
-      const matchAlm = (pref === 'DEV') ? (!d || d === alm || !o || o === alm) : (!o || o === alm);
+      const matchAlm = (pref === 'DEV') ? (!d || norm(d) === almNorm || !o || norm(o) === almNorm) : (!o || norm(o) === almNorm);
       if (matchAlm) {
         const val = parseInt(m[1], 10);
         if (val > cur) cur = val;
@@ -1362,7 +1365,15 @@ function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'C
   });
   (DB.movs || []).forEach(m => checkNum(m.doc, m.origen, m.destino));
 
-  const next = cur + 1;
+  let next = cur + 1;
+  // Escudo infalible: garantizar que el número jamás colisione con un vale o movimiento existente
+  while ((DB.vales || []).some(v => v.num === `${pref}-${String(next).padStart(7, '0')}` && norm(v.origen) === almNorm)) {
+    next++;
+  }
+  while ((DB.movs || []).some(m => m.doc === `${pref}-${String(next).padStart(7, '0')}` && norm(m.origen) === almNorm)) {
+    next++;
+  }
+
   DB.corrAlm[alm][pref] = next;
   DB.corr[pref] = Math.max(DB.corr[pref] || 0, next);
   return `${pref}-${String(next).padStart(7, '0')}`;
@@ -9535,6 +9546,102 @@ function iniciarSupabaseCloud() {
   }
 }
 
+function fusionarBasesDeDatos(cloudDB, localDB) {
+  if (!cloudDB || typeof cloudDB !== 'object') return localDB || semilla();
+  if (!localDB || typeof localDB !== 'object') return cloudDB;
+  
+  // 1. Catálogo: unión por ID
+  const catMap = new Map();
+  (cloudDB.catalogo || []).forEach(it => { if (it && it.id) catMap.set(it.id, Object.assign({}, it)); });
+  (localDB.catalogo || []).forEach(it => {
+    if (!it || !it.id) return;
+    if (!catMap.has(it.id)) catMap.set(it.id, Object.assign({}, it));
+    else catMap.set(it.id, Object.assign({}, catMap.get(it.id), it));
+  });
+  const catalogo = Array.from(catMap.values());
+
+  // 2. Vales: unión por (num + origen)
+  const valesMap = new Map();
+  (cloudDB.vales || []).forEach(v => {
+    if (!v || !v.num) return;
+    const k = `${v.num}__${v.origen || 'CENTRAL'}`;
+    valesMap.set(k, Object.assign({}, v));
+  });
+  (localDB.vales || []).forEach(v => {
+    if (!v || !v.num) return;
+    const k = `${v.num}__${v.origen || 'CENTRAL'}`;
+    if (!valesMap.has(k)) {
+      valesMap.set(k, Object.assign({}, v));
+    } else {
+      const existing = valesMap.get(k);
+      const exHist = (existing.hist || []).length;
+      const locHist = (v.hist || []).length;
+      if (locHist > exHist || (v.fecha && v.fecha > (existing.fecha || ''))) {
+        valesMap.set(k, Object.assign({}, existing, v));
+      }
+    }
+  });
+  const vales = Array.from(valesMap.values());
+
+  // 3. Movimientos: unión estricta por clave única completa
+  const movsMap = new Map();
+  const movKey = m => [m.doc||'', m.origen||'', m.destino||'', m.id||0, m.tipo||'', m.fecha||'', m.serial||'', m.cant||0, m.estAnt||'', m.estNue||''].join('|');
+  (cloudDB.movs || []).forEach(m => { if (m) movsMap.set(movKey(m), Object.assign({}, m)); });
+  (localDB.movs || []).forEach(m => {
+    if (!m) return;
+    const k = movKey(m);
+    if (!movsMap.has(k)) movsMap.set(k, Object.assign({}, m));
+  });
+  const movs = Array.from(movsMap.values());
+
+  // 4. Solicitudes: unión por (num + origen)
+  const solMap = new Map();
+  (cloudDB.solicitudes || []).forEach(s => {
+    if (!s || !s.num) return;
+    solMap.set(`${s.num}__${s.origen || 'CENTRAL'}`, Object.assign({}, s));
+  });
+  (localDB.solicitudes || []).forEach(s => {
+    if (!s || !s.num) return;
+    const k = `${s.num}__${s.origen || 'CENTRAL'}`;
+    if (!solMap.has(k)) solMap.set(k, Object.assign({}, s));
+  });
+  const solicitudes = Array.from(solMap.values());
+
+  // 5. Correlativos: tomar siempre el máximo absoluto
+  const corrAlm = Object.assign({}, cloudDB.corrAlm || {});
+  const lCorr = localDB.corrAlm || {};
+  Object.keys(lCorr).forEach(alm => {
+    corrAlm[alm] = corrAlm[alm] || {};
+    Object.keys(lCorr[alm]).forEach(pref => {
+      corrAlm[alm][pref] = Math.max(corrAlm[alm][pref] || 0, lCorr[alm][pref] || 0);
+    });
+  });
+
+  vales.forEach(v => {
+    if (!v.num) return;
+    const m = String(v.num).match(/^([A-Z]+)-(\d+)$/);
+    if (m) {
+      const pref = m[1];
+      const val = parseInt(m[2], 10);
+      const a = (v.origen && v.origen !== 'TODOS' && v.origen !== 'MAESTRO') ? v.origen : 'CENTRAL';
+      corrAlm[a] = corrAlm[a] || {};
+      corrAlm[a][pref] = Math.max(corrAlm[a][pref] || 0, val);
+    }
+  });
+
+  const exi = Object.assign({}, cloudDB.exi || {}, localDB.exi || {});
+
+  return Object.assign({}, cloudDB, localDB, {
+    catalogo,
+    vales,
+    movs,
+    solicitudes,
+    corrAlm,
+    exi,
+    _actualizadoEn: new Date().toISOString()
+  });
+}
+
 async function sincronizarConNube(forzar = false) {
   if (!supabaseClient || cloudSyncEnProgreso) return;
   cloudSyncEnProgreso = true;
@@ -9564,8 +9671,8 @@ async function sincronizarConNube(forzar = false) {
       console.log('🔄 Aplicando reinicio oficial a cero desde Supabase...');
       descargarDeNube(cloudData);
     }
-    // 2. Si la nube tiene cambios más recientes que este equipo:
-    else if (cloudData && cloudFecha > localFecha) {
+    // 2. Si la nube tiene cambios o datos, fusionar inteligentemente sin descartar cambios locales
+    else if (cloudData && (cloudFecha > localFecha || forzar)) {
       descargarDeNube(cloudData);
     }
     // 3. Si este equipo tiene cambios locales nuevos (localFecha más reciente o forzado):
@@ -9593,7 +9700,7 @@ async function sincronizarConNube(forzar = false) {
 async function subirANube() {
   if (!supabaseClient || !DB) return;
   try {
-    // ESCUDO DE DATOS: Antes de subir, verificar que no estemos destruyendo datos de la nube
+    // ESCUDO DE DATOS BIDIRECCIONAL: Antes de subir, fusionar con cualquier cambio reciente en la nube
     const { data: checkData } = await supabaseClient
       .from('herramientas_vales')
       .select('lineas')
@@ -9601,17 +9708,8 @@ async function subirANube() {
       .maybeSingle();
 
     if (checkData && checkData.lineas) {
-      const cloudData = checkData.lineas;
-      const cloudCat = (cloudData.catalogo || []).length;
-      const localCat = (DB.catalogo || []).length;
-      const cloudVales = (cloudData.vales || []).length;
-      const localVales = (DB.vales || []).length;
-
-      if (cloudCat > localCat || cloudVales > localVales) {
-        console.warn(`🛡️ ESCUDO DE DATOS: La nube tiene ${cloudCat} ítems y ${cloudVales} vales (local: ${localCat} ítems, ${localVales} vales). Bloqueando sobreescritura y adoptando datos de la nube.`);
-        descargarDeNube(cloudData);
-        return;
-      }
+      DB = fusionarBasesDeDatos(checkData.lineas, DB);
+      guardarLocalSolo();
     }
 
     DB._actualizadoEn = new Date().toISOString();
@@ -9625,7 +9723,7 @@ async function subirANube() {
       origen: (typeof S !== 'undefined' && S && S.ctx) ? S.ctx : 'CENTRAL',
       destino: (typeof S !== 'undefined' && S && S.ctx) ? S.ctx : 'CENTRAL',
       estatus: 'ACTIVO',
-      observaciones: `Sincronizado por ${DB._actualizadoPor} (${(DB.catalogo||[]).length} ítems)`,
+      observaciones: `Sincronizado por ${DB._actualizadoPor} (${(DB.catalogo||[]).length} ítems, ${(DB.vales||[]).length} vales)`,
       lineas: DB
     };
 
@@ -9637,7 +9735,7 @@ async function subirANube() {
       console.warn('Error subiendo a Supabase:', error);
       actualizarIndicadorCloud('error');
     } else {
-      console.log(`☁️ Subida completada: ${(DB.catalogo||[]).length} ítems en Supabase Cloud.`);
+      console.log(`☁️ Subida completada: ${(DB.catalogo||[]).length} ítems, ${(DB.vales||[]).length} vales en Supabase Cloud.`);
       actualizarIndicadorCloud('ok');
     }
   } catch (e) {
@@ -9658,6 +9756,10 @@ function descargarDeNube(cloudDB) {
   cloudDB = deepCleanDB(cloudDB);
   const base = semilla();
   purgarDuplicadosCorregidos(cloudDB);
+  // Fusión segura: conservar registros locales no subidos en vez de descartarlos
+  if (DB && Array.isArray(DB.vales) && DB.vales.length > 0) {
+    cloudDB = fusionarBasesDeDatos(cloudDB, DB);
+  }
   DB = Object.assign({}, base, cloudDB);
   purgarDuplicadosCorregidos(DB);
 
