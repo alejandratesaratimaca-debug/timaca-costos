@@ -7919,7 +7919,7 @@ VISTAS.cVales = p => {
     if (desde && fStr < desde) return false;
     if (hasta && fStr > hasta) return false;
     return true;
-  }).sort((a, b) => b.fecha.localeCompare(a.fecha) || (b.num || '').localeCompare(a.num || ''));
+  }).sort((a, b) => a.fecha.localeCompare(b.fecha) || (a.num || '').localeCompare(b.num || ''));
 
   const cols = [
     { t: 'N° de Vale', k: 'num', f: r => `<b>${esc(r.num)}</b>` },
@@ -8035,7 +8035,7 @@ VISTAS.cValesDet = p => {
     });
   });
 
-  rows.sort((a, b) => b.v.fecha.localeCompare(a.v.fecha) || (b.v.num || '').localeCompare(a.v.num || ''));
+  rows.sort((a, b) => a.v.fecha.localeCompare(b.v.fecha) || (a.v.num || '').localeCompare(b.v.num || ''));
 
   const cols = [
     { t: 'N° de Vale', v: r => r.v.num, f: r => `<b>${esc(r.v.num)}</b>` },
