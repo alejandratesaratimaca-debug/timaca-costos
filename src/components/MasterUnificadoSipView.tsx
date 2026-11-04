@@ -468,27 +468,43 @@ export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
 }
 
 export function determinarTipoGasto(cuenta?: string, tipoCostoExistente?: string): string {
-  if (tipoCostoExistente && tipoCostoExistente !== 'Externo' && tipoCostoExistente !== 'Interno') {
+  if (tipoCostoExistente && tipoCostoExistente !== 'Externo' && tipoCostoExistente !== 'Interno' && tipoCostoExistente !== 'OPEX') {
     return tipoCostoExistente;
   }
   const c = (cuenta || '').toUpperCase().trim();
-  if (!c || c === 'SIN-ASIGNAR') return 'Externo';
-  if (c.startsWith('TTE') || c.startsWith('EEE') || c.startsWith('ESE') || c.startsWith('ETE')) {
-    return 'Externo';
+  if (!c || c === 'SIN-ASIGNAR' || c === 'SIN_CUENTA') return 'Otros-Otros';
+
+  // Socio
+  if (c.startsWith('TT-S') || c.startsWith('AE-S') || c.startsWith('EE-S') || c.includes('SOCIO')) {
+    return 'Socio';
   }
+
+  // Administración
+  if (c.startsWith('TT-A') || c.startsWith('AE-A') || c.startsWith('EE-A') || c.includes('ADMON') || c.includes('ADMIN') || c.includes('RECURSOS HUMANOS') || c.includes('GERENTE') || c.includes('PLANIFICAC')) {
+    return 'Admon';
+  }
+
+  // Mantto Flota (OPEX)
+  if (c.startsWith('TT-F') || c.startsWith('EEA') || c.startsWith('EEM') || c.includes('FLOTA') || c.includes('EQUIPO M')) {
+    return 'Mantto Flota (OPEX)';
+  }
+
+  // Mantto Infraestructura (OPEX)
+  if (c.startsWith('TT-I') || c.startsWith('TF-I') || c.includes('OPERACIONES') || c.includes('TIMACA') || c.includes('FABRICAC') || c.includes('INFRAESTRUCTURA') || c.includes('TALLER')) {
+    return 'Mantto Infraestructura (OPEX)';
+  }
+
+  // Interno
   if (c.startsWith('TTI') || c.startsWith('ESI') || c.startsWith('EEI')) {
     return 'Interno';
   }
-  if (c.startsWith('TT-A') || c.startsWith('AE-A') || c.startsWith('EE-A') || c.includes('ADMON') || c.includes('ADMIN')) {
-    return 'Admon';
+
+  // Externo (Clientes)
+  if (c.startsWith('TTE') || c.startsWith('EEE') || c.startsWith('ESE') || c.startsWith('ETE') || c.startsWith('EES') || c.includes('PELLAS') || c.includes('PMH') || c.includes('BRIQUETAS') || c.includes('BOCA GRANDE') || c.includes('VISCO') || c.includes('SMB') || c.includes('IMPSA')) {
+    return 'Externo';
   }
-  if (c.startsWith('TT-F') || c.startsWith('EEA') || c.startsWith('EEM') || c.includes('OPEX') || c.includes('FLOTA')) {
-    return 'Mantto Flota (OPEX)';
-  }
-  if (c.includes('SOCIO') || c.startsWith('AE-S') || c.startsWith('EE-S')) {
-    return 'Socio';
-  }
-  return tipoCostoExistente || 'Externo';
+
+  return tipoCostoExistente === 'OPEX' ? 'Mantto Infraestructura (OPEX)' : (tipoCostoExistente || 'Otros-Otros');
 }
 
 // Caché en memoria para las sábanas SIP del Master Unificado (evita re-descargas y congelamientos)
