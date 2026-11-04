@@ -1197,10 +1197,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               }
 
               // 2. Si se selecciona un mes específico (ej. Agosto, Junio, Julio, Octubre):
-              // Trasladar a este mes los registros corregidos que fueron asignados a él desde otro mes
+              // Trasladar a este mes los registros corregidos que fueron asignados a él desde otro mes (solo del año 2026)
               if (selectedMes !== 'todos' && !isVerAjustesHistoricos) {
                 const matchingTransfers = combinedList.filter((c: any) => 
-                  (c.nuevoMes || '').toLowerCase() === selectedMes.toLowerCase()
+                  (c.nuevoMes || '').toLowerCase() === selectedMes.toLowerCase() &&
+                  (!c.fechaMovimiento || c.fechaMovimiento.startsWith('2026') || c.ano === 2026 || (c.fecha && String(c.fecha).includes('2026')))
                 );
 
                 if (matchingTransfers.length > 0) {
