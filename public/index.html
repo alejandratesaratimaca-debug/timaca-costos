@@ -7864,6 +7864,8 @@ VISTAS.cVales = p => {
   const hasta = p.hasta || '';
 
   let rows = DB.vales.filter(v => {
+    // Las transferencias pendientes de recepción no deben mostrarse hasta que hayan sido aceptadas
+    if (v.tipo === 'TRF' && v.estatus !== 'RECIBIDA') return false;
     // Almacén: solo mostrar vales correspondientes a este almacén
     if (alm && alm !== 'TODOS') {
       if (v.destino !== alm && v.origen !== alm) return false;
@@ -7950,6 +7952,8 @@ VISTAS.cValesDet = p => {
 
   let rows = [];
   (DB.vales || []).forEach(v => {
+    // Las transferencias pendientes de recepción no deben mostrarse hasta que hayan sido aceptadas
+    if (v.tipo === 'TRF' && v.estatus !== 'RECIBIDA') return;
     // Almacén destino / origen
     if (alm && alm !== 'TODOS') {
       if (v.destino !== alm && v.origen !== alm) return;
@@ -8073,7 +8077,7 @@ const colsKardex = maestro => [{ t: 'Fecha y hora', v: r => fFH(r.fecha), s: r =
   { t: 'Responsable', k: 'resp' }, { t: 'Usuario', k: 'usr' }, { t: 'Observación', k: 'obs' }].concat(maestro ? [{ t: 'Valor USD', v: r => +(r.cant * (item(r.id).costo || 0)).toFixed(2), cls: 'num' }] : []);
 VISTAS.cKardex = p => {
   const q = ((p && p.q) || '').trim().toUpperCase();
-  let rows = DB.movs.filter(m => m.origen === S.ctx || m.destino === S.ctx);
+  let rows = DB.movs.filter(m => (m.origen === S.ctx || m.destino === S.ctx) && !(m.tipo === 'TRF' && m.estNue === 'PENDIENTE DE RECEPCIÓN'));
   if (q) rows = rows.filter(m => (m.cod || '').toUpperCase() === q || (m.serial || '').toUpperCase() === q || (m.doc || '').toUpperCase() === q );
   rows = rows.slice().sort((a, b) => b.fecha.localeCompare(a.fecha) || b.n - a.n);
   $('area').innerHTML = cab('Kardex por código', 'Historial permanente de movimientos del almacén. Ningún registro se borra.', botonesExport('gKdx', 'Kardex ' + (q || almNombre(S.ctx))))
