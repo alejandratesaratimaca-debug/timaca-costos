@@ -1604,16 +1604,25 @@ function mov(m) {
 
 /* ----------------------------- Líneas ----------------------------- */
 function lineaDe(it, cant, cond) {
-  const est = cond === 'DAÑADO' ? 'DAN' : ((it.mod === 'CILINDRO' && cond === 'VACÍO') ? 'VACIO' : 'DISP');
+  const est = typeof estDe === 'function' ? estDe(it, cond) : (cond === 'DAÑADO' ? 'DAN' : ((it.mod === 'CILINDRO' && cond === 'VACÍO') ? 'VACIO' : 'DISP'));
   return { id: it.id, cod: it.cod, desc: it.desc, marca: it.marca, modelo: it.modelo, serial: it.serial || '', cat: it.cat, umb: it.umb, mod: it.mod, cond, est, cant: Number(cant), dev: 0 };
 }
 const nomBucket = { DISP: 'DISPONIBLE', VACIO: 'VACÍO', DAN: 'DAÑADO' };
-function validarStock(alm, lineas) {
+function validarStock(alm, lineas, tipo) {
   const req = {};
-  lineas.forEach(l => { const k = l.id + '|' + l.est; req[k] = (req[k] || 0) + Number(l.cant); });
+  lineas.forEach(l => {
+    const targetEst = (tipo === 'DAN' || tipo === 'EXT') ? (l.est === 'VACIO' ? 'VACIO' : 'DISP') : l.est;
+    const k = l.id + '|' + targetEst;
+    req[k] = (req[k] || 0) + Number(l.cant);
+  });
   Object.keys(req).forEach(k => {
     const [id, est] = k.split('|'); const e = exi(alm, +id); const it = item(+id);
-    const d = est === 'VACIO' ? (e.vacio || 0) : (est === 'DAN' ? ((e.dan || 0) + (e.rep || 0)) : (e.disp || 0));
+    let d;
+    if (tipo === 'DAN' || tipo === 'EXT') {
+      d = est === 'VACIO' ? (e.vacio || 0) : (e.disp || 0);
+    } else {
+      d = est === 'VACIO' ? (e.vacio || 0) : (est === 'DAN' ? ((e.dan || 0) + (e.rep || 0)) : (e.disp || 0));
+    }
     if (req[k] > d) throw new Error(`Existencia insuficiente en ${almNombre(alm)} para ${it.cod} · ${it.desc}${it.serial ? ' (' + it.serial + ')' : ''} [${nomBucket[est] || est}]: disponible ${d}, requerido ${req[k]}.`);
   });
 }
@@ -2287,7 +2296,7 @@ function registrarIncidencia(tipo, d) {
   if (d.valeRef) {
     vRef = valeDe(d.valeRef);
     d.lineas.forEach(l => { if (l.cant > saldoLinea(vRef.lineas[l.idx])) throw new Error(`La cantidad de ${l.cod} supera el saldo del vale ${vRef.num}.`); });
-  } else validarStock(d.origen, d.lineas);
+  } else validarStock(d.origen, d.lineas, tipo);
   const dictamen = tipo === 'DAN' ? (d.dictamen || 'POR EVALUAR') : '';
   const v = nuevoVale(tipo, {
     origen: d.origen, destino: d.origen, resp: d.resp, sup: d.sup, proyecto: d.proyecto, cuenta: d.cuenta, ref: d.valeRef || '',
@@ -2298,7 +2307,7 @@ function registrarIncidencia(tipo, d) {
     const e = exi(d.origen, l.id);
     let estAnt;
     if (vRef) { const lv = vRef.lineas[l.idx]; lv.dev = (lv.dev || 0) + l.cant; e[vRef.tipo === 'PRH' ? 'prest' : 'asig'] -= l.cant; estAnt = vRef.tipo === 'PRH' ? 'EN PRÉSTAMO' : 'ASIGNADO'; }
-    else { if (l.est === 'VACIO') e.vacio -= l.cant; else e.disp -= l.cant; estAnt = nomBucket[l.est]; }
+    else { if (l.est === 'VACIO') { e.vacio -= l.cant; estAnt = 'VACÍO'; } else { e.disp -= l.cant; estAnt = 'DISPONIBLE'; } }
     let estado, estNue;
     if (tipo === 'EXT') { e.ext += l.cant; estado = 'EN INVESTIGACIÓN'; estNue = 'EXTRAVIADO'; }
     else if (dictamen === 'REPARABLE') { e.rep += l.cant; estado = 'EN TALLER'; estNue = 'EN TALLER'; }
@@ -5319,7 +5328,13 @@ function filaCaptura() {
     </div>
   </div>`;
 }
-function dispItem(alm, id, est) { const e = exi(alm, id); return est === 'VACIO' ? (e.vacio || 0) : (est === 'DAN' ? ((e.dan || 0) + (e.rep || 0)) : (e.disp || 0)); }
+function dispItem(alm, id, est) {
+  const e = exi(alm, id);
+  if (typeof F !== 'undefined' && F && (F.tipo === 'DAN' || F.tipo === 'EXT')) {
+    return est === 'VACIO' ? (e.vacio || 0) : (e.disp || 0);
+  }
+  return est === 'VACIO' ? (e.vacio || 0) : (est === 'DAN' ? ((e.dan || 0) + (e.rep || 0)) : (e.disp || 0));
+}
 const estDe = (it, cond) => {
   if (typeof F !== 'undefined' && F && (F.tipo === 'DAN' || F.tipo === 'EXT')) {
     return (it && it.mod === 'CILINDRO' && (cond === 'VACÍO' || cond === 'VACIO')) ? 'VACIO' : 'DISP';
