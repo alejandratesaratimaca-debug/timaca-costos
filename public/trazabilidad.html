@@ -2781,7 +2781,7 @@ function semilla() {
   const D = dias => fechaLocal(new Date(base + dias * 86400000));
   DB = {
     version: 2, corr: {}, seq: { mov: 0, inc: 0 }, exi: {}, solicitudes: [], vales: [], movs: [], incid: [], bit: [], costosHist: [], intentos: {},
-    config: { empresa: 'TALLER INDUSTRIAL METALÚRGICO ANTONIO, C.A.', direccion: 'AV. NORTE SUR CALLE PORVENIR EDIF. GALPÓN, TIMACA, PUERTO ORDAZ', rif: 'J095003159', plazoHoras: 72 },
+    config: { empresa: 'TALLER INDUSTRIAL METALÚRGICO ANTONIO, C.A.', direccion: 'AV. NORTE SUR CALLE PORVENIR EDIF. GALPÓN, TIMACA, PUERTO ORDAZ', rif: 'J095003159', plazoHoras: 12 },
     almacenes: [
       { c: 'CENTRAL', n: 'Almacén Central', t: 'CENTRAL' },
       { c: 'PELLAS', n: 'Almacén Pellas', t: 'SATÉLITE' },
@@ -7253,14 +7253,14 @@ VISTAS.dash = p => {
   const docs = {};
 
   // 1. Contar desde DB.vales (Vales emitidos en origen: transferencias hechas por este almacén)
-  (DB.vales || []).filter(v => v.origen === c && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
+  (DB.vales || []).filter(v => (v.origen === c || v.destino === c) && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
     .forEach(v => {
       docs[v.tipo] = docs[v.tipo] || new Set();
       docs[v.tipo].add(v.num);
     });
 
   // 2. Contar desde DB.movs (movimientos realizados por este almacén)
-  (DB.movs || []).filter(m => m.origen === c && (m.fecha || '') >= desde && m.tipo !== 'INI' && (!mod || m.mod === mod))
+  (DB.movs || []).filter(m => (m.origen === c || m.destino === c) && (m.fecha || '') >= desde && m.tipo !== 'INI' && (!mod || m.mod === mod))
     .forEach(m => {
       docs[m.tipo] = docs[m.tipo] || new Set();
       if (m.doc) docs[m.tipo].add(m.doc);
