@@ -7318,29 +7318,15 @@ VISTAS.dash = p => {
     aviso(envMal.length, 'Transferencias enviadas rechazadas o vencidas (últimos 7 días)', ['trfEnv'], envMal.length ? 'rojo' : 'verde'),
     vacios ? aviso(vacios, c === 'CENTRAL' ? 'Cilindros vacíos en Central' : 'Cilindros vacíos por transferir a Central', ['cCil'], 'naranja') : ''
   ].join('');
-  // Movimientos de los últimos 30 días por tipo (documentos)
+  // Vales registrados / emitidos por este almacén en los últimos 30 días
   const desde = new Date(ahora().getTime() - 30 * 86400000).toISOString();
   const docs = {};
 
-  // 1. Contar desde DB.vales (Vales emitidos en origen: transferencias hechas por este almacén)
-  (DB.vales || []).filter(v => (v.origen === c || v.destino === c) && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
+  // Contar estrictamente los vales registrados / emitidos por este almacén (origen)
+  (DB.vales || []).filter(v => (c === 'TODOS' || v.origen === c) && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
     .forEach(v => {
       docs[v.tipo] = docs[v.tipo] || new Set();
       docs[v.tipo].add(v.num);
-    });
-
-  // 2. Contar desde DB.movs (movimientos realizados por este almacén)
-  (DB.movs || []).filter(m => (m.origen === c || m.destino === c) && (m.fecha || '') >= desde && m.tipo !== 'INI' && (!mod || m.mod === mod))
-    .forEach(m => {
-      docs[m.tipo] = docs[m.tipo] || new Set();
-      if (m.doc) docs[m.tipo].add(m.doc);
-    });
-
-  // 3. Contar desde DB.incid (incidencias de daño / extravío)
-  (DB.incid || []).filter(i => (i.alm === c || i.origenTrf === c) && (i.fecha || '') >= desde && (!mod || ((item(i.id) && item(i.id).mod === mod))))
-    .forEach(i => {
-      docs[i.tipo] = docs[i.tipo] || new Set();
-      if (i.valeRef) docs[i.tipo].add(i.valeRef);
     });
   const tiposMov = ['PRH', 'ASI', 'TRF', 'ENT', 'DEV', 'DAN', 'EXT', 'PLZ'];
   const dona = gDonut([
@@ -7348,7 +7334,7 @@ VISTAS.dash = p => {
     { l: 'Asignado', v: t.asig, c: COL.azul }, { l: 'Dañado', v: t.dan, c: COL.rojo }, { l: 'En taller', v: t.rep, c: COL.naranja }, { l: 'Extraviado', v: t.ext, c: COL.morado }
   ].filter(d => d.v > 0 || ['Disponible', 'En préstamo', 'Asignado', 'Dañado'].includes(d.l)), num(total), 'ítems en total');
   const corto = { PRH: 'Préstamo', ASI: 'Asignación', TRF: 'Transferencia', ENT: 'Entrada', DEV: 'Devolución', DAN: 'Daño', EXT: 'Robo / extravío', PLZ: 'Ext. plazo' };
-  const barrasMov = gBarras(tiposMov.map(k => corto[k]), [{ n: 'Documentos', cs: tiposMov.map(k => COL_TIPO[k]), vals: tiposMov.map(k => docs[k] ? docs[k].size : 0) }]);
+  const barrasMov = gBarras(tiposMov.map(k => corto[k]), [{ n: 'Vales emitidos', cs: tiposMov.map(k => COL_TIPO[k]), vals: tiposMov.map(k => docs[k] ? docs[k].size : 0) }]);
   const mods = Object.keys(MODULOS).filter(m => !mod || m === mod);
   const porMod = mods.map(m => sumaExi([c], m));
   const barrasMod = gBarras(mods.map(m => MODULOS[m]), [
@@ -7359,7 +7345,7 @@ VISTAS.dash = p => {
     `<div class="campo" style="margin:0"><select onchange="ir('dash',{mod:this.value})"><option value="">Todos los módulos</option>${opciones(Object.entries(MODULOS), mod)}</select></div><button class="btn btn-navy" onclick="refrescar()">🔄 Actualizar</button>`)
     + `<div class="cards">${cardC('Total de ítems', num(total), '', 'Bajo responsabilidad del almacén')}${cardC('Disponibles', num(t.disp), 'verde', 'Listos para despachar')}${t.vacio > 0 ? cardC('Cilindros vacíos', num(t.vacio), 'naranja', 'Pendientes de recarga') : ''}${cardC('En préstamo', num(t.prest), 'ambar', 'Fuera del almacén')}${cardC('Asignados', num(t.asig), 'azul', 'Custodia personal')}${cardC('Dañados', num(t.dan + t.rep), 'rojo', t.rep ? `${num(t.rep)} en taller` : '')}${cardC('Extraviados', num(t.ext), 'morado', 'En investigación')}</div>
     <div class="avisos">${avisos}</div>
-    <div class="dos-col">${panelG('Distribución de existencias por estado', dona)}${panelG('Movimientos por tipo', barrasMov, 'Documentos de los últimos 30 días')}</div>
+    <div class="dos-col">${panelG('Distribución de existencias por estado', dona)}${panelG('Vales registrados por tipo', barrasMov, 'Vales emitidos en los últimos 30 días')}</div>
     <div class="dos-col">${panelG('Existencias por módulo', barrasMod)}
       <div class="panel"><div class="panel-h">Préstamos más atrasados<small>Top 10</small></div><div class="panel-b">
         ${grid('gAtr', [{ t: 'Vale', v: r => r.v.num }, { t: 'Responsable', v: r => r.v.resp.nombre }, { t: 'Supervisor', v: r => r.v.sup }, { t: 'Devolución', v: r => fF(r.v.fechaDev) }, { t: 'Atraso', v: r => r.dias + ' días', s: r => r.dias, td: 'col-dan' }],
