@@ -2073,8 +2073,11 @@ function crearTransferencia(d) {
         e.dan = 0;
         e.rep = Math.max(0, (e.rep || 0) - resto);
       }
-      const incOrigen = (DB.incid || []).find(i => i.alm === d.origen && i.id === l.id && ['DAÑADO', 'EN TALLER'].includes(i.estado));
+      const incOrigen = (DB.incid || []).find(i => i.alm === d.origen && i.id === l.id && ['DAÑADO', 'EN TALLER', 'EN TRÁNSITO'].includes(i.estado));
       if (incOrigen) {
+        incOrigen.destinoTrf = d.destino;
+        incOrigen.trfRef = v.num;
+        incOrigen.estado = 'EN TRÁNSITO';
         incOrigen.hist.push({ ev: 'EN TRÁNSITO', fecha: v.fecha, usr: S.u.nombre, det: `Enviado a ${almNombre(d.destino)} mediante transferencia ${v.num}` });
       }
     }
@@ -2123,7 +2126,21 @@ function actualizarTransferencia(num, d, alm) {
   d.lineas.forEach(l => {
     const eo = exi(v.origen, l.id);
     if (l.est === 'VACIO') eo.vacio -= l.cant;
-    else if (l.est === 'DAN') eo.dan -= l.cant;
+    else if (l.est === 'DAN') {
+      if ((eo.dan || 0) >= l.cant) {
+        eo.dan -= l.cant;
+      } else {
+        const resto = l.cant - (eo.dan || 0);
+        eo.dan = 0;
+        eo.rep = Math.max(0, (eo.rep || 0) - resto);
+      }
+      const incOrigen = (DB.incid || []).find(i => i.alm === v.origen && i.id === l.id && ['DAÑADO', 'EN TALLER', 'EN TRÁNSITO'].includes(i.estado));
+      if (incOrigen) {
+        incOrigen.destinoTrf = d.destino;
+        incOrigen.trfRef = v.num;
+        incOrigen.estado = 'EN TRÁNSITO';
+      }
+    }
     else eo.disp -= l.cant;
     eo.pend += l.cant;
   });
@@ -7674,40 +7691,40 @@ VISTAS.cAsig = p => VISTAS.cPrest(Object.assign({ tipo: 'ASI', est: '' }, p || {
 VISTAS.cIncid = p => {
   p = p || {};
   const f = p.f || 'ABIERTAS';
-  const alm = p.alm || S.ctx;
+  const alm = p.alm || (enMaestro() ? 'TODOS' : S.ctx);
   const cat = p.cat || '';
   let rows = DB.incid || [];
-  if (alm !== 'TODOS') rows = rows.filter(i => i.alm === alm);
-  if (f === 'ABIERTAS') rows = rows.filter(i => ['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(i.estado));
-  else if (f === 'TRF') rows = rows.filter(i => i.origenTrf || i.destinoTrf);
+  if (alm !== 'TODOS') rows = rows.filter(i => i.alm === alm || i.origenTrf === alm || i.destinoTrf === alm);
+  if (f === 'ABIERTAS') rows = rows.filter(i => ['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN', 'EN TRÁNSITO'].includes(i.estado));
+  else if (f === 'TRF') rows = rows.filter(i => i.origenTrf || i.destinoTrf || i.trfRef || i.estado === 'EN TRÁNSITO' || i.estado === 'TRANSFERIDO');
   else if (f !== 'TODAS') rows = rows.filter(i => i.tipo === f);
   if (cat) rows = rows.filter(r => (r.cat || (r.id && item(r.id) ? item(r.id).cat : '') || (DB.catalogo.find(i => i.cod === r.cod) || {}).cat || 'General') === cat);
   rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
-  const esCentral = S.ctx === 'CENTRAL' || S.u.admin || enMaestro();
   const cols = [
-    { t: 'Documento', k: 'valeRef' },
-    { t: 'Tipo', v: r => TIPOS[r.tipo].n },
+    { t: 'Documento', k: 'valeRef', f: r => `<b>${esc(r.valeRef)}</b>` },
+    { t: 'Tipo', v: r => TIPOS[r.tipo] ? TIPOS[r.tipo].n : r.tipo },
     { t: 'Fecha', v: r => fF(r.fecha), s: r => r.fecha },
-    { t: 'Almacén / Origen', v: r => r.origenTrf ? `${almNombre(r.alm)} (desde ${almNombre(r.origenTrf)})` : (r.destinoTrf ? `${almNombre(r.alm)} (hacia ${almNombre(r.destinoTrf)})` : almNombre(r.alm)), f: r => r.origenTrf ? `<b>${esc(almNombre(r.alm))}</b> <span class="est est-ambar" style="font-size:10.5px">Desde ${esc(almNombre(r.origenTrf))}</span>` : (r.destinoTrf ? `<b>${esc(almNombre(r.alm))}</b> <span class="est est-azul" style="font-size:10.5px">→ ${esc(almNombre(r.destinoTrf))}</span>` : esc(almNombre(r.alm))) },
-    { t: 'Código', k: 'cod' },
-    { t: 'Descripción', k: 'desc' },
-    { t: 'Serial', k: 'serial' },
+    { t: 'Almacén origen', v: r => almNombre(r.origenTrf || r.alm).replace('Almacén ', ''), f: r => `<b>${esc(almNombre(r.origenTrf || r.alm).replace('Almacén ', ''))}</b>` },
+    { t: 'Almacén destino', v: r => r.destinoTrf ? almNombre(r.destinoTrf).replace('Almacén ', '') : (r.origenTrf ? almNombre(r.alm).replace('Almacén ', '') : '—'), f: r => (r.destinoTrf || r.origenTrf) ? `<span class="est est-azul">${esc(almNombre(r.destinoTrf || r.alm).replace('Almacén ', ''))}${r.trfRef ? ` <small>(${esc(r.trfRef)})</small>` : ''}</span>` : '<span style="color:#64748b">—</span>' },
+    { t: 'Código', k: 'cod', f: r => `<b>${esc(r.cod)}</b>` },
+    { t: 'Descripción', k: 'desc', td: 'wrap' },
+    { t: 'Serial', k: 'serial', f: r => r.serial ? `<span style="font-family:monospace;font-weight:700">${esc(r.serial)}</span>` : '—' },
     { t: 'Categoría', v: r => r.cat || (r.id && item(r.id) ? item(r.id).cat : '') || (DB.catalogo.find(i => i.cod === r.cod) || {}).cat || 'General' },
     { t: 'Cant.', k: 'cant', cls: 'num' },
-    { t: 'Responsable', v: r => r.resp || '' },
-    { t: 'Mal uso', v: r => r.tipo === 'DAN' ? (r.malUso || 'NO') : '' },
+    { t: 'Responsable', v: r => r.resp || '—' },
+    { t: 'Mal uso', v: r => r.tipo === 'DAN' ? (r.malUso || 'NO') : '—' },
     { t: 'Detalle', v: r => r.detalle || '', td: 'wrap' },
     { t: 'Estado', k: 'estado', f: r => estB(r.estado) }
   ];
   const listaCategoriasIncid = [...new Set((DB.catalogo || []).map(i => i.cat).concat(CATEGORIAS_OFICIALES).filter(Boolean))].sort();
   const recarga = `ir('cIncid',{f:$('inFiltro').value,alm:$('inAlm')?$('inAlm').value:'${alm}',cat:$('inCat')?$('inCat').value:''})`;
-  const hayFiltros = Boolean((f && f !== 'ABIERTAS') || (alm && alm !== S.ctx && alm !== 'TODOS') || cat);
-  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja). Incluye ítems recibidos o enviados por transferencia.',
+  const hayFiltros = Boolean((f && f !== 'ABIERTAS') || (alm && alm !== (enMaestro() ? 'TODOS' : S.ctx)) || cat);
+  $('area').innerHTML = cab('Dañados y extraviados', 'Seguimiento de daños (evaluación, envío a taller o baja) y de robos o extravíos (investigación, hallazgo o baja). Incluye trazabilidad completa de transferencias de material dañado.',
     `${botonesExport('gInc', 'Dañados y extraviados ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm)))} <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
     + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
         ${campo('Mostrar', `<select id="inFiltro" onchange="${recarga}">${opciones([['ABIERTAS', 'Casos abiertos'], ['DAN', 'Daños directos'], ['TRF', 'Transferencias (recibidas / enviadas)'], ['EXT', 'Robos / extravíos'], ['TODAS', 'Todos los casos']], f)}</select>`)}
+        ${campo('Almacén', `<select id="inAlm" onchange="${recarga}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
         ${campo('Categoría', `<select id="inCat" onchange="${recarga}"><option value="">Todas las categorías</option>${opciones(listaCategoriasIncid, cat)}</select>`)}
-        ${esCentral ? campo('Almacén', `<select id="inAlm" onchange="${recarga}"><option value="CENTRAL" ${alm === 'CENTRAL' ? 'selected' : ''}>Almacén Central (y recibidos)</option><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.filter(a => a.c !== 'CENTRAL').map(a => [a.c, a.n]), alm)}</select>`) : ''}
         ${hayFiltros ? `<button class="btn btn-claro" onclick="ir('cIncid')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
         ${buscador('gInc', 'Buscar código, descripción, serial, categoría, documento, responsable…')}
       </div>`
@@ -7723,8 +7740,9 @@ VISTAS.cIncid = p => {
 };
 function tiraInc(r) {
   $('tiNum').textContent = r.valeRef;
-  const origTxt = r.origenTrf ? ` · Recibido desde ${almNombre(r.origenTrf)}` : (r.destinoTrf ? ` · Transferido a ${almNombre(r.destinoTrf)} (${r.trfRef || ''})` : '');
-  $('tiInfo').innerHTML = `${esc(r.cod)} · ${esc(r.desc)} · ${estB(r.estado)}${origTxt}`;
+  const origTxt = r.origenTrf ? ` · Desde: ${almNombre(r.origenTrf)}` : '';
+  const destTxt = r.destinoTrf ? ` · Destino: ${almNombre(r.destinoTrf)}${r.trfRef ? ` (${r.trfRef})` : ''}` : '';
+  $('tiInfo').innerHTML = `${esc(r.cod)} · ${esc(r.desc)} · ${estB(r.estado)}${origTxt}${destTxt}`;
   $('iRep').disabled = r.estado !== 'DAÑADO'; $('iOk').disabled = r.estado !== 'EN TALLER'; $('iHal').disabled = r.estado !== 'EN INVESTIGACIÓN';
   $('iBaja').disabled = !['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(r.estado); $('iVer').disabled = false;
 }
@@ -7868,7 +7886,7 @@ VISTAS.cVales = p => {
   const tipo = p.tipo || '';
   const mod = p.mod || '';
   const cat = p.cat || '';
-  const almOrig = (p.almOrig !== undefined) ? p.almOrig : (p.alm !== undefined ? p.alm : (enMaestro() ? 'TODOS' : S.ctx));
+  const almOrig = (p.almOrig !== undefined) ? p.almOrig : 'TODOS';
   const almDest = (p.almDest !== undefined) ? p.almDest : 'TODOS';
   const proy = p.proy || '';
   const vale = p.vale || '';
@@ -7878,6 +7896,10 @@ VISTAS.cVales = p => {
   let rows = DB.vales.filter(v => {
     // Las transferencias pendientes de recepción no deben mostrarse hasta que hayan sido aceptadas
     if (v.tipo === 'TRF' && v.estatus !== 'RECIBIDA') return false;
+    // Si no es vista maestra y ambos filtros están en TODOS, mostrar todos los movimientos del almacén activo (origen o destino)
+    if (!enMaestro() && (!almOrig || almOrig === 'TODOS') && (!almDest || almDest === 'TODOS')) {
+      if (v.origen !== S.ctx && v.destino !== S.ctx) return false;
+    }
     // Almacén origen
     if (almOrig && almOrig !== 'TODOS') {
       if (v.origen !== almOrig) return false;
@@ -7950,7 +7972,7 @@ VISTAS.cVales = p => {
         ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
         ${campo('Desde', `<input type="date" id="vDesde" value="${esc(desde)}" onchange="${recargar}">`)}
         ${campo('Hasta', `<input type="date" id="vHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
-        ${(tipo || mod || cat || (almOrig && almOrig !== (enMaestro() ? 'TODOS' : S.ctx)) || (almDest && almDest !== 'TODOS') || proy || vale || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${(tipo || mod || cat || (almOrig && almOrig !== 'TODOS') || (almDest && almDest !== 'TODOS') || proy || vale || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cVales')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
         ${buscador('gVal', 'Buscar código, serial, cédula, responsable, vale…')}
       </div>`
     + grid('gVal', cols, rows, { pag: 20, onSel: r => { $('vVer').disabled = false; $('vImp').disabled = false; $('vDet').disabled = false; } })
@@ -7966,7 +7988,7 @@ VISTAS.cValesDet = p => {
   const tipo = p.tipo || '';
   const mod = p.mod || '';
   const cat = p.cat || '';
-  const almOrig = (p.almOrig !== undefined) ? p.almOrig : (p.alm !== undefined ? p.alm : (enMaestro() ? 'TODOS' : S.ctx));
+  const almOrig = (p.almOrig !== undefined) ? p.almOrig : 'TODOS';
   const almDest = (p.almDest !== undefined) ? p.almDest : 'TODOS';
   const proy = p.proy || '';
   const vale = p.vale || '';
@@ -7978,6 +8000,10 @@ VISTAS.cValesDet = p => {
   (DB.vales || []).forEach(v => {
     // Las transferencias pendientes de recepción no deben mostrarse hasta que hayan sido aceptadas
     if (v.tipo === 'TRF' && v.estatus !== 'RECIBIDA') return;
+    // Si no es vista maestra y ambos filtros están en TODOS, mostrar todos los movimientos del almacén activo (origen o destino)
+    if (!enMaestro() && (!almOrig || almOrig === 'TODOS') && (!almDest || almDest === 'TODOS')) {
+      if (v.origen !== S.ctx && v.destino !== S.ctx) return;
+    }
     // Almacén origen
     if (almOrig && almOrig !== 'TODOS') {
       if (v.origen !== almOrig) return;
@@ -8087,7 +8113,7 @@ VISTAS.cValesDet = p => {
         ${campo('Proyecto / Cuenta', `<select id="vdProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
         ${campo('Desde', `<input type="date" id="vdDesde" value="${esc(desde)}" onchange="${recargar}">`)}
         ${campo('Hasta', `<input type="date" id="vdHasta" value="${esc(hasta)}" onchange="${recargar}">`)}
-        ${(tipo || mod || cat || (almOrig && almOrig !== (enMaestro() ? 'TODOS' : S.ctx)) || (almDest && almDest !== 'TODOS') || proy || vale || itemFiltro || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cValesDet')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
+        ${(tipo || mod || cat || (almOrig && almOrig !== 'TODOS') || (almDest && almDest !== 'TODOS') || proy || vale || itemFiltro || desde || hasta) ? `<button class="btn btn-claro" onclick="ir('cValesDet')" style="align-self:flex-end">✖ Limpiar</button>` : ''}
         ${buscador('gValDet', 'Buscar código, descripción, serial, vale, responsable…')}
       </div>`
     + grid('gValDet', cols, rows, { pag: 25, onSel: r => tiraValDet(r) })
