@@ -1513,25 +1513,24 @@ function reconciliarStockAlmacen(alm) {
     });
   });
 
-  // 3. Transferencias ENVIADAS
-  (DB.vales || []).filter(v => v.tipo === 'TRF' && v.origen === alm).forEach(v => {
+  // 3. Devoluciones recibidas en este almacén (DEV) - Sumar entradas antes de descontar salidas
+  (DB.vales || []).filter(v => v.tipo === 'DEV' && (v.destino === alm || (!v.destino && v.origen === alm))).forEach(v => {
     (v.lineas || []).forEach(l => {
       init(l.id);
       const c = Number(l.cant) || 0;
-      if (v.estatus === 'PENDIENTE DE RECEPCIÓN') {
-        nuevoExi[l.id].pend += c;
-        if (l.est === 'DAN' || l.cond === 'DAÑADO') nuevoExi[l.id].dan = Math.max(0, nuevoExi[l.id].dan - c);
-        else if (l.est === 'VACIO' || l.cond === 'VACÍO') nuevoExi[l.id].vacio = Math.max(0, nuevoExi[l.id].vacio - c);
-        else nuevoExi[l.id].disp = Math.max(0, nuevoExi[l.id].disp - c);
-      } else if (v.estatus === 'RECIBIDA') {
-        if (l.est === 'DAN' || l.cond === 'DAÑADO') nuevoExi[l.id].dan = Math.max(0, nuevoExi[l.id].dan - c);
-        else if (l.est === 'VACIO' || l.cond === 'VACÍO') nuevoExi[l.id].vacio = Math.max(0, nuevoExi[l.id].vacio - c);
-        else nuevoExi[l.id].disp = Math.max(0, nuevoExi[l.id].disp - c);
+      if (l.cond === 'VACÍO' || l.cond === 'VACIO' || l.est === 'VACIO') {
+        nuevoExi[l.id].vacio += c;
+      } else if (l.cond === 'DAÑADO' || l.est === 'DAN') {
+        nuevoExi[l.id].dan += c;
+      } else if (l.cond === 'EXTRAVIADO' || l.est === 'EXT') {
+        nuevoExi[l.id].ext += c;
+      } else {
+        nuevoExi[l.id].disp += c;
       }
     });
   });
 
-  // 4. Asignaciones y préstamos emitidos en este almacén
+  // 4. Asignaciones y préstamos emitidos en este almacén (ASI / PRH)
   (DB.vales || []).filter(v => v.origen === alm && (v.tipo === 'ASI' || v.tipo === 'PRH')).forEach(v => {
     (v.lineas || []).forEach(l => {
       init(l.id);
@@ -1550,19 +1549,20 @@ function reconciliarStockAlmacen(alm) {
     });
   });
 
-  // 4b. Devoluciones recibidas en este almacén (DEV)
-  (DB.vales || []).filter(v => v.tipo === 'DEV' && (v.destino === alm || (!v.destino && v.origen === alm))).forEach(v => {
+  // 5. Transferencias ENVIADAS (TRF) - Descontar salidas del almacén origen
+  (DB.vales || []).filter(v => v.tipo === 'TRF' && v.origen === alm).forEach(v => {
     (v.lineas || []).forEach(l => {
       init(l.id);
       const c = Number(l.cant) || 0;
-      if (l.cond === 'VACÍO' || l.cond === 'VACIO' || l.est === 'VACIO') {
-        nuevoExi[l.id].vacio += c;
-      } else if (l.cond === 'DAÑADO' || l.est === 'DAN') {
-        nuevoExi[l.id].dan += c;
-      } else if (l.cond === 'EXTRAVIADO' || l.est === 'EXT') {
-        nuevoExi[l.id].ext += c;
-      } else {
-        nuevoExi[l.id].disp += c;
+      if (v.estatus === 'PENDIENTE DE RECEPCIÓN') {
+        nuevoExi[l.id].pend += c;
+        if (l.est === 'DAN' || l.cond === 'DAÑADO') nuevoExi[l.id].dan = Math.max(0, nuevoExi[l.id].dan - c);
+        else if (l.est === 'VACIO' || l.cond === 'VACÍO') nuevoExi[l.id].vacio = Math.max(0, nuevoExi[l.id].vacio - c);
+        else nuevoExi[l.id].disp = Math.max(0, nuevoExi[l.id].disp - c);
+      } else if (v.estatus === 'RECIBIDA') {
+        if (l.est === 'DAN' || l.cond === 'DAÑADO') nuevoExi[l.id].dan = Math.max(0, nuevoExi[l.id].dan - c);
+        else if (l.est === 'VACIO' || l.cond === 'VACÍO') nuevoExi[l.id].vacio = Math.max(0, nuevoExi[l.id].vacio - c);
+        else nuevoExi[l.id].disp = Math.max(0, nuevoExi[l.id].disp - c);
       }
     });
   });
