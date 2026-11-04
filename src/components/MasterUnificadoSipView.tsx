@@ -1386,7 +1386,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
           // 4. Filtro de Clasificación
           if (selectedClasificacion && selectedClasificacion !== 'TODAS') {
-            items = items.filter((r: any) => r.datos_tipo_costo === selectedClasificacion);
+            items = items.filter((r: any) => (r.datos_tipo_costo || determinarTipoGasto(r.cuenta_aux, r.datos_tipo_costo)) === selectedClasificacion);
           }
 
           // 5. Filtro de Categoría
