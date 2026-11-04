@@ -545,7 +545,7 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Agrupación Mes a Mes Oficial 2026 (Enero a Octubre - Base Oficial SIP TIMACA)
   const resumenMeses = useMemo<ResumenMensual[]>(() => {
-    const mesesSalidasCount = [10365, 7819, 9036, 8143, 7479, 7253, 8702, 10617, 13308, 5000];
+    const mesesSalidasCount = [10365, 7819, 9036, 8143, 7479, 7253, 8702, 10617, 13308, 7016];
     const semanasPorMes = [4, 4, 5, 4, 5, 4, 5, 4, 5, 4];
 
     // Salidas reales cargadas de agosto, septiembre y octubre
@@ -556,7 +556,7 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const sepSalidasCount = sepSalidasFiltradas.length > 0 ? sepSalidasFiltradas.length : 13308;
 
     const octSalidasFiltradas = salidas.filter(s => s.mes === 10 && !isNormalizacion(s));
-    const octSalidasCount = octSalidasFiltradas.length > 0 ? octSalidasFiltradas.length : 5000;
+    const octSalidasCount = octSalidasFiltradas.length > 0 ? octSalidasFiltradas.length : 7016;
 
     const lista = TOTALES_MESES_PPT.map((ppt, idx) => {
       const mesNum = ppt.mesNum;
@@ -583,6 +583,10 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         let val = Math.round((pData.meses[idx] || 0) * 100) / 100;
         if (idx === 8 && val === 0) {
           const prySalidas = sepSalidasFiltradas.filter(s => s.cuentaAuxiliarCodigo === cod);
+          val = Math.round(prySalidas.reduce((sum, s) => sum + s.montoTotal, 0) * 100) / 100;
+        }
+        if (idx === 9 && val === 0) {
+          const prySalidas = octSalidasFiltradas.filter(s => s.cuentaAuxiliarCodigo === cod);
           val = Math.round(prySalidas.reduce((sum, s) => sum + s.montoTotal, 0) * 100) / 100;
         }
         const short = CUENTAS_CORTAS_MAP[cod] || pData.descripcion;

@@ -1440,7 +1440,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             else if (t.includes('HORA') || t.includes('HM')) hm_total += val;
             else ind_total += val;
 
-            const dt = (r.datos_tipo_costo || '').toUpperCase();
+            const dt = (r.datos_tipo_costo || determinarTipoGasto(r.cuenta_aux, r.datos_tipo_costo) || '').toUpperCase();
             if (dt.includes('EXTERNO')) ext_total += val;
             else if (dt.includes('INTERNO')) int_total += val;
             else if (dt.includes('OPEX') || dt.includes('MANTTO')) opex_total += val;

@@ -15,12 +15,13 @@ let cachedCookie = null;
 
 function toISODate(dStr) {
   if (!dStr) return '';
-  if (dStr.includes('-')) return dStr;
-  const parts = dStr.split('/');
+  const s = String(dStr);
+  if (s.includes('-')) return s;
+  const parts = s.split('/');
   if (parts.length === 3) {
     return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
   }
-  return dStr;
+  return s;
 }
 
 function request(path, method = 'GET', payload = null) {

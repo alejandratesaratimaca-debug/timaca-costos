@@ -128,19 +128,19 @@ export const DETALLE_SUBCONCEPTOS_CATEGORIAS: Record<string, {
 export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
-    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 561462.88, 823463.09, 499968.36],
-    total2026: 4612316.33,
-    variacion: '+46,7%',
-    variacionNum: 46.7,
-    esPositiva: true
+    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 561462.88, 823463.09, 616518.10],
+    total2026: 4728866.07,
+    variacion: '-25,1%',
+    variacionNum: -25.1,
+    esPositiva: false
   },
   {
     categoria: 'Servicios Directos',
-    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 247200.63],
-    total2026: 3847303.02,
-    variacion: '-55,7%',
-    variacionNum: -55.7,
-    esPositiva: false
+    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 1144235.61],
+    total2026: 4744338.00,
+    variacion: '+307,9%',
+    variacionNum: 307.9,
+    esPositiva: true
   },
   {
     categoria: 'Mano de Obra Directa',
