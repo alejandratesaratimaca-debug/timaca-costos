@@ -128,43 +128,43 @@ export const DETALLE_SUBCONCEPTOS_CATEGORIAS: Record<string, {
 export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
-    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 561462.88, 823463.09, 616518.10],
-    total2026: 4728866.07,
-    variacion: '-25,1%',
-    variacionNum: -25.1,
+    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 561462.88, 823463.09, 476866.47],
+    total2026: 4589214.44,
+    variacion: '-42,1%',
+    variacionNum: -42.1,
     esPositiva: false
   },
   {
     categoria: 'Servicios Directos',
-    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 1144235.61],
-    total2026: 4744338.00,
-    variacion: '+307,9%',
-    variacionNum: 307.9,
+    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 967478.81],
+    total2026: 4567581.20,
+    variacion: '+244,9%',
+    variacionNum: 244.9,
     esPositiva: true
   },
   {
     categoria: 'Mano de Obra Directa',
     meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 290728.22, 208500.75, 0],
     total2026: 2242856.97,
-    variacion: '-28,3%',
-    variacionNum: -28.3,
+    variacion: '0,0%',
+    variacionNum: 0,
     esPositiva: false
   },
   {
     categoria: 'Horas Máquina',
     meses: [145113, 113686, 149030, 55110, 129625, 69063, 75933, 87975.46, 53398.08, 0],
     total2026: 878933.54,
-    variacion: '-39,3%',
-    variacionNum: -39.3,
+    variacion: '0,0%',
+    variacionNum: 0,
     esPositiva: false
   },
   {
     categoria: 'Costos Indirectos',
     meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 207508.00, 341374.77, 0],
     total2026: 1894988.77,
-    variacion: '+64,5%',
-    variacionNum: 64.5,
-    esPositiva: true
+    variacion: '0,0%',
+    variacionNum: 0,
+    esPositiva: false
   }
 ];
 
@@ -184,7 +184,10 @@ export interface CuentaAuxiliarProyecto {
   cuentaAuxiliar: string;
   proyecto: string;
   proyectoCorto: string;
-  montoAgosto: number;
+  montoAgosto?: number;
+  montoSeptiembre?: number;
+  montoOctubre?: number;
+  total?: number;
   porcentaje: number;
 }
 
@@ -201,6 +204,7 @@ export const CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026: CuentaAuxiliarProyecto[] = 
       proyecto: p.descripcion,
       proyectoCorto: CUENTAS_CORTAS_MAP[p.cuentaAuxiliar] || p.descripcion,
       montoAgosto: val,
+      total: val,
       porcentaje: totAgostoExacto > 0 ? Math.round((val / totAgostoExacto) * 10000) / 100 : 0
     };
   });
@@ -208,7 +212,7 @@ export const CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026: CuentaAuxiliarProyecto[] = 
 // LISTADO OFICIAL DE PROYECTOS EXTERNOS DE SEPTIEMBRE 2026 ($1.613.225 USD)
 const totSepExacto = 1613225;
 
-export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 = projsListAll
+export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026: CuentaAuxiliarProyecto[] = projsListAll
   .filter(p => (p.meses[8] || 0) > 0)
   .sort((a, b) => (b.meses[8] || 0) - (a.meses[8] || 0))
   .map(p => {
@@ -218,7 +222,26 @@ export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 = projsListAll
       proyecto: p.descripcion,
       proyectoCorto: CUENTAS_CORTAS_MAP[p.cuentaAuxiliar] || p.descripcion,
       montoSeptiembre: val,
+      total: val,
       porcentaje: totSepExacto > 0 ? Math.round((val / totSepExacto) * 10000) / 100 : 0
+    };
+  });
+
+// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE OCTUBRE 2026 ($1.444.345,28 USD)
+const totOctExacto = 1444345.28;
+
+export const CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026: CuentaAuxiliarProyecto[] = projsListAll
+  .filter(p => (p.meses[9] || 0) > 0)
+  .sort((a, b) => (b.meses[9] || 0) - (a.meses[9] || 0))
+  .map(p => {
+    const val = Math.round((p.meses[9] || 0) * 100) / 100;
+    return {
+      cuentaAuxiliar: p.cuentaAuxiliar,
+      proyecto: p.descripcion,
+      proyectoCorto: CUENTAS_CORTAS_MAP[p.cuentaAuxiliar] || p.descripcion,
+      montoOctubre: val,
+      total: val,
+      porcentaje: totOctExacto > 0 ? Math.round((val / totOctExacto) * 10000) / 100 : 0
     };
   });
 

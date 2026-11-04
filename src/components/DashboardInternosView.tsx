@@ -89,7 +89,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   onSelectSubTab
 }) => {
   const [subTab, setSubTab] = useState<SubTabInternos>(activeSubTab || 'resumen');
-  const [selectedMesIdx, setSelectedMesIdx] = useState<number>(8); // Septiembre por defecto (index 8)
+  const [selectedMesIdx, setSelectedMesIdx] = useState<number>(9); // Octubre por defecto (index 9)
   const [modoReclasificadoSep, setModoReclasificadoSep] = useState<boolean>(true);
   const [incluirEquiposNuevosCapex, setIncluirEquiposNuevosCapex] = useState<boolean>(true);
   
@@ -109,17 +109,17 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
   const [selectedActivoParaDesglose, setSelectedActivoParaDesglose] = useState<DetalleCuentaOActivo | null>(null);
 
   // Estados para el Tablero Ejecutivo (Igual a Proyectos Externos)
-  const [periodoDetalleBloques, setPeriodoDetalleBloques] = useState<'anual' | number>(9);
+  const [periodoDetalleBloques, setPeriodoDetalleBloques] = useState<'anual' | number>(10);
   const [filtroBloqueAuditoria, setFiltroBloqueAuditoria] = useState<'todos' | 'capex' | 'activos' | 'flota' | 'infra'>('todos');
   const [filtroCategoriaAuditoria, setFiltroCategoriaAuditoria] = useState<'todos' | 'Materiales Directos' | 'Servicios' | 'MOD'>('todos');
-  const [filtroMesAuditoria, setFiltroMesAuditoria] = useState<number | 'todos'>(9);
+  const [filtroMesAuditoria, setFiltroMesAuditoria] = useState<number | 'todos'>(10);
   const [selectedCuentasAuditoria, setSelectedCuentasAuditoria] = useState<string[]>([]);
   const [busquedaAuditoria, setBusquedaAuditoria] = useState<string>('');
   const [filasAMostrarAuditoria, setFilasAMostrarAuditoria] = useState<number | 'todas'>(50);
   const [downloadExcelSuccessAuditoria, setDownloadExcelSuccessAuditoria] = useState<boolean>(false);
   const [mostrarMatrizHistorica, setMostrarMatrizHistorica] = useState<boolean>(false);
 
-  // Datos mensuales consolidados oficiales Enero a Septiembre 2026
+  // Datos mensuales consolidados oficiales Enero a Octubre 2026
   const MESES_INTERNOS_DATA = useMemo(() => [
     { num: 1, label: 'Enero 2026', corto: 'Ene', salidas: 382, capex: 162467.00, flota: 143580.59, infra: 145196.50, total: 451244.09, promSem: 112811 },
     { num: 2, label: 'Febrero 2026', corto: 'Feb', salidas: 415, capex: 326380.08, flota: 102274.05, infra: 50329.09, total: 478983.22, promSem: 119746 },
@@ -129,7 +129,8 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
     { num: 6, label: 'Junio 2026', corto: 'Jun', salidas: 198, capex: 32585.22, flota: 72213.23, infra: 15747.60, total: 120546.05, promSem: 30137 },
     { num: 7, label: 'Julio 2026', corto: 'Jul', salidas: 260, capex: 45087.13, flota: 97727.42, infra: 41897.82, total: 184712.37, promSem: 46178 },
     { num: 8, label: 'Agosto 2026', corto: 'Ago', salidas: 310, capex: 29017.30, flota: 113450.01, infra: 40545.39, total: 183012.70, promSem: 45753 },
-    { num: 9, label: 'Septiembre 2026', corto: 'Sep', salidas: 1884, capex: 63323.92, flota: 65757.04, infra: 42818.77, total: 171899.73, promSem: 42975 }
+    { num: 9, label: 'Septiembre 2026', corto: 'Sep', salidas: 1884, capex: 63323.92, flota: 65757.04, infra: 42818.77, total: 171899.73, promSem: 42975 },
+    { num: 10, label: 'Octubre 2026', corto: 'Oct', salidas: 1683, capex: 30225.95, flota: 40344.07, infra: 66612.49, total: 137182.51, promSem: 34296 }
   ], []);
 
   const maxMesMontoInternos = Math.max(...MESES_INTERNOS_DATA.map(m => m.total), 1);

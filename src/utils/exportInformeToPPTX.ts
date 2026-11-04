@@ -396,7 +396,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     );
 
     // Native Table (13.333" width)
-    const headers = ['Categoría', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Total 2026', 'Var. % (Sep vs Ago)'];
+    const headers = ['Categoría', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Total 2026', 'Var. %'];
     const tableRows: any[][] = [];
 
     tableRows.push(
@@ -405,7 +405,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
         options: {
           bold: true,
           color: C_WHITE,
-          fill: { color: i === 9 ? C_AMBER : C_DARK },
+          fill: { color: i === selectedMesNum ? C_AMBER : C_DARK },
           align: i === 0 ? 'left' : 'right',
           fontSize: 8.5
         }
@@ -414,14 +414,14 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
 
     TABLA_PPT_DISTRIBUCION_2026.forEach((row) => {
       const cells: any[] = [
-        { text: row.categoria, options: { bold: true, fontSize: 10.5, color: C_DARK, align: 'left' } }
+        { text: row.categoria, options: { bold: true, fontSize: 10.0, color: C_DARK, align: 'left' } }
       ];
       row.meses.forEach((val, mIdx) => {
-        const isSelected = mIdx === 8; // Septiembre
+        const isSelected = mIdx === (selectedMesNum - 1);
         cells.push({
           text: val.toLocaleString('de-DE'),
           options: {
-            fontSize: 9.8,
+            fontSize: 9.0,
             color: isSelected ? C_NAVY : C_SLATE,
             bold: isSelected,
             fill: isSelected ? { color: 'FEF3C7' } : undefined,
@@ -431,13 +431,13 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       });
       cells.push({
         text: row.total2026.toLocaleString('de-DE'),
-        options: { bold: true, fontSize: 9.8, color: C_DARK, fill: { color: 'F1F5F9' }, align: 'right' }
+        options: { bold: true, fontSize: 9.0, color: C_DARK, fill: { color: 'F1F5F9' }, align: 'right' }
       });
       cells.push({
         text: row.variacion,
         options: {
           bold: true,
-          fontSize: 9.8,
+          fontSize: 9.0,
           color: row.esPositiva ? C_EMERALD : 'B45309',
           align: 'center'
         }
@@ -447,28 +447,29 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
 
     // Total Row
     const totalCells: any[] = [
-      { text: 'TOTAL MENSUAL (USD)', options: { bold: true, fontSize: 10.5, color: C_WHITE, fill: { color: C_NAVY }, align: 'left' } }
+      { text: 'TOTAL MENSUAL (USD)', options: { bold: true, fontSize: 9.5, color: C_WHITE, fill: { color: C_NAVY }, align: 'left' } }
     ];
     TOTALES_MESES_PPT.forEach((tm, mIdx) => {
-      const isSelected = mIdx === 8;
+      const isSelected = mIdx === (selectedMesNum - 1);
       totalCells.push({
         text: tm.total.toLocaleString('de-DE'),
         options: {
           bold: true,
-          fontSize: 10.5,
+          fontSize: 9.5,
           color: isSelected ? 'FCD34D' : C_WHITE,
           fill: { color: isSelected ? '1E3A8A' : C_NAVY },
           align: 'right'
         }
       });
     });
+    const grandTotal2026 = TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0);
     totalCells.push({
-      text: '12.052.176',
-      options: { bold: true, fontSize: 10.5, color: C_WHITE, fill: { color: '0F172A' }, align: 'right' }
+      text: Math.round(grandTotal2026).toLocaleString('de-DE'),
+      options: { bold: true, fontSize: 9.5, color: C_WHITE, fill: { color: '0F172A' }, align: 'right' }
     });
     totalCells.push({
-      text: '+34,7%',
-      options: { bold: true, fontSize: 10.5, color: 'FCD34D', fill: { color: '0F172A' }, align: 'center' }
+      text: '-10,5%',
+      options: { bold: true, fontSize: 9.5, color: 'FCD34D', fill: { color: '0F172A' }, align: 'center' }
     });
     tableRows.push(totalCells);
 
@@ -476,7 +477,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       x: 0.6,
       y: 1.35,
       w: 12.13,
-      colW: [2.33, 0.82, 0.82, 0.82, 0.82, 0.82, 0.82, 0.82, 0.90, 0.92, 1.18, 1.06],
+      colW: [2.13, 0.76, 0.76, 0.76, 0.76, 0.76, 0.76, 0.76, 0.76, 0.82, 0.85, 1.15, 0.95],
       border: { pt: 0.5, color: C_BORDER }
     });
 

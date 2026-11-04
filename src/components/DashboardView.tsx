@@ -60,7 +60,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [chartMode, setChartMode] = useState<'mensual' | 'semanal' | 'por-categoria'>('mensual');
   const [selectedCatFocus, setSelectedCatFocus] = useState<string>('Materiales Directos');
   const [selectedMesModal, setSelectedMesModal] = useState<ResumenMensual | null>(null);
-  const [periodoDetalleCategorias, setPeriodoDetalleCategorias] = useState<'anual' | number>(9);
+  const [periodoDetalleCategorias, setPeriodoDetalleCategorias] = useState<'anual' | number>(10);
 
   const MESES_CONFIG = [
     { num: 1, label: 'Enero', corto: 'Ene' },

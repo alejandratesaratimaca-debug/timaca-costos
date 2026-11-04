@@ -192,7 +192,7 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     async function loadSipData() {
       try {
         let items: any[] = [];
-        const mesTarget = selectedMes === '8' ? 'agosto' : selectedMes === '10' ? 'octubre' : 'septiembre';
+        const mesTarget = selectedMes === '8' ? 'agosto' : selectedMes === '9' ? 'septiembre' : 'octubre';
         const fileTarget = `/data/sip/unificada_${mesTarget}.json`;
 
         // 1. Intentar API segura interna (HTTPS/Proxy sin Mixed Content)
