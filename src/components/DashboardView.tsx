@@ -506,8 +506,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             
             const montoAnual = catPPT?.total2026 ?? 0;
             const mesIdx = typeof periodoDetalleCategorias === 'number' 
-              ? Math.max(0, Math.min(8, periodoDetalleCategorias - 1)) 
-              : 7;
+              ? Math.max(0, Math.min(9, periodoDetalleCategorias - 1)) 
+              : 9;
             const montoMes = (catPPT?.meses && catPPT.meses[mesIdx] !== undefined) ? catPPT.meses[mesIdx] : 0;
             const montoActual = periodoDetalleCategorias === 'anual' ? montoAnual : montoMes;
             

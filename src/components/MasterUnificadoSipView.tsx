@@ -1531,7 +1531,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
           // 3. Filtro de Tipo de Insumo
           if (selectedTipo && selectedTipo !== 'TODOS') {
-            items = items.filter((r: any) => r.tipo === selectedTipo);
+            items = items.filter((r: any) => {
+              if (selectedTipo === 'Mano de Obra Directa' || selectedTipo === 'Mano de Obra') {
+                return r.tipo === 'Mano de Obra Directa' || r.tipo === 'Mano de Obra Directa ECO' || r.tipo === 'Mano de Obra';
+              }
+              return r.tipo === selectedTipo;
+            });
           }
 
           // 4. Filtro de Clasificación
