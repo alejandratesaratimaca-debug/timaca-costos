@@ -1332,6 +1332,45 @@ function cargarDatos() {
   if (typeof asegurarMovimientosVales === 'function') asegurarMovimientosVales();
   guardarLocalSolo();
 }
+function proximoNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')) {
+  if (pref === 'DEV' && typeof S !== 'undefined' && S && S.ctx && S.ctx !== 'MAESTRO') {
+    alm = S.ctx;
+  }
+  if (!alm || alm === 'TODOS' || alm === 'MAESTRO') alm = 'CENTRAL';
+  const norm = s => String(s || '').trim().toUpperCase();
+  const almNorm = norm(alm);
+
+  let cur = 0;
+  const regex = new RegExp(`^${pref}-(\\d+)$`);
+  const checkNum = (n, o, d) => {
+    if (!n) return;
+    const m = String(n).trim().match(regex);
+    if (m) {
+      const matchAlm = (pref === 'DEV') ? (!d || norm(d) === almNorm || !o || norm(o) === almNorm) : (!o || norm(o) === almNorm);
+      if (matchAlm) {
+        const val = parseInt(m[1], 10);
+        if (val > cur) cur = val;
+      }
+    }
+  };
+
+  (DB.vales || []).forEach(v => checkNum(v.num, v.origen, v.destino));
+  (DB.solicitudes || []).forEach(s => {
+    if (pref === 'SOL') checkNum(s.num, s.origen, s.destino);
+    if (s.vale) checkNum(s.vale, s.origen, s.destino);
+  });
+  (DB.movs || []).forEach(m => checkNum(m.doc, m.origen, m.destino));
+
+  let next = cur + 1;
+  while ((DB.vales || []).some(v => v.num === `${pref}-${String(next).padStart(7, '0')}` && norm(v.origen) === almNorm)) {
+    next++;
+  }
+  while ((DB.movs || []).some(m => m.doc === `${pref}-${String(next).padStart(7, '0')}` && norm(m.origen) === almNorm)) {
+    next++;
+  }
+  return `${pref}-${String(next).padStart(7, '0')}`;
+}
+
 function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'CENTRAL')) {
   if (pref === 'DEV' && typeof S !== 'undefined' && S && S.ctx && S.ctx !== 'MAESTRO') {
     alm = S.ctx;
@@ -1344,7 +1383,7 @@ function sigNum(pref, alm = (typeof S !== 'undefined' && S && S.ctx ? S.ctx : 'C
   DB.corrAlm = DB.corrAlm || {};
   DB.corrAlm[alm] = DB.corrAlm[alm] || {};
 
-  let cur = DB.corrAlm[alm][pref] || 0;
+  let cur = 0;
 
   const regex = new RegExp(`^${pref}-(\\d+)$`);
   const checkNum = (n, o, d) => {
@@ -7931,7 +7970,7 @@ function abrirModalValeServiciosGenerales(preSelNum) {
   }
 
   const preSel = preSelNum || (selDe('gInc') ? selDe('gInc').n : null);
-  const numProx = sigNum('VSG', 'CENTRAL');
+  const numProx = proximoNum('VSG', 'CENTRAL');
   const despachaDef = (S && S.u && S.u.nombre) ? S.u.nombre : 'Almacenista Central';
 
   const filasHtml = disponibles.map(inc => {
