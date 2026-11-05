@@ -75,6 +75,115 @@ function classifyArticle(cod, desc, catMap) {
   return 'Materiales Directos';
 }
 
+function resolverCuentaAuxiliar(rawCta, motivo, desc, solicitante, codigoMat) {
+  const c = (rawCta || '').trim().toUpperCase();
+  const m = (motivo || '').toUpperCase();
+  const d = (desc || '').toUpperCase();
+  const sol = (solicitante || '').toUpperCase();
+
+  if (/^[A-Z]{2,4}-[A-Z0-9]+-[A-Z0-9]+/i.test(c)) {
+    return c;
+  }
+
+  if (m.includes('TTE-C-0706') || m.includes('1LPP') || m.includes('PLANTA DE PELLAS') || m.includes('PLANTA PELLAS') || m.includes('LINEA 1 PELLAS')) {
+    return 'TTE-C-0706';
+  }
+  if (m.includes('TTE-C-0640') || m.includes('PARRILLA MÓVIL') || m.includes('PARRILLA MOVIL')) {
+    return 'TTE-C-0640';
+  }
+  if (m.includes('TTE-C-0671') || m.includes('2DA LINEA PMH') || m.includes('SEGUNDA LINEA PMH') || m.includes('PMH') || m.includes('DRAVO') || m.includes('TH4') || m.includes('VISCO ORINOCO')) {
+    return 'TTE-C-0671';
+  }
+  if (m.includes('TTE-C-0683') || m.includes('BRIQUETAS') || m.includes('REFORMADOR') || m.includes('CALDERA')) {
+    return 'TTE-C-0683';
+  }
+  if (m.includes('BOCA GRANDE') || m.includes('TTE-C-0655')) {
+    return 'TTE-C-0655';
+  }
+  if (m.includes('IMPSA') || m.includes('TTE-C-0652')) {
+    return 'TTE-C-0652';
+  }
+
+  switch (c) {
+    case 'FABRICACIÓN':
+    case 'FABRICACION':
+      return 'TT-A-C-505';
+
+    case 'OPERACIONES':
+      if (sol.includes('ALBERT') || m.includes('VALENCIA') || m.includes('METAL Y ACERO') || m.includes('FABRICAC')) {
+        return 'TT-A-C-505';
+      }
+      return 'TT-A-C-500';
+
+    case 'ADMINISTRATIVO':
+    case 'ADMINISTRACION':
+      if (m.includes('REPUESTOS ECO')) return 'EE-A-C-511';
+      return 'TT-A-C-200';
+
+    case 'GENERAL (GERENTE, ASISTENTE)':
+    case 'GENERAL':
+    case 'CUENTA SOCIO':
+      return 'TT-A-C-100';
+
+    case 'RECURSOS HUMANOS':
+    case 'RRHH':
+      if (m.includes('EPP')) return 'TT-A-C-601';
+      return 'TT-A-C-600';
+
+    case 'EQUIPO MÓVIL':
+    case 'EQUIPO MOVIL':
+      const vehMatch = m.match(/\b(BS\d{2}|VH\d{2}|CH\d{2}|CA\d{2}|GR\d{2}|RM\d{2}|TR\d{2}|MC\d{2})\b/);
+      if (vehMatch) {
+        const vCode = vehMatch[1];
+        if (vCode.startsWith('BS')) return `EEA-C-${vCode}`;
+        if (vCode.startsWith('VH')) return `EEE-C-${vCode}`;
+        if (vCode.startsWith('GR')) return `EEI-C-${vCode}`;
+        if (vCode.startsWith('CH')) return `EEM-C-${vCode}`;
+        if (vCode.startsWith('CA')) return `EEM-C-${vCode}`;
+        if (vCode.startsWith('RM')) return `EEM-C-${vCode}`;
+        if (vCode.startsWith('TR')) return `EEE-C-${vCode}`;
+        if (vCode.startsWith('MC')) return `EEE-C-${vCode}`;
+      }
+      return 'EE-A-C-507';
+
+    case 'PLANIFICACIÓN':
+    case 'PLANIFICACION':
+      return 'TT-A-C-400';
+
+    case 'PELLAS':
+    case 'PELLAS 1':
+      return 'TTE-C-0706';
+
+    case 'PMH':
+      return 'TTE-C-0671';
+
+    case 'BRIQUETAS':
+      return 'TTE-C-0683';
+
+    case 'BOCA GRANDE':
+      return 'TTE-C-0655';
+
+    case 'SMB':
+      return 'TSI-T-0100';
+
+    case 'IMPSA':
+      return 'TTE-C-0652';
+
+    case 'VISCO ORINOCO, C.A.':
+    case 'VISCO ORINOCO':
+      return 'TTE-C-0671';
+
+    case 'TIMACA':
+      if (m.includes('BAÑOS') || m.includes('PORTATILES') || m.includes('ALMACEN') || d.includes('IMPORTACION')) {
+        return 'TT-A-C-203';
+      }
+      return 'TT-I-C-033';
+
+    default:
+      return c || 'SIN-ASIGNAR';
+  }
+}
+
 async function getSipCookie() {
   const token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6Ijk4MzgyZTNhLTZlZWQtNDU0OC05ZTY2LTM1NmRiNTM2Y2E2OSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Fra3p2bXBjeHdsaXFndXhybG9tLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkZDQ5NDVjMy0zYTAzLTRlZjctYTcwYS02NTAwMTA2N2Q4NzYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzkzODMwNTU0LCJpYXQiOjE3OTM4MjY5NTQsImVtYWlsIjoiYWxlamFuZHJhdGVzYXJhQHRpbWFjYS5jb20udmUiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7fSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc5MzgyNjk1NH1dLCJzZXNzaW9uX2lkIjoiNGQyYjVjNDktYzZmOS00YmQxLWJjZWEtMGVkNWFjNzQ0OGVjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.c993lFi4MyGXHjLI_toTlozjvhFfAfFooNDP93CSsn-MyRaDgdXDA3MaIOolNavFbtAOu-VkvujWvAPb45LK2g';
 
@@ -245,7 +354,8 @@ async function runSyncNoviembre() {
     const sc = (r.solicitud || r.SC || '').trim();
     const oc = (r.numero || r.OC || '').trim();
     const cod = (r.material || r.codigo || '').trim();
-    const ctaAux = (r.descripcionCuenta || r.cuenta || '').trim().toUpperCase();
+    let ctaAux = (r.descripcionCuenta || r.cuenta || '').trim().toUpperCase();
+    ctaAux = resolverCuentaAuxiliar(ctaAux, r.motivo, r.descripcion, r.solicitante || r.comprador, cod);
 
     const proj = projMap.get(ctaAux) || {
       nombre: (r.descripcionCuenta || ctaAux).trim(),

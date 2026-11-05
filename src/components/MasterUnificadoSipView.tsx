@@ -467,6 +467,116 @@ export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
   return 'Septiembre';
 }
 
+export function resolverCodigoCuentaAuxiliar(rawCta?: string, motivo?: string, desc?: string, solicitante?: string): string {
+  const c = (rawCta || '').trim().toUpperCase();
+  const m = (motivo || '').toUpperCase();
+  const d = (desc || '').toUpperCase();
+  const sol = (solicitante || '').toUpperCase();
+
+  if (/^[A-Z]{2,4}-[A-Z0-9]+-[A-Z0-9]+/i.test(c)) {
+    return c;
+  }
+
+  if (m.includes('TTE-C-0706') || m.includes('1LPP') || m.includes('PLANTA DE PELLAS') || m.includes('PLANTA PELLAS') || m.includes('LINEA 1 PELLAS')) {
+    return 'TTE-C-0706';
+  }
+  if (m.includes('TTE-C-0640') || m.includes('PARRILLA MÓVIL') || m.includes('PARRILLA MOVIL')) {
+    return 'TTE-C-0640';
+  }
+  if (m.includes('TTE-C-0671') || m.includes('2DA LINEA PMH') || m.includes('SEGUNDA LINEA PMH') || m.includes('PMH') || m.includes('DRAVO') || m.includes('TH4') || m.includes('VISCO ORINOCO')) {
+    return 'TTE-C-0671';
+  }
+  if (m.includes('TTE-C-0683') || m.includes('BRIQUETAS') || m.includes('REFORMADOR') || m.includes('CALDERA')) {
+    return 'TTE-C-0683';
+  }
+  if (m.includes('BOCA GRANDE') || m.includes('TTE-C-0655')) {
+    return 'TTE-C-0655';
+  }
+  if (m.includes('IMPSA') || m.includes('TTE-C-0652')) {
+    return 'TTE-C-0652';
+  }
+
+  switch (c) {
+    case 'FABRICACIÓN':
+    case 'FABRICACION':
+      return 'TT-A-C-505';
+
+    case 'OPERACIONES':
+      if (sol.includes('ALBERT') || m.includes('VALENCIA') || m.includes('METAL Y ACERO') || m.includes('FABRICAC')) {
+        return 'TT-A-C-505';
+      }
+      return 'TT-A-C-500';
+
+    case 'ADMINISTRATIVO':
+    case 'ADMINISTRACION':
+      if (m.includes('REPUESTOS ECO')) return 'EE-A-C-511';
+      return 'TT-A-C-200';
+
+    case 'GENERAL (GERENTE, ASISTENTE)':
+    case 'GENERAL':
+    case 'CUENTA SOCIO':
+      return 'TT-A-C-100';
+
+    case 'RECURSOS HUMANOS':
+    case 'RRHH':
+      if (m.includes('EPP')) return 'TT-A-C-601';
+      return 'TT-A-C-600';
+
+    case 'EQUIPO MÓVIL':
+    case 'EQUIPO MOVIL': {
+      const vehMatch = m.match(/\b(BS\d{2}|VH\d{2}|CH\d{2}|CA\d{2}|GR\d{2}|RM\d{2}|TR\d{2}|MC\d{2})\b/);
+      if (vehMatch) {
+        const vCode = vehMatch[1];
+        if (vCode.startsWith('BS')) return `EEA-C-${vCode}`;
+        if (vCode.startsWith('VH')) return `EEE-C-${vCode}`;
+        if (vCode.startsWith('GR')) return `EEI-C-${vCode}`;
+        if (vCode.startsWith('CH')) return `EEM-C-${vCode}`;
+        if (vCode.startsWith('CA')) return `EEM-C-${vCode}`;
+        if (vCode.startsWith('RM')) return `EEM-C-${vCode}`;
+        if (vCode.startsWith('TR')) return `EEE-C-${vCode}`;
+        if (vCode.startsWith('MC')) return `EEE-C-${vCode}`;
+      }
+      return 'EE-A-C-507';
+    }
+
+    case 'PLANIFICACIÓN':
+    case 'PLANIFICACION':
+      return 'TT-A-C-400';
+
+    case 'PELLAS':
+    case 'PELLAS 1':
+      return 'TTE-C-0706';
+
+    case 'PMH':
+      return 'TTE-C-0671';
+
+    case 'BRIQUETAS':
+      return 'TTE-C-0683';
+
+    case 'BOCA GRANDE':
+      return 'TTE-C-0655';
+
+    case 'SMB':
+      return 'TSI-T-0100';
+
+    case 'IMPSA':
+      return 'TTE-C-0652';
+
+    case 'VISCO ORINOCO, C.A.':
+    case 'VISCO ORINOCO':
+      return 'TTE-C-0671';
+
+    case 'TIMACA':
+      if (m.includes('BAÑOS') || m.includes('PORTATILES') || m.includes('ALMACEN') || d.includes('IMPORTACION')) {
+        return 'TT-A-C-203';
+      }
+      return 'TT-I-C-033';
+
+    default:
+      return c || 'SIN-ASIGNAR';
+  }
+}
+
 export function determinarTipoGasto(cuenta?: string, tipoCostoExistente?: string): string {
   if (tipoCostoExistente && tipoCostoExistente !== 'Externo' && tipoCostoExistente !== 'Interno' && tipoCostoExistente !== 'OPEX') {
     return tipoCostoExistente;
@@ -635,6 +745,21 @@ export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoric
       }
     }
   }
+
+  // Normalizar cuentas auxiliares para asegurar que nunca aparezcan palabras como OPERACIONES, FABRICACION, TIMACA
+  items = items.map((it: any) => {
+    const raw = it.cuenta_aux || it.cuentaAuxiliar || '';
+    const resolved = resolverCodigoCuentaAuxiliar(raw, it.motivo, it.descripcion, it.solicitante);
+    if (resolved && resolved !== raw) {
+      return {
+        ...it,
+        cuenta_aux_original: it.cuenta_aux_original || raw,
+        cuenta_aux: resolved,
+        cuentaAuxiliar: resolved
+      };
+    }
+    return it;
+  });
 
   masterStaticCache.set(cacheKey, items);
   return [...items];
@@ -2033,8 +2158,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       pa: item.pedido || item.pa || '',
       sc: item.sc || (item.tipo === 'servicio' ? item.numero : '') || '',
       oc: item.oc || item.ordenCompra || '',
-      cuentaAuxiliar: item.cuenta_aux || item.cuentaAuxiliar || '',
-      cuentaAuxiliarOriginal: item.cuenta_aux || item.cuentaAuxiliar || '',
+      cuentaAuxiliar: resolverCodigoCuentaAuxiliar(item.cuenta_aux || item.cuentaAuxiliar || '', item.motivo, item.descripcion, item.solicitante),
+      cuentaAuxiliarOriginal: item.cuenta_aux_original || item.cuentaAuxiliarOriginal || item.cuenta_aux || item.cuentaAuxiliar || '',
       codigo: item.codigo || '',
       descripcion: item.descripcion || '',
       cantidad: item.cantidad != null ? item.cantidad : 1,
@@ -4300,7 +4425,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                 }`}
                                 title="Clic para corregir / re-imputar esta cuenta auxiliar"
                               >
-                                <span>{r.cuenta_aux || 'S/A'}</span>
+                                <span>{resolverCodigoCuentaAuxiliar(r.cuenta_aux, r.motivo, r.descripcion, r.solicitante) || 'S/A'}</span>
                                 <Edit3 className="w-3 h-3 text-purple-400 group-hover:text-purple-700 transition-colors" />
                               </button>
                               {isCorr && (
@@ -4313,8 +4438,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                               )}
                               <button
                                 onClick={() => {
-                                  setSelectedCta(r.cuenta_aux);
-                                  setInputProyecto(r.cuenta_aux);
+                                  const ctaCode = resolverCodigoCuentaAuxiliar(r.cuenta_aux, r.motivo, r.descripcion, r.solicitante);
+                                  setSelectedCta(ctaCode);
+                                  setInputProyecto(ctaCode);
                                   setPageMaster(1);
                                 }}
                                 className="text-slate-400 hover:text-slate-700 p-0.5 rounded hover:bg-slate-100 transition-colors cursor-pointer"
@@ -4978,7 +5104,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                 className="group inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 hover:bg-purple-100 border border-purple-200 hover:border-purple-300 text-purple-800 hover:text-purple-900 transition-all font-mono font-bold text-xs cursor-pointer shadow-2xs"
                                 title="Clic para corregir / re-imputar esta cuenta auxiliar"
                               >
-                                <span>{c.cuentaAuxiliar || 'S/A'}</span>
+                                <span>{resolverCodigoCuentaAuxiliar(c.cuentaAuxiliar, c.motivo, c.descripcion, c.solicitante) || 'S/A'}</span>
                                 <Edit3 className="w-3 h-3 text-purple-400 group-hover:text-purple-700 transition-colors" />
                               </button>
                               {c.esReclasificado && (
@@ -5260,7 +5386,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                 className="group inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 hover:bg-purple-100 border border-purple-200 hover:border-purple-300 text-purple-800 hover:text-purple-900 transition-all font-mono font-bold text-xs cursor-pointer shadow-2xs"
                                 title="Clic para corregir / re-imputar esta cuenta auxiliar"
                               >
-                                <span>{c.cuentaAuxiliar || 'S/A'}</span>
+                                <span>{resolverCodigoCuentaAuxiliar(c.cuentaAuxiliar, c.motivo, c.descripcion, c.solicitante) || 'S/A'}</span>
                                 <Edit3 className="w-3 h-3 text-purple-400 group-hover:text-purple-700 transition-colors" />
                               </button>
                               {c.esReclasificado && (
