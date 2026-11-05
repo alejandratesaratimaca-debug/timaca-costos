@@ -7918,28 +7918,26 @@ function accInc(a) {
 
 /* ---------- Vale de Entrega a Servicios Generales (VSG) ---------- */
 function abrirModalValeServiciosGenerales(preSelNum) {
-  const esCentral = S.ctx === 'CENTRAL' || S.u.admin || enMaestro();
-  if (!esCentral) {
-    return toast('El envío y emisión de vales a Servicios Generales se gestiona desde Almacén Central.', 'err');
-  }
-
-  // Herramientas dañadas en Almacén Central
-  let disponibles = (DB.incid || []).filter(i => i.alm === 'CENTRAL' && i.estado === 'DAÑADO');
+  // Herramientas dañadas disponibles: buscar en Central o en el almacén activo
+  const ctx = (typeof S !== 'undefined' && S && S.ctx && S.ctx !== 'MAESTRO' && S.ctx !== 'TODOS') ? S.ctx : 'CENTRAL';
+  let disponibles = (DB.incid || []).filter(i => (i.alm === 'CENTRAL' || i.alm === ctx || i.destinoTrf === 'CENTRAL') && i.estado === 'DAÑADO');
+  
   if (!disponibles.length) {
-    const enTaller = (DB.incid || []).filter(i => i.alm === 'CENTRAL' && i.estado === 'EN TALLER');
+    const enTaller = (DB.incid || []).filter(i => (i.alm === 'CENTRAL' || i.alm === ctx || i.destinoTrf === 'CENTRAL') && i.estado === 'EN TALLER');
     if (!enTaller.length) {
-      return toast('No hay herramientas dañadas en Almacén Central pendientes por enviar a Servicios Generales.', 'err');
+      return toast('No hay herramientas dañadas pendientes por enviar a Servicios Generales.', 'err');
     }
     disponibles = enTaller;
   }
 
   const preSel = preSelNum || (selDe('gInc') ? selDe('gInc').n : null);
   const numProx = sigNum('VSG', 'CENTRAL');
+  const despachaDef = (S && S.u && S.u.nombre) ? S.u.nombre : 'Almacenista Central';
 
   const filasHtml = disponibles.map(inc => {
     const it = inc.id ? item(inc.id) : (DB.catalogo.find(i => i.cod === inc.cod) || {});
     const checked = (preSel ? (inc.n === preSel) : true) ? 'checked' : '';
-    const orig = inc.origenTrf ? almNombre(inc.origenTrf).replace('Almacén ', '') : 'Central';
+    const orig = inc.origenTrf ? almNombre(inc.origenTrf).replace('Almacén ', '') : (inc.alm ? almNombre(inc.alm).replace('Almacén ', '') : 'Central');
     const marca = inc.marca || it.marca || '—';
     const cat = inc.cat || it.cat || '—';
     const serial = inc.serial || it.serial || '—';
@@ -7964,7 +7962,7 @@ function abrirModalValeServiciosGenerales(preSelNum) {
   const contenido = `
     <div style="font-size:12.5px;color:var(--texto-2);margin-bottom:14px;line-height:1.4">
       Este módulo genera el <b>Vale Oficial de Entrega a Servicios Generales (VSG)</b> con el formato institucional de TIMACA.
-      Las herramientas seleccionadas cambiarán su estado a <b>EN TALLER</b> y pasarán a custodia de Servicios Generales.
+      Las herramientas seleccionadas cambiarán su estado a <b>EN TALLER</b> y pasarán a custodia de Servicios Generales para peritaje o reparación.
     </div>
 
     <div style="background:#F8FAFC;border:1px solid var(--borde);border-radius:8px;padding:12px;margin-bottom:14px">
@@ -7975,7 +7973,7 @@ function abrirModalValeServiciosGenerales(preSelNum) {
         </div>
         <div>
           <label style="display:block;font-size:11px;font-weight:700;color:var(--texto-3);text-transform:uppercase;margin-bottom:4px">Despachado por (Central)</label>
-          <input type="text" id="vsgDespacha" value="${esc(S.u.nombre)}" style="width:100%;border:1px solid var(--borde);padding:6px 10px;border-radius:6px;font-weight:600">
+          <input type="text" id="vsgDespacha" value="${esc(despachaDef)}" style="width:100%;border:1px solid var(--borde);padding:6px 10px;border-radius:6px;font-weight:600">
         </div>
         <div>
           <label style="display:block;font-size:11px;font-weight:700;color:var(--texto-3);text-transform:uppercase;margin-bottom:4px">Recibe en Servicios Generales *</label>
@@ -8017,16 +8015,17 @@ function abrirModalValeServiciosGenerales(preSelNum) {
         </tbody>
       </table>
     </div>
-
-    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
-      <button class="btn btn-claro" onclick="cerrarModal()">Cancelar</button>
-      <button class="btn btn-navy" style="font-weight:800;display:inline-flex;align-items:center;gap:6px" onclick="ejecutarValeServiciosGenerales()">
-        🖨️ Generar e Imprimir Vale Oficial (VSG)
-      </button>
-    </div>
   `;
 
-  abrirModal('Vale de Entrega a Servicios Generales', contenido, 'max-width:920px');
+  abrirModal(
+    'Vale de Entrega a Servicios Generales',
+    contenido,
+    [
+      { t: 'Cancelar', cls: 'btn-claro', fn: cerrarModal },
+      { t: '🖨️ Generar e Imprimir Vale Oficial (VSG)', cls: 'btn-navy', fn: ejecutarValeServiciosGenerales }
+    ],
+    true
+  );
   actualizarContadorVSG();
 }
 
@@ -8046,7 +8045,10 @@ function ejecutarValeServiciosGenerales() {
     const chks = Array.from(document.querySelectorAll('.chk-vsg-item:checked'));
     if (!chks.length) throw new Error('Debe seleccionar al menos una herramienta para generar el vale.');
 
-    const despacha = ($('vsgDespacha') ? $('vsgDespacha').value.trim() : '') || S.u.nombre;
+    const uNombre = (S && S.u && S.u.nombre) ? S.u.nombre : 'Almacenista Central';
+    const uCedula = (S && S.u && S.u.cedula) ? S.u.cedula : '—';
+    const uCargo = (S && S.u && S.u.cargo) ? S.u.cargo : 'Almacén Central';
+    const despacha = ($('vsgDespacha') ? $('vsgDespacha').value.trim() : '') || uNombre;
     const recibe = ($('vsgRecibe') ? $('vsgRecibe').value.trim() : '') || 'Servicios Generales';
     const obs = ($('vsgObs') ? $('vsgObs').value.trim() : '') || 'Entrega de herramientas averiadas a Servicios Generales.';
 
@@ -8085,19 +8087,19 @@ function ejecutarValeServiciosGenerales() {
       destino: 'Servicios Generales',
       cuenta: 'EE-A-C-509',
       proyecto: 'SERVICIOS GENERALES / MANTENIMIENTO',
-      sup: S.u.rol === 'SUPERVISOR' || S.u.admin ? S.u.nombre : (((DB.usuarios || []).find(u => u.rol === 'SUPERVISOR' && (u.alm === 'CENTRAL' || u.admin))) || {}).nombre || 'Supervisor de Almacén',
+      sup: (S && S.u && (S.u.rol === 'SUPERVISOR' || S.u.admin)) ? S.u.nombre : (((DB.usuarios || []).find(u => u.rol === 'SUPERVISOR' && (u.alm === 'CENTRAL' || u.admin))) || {}).nombre || 'Supervisor de Almacén',
       despacha,
-      despachaCedula: S.u.cedula || '—',
-      despachaCargo: S.u.cargo || 'Almacenista Central',
+      despachaCedula: uCedula,
+      despachaCargo: uCargo,
       recibeSG: recibe,
       obs,
-      realizadoPor: { nombre: S.u.nombre, cedula: S.u.cedula, cargo: S.u.cargo || 'Almacenista Central' },
+      realizadoPor: { nombre: uNombre, cedula: uCedula, cargo: uCargo },
       lineas,
       estatus: 'ENTREGADO',
       hist: [{
         ev: 'EMITIDO',
         fecha: nowISO(),
-        usr: S.u.nombre,
+        usr: uNombre,
         det: `Entrega a Servicios Generales (${lineas.length} herramientas) - Recibe: ${recibe}`
       }],
       impresiones: 0
@@ -8115,7 +8117,7 @@ function ejecutarValeServiciosGenerales() {
       inc.hist.push({
         ev: 'EN TALLER',
         fecha: nowISO(),
-        usr: S.u.nombre,
+        usr: uNombre,
         det: `Entregado a Servicios Generales con Vale ${numVale}. Receptor: ${recibe}`
       });
 
@@ -8129,7 +8131,7 @@ function ejecutarValeServiciosGenerales() {
           incOrig.hist.push({
             ev: 'EN TALLER (en Servicios Generales)',
             fecha: nowISO(),
-            usr: S.u.nombre,
+            usr: uNombre,
             det: `Central entregó la herramienta a Servicios Generales con Vale ${numVale}`
           });
         }
@@ -8153,8 +8155,8 @@ function ejecutarValeServiciosGenerales() {
         estAnt: ant,
         estNue: 'EN TALLER',
         resp: recibe,
-        cedula: S.u.cedula,
-        usr: S.u.nombre,
+        cedula: uCedula,
+        usr: uNombre,
         obs: `Vale ${numVale} a Servicios Generales: ${inc.detalle || 'Requiere reparación'}`
       });
     });
