@@ -1843,8 +1843,57 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         }
       }
 
+      // 2. Filtro de Cuenta / Proyecto
       if (selectedCta && selectedCta !== 'TODAS') {
         rows = rows.filter((r: any) => r.cuenta_aux === selectedCta);
+      } else if (inputProyecto.trim()) {
+        const qP = inputProyecto.trim().toLowerCase();
+        rows = rows.filter((r: any) => 
+          (r.cuenta_aux && r.cuenta_aux.toLowerCase().includes(qP)) ||
+          (r.datos_descripcion && r.datos_descripcion.toLowerCase().includes(qP))
+        );
+      }
+
+      // 3. Filtro de Tipo de Insumo
+      if (selectedTipo && selectedTipo !== 'TODOS') {
+        rows = rows.filter((r: any) => {
+          if (selectedTipo === 'Mano de Obra Directa' || selectedTipo === 'Mano de Obra') {
+            return r.tipo === 'Mano de Obra Directa' || r.tipo === 'Mano de Obra Directa ECO' || r.tipo === 'Mano de Obra';
+          }
+          return r.tipo === selectedTipo;
+        });
+      }
+
+      // 4. Filtro de Clasificación
+      if (selectedClasificacion && selectedClasificacion !== 'TODAS') {
+        rows = rows.filter((r: any) => (r.datos_tipo_costo || determinarTipoGasto(r.cuenta_aux, r.datos_tipo_costo)) === selectedClasificacion);
+      }
+
+      // 5. Filtro de Categoría
+      if (selectedCategoria && selectedCategoria !== 'TODAS') {
+        rows = rows.filter((r: any) => r.categoria === selectedCategoria);
+      }
+
+      // 6. Filtro de Rango de Fechas
+      if (fechaDesde) {
+        rows = rows.filter((r: any) => r.fecha >= fechaDesde);
+      }
+      if (fechaHasta) {
+        rows = rows.filter((r: any) => r.fecha <= fechaHasta);
+      }
+
+      // 7. Búsqueda de texto general
+      if (searchMaster) {
+        const q = searchMaster.toLowerCase();
+        rows = rows.filter((r: any) => 
+          (r.descripcion && String(r.descripcion).toLowerCase().includes(q)) ||
+          (r.cuenta_aux && String(r.cuenta_aux).toLowerCase().includes(q)) ||
+          (r.codigo && String(r.codigo).toLowerCase().includes(q)) ||
+          (r.numero && String(r.numero).toLowerCase().includes(q)) ||
+          (r.pedido && String(r.pedido).toLowerCase().includes(q)) ||
+          (r.solicitante && String(r.solicitante).toLowerCase().includes(q)) ||
+          (r.motivo && String(r.motivo).toLowerCase().includes(q))
+        );
       }
 
       if (rows.length === 0) {
