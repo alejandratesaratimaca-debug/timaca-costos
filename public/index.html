@@ -609,6 +609,7 @@ const TIPOS = {
   PLZ: { n: 'Extensión de plazo', titulo: 'EXTENSIÓN DE PLAZO' },
   ENT: { n: 'Entrada al catálogo', titulo: 'VALE DE ENTRADA' },
   INI: { n: 'Inventario inicial', titulo: 'INVENTARIO INICIAL' },
+  VSG: { n: 'Entrega a Servicios Generales', titulo: 'VALE DE ENTREGA A SERVICIOS GENERALES' },
 };
 const MODULOS = { HERRAMIENTA: 'Herramientas', CILINDRO: 'Cilindros y gases', EPP: 'EPP', MISCELANEO: 'Misceláneos' };
 const CATEGORIAS_OFICIALES = [
@@ -1641,6 +1642,7 @@ function validarStock(alm, lineas, tipo) {
 }
 function saldoLinea(l) { return l.consumo ? 0 : (l.cant - (l.dev || 0)); }
 function estadoVale(v) {
+  if (v.tipo === 'VSG') return v.estatus || 'ENTREGADO';
   if (v.tipo === 'TRF') return v.estatus;
   if (v.tipo !== 'PRH' && v.tipo !== 'ASI') return 'REGISTRADO';
   const lineasControl = v.lineas.filter(l => !l.consumo);
@@ -6631,6 +6633,12 @@ VISTAS.doc = p => {
     if (d.sup) c += R('Supervisor', d.sup);
   }
   else if (t === 'ENT') c += R('Registrado por', d.realizadoPor.nombre) + (d.obs ? R('Observación', d.obs) : '');
+  else if (t === 'VSG') {
+    c += R('Despachado por', d.despacha || (d.realizadoPor ? d.realizadoPor.nombre : '—'))
+      + R('Recibe (Servicios Generales)', d.recibeSG || 'Taller de Servicios Generales')
+      + (d.cuenta ? R('Cuenta auxiliar', d.cuenta) : '')
+      + (d.obs ? R('Observación', d.obs) : '');
+  }
   else if (t === 'DEVCH') {
     c += R('Caja de herramientas', `${d.cajaId} · ${d.cajaNombre || ''}`)
       + R('Responsable que devuelve', d.resp ? d.resp.nombre : '—')
@@ -7853,7 +7861,7 @@ VISTAS.cIncid = p => {
   const hayFiltros = Boolean((f && f !== 'DAN') || (alm && alm !== (enMaestro() ? 'TODOS' : S.ctx)) || cat);
 
   $('area').innerHTML = cab('Daño y extravío', 'Control y seguimiento exclusivo de herramientas dañadas y casos de extravío. Central gestiona la evaluación, envío a taller y baja.',
-    `${botonesExport('gInc', 'Dañados y extraviados ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm)))} <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
+    `${botonesExport('gInc', 'Dañados y extraviados ' + (alm === 'TODOS' ? 'Consolidado' : almNombre(alm)))} <button class="btn btn-navy btn-mini" style="background:#0F2942;color:#fff;font-weight:700" onclick="abrirModalValeServiciosGenerales()">🖨️ Vale para Servicios Generales</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'DAN'})">Reportar daño</button> <button class="btn btn-navy btn-mini" onclick="ir('mov',{tipo:'EXT'})">Reportar robo / extravío</button>`)
     + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
         ${campo('Mostrar', `<select id="inFiltro" onchange="${recarga}">${opciones([['DAN', '🔴 Herramientas dañadas'], ['ABIERTAS', '⚠️ Casos abiertos / pendientes'], ['TRF', '🔄 Transferencias de material dañado'], ['EXT', '🔍 Robos / Extravíos'], ['TODAS', '📋 Todos los casos registrados']], f)}</select>`)}
         ${campo('Almacén', `<select id="inAlm" onchange="${recarga}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
@@ -7868,6 +7876,7 @@ VISTAS.cIncid = p => {
       <button class="btn-sip" id="iOk" disabled onclick="accInc('REPARADO')">Retorno de taller</button>
       <button class="btn-sip" id="iHal" disabled onclick="accInc('RECUPERADO')">Registrar hallazgo</button>
       <button class="btn-sip" id="iBaja" disabled onclick="accInc('BAJA')">Dar de baja</button>
+      <button class="btn btn-navy" id="iServGral" style="margin-left:auto;font-weight:800;display:inline-flex;align-items:center;gap:6px" onclick="abrirModalValeServiciosGenerales()">🖨️ Vale para Servicios Generales</button>
     </div>`;
 };
 
@@ -7886,9 +7895,10 @@ function tiraInc(r) {
   const respTxt = r.resp ? ` · Resp: ${r.resp}` : '';
   const origTxt = r.origenTrf ? ` · Desde: ${almNombre(r.origenTrf)}` : ` · Origen: ${almNombre(r.alm)}`;
   const destTxt = (r.estado === 'TRANSFERIDO' || r.destinoTrf) ? ` · En: ${almNombre(r.destinoTrf || 'CENTRAL')}` : (r.alm === 'CENTRAL' ? ' · En: Almacén Central' : '');
+  const vsgTxt = r.vsgRef ? ` · Vale SG: <b>${r.vsgRef}</b>` : '';
 
   $('tiNum').textContent = r.serial ? `SN: ${r.serial}` : (r.cod || '');
-  $('tiInfo').innerHTML = `<b>${esc(r.cod)}</b> · ${esc(r.desc)}${marcaTxt} · ${estB(r.estado)}${origTxt}${destTxt}${respTxt}`;
+  $('tiInfo').innerHTML = `<b>${esc(r.cod)}</b> · ${esc(r.desc)}${marcaTxt} · ${estB(r.estado)}${origTxt}${destTxt}${respTxt}${vsgTxt}`;
 
   // Permisos para Central y almacén poseedor:
   const esCentral = S.ctx === 'CENTRAL' || S.u.admin;
@@ -7904,6 +7914,264 @@ function accInc(a) {
   const r = selDe('gInc');
   const txt = { REPARABLE: 'Enviar a taller (pasa a taller)', REPARADO: 'Retorno de taller (vuelve a disponible)', RECUPERADO: 'Registrar hallazgo (vuelve a disponible)', BAJA: r.tipo === 'EXT' ? 'Cerrar investigación sin hallazgo y dar de baja' : 'Dar de baja (no reparable)' }[a];
   pedirTexto(txt, 'Nota (opcional)', v => { accionIncidencia(r.n, a, v); toast('Caso actualizado.', 'ok'); refrescar(); }, 'Confirmar');
+}
+
+/* ---------- Vale de Entrega a Servicios Generales (VSG) ---------- */
+function abrirModalValeServiciosGenerales(preSelNum) {
+  const esCentral = S.ctx === 'CENTRAL' || S.u.admin || enMaestro();
+  if (!esCentral) {
+    return toast('El envío y emisión de vales a Servicios Generales se gestiona desde Almacén Central.', 'err');
+  }
+
+  // Herramientas dañadas en Almacén Central
+  let disponibles = (DB.incid || []).filter(i => i.alm === 'CENTRAL' && i.estado === 'DAÑADO');
+  if (!disponibles.length) {
+    const enTaller = (DB.incid || []).filter(i => i.alm === 'CENTRAL' && i.estado === 'EN TALLER');
+    if (!enTaller.length) {
+      return toast('No hay herramientas dañadas en Almacén Central pendientes por enviar a Servicios Generales.', 'err');
+    }
+    disponibles = enTaller;
+  }
+
+  const preSel = preSelNum || (selDe('gInc') ? selDe('gInc').n : null);
+  const numProx = sigNum('VSG', 'CENTRAL');
+
+  const filasHtml = disponibles.map(inc => {
+    const it = inc.id ? item(inc.id) : (DB.catalogo.find(i => i.cod === inc.cod) || {});
+    const checked = (preSel ? (inc.n === preSel) : true) ? 'checked' : '';
+    const orig = inc.origenTrf ? almNombre(inc.origenTrf).replace('Almacén ', '') : 'Central';
+    const marca = inc.marca || it.marca || '—';
+    const cat = inc.cat || it.cat || '—';
+    const serial = inc.serial || it.serial || '—';
+    const detalle = inc.detalle || 'Requiere revisión técnica';
+
+    return `
+      <tr style="border-bottom:1px solid var(--borde)">
+        <td style="text-align:center;padding:6px">
+          <input type="checkbox" class="chk-vsg-item" value="${inc.n}" ${checked} onchange="actualizarContadorVSG()">
+        </td>
+        <td style="padding:6px"><b>${esc(inc.cod)}</b></td>
+        <td style="padding:6px">${esc(inc.desc)}</td>
+        <td style="padding:6px;font-family:monospace;font-weight:700">${esc(serial)}</td>
+        <td style="padding:6px">${esc(marca)}</td>
+        <td style="padding:6px">${esc(cat)}</td>
+        <td style="padding:6px"><span class="chip-mod m-HERRAMIENTA" style="font-size:10.5px">${esc(orig)}</span></td>
+        <td style="padding:6px;font-size:11.5px;color:var(--rojo)">${esc(detalle)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const contenido = `
+    <div style="font-size:12.5px;color:var(--texto-2);margin-bottom:14px;line-height:1.4">
+      Este módulo genera el <b>Vale Oficial de Entrega a Servicios Generales (VSG)</b> con el formato institucional de TIMACA.
+      Las herramientas seleccionadas cambiarán su estado a <b>EN TALLER</b> y pasarán a custodia de Servicios Generales.
+    </div>
+
+    <div style="background:#F8FAFC;border:1px solid var(--borde);border-radius:8px;padding:12px;margin-bottom:14px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:var(--texto-3);text-transform:uppercase;margin-bottom:4px">N° Próximo Vale</label>
+          <input type="text" value="${numProx}" readonly style="width:100%;font-weight:800;background:#E2E8F0;border:1px solid var(--borde);padding:6px 10px;border-radius:6px;font-family:monospace">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:var(--texto-3);text-transform:uppercase;margin-bottom:4px">Despachado por (Central)</label>
+          <input type="text" id="vsgDespacha" value="${esc(S.u.nombre)}" style="width:100%;border:1px solid var(--borde);padding:6px 10px;border-radius:6px;font-weight:600">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:var(--texto-3);text-transform:uppercase;margin-bottom:4px">Recibe en Servicios Generales *</label>
+          <input type="text" id="vsgRecibe" placeholder="Ej. Taller Central / Ing. Mecánico" value="Servicios Generales" style="width:100%;border:1px solid var(--borde);padding:6px 10px;border-radius:6px;font-weight:600">
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--texto-3);text-transform:uppercase;margin-bottom:4px">Observaciones / Motivo</label>
+        <input type="text" id="vsgObs" value="Entrega de herramientas e implementos averiados para evaluación, diagnóstico técnico y reparación." style="width:100%;border:1px solid var(--borde);padding:6px 10px;border-radius:6px">
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-weight:800;color:var(--navy);font-size:13px">
+        Herramientas a entregar (<span id="vsgCantSel">${disponibles.length}</span> seleccionadas):
+      </div>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="btn btn-claro btn-mini" onclick="toggleTodosVSG(true)">Seleccionar todas</button>
+        <button type="button" class="btn btn-claro btn-mini" onclick="toggleTodosVSG(false)">Deseleccionar</button>
+      </div>
+    </div>
+
+    <div style="max-height:280px;overflow-y:auto;border:1px solid var(--borde);border-radius:6px;background:#fff">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>
+          <tr style="background:#0F2942;color:#fff;text-align:left;position:sticky;top:0;z-index:2">
+            <th style="width:36px;text-align:center;padding:6px">✓</th>
+            <th style="padding:6px">Código</th>
+            <th style="padding:6px">Descripción</th>
+            <th style="padding:6px">Serial</th>
+            <th style="padding:6px">Marca</th>
+            <th style="padding:6px">Categoría</th>
+            <th style="padding:6px">Origen</th>
+            <th style="padding:6px">Falla reportada</th>
+          </tr>
+        </thead>
+        <tbody id="vsgTbody">
+          ${filasHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
+      <button class="btn btn-claro" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-navy" style="font-weight:800;display:inline-flex;align-items:center;gap:6px" onclick="ejecutarValeServiciosGenerales()">
+        🖨️ Generar e Imprimir Vale Oficial (VSG)
+      </button>
+    </div>
+  `;
+
+  abrirModal('Vale de Entrega a Servicios Generales', contenido, 'max-width:920px');
+  actualizarContadorVSG();
+}
+
+function toggleTodosVSG(check) {
+  document.querySelectorAll('.chk-vsg-item').forEach(chk => { chk.checked = !!check; });
+  actualizarContadorVSG();
+}
+
+function actualizarContadorVSG() {
+  const sel = document.querySelectorAll('.chk-vsg-item:checked').length;
+  const el = $('vsgCantSel');
+  if (el) el.textContent = sel;
+}
+
+function ejecutarValeServiciosGenerales() {
+  run(() => {
+    const chks = Array.from(document.querySelectorAll('.chk-vsg-item:checked'));
+    if (!chks.length) throw new Error('Debe seleccionar al menos una herramienta para generar el vale.');
+
+    const despacha = ($('vsgDespacha') ? $('vsgDespacha').value.trim() : '') || S.u.nombre;
+    const recibe = ($('vsgRecibe') ? $('vsgRecibe').value.trim() : '') || 'Servicios Generales';
+    const obs = ($('vsgObs') ? $('vsgObs').value.trim() : '') || 'Entrega de herramientas averiadas a Servicios Generales.';
+
+    const incNums = new Set(chks.map(c => Number(c.value)));
+    const incidenciasSel = (DB.incid || []).filter(i => incNums.has(i.n));
+    if (!incidenciasSel.length) throw new Error('No se encontraron las incidencias seleccionadas.');
+
+    const numVale = sigNum('VSG', 'CENTRAL');
+
+    const lineas = incidenciasSel.map(inc => {
+      const it = inc.id ? item(inc.id) : (DB.catalogo.find(i => i.cod === inc.cod) || {});
+      return {
+        id: inc.id,
+        cod: inc.cod,
+        desc: inc.desc,
+        cant: inc.cant || 1,
+        umb: it.umb || 'UND',
+        marca: inc.marca || it.marca || 'SIN MARCA',
+        modelo: it.modelo || '—',
+        serial: inc.serial || it.serial || '—',
+        cat: inc.cat || it.cat || '—',
+        falla: inc.detalle || 'Averiado / Requiere reparación',
+        incN: inc.n,
+        origenTrf: inc.origenTrf || inc.alm,
+        respOriginal: inc.resp || '—'
+      };
+    });
+
+    // 1. Crear el vale oficial VSG
+    const v = {
+      num: numVale,
+      tipo: 'VSG',
+      tipoDoc: 'VSG',
+      fecha: nowISO(),
+      origen: 'CENTRAL',
+      destino: 'Servicios Generales',
+      cuenta: 'EE-A-C-509',
+      proyecto: 'SERVICIOS GENERALES / MANTENIMIENTO',
+      sup: S.u.rol === 'SUPERVISOR' || S.u.admin ? S.u.nombre : (((DB.usuarios || []).find(u => u.rol === 'SUPERVISOR' && (u.alm === 'CENTRAL' || u.admin))) || {}).nombre || 'Supervisor de Almacén',
+      despacha,
+      despachaCedula: S.u.cedula || '—',
+      despachaCargo: S.u.cargo || 'Almacenista Central',
+      recibeSG: recibe,
+      obs,
+      realizadoPor: { nombre: S.u.nombre, cedula: S.u.cedula, cargo: S.u.cargo || 'Almacenista Central' },
+      lineas,
+      estatus: 'ENTREGADO',
+      hist: [{
+        ev: 'EMITIDO',
+        fecha: nowISO(),
+        usr: S.u.nombre,
+        det: `Entrega a Servicios Generales (${lineas.length} herramientas) - Recibe: ${recibe}`
+      }],
+      impresiones: 0
+    };
+
+    DB.vales = DB.vales || [];
+    DB.vales.push(v);
+
+    // 2. Actualizar estado de las incidencias y stock de Central
+    incidenciasSel.forEach(inc => {
+      const ant = inc.estado;
+      inc.estado = 'EN TALLER';
+      inc.vsgRef = numVale;
+      inc.hist = inc.hist || [];
+      inc.hist.push({
+        ev: 'EN TALLER',
+        fecha: nowISO(),
+        usr: S.u.nombre,
+        det: `Entregado a Servicios Generales con Vale ${numVale}. Receptor: ${recibe}`
+      });
+
+      // Si vino de un almacén satélite (ej. Fabricación, Pellas), actualizar el registro gemelo en origen
+      if (inc.origenTrf) {
+        const incOrig = (DB.incid || []).find(i => i.alm === inc.origenTrf && (i.id === inc.id || (i.serial && i.serial === inc.serial) || (i.cod && i.cod === inc.cod)) && i.n !== inc.n);
+        if (incOrig) {
+          incOrig.estadoTaller = 'EN TALLER';
+          incOrig.vsgRef = numVale;
+          incOrig.hist = incOrig.hist || [];
+          incOrig.hist.push({
+            ev: 'EN TALLER (en Servicios Generales)',
+            fecha: nowISO(),
+            usr: S.u.nombre,
+            det: `Central entregó la herramienta a Servicios Generales con Vale ${numVale}`
+          });
+        }
+      }
+
+      // Mover existencia en Central: de dan (dañado) a rep (en taller / reparación)
+      const e = exi('CENTRAL', inc.id);
+      if (e) {
+        e.dan = Math.max(0, (e.dan || 0) - (inc.cant || 1));
+        e.rep = (e.rep || 0) + (inc.cant || 1);
+      }
+
+      // Registrar movimiento individual en Kardex
+      mov({
+        doc: numVale,
+        tipo: 'VSG',
+        id: inc.id,
+        cant: inc.cant || 1,
+        origen: 'CENTRAL',
+        destino: 'Servicios Generales',
+        estAnt: ant,
+        estNue: 'EN TALLER',
+        resp: recibe,
+        cedula: S.u.cedula,
+        usr: S.u.nombre,
+        obs: `Vale ${numVale} a Servicios Generales: ${inc.detalle || 'Requiere reparación'}`
+      });
+    });
+
+    bit('VALE SERVICIOS GENERALES EMITIDO', `${numVale} · ${lineas.length} herramientas para ${recibe}`);
+    guardar();
+    cerrarModal();
+    toast(`✅ Vale ${numVale} generado exitosamente (${lineas.length} herramientas).`, 'ok');
+
+    // Imprimir inmediatamente el vale oficial con el formato idéntico TIMACA
+    imprimirVale(numVale, 'CENTRAL');
+
+    // Refrescar la vista actual si está en cIncid
+    if (S.vista === 'cIncid') {
+      ir('cIncid');
+    }
+  });
 }
 
 function navTabsVales(activa) {
@@ -8104,7 +8372,7 @@ VISTAS.cVales = p => {
     + `<div class="fila-filtros" style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
         ${campo('N° de Vale', `<input id="vVale" value="${esc(vale)}" placeholder="Ej. PRH-000001" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Almacén', `<select id="vAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
-        ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
+        ${campo('Tipo de movimiento', `<select id="vTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI', 'VSG'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
         ${campo('Módulo', `<select id="vMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación'], ['MISCELANEO', '📦 Misceláneos']], mod)}</select>`)}
         ${campo('Categoría', `<select id="vCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(CATEGORIAS_OFICIALES, cat)}</select>`)}
         ${campo('Proyecto / Cuenta', `<select id="vProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
@@ -8229,7 +8497,7 @@ VISTAS.cValesDet = p => {
         ${campo('N° de Vale', `<input id="vdValeIn" value="${esc(vale)}" placeholder="Ej. TRF-00064" style="max-width:130px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Código / Serial / Ítem', `<input id="vdItemIn" value="${esc(itemFiltro)}" placeholder="Código, serial..." style="max-width:140px" onkeydown="if(event.key==='Enter')${recargar}" onchange="${recargar}">`)}
         ${campo('Almacén', `<select id="vdAlm" onchange="${recargar}"><option value="TODOS" ${alm === 'TODOS' ? 'selected' : ''}>Todos los almacenes</option>${opciones(DB.almacenes.map(a => [a.c, a.n.replace('Almacén ', '')]), alm)}</select>`)}
-        ${campo('Tipo de movimiento', `<select id="vdTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
+        ${campo('Tipo de movimiento', `<select id="vdTipo" onchange="${recargar}"><option value="">Todos los movimientos</option>${opciones(['PRH', 'ASI', 'TRF', 'DEV', 'ENT', 'DAN', 'EXT', 'PLZ', 'INI', 'VSG'].map(k => [k, k + ' - ' + (TIPOS[k] ? TIPOS[k].n : k)]), tipo)}</select>`)}
         ${campo('Módulo', `<select id="vdMod" onchange="${recargar}"><option value="">Todos los módulos</option>${opciones([['HERRAMIENTA', '🔧 Herramientas'], ['CILINDRO', '🧪 Cilindros y gases'], ['EPP', '🦺 EPP y Dotación'], ['MISCELANEO', '📦 Misceláneos']], mod)}</select>`)}
         ${campo('Categoría', `<select id="vdCat" onchange="${recargar}"><option value="">Todas las categorías</option>${opciones(listaCategoriasVales, cat)}</select>`)}
         ${campo('Proyecto / Cuenta', `<select id="vdProy" onchange="${recargar}"><option value="">Todos los proyectos</option>${opciones(DB.proyectos.map(p => [p.cuenta, `${p.cuenta} · ${(p.nombre.length > 25 ? p.nombre.slice(0, 25) + '…' : p.nombre)}`]), proy)}</select>`)}
@@ -9551,7 +9819,7 @@ function imprimirVale(n, alm, solNum, origen) {
     if (s && s.vale) v = valeDe(s.vale, alm || s.origen, s.num, origen);
   }
   if (!v) return toast('Vale no encontrado.', 'err');
-  const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT';
+  const t = v.tipo, esTrf = t === 'TRF', esEnt = t === 'ENT', esVSG = t === 'VSG';
 
   if (!puedeImprimir()) return toast('La impresión del vale corresponde al personal del almacén. El supervisor solo aprueba.', 'err');
 
@@ -9563,12 +9831,16 @@ function imprimirVale(n, alm, solNum, origen) {
     ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)}</div><div><b>Cédula:</b> ${esc(v.realizadoPor.cedula)}</div><div><b>Cargo:</b> ${esc(v.realizadoPor.cargo)}</div>`
     : esTrf
     ? `<div><b>Realizado por:</b> ${esc(v.realizadoPor.nombre)}</div><div><b>Despachado por:</b> ${esc(v.despacha || v.realizadoPor.nombre)}</div>${v.resp ? `<div><b>Responsable / Custodio:</b> ${esc(v.resp.nombre)} (C.I. ${esc(v.resp.cedula)})</div><div><b>Cargo:</b> ${esc(v.resp.cargo)}</div>` : ''}`
+    : esVSG
+    ? `<div><b>Despachado por:</b> ${esc(v.despacha || (v.realizadoPor ? v.realizadoPor.nombre : 'Almacenista Central'))}</div><div><b>Cédula:</b> ${esc(v.despachaCedula || (v.realizadoPor ? v.realizadoPor.cedula : '—'))}</div><div><b>Cargo:</b> ${esc(v.despachaCargo || (v.realizadoPor ? v.realizadoPor.cargo : 'Almacén Central'))}</div><div><b>Recibe (Servicios Generales):</b> ${esc(v.recibeSG || 'Taller de Servicios Generales')}</div>`
     : `<div><b>Responsable:</b> ${esc(v.resp ? v.resp.nombre : '')}</div><div><b>Cédula:</b> ${esc(v.resp ? v.resp.cedula : '')}</div><div><b>Cargo / Supervisor:</b> ${esc(v.resp ? v.resp.cargo : '')} / ${esc(v.sup)}</div><div><b>Cuenta Auxiliar:</b> ${esc(v.cuenta)}</div>`;
 
   const der = esEnt
     ? `<div><b>Almacén:</b> ${esc(almNombre(v.origen))}</div>`
     : esTrf
     ? `<div><b>Origen → Destino:</b> ${esc(almNombre(v.origen))} → ${esc(almNombre(v.destino))}</div>${v.proyecto ? `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div>` : ''}${v.cuenta ? `<div><b>Cuenta auxiliar:</b> ${esc(v.cuenta)}</div>` : ''}${v.sup ? `<div><b>Supervisor:</b> ${esc(v.sup)}</div>` : ''}${v.salidaTimaca ? `<div><b>N° de salida TIMACA:</b> ${esc(v.salidaTimaca)}</div>` : ''}`
+    : esVSG
+    ? `<div><b>Almacén Origen:</b> ${esc(almNombre(v.origen || 'CENTRAL'))}</div><div><b>Destino:</b> ${esc(v.destino || 'Servicios Generales / Taller de Mantenimiento')}</div><div><b>Cuenta Auxiliar:</b> ${esc(v.cuenta || 'EE-A-C-509')}</div><div><b>Motivo de entrega:</b> Reparación / Mantenimiento correctivo</div>`
     : `<div><b>Proyecto / OT:</b> ${esc(v.proyecto)}</div><div><b>Origen → Destino:</b> ${esc(almNombre(v.origen))} → ${esc(formatoDestinoUbicacion(v.destino))}</div><div><b>Tipo A / Aprobación:</b> ${v.lineas.some(l => item(l.id).tipoA) ? 'SI · N° ' + esc(v.aprobGer || '—') : 'NO'}</div>${v.ref ? `<div><b>Vale de referencia:</b> ${esc(v.ref)}</div>` : ''}`;
 
   let extra = '';
@@ -9578,11 +9850,14 @@ function imprimirVale(n, alm, solNum, origen) {
   if (t === 'DAN') extra = `<b>Descripción del daño:</b> ${esc(v.extra.detalle)}<br><b>¿Mal uso o negligencia?:</b> ${esc(v.extra.malUso)} &nbsp;·&nbsp; <b>Dictamen:</b> ${esc(v.extra.dictamen)}`;
   if (t === 'EXT') extra = `<b>Descripción de la incidencia:</b> ${esc(v.extra.detalle)}`;
   if (t === 'PLZ') extra = `<b>Vale de referencia:</b> ${esc(v.ref)} &nbsp;·&nbsp; <b>Fecha anterior:</b> ${fF(v.extra.anterior)} &nbsp;·&nbsp; <b>Nueva fecha:</b> ${fF(v.extra.nueva)}${v.extra.motivo ? '<br><b>Motivo:</b> ' + esc(v.extra.motivo) : ''}`;
-  if (v.obs) extra += (extra ? '<br>' : '') + `<b>Observación:</b> ${esc(v.obs)}`;
+  if (t === 'VSG') extra = `<b>Instrucciones / Observaciones para Servicios Generales:</b> ${esc(v.obs || 'Entrega oficial de herramientas e implementos con averías para evaluación técnica y reparación.')}`;
+  else if (v.obs) extra += (extra ? '<br>' : '') + `<b>Observación:</b> ${esc(v.obs)}`;
 
   const firmas = esEnt ? [['Entrega', 'Firma', ''], ['Recibe (almacenista)', 'Firma y Sello', v.realizadoPor.nombre], ['Supervisor', 'Firma y Sello', '']]
     : esTrf
     ? [['Despacha (' + almNombre(v.origen).replace('Almacén ', '') + ')', 'Firma y Sello', v.despacha || v.realizadoPor.nombre], ['Recibe (' + almNombre(v.destino).replace('Almacén ', '') + ')', 'Firma y Sello', v.estatus === 'RECIBIDA' ? v.procesadoPor.nombre : ''], ['Supervisor', 'Firma y Sello', v.sup || '']]
+    : esVSG
+    ? [['Despacha (Almacén Central)', 'Firma y Sello', v.despacha || (v.realizadoPor ? v.realizadoPor.nombre : '')], ['Recibe (Servicios Generales)', 'Firma, Cédula y Sello', v.recibeSG || 'Servicios Generales'], ['Supervisor de Almacén', 'Firma y Sello', v.sup || '']]
     : [['Responsable / Recibe', 'Firma y Cédula', ''], ['Almacenista / Despacha', 'Firma y Sello', ''], ['Supervisor', 'Firma y Sello', v.sup || (v.aprobadoPor ? v.aprobadoPor.nombre : '')]];
 
   const totPiezasNormal = (v.lineas || []).reduce((a, l) => a + (l.cant || 1), 0);
@@ -9593,7 +9868,39 @@ function imprimirVale(n, alm, solNum, origen) {
     return (!t || t === '—' || t === '-' || t === 'null' || t === 'undefined') ? '—' : t;
   };
 
-  const tablaHtml = `<table class="vale-items">
+  const tablaHtml = esVSG ? `<table class="vale-items">
+        <thead>
+          <tr>
+            <th>Código</th><th>Descripción</th><th class="c">Cantidad</th><th class="c">UMB</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Falla / Daño reportado</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${v.lineas.map(l => {
+            const it = l.id ? item(l.id) : (DB.catalogo.find(i => i.cod === l.cod) || {});
+            let u = (l.umb || it.umb || 'UND').trim().toUpperCase();
+            if (u === 'JGO') u = 'JG';
+            const m = limpiaTxt(l.marca || it.marca || 'SIN MARCA');
+            const mod = limpiaTxt(l.modelo || it.modelo || '—');
+            const cat = limpiaTxt(l.cat || it.cat || '—');
+            const falla = limpiaTxt(l.falla || l.detalle || it.detalle || 'Averiado / Requiere reparación');
+            return `<tr>
+              <td><b>${esc(l.cod)}</b></td>
+              <td>${esc(l.desc)}</td>
+              <td class="c"><b>${l.cant || 1}</b></td>
+              <td class="c"><b>${esc(u)}</b></td>
+              <td>${esc(m)} / ${esc(mod)}</td>
+              <td>${esc(l.serial || it.serial || '—')}</td>
+              <td>${esc(cat)}</td>
+              <td>${esc(falla)}</td>
+            </tr>`;
+          }).join('')}
+          <tr class="fila-total-piezas" style="font-weight:800;background:#F8FAFC">
+            <td colspan="2" style="text-align:right">Total de piezas:</td>
+            <td class="c"><b>${totPiezasNormal}</b></td>
+            <td colspan="5"></td>
+          </tr>
+        </tbody>
+      </table>` : `<table class="vale-items">
         <thead>
           <tr>
             <th>Código</th><th>Descripción</th><th class="c">Cantidad</th><th class="c">UMB</th><th>Marca / Modelo</th><th>Serial</th><th>Categoría</th><th>Condición</th>
