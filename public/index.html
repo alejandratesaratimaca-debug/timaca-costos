@@ -971,10 +971,30 @@ function marcarTodasNotifLeidas() {
 function purgarDuplicadosCorregidos(dbObj) {
   if (!dbObj) return;
   if (Array.isArray(dbObj.vales)) {
-    dbObj.vales = dbObj.vales.filter(v => !(v.num === 'DEV-0000002' && (String(v.fecha || '').startsWith('2026-11-03') || v.ref === 'PRH-0000019')));
+    dbObj.vales = dbObj.vales.filter(v => v.num !== 'VSG-0000013' && !(v.num === 'DEV-0000002' && (String(v.fecha || '').startsWith('2026-11-03') || v.ref === 'PRH-0000019')));
   }
   if (Array.isArray(dbObj.movs)) {
-    dbObj.movs = dbObj.movs.filter(m => !(m.doc === 'DEV-0000002' && (String(m.fecha || '').startsWith('2026-11-03') || m.obs === 'Ref. PRH-0000019')));
+    dbObj.movs = dbObj.movs.filter(m => m.doc !== 'VSG-0000013' && !(m.doc === 'DEV-0000002' && (String(m.fecha || '').startsWith('2026-11-03') || m.obs === 'Ref. PRH-0000019')));
+  }
+  if (Array.isArray(dbObj.incid)) {
+    dbObj.incid.forEach(i => {
+      if (i.vsgRef === 'VSG-0000013') {
+        delete i.vsgRef;
+        if (i.alm === 'CENTRAL') i.estado = 'DAÑADO';
+        if (i.hist) i.hist = i.hist.filter(h => !h.det || !h.det.includes('VSG-0000013'));
+      }
+      if (i.estadoTaller === 'EN TALLER' && i.vsgRef === 'VSG-0000013') {
+        delete i.estadoTaller;
+        delete i.vsgRef;
+        if (i.hist) i.hist = i.hist.filter(h => !h.det || !h.det.includes('VSG-0000013'));
+      }
+    });
+  }
+  if (dbObj.corr && dbObj.corr.VSG) delete dbObj.corr.VSG;
+  if (dbObj.corrAlm) {
+    Object.keys(dbObj.corrAlm).forEach(a => {
+      if (dbObj.corrAlm[a] && dbObj.corrAlm[a].VSG) delete dbObj.corrAlm[a].VSG;
+    });
   }
 }
 
@@ -6746,7 +6766,7 @@ VISTAS.doc = p => {
           <td>${esc(l.marca || it.marca || '—')} / ${esc(l.modelo || it.modelo || '—')}</td>
           <td>${esc(l.serial || it.serial || '—')}</td>
           <td>${esc(l.cat || it.cat || '—')}</td>
-          <td>${l.cond === 'DAÑADO' ? '<span class="est est-rojo">DAÑADO</span>' : esc(l.cond || 'ÓPTIMO')}</td>
+          <td>${(l.cond === 'DAÑADO' || d.tipo === 'VSG' || d.tipo === 'DAN') ? '<span class="est est-rojo">DAÑADO</span>' : esc(l.cond || (it.mod === 'CILINDRO' ? 'LLENO' : 'ÓPTIMO'))}</td>
           ${conSaldo ? `<td class="cen">${l.consumo ? 'Asignado' : (l.dev || 0)}</td><td class="cen">${saldoLinea(l)}</td>` : ''}
         </tr>`;
       }).join('');
@@ -8109,6 +8129,11 @@ function ejecutarValeServiciosGenerales() {
         modelo: it.modelo || '—',
         serial: inc.serial || it.serial || '—',
         cat: inc.cat || it.cat || '—',
+        cond: 'DAÑADO',
+        condicion: 'DAÑADO',
+        condEntrega: 'DAÑADO',
+        condRet: 'EN TALLER',
+        est: 'DAN',
         falla: inc.detalle || 'Averiado / Requiere reparación',
         incN: inc.n,
         origenTrf: inc.origenTrf || inc.alm,
@@ -8303,6 +8328,9 @@ function chipCondicion(c) {
   if (['REGULAR', 'USADO', 'VACÍO', 'VACIO', 'PENDIENTE', 'POR REVISAR', 'DEV. PARCIAL'].includes(val)) {
     return `<span class="est est-ambar" style="font-weight:700">🟡 ${esc(val)}</span>`;
   }
+  if (['EN TALLER', 'TALLER'].includes(val)) {
+    return `<span class="est est-ambar" style="font-weight:700">🔧 EN TALLER</span>`;
+  }
   if (['DAÑADO', 'DANADO', 'EXTRAVIADO', 'ROBADO', 'INOPERATIVO', 'DEFECTUOSO', 'BAJA', 'EN REVISIÓN'].includes(val)) {
     return `<span class="est est-rojo" style="font-weight:700">🔴 ${esc(val)}</span>`;
   }
@@ -8311,8 +8339,8 @@ function chipCondicion(c) {
 
 function getCondEntrega(r) {
   if (!r) return '—';
+  if (r.v && (r.v.tipo === 'DAN' || r.v.tipo === 'VSG')) return 'DAÑADO';
   if (r.l && r.l.condEntrega) return r.l.condEntrega;
-  if (r.v && r.v.tipo === 'DAN') return 'DAÑADO';
   if (r.v && r.v.tipo === 'EXT') return 'EXTRAVIADO';
   if (r.v && r.v.tipo === 'DEV') return 'ÓPTIMO';
   if (r.l && (r.l.cond || r.l.condicion)) return r.l.cond || r.l.condicion;
@@ -8321,6 +8349,7 @@ function getCondEntrega(r) {
 
 function getCondRetorno(r) {
   if (!r) return '—';
+  if (r.v && r.v.tipo === 'VSG') return 'EN TALLER';
   if (r.v && r.v.tipo === 'DEV') {
     return (r.l && (r.l.condRet || r.l.cond || r.l.condicion)) || 'ÓPTIMO';
   }
@@ -10036,6 +10065,8 @@ function iniciarSupabaseCloud() {
 function fusionarBasesDeDatos(cloudDB, localDB) {
   if (!cloudDB || typeof cloudDB !== 'object') return localDB || semilla();
   if (!localDB || typeof localDB !== 'object') return cloudDB;
+  purgarDuplicadosCorregidos(cloudDB);
+  purgarDuplicadosCorregidos(localDB);
   
   // 1. Catálogo: unión por ID
   const catMap = new Map();
@@ -10124,7 +10155,7 @@ function fusionarBasesDeDatos(cloudDB, localDB) {
 
   const exi = Object.assign({}, cloudDB.exi || {}, localDB.exi || {});
 
-  return Object.assign({}, cloudDB, localDB, {
+  const res = Object.assign({}, cloudDB, localDB, {
     catalogo,
     vales,
     movs,
@@ -10133,6 +10164,8 @@ function fusionarBasesDeDatos(cloudDB, localDB) {
     exi,
     _actualizadoEn: new Date().toISOString()
   });
+  purgarDuplicadosCorregidos(res);
+  return res;
 }
 
 async function sincronizarConNube(forzar = false) {
