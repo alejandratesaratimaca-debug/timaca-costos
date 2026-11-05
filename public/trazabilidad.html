@@ -972,9 +972,19 @@ function purgarDuplicadosCorregidos(dbObj) {
   if (!dbObj) return;
   if (Array.isArray(dbObj.vales)) {
     dbObj.vales = dbObj.vales.filter(v => v.num !== 'VSG-0000013' && !(v.num === 'DEV-0000002' && (String(v.fecha || '').startsWith('2026-11-03') || v.ref === 'PRH-0000019')));
+    dbObj.vales.forEach(v => {
+      if (v.num && v.num.startsWith('PRH-') && v.tipo === 'ASI') {
+        v.tipo = 'PRH';
+      }
+    });
   }
   if (Array.isArray(dbObj.movs)) {
     dbObj.movs = dbObj.movs.filter(m => m.doc !== 'VSG-0000013' && !(m.doc === 'DEV-0000002' && (String(m.fecha || '').startsWith('2026-11-03') || m.obs === 'Ref. PRH-0000019')));
+    dbObj.movs.forEach(m => {
+      if (m.doc && m.doc.startsWith('PRH-') && m.tipo === 'ASI') {
+        m.tipo = 'PRH';
+      }
+    });
   }
   if (Array.isArray(dbObj.incid)) {
     dbObj.incid.forEach(i => {
@@ -7389,11 +7399,48 @@ VISTAS.dash = p => {
   const desde = new Date(ahora().getTime() - 30 * 86400000).toISOString();
   const docs = {};
 
-  // Contar estrictamente los vales registrados / emitidos por este almacén (origen)
-  (DB.vales || []).filter(v => (c === 'TODOS' || v.origen === c) && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
+  function valePerteneceAlmacen(v, alm) {
+    if (!alm || alm === 'TODOS') return true;
+    if (v.alm === alm) return true;
+    // En devoluciones, el almacén que recibe y procesa la devolución es v.destino (o v.origen)
+    if (v.tipo === 'DEV' || (v.num && v.num.startsWith('DEV-'))) {
+      return v.destino === alm || v.origen === alm;
+    }
+    // En transferencias, el almacén emisor es v.origen
+    if (v.tipo === 'TRF' || (v.num && v.num.startsWith('TRF-'))) {
+      return v.origen === alm;
+    }
+    // En entradas, v.origen === alm o v.destino === alm
+    if (v.tipo === 'ENT' || (v.num && v.num.startsWith('ENT-'))) {
+      return v.origen === alm || v.destino === alm;
+    }
+    // En préstamos, asignaciones, daños y extravíos: el almacén emisor/responsable
+    return v.origen === alm;
+  }
+
+  function getTipoValeReal(v) {
+    if (v.num) {
+      if (v.num.startsWith('PRH-')) return 'PRH';
+      if (v.num.startsWith('ASI-')) return 'ASI';
+      if (v.num.startsWith('DEV-')) return 'DEV';
+      if (v.num.startsWith('TRF-')) return 'TRF';
+      if (v.num.startsWith('ENT-')) return 'ENT';
+      if (v.num.startsWith('DAN-')) return 'DAN';
+      if (v.num.startsWith('EXT-')) return 'EXT';
+      if (v.num.startsWith('PLZ-')) return 'PLZ';
+    }
+    return v.tipo || '';
+  }
+
+  // Contar los vales registrados / gestionados por este almacén
+  (DB.vales || []).filter(v => valePerteneceAlmacen(v, c) && (v.fecha || '') >= desde && (!mod || getValeMods(v).includes(mod)))
     .forEach(v => {
-      docs[v.tipo] = docs[v.tipo] || new Set();
-      docs[v.tipo].add(v.num);
+      const tipo = getTipoValeReal(v);
+      if (tipo) {
+        docs[tipo] = docs[tipo] || new Set();
+        const clave = v.id || (v.num + '_' + (v.fecha || '') + '_' + (v.origen || ''));
+        docs[tipo].add(clave);
+      }
     });
   const tiposMov = ['PRH', 'ASI', 'TRF', 'ENT', 'DEV', 'DAN', 'EXT', 'PLZ'];
   const dona = gDonut([
