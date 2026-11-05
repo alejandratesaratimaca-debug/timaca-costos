@@ -572,7 +572,15 @@ export function resolverCodigoCuentaAuxiliar(rawCta?: string, motivo?: string, d
       }
       return 'TT-I-C-033';
 
+    case 'GASOIL':
+    case 'GASOLINA':
+    case 'EQUIPOS EXTERNOS':
+    case 'MOVILIZACIONES':
+      return 'EE-A-C-507';
+
     default:
+      if (c.startsWith('AACO')) return 'EE-A-C-509';
+      if (['TL04', 'TL05', 'MSEL', 'PH02', 'PH04', 'PH05', 'SI03', 'HEMA'].includes(c)) return 'EE-A-C-510';
       return c || 'SIN-ASIGNAR';
   }
 }
