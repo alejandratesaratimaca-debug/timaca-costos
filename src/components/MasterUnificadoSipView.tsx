@@ -586,40 +586,41 @@ export function resolverCodigoCuentaAuxiliar(rawCta?: string, motivo?: string, d
 }
 
 export function determinarTipoGasto(cuenta?: string, tipoCostoExistente?: string): string {
-  if (tipoCostoExistente && tipoCostoExistente !== 'Externo' && tipoCostoExistente !== 'Interno' && tipoCostoExistente !== 'OPEX') {
-    return tipoCostoExistente;
-  }
   const c = (cuenta || '').toUpperCase().trim();
   if (!c || c === 'SIN-ASIGNAR' || c === 'SIN_CUENTA') return 'Otros-Otros';
 
-  // Socio
-  if (c.startsWith('TT-S') || c.startsWith('AE-S') || c.startsWith('EE-S') || c.includes('SOCIO')) {
+  // 1. Socio
+  if (c.startsWith('TT-S') || c.startsWith('AE-S') || c.startsWith('EE-S') || c.startsWith('EES-C-VH') || c.includes('SOCIO')) {
     return 'Socio';
   }
 
-  // Administración
+  // 2. Administración y Departamentos de Soporte
   if (c.startsWith('TT-A') || c.startsWith('AE-A') || c.startsWith('EE-A') || c.includes('ADMON') || c.includes('ADMIN') || c.includes('RECURSOS HUMANOS') || c.includes('GERENTE') || c.includes('PLANIFICAC')) {
     return 'Admon';
   }
 
-  // Mantto Flota (OPEX)
-  if (c.startsWith('TT-F') || c.startsWith('EEA') || c.startsWith('EEM') || c.includes('FLOTA') || c.includes('EQUIPO M')) {
+  // 3. Equipos Móviles, Maquinaria, Grúas y Flota (OPEX)
+  if (c.startsWith('EE') || c.startsWith('TT-F') || c.startsWith('TF-I-C-GP') || c.startsWith('TF-') || c.includes('FLOTA') || c.includes('EQUIPO M') || c.includes('GRUA') || c.includes('CAMION') || c.includes('MONTACARGA')) {
     return 'Mantto Flota (OPEX)';
   }
 
-  // Mantto Infraestructura (OPEX)
-  if (c.startsWith('TT-I') || c.startsWith('TF-I') || c.includes('OPERACIONES') || c.includes('TIMACA') || c.includes('FABRICAC') || c.includes('INFRAESTRUCTURA') || c.includes('TALLER')) {
+  // 4. Mantenimiento de Infraestructura y Planta (OPEX)
+  if (c.startsWith('TT-I') || c.startsWith('TF-I') || c.startsWith('EE-G') || c.includes('INFRAESTRUCTURA') || c.includes('TALLER')) {
     return 'Mantto Infraestructura (OPEX)';
   }
 
-  // Interno
-  if (c.startsWith('TTI') || c.startsWith('ESI') || c.startsWith('EEI')) {
+  // 5. Proyectos Internos (Inversiones de Capital y Obras Propias TIMACA)
+  if (c.startsWith('TTI') || c.startsWith('TSI') || c.startsWith('STI') || c.startsWith('ESI')) {
     return 'Interno';
   }
 
-  // Externo (Clientes)
-  if (c.startsWith('TTE') || c.startsWith('EEE') || c.startsWith('ESE') || c.startsWith('ETE') || c.startsWith('EES') || c.includes('PELLAS') || c.includes('PMH') || c.includes('BRIQUETAS') || c.includes('BOCA GRANDE') || c.includes('VISCO') || c.includes('SMB') || c.includes('IMPSA')) {
+  // 6. Proyectos Externos (Facturables a Clientes Comerciales)
+  if (c.startsWith('TTE') || c.startsWith('TSE') || c.startsWith('STE') || c.startsWith('ESE') || c.startsWith('ETE') || c.includes('PELLAS') || c.includes('PMH') || c.includes('BRIQUETAS') || c.includes('BOCA GRANDE') || c.includes('VISCO') || c.includes('SMB') || c.includes('IMPSA')) {
     return 'Externo';
+  }
+
+  if (tipoCostoExistente && tipoCostoExistente !== 'Externo' && tipoCostoExistente !== 'Interno' && tipoCostoExistente !== 'OPEX') {
+    return tipoCostoExistente;
   }
 
   return tipoCostoExistente === 'OPEX' ? 'Mantto Infraestructura (OPEX)' : (tipoCostoExistente || 'Otros-Otros');
