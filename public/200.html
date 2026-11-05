@@ -7868,7 +7868,6 @@ VISTAS.cIncid = p => {
       <button class="btn-sip" id="iOk" disabled onclick="accInc('REPARADO')">Retorno de taller</button>
       <button class="btn-sip" id="iHal" disabled onclick="accInc('RECUPERADO')">Registrar hallazgo</button>
       <button class="btn-sip" id="iBaja" disabled onclick="accInc('BAJA')">Dar de baja</button>
-      <button class="btn-sip" id="iVer" disabled onclick="const r=selDe('gInc'); ir('doc',{num:(r.origenTrf && (r.alm === S.ctx || S.ctx === 'CENTRAL')) ? (r.trfRef || r.valeRef) : (r.valeRef || r.trfRef), back:'cIncid'})">Visualizar reporte</button>
     </div>`;
 };
 
@@ -7880,7 +7879,6 @@ function tiraInc(r) {
     if ($('iOk')) $('iOk').disabled = true;
     if ($('iHal')) $('iHal').disabled = true;
     if ($('iBaja')) $('iBaja').disabled = true;
-    if ($('iVer')) $('iVer').disabled = true;
     return;
   }
   const it = r.id ? item(r.id) : (DB.catalogo.find(i => i.cod === r.cod) || {});
@@ -7901,7 +7899,6 @@ function tiraInc(r) {
   $('iOk').disabled = !puedeGestionar || r.estado !== 'EN TALLER';
   $('iHal').disabled = !puedeGestionar || r.estado !== 'EN INVESTIGACIÓN';
   $('iBaja').disabled = !puedeGestionar || !['DAÑADO', 'EN TALLER', 'EN INVESTIGACIÓN'].includes(r.estado);
-  $('iVer').disabled = !(r.valeRef || r.trfRef);
 }
 function accInc(a) {
   const r = selDe('gInc');
