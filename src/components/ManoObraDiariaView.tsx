@@ -41,7 +41,8 @@ const DATOS_CONCILIACION_2026 = [
   { mesNum: 6, mesNombre: 'Junio', diasCal: 30, personas: 346, semRRHH: 202303.19, devengoReal: 213881.36, dif: 11578.17, pellas: 115901.14, bg: 38118.90, briquetas: 24200.50, pmh: 35660.82, varios: 0.0, dinamicaOperativa: 'Mes de menor devengo del año', nota: 'Semana 26 dividida entre Junio (6 días) y Julio (1 día)' },
   { mesNum: 7, mesNombre: 'Julio', diasCal: 31, personas: 385, semRRHH: 267473.88, devengoReal: 237850.61, dif: -29623.27, pellas: 140764.76, bg: 45290.30, briquetas: 22850.00, pmh: 28945.55, varios: 0.0, dinamicaOperativa: 'Reactivación de frentes en Boca Grande y Pellas', nota: 'Corte operativo tenía 5 semanas (35 días) vs 31 días reales' },
   { mesNum: 8, mesNombre: 'Agosto', diasCal: 31, personas: 398, semRRHH: 223130.13, devengoReal: 246110.70, dif: 22980.57, pellas: 147941.02, bg: 37940.20, briquetas: 26410.10, pmh: 33819.38, varios: 0.0, dinamicaOperativa: 'Base auditada oficial de RRHH (4 Master Unificado)', nota: 'Cierre completo de 31 días con guardias de fin de mes' },
-  { mesNum: 9, mesNombre: 'Septiembre', diasCal: 30, personas: 394, semRRHH: 196665.65, devengoReal: 212832.38, dif: 16166.73, pellas: 137877.61, bg: 28551.40, briquetas: 23400.00, pmh: 23003.37, varios: 0.0, dinamicaOperativa: 'Cierre oficial auditado de nómina (Semanas 35 a 39)', nota: 'Semana 35 sumó 2 días (01 y 02 Sep) al devengo mensual (+16K)' }
+  { mesNum: 9, mesNombre: 'Septiembre', diasCal: 30, personas: 394, semRRHH: 196665.65, devengoReal: 212832.38, dif: 16166.73, pellas: 137877.61, bg: 28551.40, briquetas: 23400.00, pmh: 23003.37, varios: 0.0, dinamicaOperativa: 'Cierre oficial auditado de nómina (Semanas 35 a 39)', nota: 'Semana 35 sumó 2 días (01 y 02 Sep) al devengo mensual (+16K)' },
+  { mesNum: 10, mesNombre: 'Octubre', diasCal: 31, personas: 158, semRRHH: 103875.66, devengoReal: 103875.66, dif: 0.0, pellas: 0.0, bg: 0.0, briquetas: 23875.00, pmh: 80000.66, varios: 0.0, dinamicaOperativa: 'Libros oficiales Semanas 39 al 43 (FMO PMH y FMO Briquetas)', nota: '750 registros con 29.697 Horas Hombre auditadas de nómina' }
 ];
 
 export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver }) => {
@@ -63,7 +64,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
   }, [initialRegistros, uploadedRegistros]);
 
   // Filter states
-  const [selectedMes, setSelectedMes] = useState<number>(9); // 9 = Septiembre 2026, 0 = todos
+  const [selectedMes, setSelectedMes] = useState<number>(10); // 10 = Octubre 2026, 0 = todos
   const [selectedProyecto, setSelectedProyecto] = useState<string>('todos'); // 'todos' | 'pellas' | 'bg' | 'briquetas' | 'pmh'
   const [selectedSemana, setSelectedSemana] = useState<number>(0); // 0 = all
   const [selectedFecha, setSelectedFecha] = useState<string>('todas');
@@ -113,7 +114,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
   const totalMonto = useMemo(() => {
     // If in devengo mode and looking at all records for a month, reflect the true 30/31 day accrued total
     if (vistaModo === 'devengo' && selectedSemana === 0 && selectedFecha === 'todas' && selectedCuenta === 'todas' && selectedProyecto === 'todos' && !searchTerm) {
-      if (selectedMes > 0 && selectedMes <= 9) {
+      if (selectedMes > 0 && selectedMes <= 10) {
         return DATOS_CONCILIACION_2026[selectedMes - 1].devengoReal;
       } else if (selectedMes === 0) {
         return DATOS_CONCILIACION_2026.reduce((acc, d) => acc + d.devengoReal, 0);
@@ -481,7 +482,9 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
             ${Math.round(totalMonto).toLocaleString('de-DE')} USD
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
-            {selectedMes === 9
+            {selectedMes === 10
+              ? '5 semanas de Octubre ($103.876 USD: Sem 39 a 43 en PMH y Briquetas - 29.697 HH)'
+              : selectedMes === 9
               ? (vistaModo === 'devengo' 
                   ? '30 días exactos de Septiembre ($212.832 USD: incluye 2 días de Sem 35)' 
                   : '4 semanas de Septiembre ($196.665 USD: Sem 36 a 39)')
@@ -490,7 +493,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                   ? '31 días exactos de Agosto ($246.111 USD: asigna 5 días de Sem 35)' 
                   : 'Semanas 31 a 34 ($223.130 USD)')
               : selectedMes === 0 
-                ? 'Total acumulado 2026 ($2.178.945 USD)' 
+                ? 'Total acumulado 2026 ($2.282.821 USD)' 
                 : `Mes ${selectedMes} • ${registrosFiltrados.length} registros`}
           </span>
         </div>
@@ -700,6 +703,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 }}
                 className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500"
               >
+                <option value={10}>Octubre 2026 (Auditoría RRHH - Semanas 39-43: PMH y Briquetas)</option>
                 <option value={9}>Septiembre 2026 (Auditoría Detallada - Semanas 35-39)</option>
                 <option value={8}>Agosto 2026</option>
                 <option value={7}>Julio 2026</option>
@@ -709,7 +713,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 <option value={3}>Marzo 2026</option>
                 <option value={2}>Febrero 2026</option>
                 <option value={1}>Enero 2026</option>
-                <option value={0}>Todos los Meses (Ene - Sep 2026)</option>
+                <option value={0}>Todos los Meses (Ene - Oct 2026)</option>
               </select>
             </div>
 

@@ -13,4 +13,6 @@ dist_test/
 temp_pptx/
 scratch/
 temp_actualizado.xlsx
-data/
+/data/
+!src/data/
+!public/data/

@@ -311,7 +311,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
           `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.444.345,28 USD, acumulando un total anual consolidado de $13.496.521,32 USD en los 10 meses de 2026.\n\n` +
           `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $867.861,15 USD (60,1% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($686.040 USD), Henan Front ($40.000 USD), Mamusa ($4.920 USD) y compras de insumos directos de taller.\n\n` +
           `Le siguen Segunda Línea PMH (TTE-C-0671) con $258.881,82 USD (17,9%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $106.811,57 USD (7,4%) y Fase 2 Planta de Briquetas (TTE-C-0668) con $42.228,88 USD (2,9%).\n\n` +
-          `Por categorías operativas: Servicios Directos totalizó $967.478,81 USD (67,0%) y Materiales Directos alcanzó $476.866,47 USD (33,0%). Los conceptos de Mano de Obra Directa y Costos Indirectos se encuentran en proceso de conciliación final con RRHH y Administración.`
+          `Por categorías operativas: Servicios Directos totalizó $967.478,81 USD (67,0%) y Materiales Directos alcanzó $476.866,47 USD (33,0%). Se incorporó la Mano de Obra Directa (MOD) entregada por RRHH por $103.875,66 USD (29.697 Horas Hombre) en FMO PMH ($80.000,66 USD) y FMO Briquetas ($23.875,00 USD) para las Semanas 39 a 43.`
         );
       } else {
         const mesNombre = activeMonth?.mesLabel || `Mes ${selectedMesNum}`;
@@ -735,7 +735,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
-                            ? 'Ejecución auditada al centavo en 35 frentes activos. Conceptos de Mano de Obra y Costos Indirectos se encuentran en proceso de conciliación final con RRHH y Administración.'
+                            ? 'Ejecución auditada al centavo en 35 frentes activos. Incorporada Mano de Obra Directa de RRHH con 29.697 Horas Hombre ($103.876 USD en PMH y Briquetas).'
                             : 'Fuerza laboral técnica devengada en frentes de obra. En septiembre cerró en $196.665 USD en 10 proyectos externos, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Rehabilitación Bandas PMH ($28.142 USD · 12,7%).'}
                         </p>
                       </div>
@@ -3762,7 +3762,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Pendiente Cierre de Nómina MOD y CIF:</strong> Recursos Humanos y Administración están por remitir los libros de mano de obra y costos indirectos de octubre para completar la conciliación global.</>
+                              ? <><strong>Mano de Obra Directa (MOD) Incorporada:</strong> $103.875,66 USD devengados en 29.697 Horas Hombre (Semanas 39 a 43) en Segunda Línea PMH ($80.000,66 USD) y Briquetas Fase 2 ($23.875,00 USD) auditadas al 100%.</>
                               : <><strong>Segunda Línea PMH en expansión (+47%):</strong> Cierre en $291.949 USD (vs $198.053 USD en agosto), consolidándose como el segundo frente de mayor inversión de TIMACA (17,8% del mes).</>}
                             </span>
                           </li>

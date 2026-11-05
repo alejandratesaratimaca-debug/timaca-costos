@@ -1,6 +1,7 @@
 import { RegistroManoObraDiaria } from '../types/manoObra';
 import { REGISTROS_REALES_MANO_OBRA_AGOSTO_2026 } from './realManoObraAugust2026';
 import { REGISTROS_REALES_MANO_OBRA_SEPTIEMBRE_2026 } from './realManoObraSeptiembre2026';
+import { REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026 } from './realManoObraOctubre2026';
 
 export const CUENTAS_CORTAS_MAP: Record<string, string> = {
   'TTE-C-0706': 'Línea 1 Pellas',
@@ -53,7 +54,12 @@ export function generateMockManoObraDiaria(): RegistroManoObraDiaria[] {
     all.push(r);
   });
 
-  // 3. Meses 1 a 7
+  // 3. Octubre 2026 (Registros reales auditados: 750 registros, Semanas 39 a 43 en PMH y Briquetas)
+  REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026.forEach(r => {
+    all.push(r);
+  });
+
+  // 4. Meses 1 a 7
   for (const m of [1, 2, 3, 4, 5, 6, 7]) {
     const cfg = MESES_CONFIG_MOD[m];
     const targetMonto = MOD_MESES_TOTALES[m - 1] || 211817;

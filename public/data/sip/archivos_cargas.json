@@ -1,6 +1,22 @@
 {
   "mdo": [
     {
+      "nombre": "10-2026 Horas Hombre Octubre RRHH Proyecto FMO PMH Sem 39 al 43.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Mano de obra\\4_PMH",
+      "tamanoKB": 69,
+      "fechaMod": "2026-11-05",
+      "estado": "Carga Semanal Activa"
+    },
+    {
+      "nombre": "10-2026 Horas Hombre Octubre RRHH Proyecto FMO BRIQUETAS Sem 39 al 43.xlsx",
+      "categoria": "Mano de Obra",
+      "carpeta": "3 Mano de obra\\3_Briquetas",
+      "tamanoKB": 27,
+      "fechaMod": "2026-11-05",
+      "estado": "Carga Semanal Activa"
+    },
+    {
       "nombre": "2026 - Pellas sem 01.xlsx",
       "categoria": "Mano de Obra",
       "carpeta": "3 Mano de obra\\1_Pellas",
