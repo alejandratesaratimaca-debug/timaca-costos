@@ -123,60 +123,65 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
     return Math.round(((activeMonth.totalMonto - mesAnterior.totalMonto) / mesAnterior.totalMonto) * 100);
   }, [activeMonth, mesAnterior]);
 
-  // Cuentas Auxiliares / Proyectos activos en el mes ordenados por monto de mayor a menor
+  // Cuentas Auxiliares / Proyectos externos activos en el mes ordenados por monto de mayor a menor
   const cuentasAuxiliaresMes = useMemo(() => {
+    let rawItems: { codigo: string; proyecto: string; total: number; porcentaje: number; salidasCount: number }[] = [];
+
     if (selectedMesNum === 8) {
-      return CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.map((item, idx) => ({
-        idx: idx + 1,
+      rawItems = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.map(item => ({
         codigo: item.cuentaAuxiliar,
         proyecto: item.proyecto,
-        total: item.montoAgosto,
+        total: item.montoAgosto || item.total || 0,
         porcentaje: item.porcentaje,
         salidasCount: 5
       }));
-    }
-    if (selectedMesNum === 9) {
-      return CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026.map((item, idx) => ({
-        idx: idx + 1,
+    } else if (selectedMesNum === 9) {
+      rawItems = CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026.map(item => ({
         codigo: item.cuentaAuxiliar,
         proyecto: item.proyecto,
-        total: item.montoSeptiembre,
+        total: item.montoSeptiembre || item.total || 0,
         porcentaje: item.porcentaje,
         salidasCount: 5
       }));
-    }
-    if (selectedMesNum === 10) {
-      return CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026.map((item, idx) => ({
-        idx: idx + 1,
+    } else if (selectedMesNum === 10) {
+      rawItems = CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026.map(item => ({
         codigo: item.cuentaAuxiliar,
         proyecto: item.proyecto,
         total: item.montoOctubre || item.total || 0,
         porcentaje: item.porcentaje,
         salidasCount: 5
       }));
+    } else {
+      const mapa = new Map<string, { codigo: string; proyecto: string; total: number; salidasCount: number }>();
+      salidasMes.forEach(s => {
+        const cod = s.cuentaAuxiliarCodigo || s.proyecto;
+        if (!cod || !cod.startsWith('TTE-C-')) return;
+        const cur = mapa.get(cod) || { codigo: cod, proyecto: s.cuentaAuxiliarNombre || s.proyecto, total: 0, salidasCount: 0 };
+        cur.total += s.montoTotal;
+        cur.salidasCount += 1;
+        mapa.set(cod, cur);
+      });
+
+      const monthTotal = activeMonth?.totalMonto || 1;
+      rawItems = Array.from(mapa.values())
+        .map(data => ({
+          codigo: data.codigo,
+          proyecto: data.proyecto,
+          total: data.total,
+          salidasCount: data.salidasCount,
+          porcentaje: Math.round((data.total / monthTotal) * 1000) / 10,
+        }))
+        .sort((a, b) => b.total - a.total);
     }
 
-    const mapa = new Map<string, { codigo: string; proyecto: string; total: number; salidasCount: number }>();
-    salidasMes.forEach(s => {
-      const cod = s.cuentaAuxiliarCodigo || s.proyecto;
-      const cur = mapa.get(cod) || { codigo: cod, proyecto: s.cuentaAuxiliarNombre || s.proyecto, total: 0, salidasCount: 0 };
-      cur.total += s.montoTotal;
-      cur.salidasCount += 1;
-      mapa.set(cod, cur);
-    });
-
-    const monthTotal = activeMonth?.totalMonto || 1;
-    return Array.from(mapa.values())
-      .map((data, idx) => ({
-        idx: idx + 1,
-        codigo: data.codigo,
-        proyecto: data.proyecto,
-        total: data.total,
-        salidasCount: data.salidasCount,
-        porcentaje: Math.round((data.total / monthTotal) * 1000) / 10,
-      }))
+    // Filtrar estrictamente solo cuentas auxiliares de PROYECTOS EXTERNOS (TTE-C-)
+    return rawItems
+      .filter(item => item.codigo && item.codigo.startsWith('TTE-C-'))
       .sort((a, b) => b.total - a.total)
-      .map((item, idx) => ({ ...item, idx: idx + 1 }));
+      .map((item, idx) => ({
+        ...item,
+        idx: idx + 1
+      }));
   }, [salidasMes, activeMonth, selectedMesNum]);
 
   // Métricas de Presupuesto Oficial TIMACA para cada cuenta auxiliar activa
@@ -731,11 +736,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1">
                         <strong className="text-emerald-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($1.444.345 USD)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
+                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($1.228.222 USD)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
-                            ? 'Ejecución auditada al centavo en 35 frentes activos. Incorporada Mano de Obra Directa de RRHH con 29.697 Horas Hombre ($103.876 USD en PMH y Briquetas).'
+                            ? 'Ejecución auditada al centavo en 20 frentes de proyectos externos activos (TTE-C). Incorporada Mano de Obra Directa de RRHH con 29.697 Horas Hombre ($103.876 USD en PMH y Briquetas).'
                             : 'Fuerza laboral técnica devengada en frentes de obra. En septiembre cerró en $196.665 USD en 10 proyectos externos, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Rehabilitación Bandas PMH ($28.142 USD · 12,7%).'}
                         </p>
                       </div>
@@ -1548,7 +1553,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       {/* Pareto Bars */}
                       <div className="pt-3 space-y-3">
                         {(() => {
-                          const totalMes = activeMonth?.totalMonto || 1;
+                          const totalMes = cuentasAuxiliaresMes.reduce((acc, curr) => acc + curr.total, 0) || activeMonth?.totalMonto || 1;
                           const topItems = cuentasAuxiliaresMes.slice(0, 7);
                           let runningAccum = 0;
 
@@ -1607,7 +1612,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         {/* Rest of projects aggregation */}
                         {(() => {
                           const top7Sum = cuentasAuxiliaresMes.slice(0, 7).reduce((acc, curr) => acc + curr.total, 0);
-                          const totalMes = activeMonth?.totalMonto || 1;
+                          const totalMes = cuentasAuxiliaresMes.reduce((acc, curr) => acc + curr.total, 0) || activeMonth?.totalMonto || 1;
                           const restSum = Math.max(0, totalMes - top7Sum);
                           const restPct = Math.round((restSum / totalMes) * 1000) / 10;
                           const restCount = Math.max(0, cuentasAuxiliaresMes.length - 7);
@@ -1768,9 +1773,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <tr>
                             <td className="py-2 px-3 text-center">Σ</td>
                             <td className="py-2 px-3">Total General</td>
-                            <td className="py-2 px-3">Consolidado {cuentasAuxiliaresMes.length} Proyectos Activos</td>
+                            <td className="py-2 px-3">Consolidado {cuentasAuxiliaresMes.length} Proyectos Externos Activos</td>
                             <td className="py-2 px-3 text-right font-mono tabular-nums text-sm text-amber-300">
-                              {formatCurrency(activeMonth?.totalMonto || 0)}
+                              {formatCurrency(cuentasAuxiliaresMes.reduce((sum, c) => sum + c.total, 0))}
                             </td>
                             <td className="py-2 px-3 text-right font-mono text-xs text-white">
                               100%
@@ -4063,9 +4068,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                 </tbody>
                 <tfoot className="bg-neutral-100 font-bold border-t-2 border-neutral-300">
                   <tr>
-                    <td colSpan={3} className="py-2.5 px-3">TOTAL GENERAL PROYECTOS EXTERNOS:</td>
+                    <td colSpan={3} className="py-2.5 px-3">TOTAL GENERAL PROYECTOS EXTERNOS ({cuentasAuxiliaresMes.length} Frentes):</td>
                     <td className="py-2.5 px-3 text-right font-mono text-blue-700 text-sm">
-                      {formatCurrency(activeMonth?.totalMonto || 0)}
+                      {formatCurrency(cuentasAuxiliaresMes.reduce((sum, c) => sum + c.total, 0))}
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono">100.0%</td>
                     <td className="py-2.5 px-3 text-right font-mono text-blue-900">

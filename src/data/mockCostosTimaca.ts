@@ -227,11 +227,11 @@ export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026: CuentaAuxiliarProyecto[
     };
   });
 
-// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE OCTUBRE 2026 ($1.444.345,28 USD)
-const totOctExacto = 1444345.28;
+// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE OCTUBRE 2026 ($1.228.221,75 USD)
+const totOctExacto = 1228221.75;
 
 export const CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026: CuentaAuxiliarProyecto[] = projsListAll
-  .filter(p => (p.meses[9] || 0) > 0)
+  .filter(p => p.cuentaAuxiliar.startsWith('TTE-C-') && (p.meses[9] || 0) > 0)
   .sort((a, b) => (b.meses[9] || 0) - (a.meses[9] || 0))
   .map(p => {
     const val = Math.round((p.meses[9] || 0) * 100) / 100;
