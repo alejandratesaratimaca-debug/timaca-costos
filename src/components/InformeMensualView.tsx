@@ -736,11 +736,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1">
                         <strong className="text-emerald-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($1.228.222 USD)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
+                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($1.428.905 USD)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
-                            ? 'Ejecución auditada al centavo en 20 frentes de proyectos externos activos (TTE-C). Incorporada Mano de Obra Directa de RRHH con 64.585 Horas Hombre ($235.066 USD en PMH, Briquetas y Pellas Línea 1).'
+                            ? 'Ejecución auditada al centavo en 19 frentes de proyectos externos activos (TTE-C). Cierre oficial de despachos y compras con Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO como frentes de mayor inversión.'
                             : 'Fuerza laboral técnica devengada en frentes de obra. En septiembre cerró en $196.665 USD en 10 proyectos externos, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Rehabilitación Bandas PMH ($28.142 USD · 12,7%).'}
                         </p>
                       </div>
