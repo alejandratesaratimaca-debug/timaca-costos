@@ -1058,7 +1058,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   // States for Historial de Correcciones (auditoría de las 447 correcciones)
   const [searchHistorialCorrecciones, setSearchHistorialCorrecciones] = useState('');
-  const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'historicas' | 'recientes' | 'consumos' | 'compras' | 'rezagadas' | 'valorizaciones_pellas' | 'pellas_todas'>('todos');
+  const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'mis_recientes' | 'historicas' | 'recientes' | 'consumos' | 'compras' | 'rezagadas' | 'valorizaciones_pellas' | 'pellas_todas'>('todos');
   const [pageReclasificaciones, setPageReclasificaciones] = useState(1);
 
   // States for Cargas de Insumos al Cierre (MDO, HM & Costos Indirectos)
@@ -2127,19 +2127,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       if (localStr) localList = JSON.parse(localStr);
     } catch (e) {}
 
-    // Combinar todas las fuentes para garantizar que las históricas y las correcciones en vivo de Alejandra se muestren siempre
+    // Combinar todas las fuentes colocando primero las correcciones locales/recientes de la sesión
     const map = new Map<string, any>();
-    for (const item of staticList) {
+    for (const item of localList) {
       const k = item.recordId || item.id || `${item.documento}-${item.codigo}`;
-      map.set(k, item);
+      map.set(k, { ...item, esLocal: true });
     }
     for (const item of lanList) {
       const k = item.recordId || item.id || `${item.documento}-${item.codigo}`;
-      map.set(k, item);
+      if (!map.has(k)) map.set(k, item);
     }
-    for (const item of localList) {
+    for (const item of staticList) {
       const k = item.recordId || item.id || `${item.documento}-${item.codigo}`;
-      map.set(k, item);
+      if (!map.has(k)) map.set(k, item);
     }
     const merged = Array.from(map.values());
     const finalList = merged.length > 0 ? merged : staticList;
@@ -2493,7 +2493,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
       if (localStr) {
         const localList = JSON.parse(localStr);
-        const filtered = localList.filter((x: any) => (x.recordId || `${x.documento}-${x.codigo}`) !== recordId);
+        const filtered = localList.filter((x: any) => 
+          String(x.recordId) !== String(recordId) && 
+          String(x.id) !== String(recordId) && 
+          `${x.documento}-${x.codigo}` !== String(recordId)
+        );
         localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
       }
     } catch (e) {}
@@ -2686,7 +2690,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const filteredReclasificaciones = useMemo(() => {
     return reclasificaciones.filter(r => {
       // 1. Filtro por origen
-      if (filtroTipoHistorial === 'valorizaciones_pellas') {
+      if (filtroTipoHistorial === 'mis_recientes') {
+        if (!r.esLocal && !String(r.usuario || '').includes('atesara')) return false;
+      } else if (filtroTipoHistorial === 'valorizaciones_pellas') {
         if (!isPellas1Record(r)) return false;
       } else if (filtroTipoHistorial === 'pellas_todas') {
         if (!isPellasTotalRecord(r)) return false;
@@ -2695,7 +2701,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         if (!isHist) return false;
       } else if (filtroTipoHistorial === 'recientes') {
         const isHist = (r.usuario && r.usuario.includes('Correcciones.xlsx')) || (r.recordId && String(r.recordId).startsWith('HIST-'));
-        if (isHist) return false;
+        if (isHist || isPellasTotalRecord(r)) return false;
       } else if (filtroTipoHistorial === 'consumos') {
         if (r.tipoItem !== 'consumo') return false;
       } else if (filtroTipoHistorial === 'compras') {
@@ -4562,10 +4568,20 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                               const isCorregido = !!(r.esReclasificado || (r.ajuste || '').toUpperCase().includes('CORREGIDO'));
 
                               if (isCorregido) {
+                                const recordKey = r.id != null ? String(r.id) : (r.recordId || `${r.numero}-${r.codigo}`);
                                 return (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-2xs">
-                                    ✓ Corregido {r.nombre_mes && r.nombre_mes.toLowerCase() !== 'septiembre' ? `→ ${r.nombre_mes.toUpperCase()}` : ''}
-                                  </span>
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-2xs">
+                                      ✓ Corregido {r.nombre_mes && r.nombre_mes.toLowerCase() !== 'septiembre' ? `→ ${r.nombre_mes.toUpperCase()}` : ''}
+                                    </span>
+                                    <button
+                                      onClick={() => handleRevertirCorreccion(recordKey)}
+                                      className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded text-[9px] font-bold bg-white hover:bg-rose-600 hover:text-white text-slate-700 border border-slate-300 transition-all cursor-pointer shadow-2xs"
+                                      title="Deshacer esta corrección y restaurar a pendiente"
+                                    >
+                                      <RotateCcw className="w-2.5 h-2.5" /> Deshacer
+                                    </button>
+                                  </div>
                                 );
                               }
 
@@ -6121,19 +6137,45 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       setFiltroTipoHistorial(e.target.value as any);
                       setPageReclasificaciones(1);
                     }}
-                    className="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-purple-600"
+                    className="bg-white border border-purple-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-semibold focus:outline-none focus:border-purple-600 shadow-2xs"
                   >
+                    <option value="mis_recientes">⭐ Mis Correcciones Recientes ({reclasificaciones.filter(x => x.esLocal || String(x.usuario || '').includes('atesara')).length})</option>
                     <option value="todos">Todos los Orígenes ({reclasificaciones.length.toLocaleString()})</option>
+                    <option value="recientes">⚡ Recientes Sistema ({reclasificaciones.filter(x => !((x.usuario && x.usuario.includes('Correcciones.xlsx')) || (x.recordId && String(x.recordId).startsWith('HIST-')) || isPellasTotalRecord(x))).length.toLocaleString()})</option>
+                    <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && String(x.motivo).toLowerCase().includes('rezagad'))).length.toLocaleString()})</option>
                     <option value="valorizaciones_pellas">🏭 Valorizaciones Pellas 1 (Línea 1 · TTE-C-0706) ({reclasificaciones.filter(isPellas1Record).length.toLocaleString()})</option>
                     <option value="pellas_todas">🏗️ Todas las Plantas de Pellas ({reclasificaciones.filter(isPellasTotalRecord).length.toLocaleString()})</option>
                     <option value="historicas">📋 Históricas Anteriores (Correcciones.xlsx) ({reclasificaciones.filter(x => (x.usuario && x.usuario.includes('Correcciones.xlsx')) || (x.recordId && String(x.recordId).startsWith('HIST-'))).length.toLocaleString()})</option>
-                    <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificaciones.filter(x => x.nuevoMes || (x.motivo && String(x.motivo).toLowerCase().includes('rezagad'))).length.toLocaleString()})</option>
-                    <option value="recientes">⚡ Recientes Sistema ({reclasificaciones.filter(x => !((x.usuario && x.usuario.includes('Correcciones.xlsx')) || (x.recordId && String(x.recordId).startsWith('HIST-')))).length.toLocaleString()})</option>
                     <option value="consumos">Solo Consumos ({reclasificaciones.filter(x => x.tipoItem === 'consumo').length.toLocaleString()})</option>
                     <option value="compras">Solo Compras / Servicios ({reclasificaciones.filter(x => x.tipoItem === 'compra').length.toLocaleString()})</option>
                   </select>
                 </div>
               </div>
+
+              {/* BANNER DESTACADO SI HAY CORRECCIONES RECIENTES LOCALES */}
+              {reclasificaciones.filter(x => x.esLocal || String(x.usuario || '').includes('atesara')).length > 0 && (
+                <div className="mx-4 my-2.5 p-3 rounded-xl bg-amber-50 border border-amber-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-2xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                    <span className="text-xs font-bold text-amber-950">
+                      Tienes {reclasificaciones.filter(x => x.esLocal || String(x.usuario || '').includes('atesara')).length} corrección(es) registrada(s) recientemente en esta sesión.
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setFiltroTipoHistorial('mis_recientes');
+                      setPageReclasificaciones(1);
+                    }}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      filtroTipoHistorial === 'mis_recientes'
+                        ? 'bg-amber-600 text-white shadow-xs'
+                        : 'bg-white hover:bg-amber-100 text-amber-900 border border-amber-300'
+                    }`}
+                  >
+                    {filtroTipoHistorial === 'mis_recientes' ? '✓ Viendo mis correcciones' : 'Ver solo mis correcciones recientes →'}
+                  </button>
+                </div>
+              )}
 
               {filteredReclasificaciones.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 text-xs">
