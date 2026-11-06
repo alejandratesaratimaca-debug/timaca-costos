@@ -144,11 +144,11 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Mano de Obra Directa',
-    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 290728.22, 208500.75, 103875.66],
-    total2026: 2346732.63,
-    variacion: '0,0%',
-    variacionNum: 0,
-    esPositiva: false
+    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 290728.22, 208500.75, 235065.82],
+    total2026: 2477922.79,
+    variacion: '+12,7%',
+    variacionNum: 12.7,
+    esPositiva: true
   },
   {
     categoria: 'Horas Máquina',

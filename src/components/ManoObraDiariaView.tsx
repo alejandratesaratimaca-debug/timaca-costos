@@ -42,7 +42,7 @@ const DATOS_CONCILIACION_2026 = [
   { mesNum: 7, mesNombre: 'Julio', diasCal: 31, personas: 385, semRRHH: 267473.88, devengoReal: 237850.61, dif: -29623.27, pellas: 140764.76, bg: 45290.30, briquetas: 22850.00, pmh: 28945.55, varios: 0.0, dinamicaOperativa: 'Reactivación de frentes en Boca Grande y Pellas', nota: 'Corte operativo tenía 5 semanas (35 días) vs 31 días reales' },
   { mesNum: 8, mesNombre: 'Agosto', diasCal: 31, personas: 398, semRRHH: 223130.13, devengoReal: 246110.70, dif: 22980.57, pellas: 147941.02, bg: 37940.20, briquetas: 26410.10, pmh: 33819.38, varios: 0.0, dinamicaOperativa: 'Base auditada oficial de RRHH (4 Master Unificado)', nota: 'Cierre completo de 31 días con guardias de fin de mes' },
   { mesNum: 9, mesNombre: 'Septiembre', diasCal: 30, personas: 394, semRRHH: 196665.65, devengoReal: 212832.38, dif: 16166.73, pellas: 137877.61, bg: 28551.40, briquetas: 23400.00, pmh: 23003.37, varios: 0.0, dinamicaOperativa: 'Cierre oficial auditado de nómina (Semanas 35 a 39)', nota: 'Semana 35 sumó 2 días (01 y 02 Sep) al devengo mensual (+16K)' },
-  { mesNum: 10, mesNombre: 'Octubre', diasCal: 31, personas: 158, semRRHH: 103875.66, devengoReal: 103875.66, dif: 0.0, pellas: 0.0, bg: 0.0, briquetas: 23875.00, pmh: 80000.66, varios: 0.0, dinamicaOperativa: 'Libros oficiales Semanas 39 al 43 (FMO PMH y FMO Briquetas)', nota: '750 registros con 29.697 Horas Hombre auditadas de nómina' }
+  { mesNum: 10, mesNombre: 'Octubre', diasCal: 31, personas: 383, semRRHH: 235065.82, devengoReal: 235065.82, dif: 0.0, pellas: 131190.16, bg: 0.0, briquetas: 23215.00, pmh: 80660.66, varios: 0.0, dinamicaOperativa: 'Libros oficiales Semanas 39 al 43 (FMO PMH, Briquetas y Pellas Línea 1)', nota: '1.629 registros con 64.585 Horas Hombre auditadas de nómina' }
 ];
 
 export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver }) => {
@@ -483,7 +483,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
             {selectedMes === 10
-              ? '5 semanas de Octubre ($103.876 USD: Sem 39 a 43 en PMH y Briquetas - 29.697 HH)'
+              ? '5 semanas de Octubre ($235.066 USD: Sem 39 a 43 en PMH, Briquetas y Pellas - 64.585 HH)'
               : selectedMes === 9
               ? (vistaModo === 'devengo' 
                   ? '30 días exactos de Septiembre ($212.832 USD: incluye 2 días de Sem 35)' 
@@ -703,7 +703,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 }}
                 className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500"
               >
-                <option value={10}>Octubre 2026 (Auditoría RRHH - Semanas 39-43: PMH y Briquetas)</option>
+                <option value={10}>Octubre 2026 (Auditoría RRHH - Semanas 39-43: PMH, Briquetas y Pellas)</option>
                 <option value={9}>Septiembre 2026 (Auditoría Detallada - Semanas 35-39)</option>
                 <option value={8}>Agosto 2026</option>
                 <option value={7}>Julio 2026</option>

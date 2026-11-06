@@ -740,7 +740,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
-                            ? 'Ejecución auditada al centavo en 20 frentes de proyectos externos activos (TTE-C). Incorporada Mano de Obra Directa de RRHH con 29.697 Horas Hombre ($103.876 USD en PMH y Briquetas).'
+                            ? 'Ejecución auditada al centavo en 20 frentes de proyectos externos activos (TTE-C). Incorporada Mano de Obra Directa de RRHH con 64.585 Horas Hombre ($235.066 USD en PMH, Briquetas y Pellas Línea 1).'
                             : 'Fuerza laboral técnica devengada en frentes de obra. En septiembre cerró en $196.665 USD en 10 proyectos externos, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Rehabilitación Bandas PMH ($28.142 USD · 12,7%).'}
                         </p>
                       </div>

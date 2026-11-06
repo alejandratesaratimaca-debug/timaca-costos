@@ -772,7 +772,7 @@ export const InformeInternosPPTView: React.FC<InformeInternosPPTViewProps> = ({ 
                       Mantto. Infraestructura – OPEX Septiembre 2026
                     </h2>
                     <p className="text-xs text-slate-500">
-                      Total Septiembre: $40.545,39 USD | Acumulado 2026: $401.562,86 USD.
+                      Total Septiembre: $42.818,77 USD | Acumulado 2026: $402.641,72 USD.
                     </p>
                   </div>
                   <span className="text-xs font-mono font-bold bg-slate-100 px-3 py-1 rounded-lg text-slate-700">
