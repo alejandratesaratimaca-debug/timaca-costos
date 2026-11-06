@@ -676,7 +676,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -826,7 +826,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -856,7 +856,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -886,7 +886,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO02 Torno Frontal TOS CELAKOVICE SU100"
     },
     {
@@ -4859,7 +4859,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -5159,7 +5159,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -5399,7 +5399,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -6599,7 +6599,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO02 Torno Frontal TOS CELAKOVICE SU100"
     },
     {
@@ -6839,7 +6839,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO02 Torno Frontal TOS CELAKOVICE SU100"
     },
     {
@@ -7982,7 +7982,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -8072,7 +8072,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -8162,7 +8162,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -8793,7 +8793,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -9183,7 +9183,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -9725,7 +9725,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -9755,7 +9755,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -10236,7 +10236,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -10266,7 +10266,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -10356,7 +10356,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -10719,7 +10719,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -10809,7 +10809,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -10839,7 +10839,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -10929,7 +10929,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -10959,7 +10959,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -11049,7 +11049,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -11474,7 +11474,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -11534,7 +11534,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -12345,7 +12345,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -12435,7 +12435,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -12767,7 +12767,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -12888,7 +12888,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -13008,7 +13008,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -13128,7 +13128,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -15953,7 +15953,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -18637,7 +18637,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -19091,7 +19091,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -20887,7 +20887,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -24509,7 +24509,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -24569,7 +24569,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -25109,7 +25109,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -25352,7 +25352,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -25442,7 +25442,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -28175,7 +28175,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -28989,7 +28989,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -29620,7 +29620,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -29710,7 +29710,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -29981,7 +29981,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -30132,7 +30132,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -30162,7 +30162,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -30946,7 +30946,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -31036,7 +31036,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -31066,7 +31066,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -31156,7 +31156,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -31306,7 +31306,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -31396,7 +31396,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -31426,7 +31426,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -31456,7 +31456,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -31816,7 +31816,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -31906,7 +31906,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -31936,7 +31936,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -32026,7 +32026,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -36039,7 +36039,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -38842,7 +38842,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -39085,7 +39085,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -40083,7 +40083,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -40630,7 +40630,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -42506,7 +42506,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -49521,7 +49521,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -50241,7 +50241,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -50903,7 +50903,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -51083,7 +51083,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -51233,7 +51233,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -51413,7 +51413,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -51503,7 +51503,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -51593,7 +51593,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -51653,7 +51653,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -51713,7 +51713,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -51803,7 +51803,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -51953,7 +51953,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -52043,7 +52043,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -52133,7 +52133,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -52223,7 +52223,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -52553,7 +52553,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -53273,7 +53273,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -53363,7 +53363,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -53393,7 +53393,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -53483,7 +53483,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -53725,7 +53725,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -54296,7 +54296,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -54567,7 +54567,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -54657,7 +54657,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -55566,7 +55566,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -55686,7 +55686,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -56571,7 +56571,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -60897,7 +60897,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -61077,7 +61077,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -61258,7 +61258,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -61349,7 +61349,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -61649,7 +61649,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -62472,7 +62472,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -62683,7 +62683,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -62743,7 +62743,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -62833,7 +62833,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -63104,7 +63104,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -63917,7 +63917,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO08 Torno Vertical VK25M"
     },
     {
@@ -64067,7 +64067,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -65455,7 +65455,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -65485,7 +65485,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -66269,7 +66269,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -66662,7 +66662,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -66692,7 +66692,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO08 Torno Vertical VK25M"
     },
     {
@@ -67086,7 +67086,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -67476,7 +67476,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Interno",
+      "datos_tipo_costo": "Externo",
       "datos_descripcion": "Reacondicionamiento Grúas Torres Liebherr (Pellas 2)"
     },
     {
@@ -71042,7 +71042,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -71733,7 +71733,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -72183,7 +72183,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -72633,7 +72633,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -73714,7 +73714,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -73804,7 +73804,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -73864,7 +73864,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -74104,7 +74104,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -74194,7 +74194,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -74254,7 +74254,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -74344,7 +74344,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -74794,7 +74794,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -75215,7 +75215,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -75305,7 +75305,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -75425,7 +75425,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -75455,7 +75455,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -76476,7 +76476,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -76566,7 +76566,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen"
     },
     {
@@ -83281,7 +83281,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -85542,7 +85542,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -85572,7 +85572,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -86987,7 +86987,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -88550,7 +88550,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -90298,7 +90298,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -90508,7 +90508,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -90628,7 +90628,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -90658,7 +90658,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -90778,7 +90778,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto"
     },
     {
@@ -90868,7 +90868,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  G11"
     },
     {
@@ -90928,7 +90928,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Grua Puente"
     },
     {
@@ -90988,7 +90988,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -91018,7 +91018,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -91048,7 +91048,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -148957,7 +148957,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "Payloader Hyndai HL760-7"
     },
     {
@@ -149077,7 +149077,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "Payloader Hyndai HL760-7"
     },
     {
@@ -151477,7 +151477,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -153247,7 +153247,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "Payloader Hyndai HL760-7"
     },
     {
@@ -153637,7 +153637,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO04 Torno Paralelo BREDA 300"
     },
     {
@@ -154357,7 +154357,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "Payloader Hyndai HL760-7"
     },
     {
@@ -156548,7 +156548,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen"
     },
     {
@@ -156729,7 +156729,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -156789,7 +156789,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -156819,7 +156819,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -156909,7 +156909,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -158079,7 +158079,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "Payloader Hyndai HL760-7"
     },
     {
@@ -158409,7 +158409,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "Payloader Hyndai HL760-7"
     },
     {
@@ -159129,7 +159129,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "MOTOBOMBA DEUZ 12,5 HP 673CM3 SERIAL 6490471"
     },
     {
@@ -159609,7 +159609,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "MOTOBOMBA DEUZ 12,5 HP 673CM3 SERIAL 6490471"
     },
     {
@@ -160119,7 +160119,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "Payloader Hyndai HL760-7"
     },
     {
@@ -160149,7 +160149,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "Payloader Hyndai HL760-7"
     },
     {
@@ -161499,7 +161499,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "MOTOBOMBA DEUZ 12,5 HP 673CM3 SERIAL 6490471"
     },
     {
@@ -162039,7 +162039,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_descripcion": "MOTOBOMBA DEUZ 12,5 HP 673CM3 SERIAL 6490471"
     },
     {
@@ -174231,7 +174231,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -176901,7 +176901,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -178102,7 +178102,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO06 Torno Paralelo BREDA  BRF 150"
     },
     {
@@ -180262,7 +180262,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO04 Torno Paralelo BREDA 300"
     },
     {
@@ -181854,7 +181854,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO10 Torno Frontal TOS SP10"
     },
     {
@@ -183264,7 +183264,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -183774,7 +183774,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO03 Torno Grande zerbt"
     },
     {
@@ -184134,7 +184134,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -184164,7 +184164,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -184314,7 +184314,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -184344,7 +184344,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -184434,7 +184434,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Grúa Bandera COL D3"
     },
     {
@@ -184464,7 +184464,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -184494,7 +184494,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -184764,7 +184764,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Grúa Bandera COL D3"
     },
     {
@@ -184884,7 +184884,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -184914,7 +184914,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -184974,7 +184974,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO04 Torno Paralelo BREDA 300"
     },
     {
@@ -185004,7 +185004,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "TO01 Torno Paralelo GUANGZHOU"
     },
     {
@@ -191006,7 +191006,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -191311,7 +191311,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -191432,7 +191432,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -191798,7 +191798,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -192073,7 +192073,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -192439,7 +192439,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -192469,7 +192469,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -192652,7 +192652,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -192894,7 +192894,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -193044,7 +193044,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -193165,7 +193165,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -193589,7 +193589,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -193710,7 +193710,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -193922,7 +193922,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -194586,7 +194586,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -194738,7 +194738,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -194981,7 +194981,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -195195,7 +195195,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -195316,7 +195316,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -195468,7 +195468,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -195709,7 +195709,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -196042,7 +196042,7 @@
       "estatus_auditoria": "VALIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -196434,7 +196434,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -196524,7 +196524,7 @@
       "estatus_auditoria": "CORREGIDO",
       "ano": 2026,
       "nombre_mes": "octubre",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto"
     },
     {
@@ -224674,7 +224674,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -227222,7 +227222,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -227271,7 +227271,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -230015,7 +230015,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -230064,7 +230064,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -230113,7 +230113,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -230505,7 +230505,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -230603,7 +230603,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -230701,7 +230701,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "TO08 Torno Vertical VK25M",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "TORNO",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -230750,7 +230750,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -230897,7 +230897,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -233494,7 +233494,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -233543,7 +233543,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -233739,7 +233739,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -233788,7 +233788,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -233935,7 +233935,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "TO10 Torno Frontal TOS SP10",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "TORNO",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -235846,7 +235846,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -235895,7 +235895,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -236875,7 +236875,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -236924,7 +236924,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -238884,7 +238884,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -238982,7 +238982,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -239031,7 +239031,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "TO03 Torno Grande zerbt",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "TORNO",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -239129,7 +239129,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -239178,7 +239178,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -239227,7 +239227,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "TO08 Torno Vertical VK25M",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "TORNO",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -239619,7 +239619,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -239668,7 +239668,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -240697,7 +240697,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -241824,7 +241824,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -241873,7 +241873,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -242216,7 +242216,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -242902,7 +242902,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -244764,7 +244764,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "HIDROLAVADORA KARCHER HD3600DH SER: 281176",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Hidrolavadora",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -244813,7 +244813,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "HIDROLAVADORA KARCHER HD3600DH SER: 281176",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Hidrolavadora",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -244862,7 +244862,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "HIDROLAVADORA KARCHER HD3600DH SER: 281176",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Hidrolavadora",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -245352,7 +245352,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -245401,7 +245401,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -247949,7 +247949,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -247998,7 +247998,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -248096,7 +248096,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -248145,7 +248145,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -248341,7 +248341,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -248488,7 +248488,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -248586,7 +248586,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones -  Almacen",
-      "datos_tipo_costo": "Admon",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -248635,7 +248635,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "TO08 Torno Vertical VK25M",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "TORNO",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -250203,7 +250203,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -250252,7 +250252,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -250693,7 +250693,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -250742,7 +250742,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -251330,7 +251330,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -251379,7 +251379,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -256426,7 +256426,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -257161,7 +257161,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -257210,7 +257210,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -257259,7 +257259,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -258190,7 +258190,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -258239,7 +258239,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -258288,7 +258288,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -261130,7 +261130,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "MOTOBOMBA DEUZ 12,5 HP 673CM3 SERIAL 6490471",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "MOTOBOMBA",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -261179,7 +261179,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "MOTOBOMBA DEUZ 12,5 HP 673CM3 SERIAL 6490471",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "MOTOBOMBA",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -261228,7 +261228,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "MOTOBOMBA DEUZ 12,5 HP 673CM3 SERIAL 6490471",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "MOTOBOMBA",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -264854,7 +264854,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto herramientas y accesorios - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -271910,7 +271910,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -272694,7 +272694,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Mantto y Adecuaciones Galpones - Mantto",
-      "datos_tipo_costo": "Mantto Flota (OPEX)",
+      "datos_tipo_costo": "Mantto Infraestructura (OPEX)",
       "datos_tipo_equipo": "Mantenimiento y Adecuaciones",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -274507,7 +274507,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -274556,7 +274556,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -281857,7 +281857,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -281906,7 +281906,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -285679,7 +285679,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -285728,7 +285728,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -285777,7 +285777,7 @@
       "agrupador_linea": "",
       "linea_produccion": "",
       "datos_descripcion": "Payloader Hyndai HL760-7",
-      "datos_tipo_costo": "Socio",
+      "datos_tipo_costo": "Mantto Flota (OPEX)",
       "datos_tipo_equipo": "Equipos Especiales",
       "datos_codigo_sysman": "",
       "datos_zona": "",
@@ -321161,10 +321161,10 @@
     "mdo_total": 116833.05,
     "hm_total": 0,
     "ind_total": 0,
-    "ext_total": 1544849.87,
-    "int_total": 30289.55,
-    "opex_total": 79186.83,
-    "admon_total": 223260.51
+    "ext_total": 1547068.13,
+    "int_total": 28071.29,
+    "opex_total": 92375.34,
+    "admon_total": 202706.78
   },
   "top_cuentas": [
     {

@@ -6113,7 +6113,7 @@
   {
     "codigo": "TT-A-C-512",
     "nombre": "Mantto y Adecuaciones Galpones -  G1",
-    "tipoCosto": "Admon",
+    "tipoCosto": "Mantto Infraestructura (OPEX)",
     "cliente": "Mantto y Adecuaciones Galpones -",
     "ceco": ""
   },
@@ -6148,7 +6148,7 @@
   {
     "codigo": "TT-A-C-900",
     "nombre": "Galpon Calle neveri",
-    "tipoCosto": "Otros-Otros",
+    "tipoCosto": "Mantto Infraestructura (OPEX)",
     "cliente": "Otros",
     "ceco": "Galpon Comercial"
   },
@@ -9487,7 +9487,7 @@
   {
     "codigo": "TT-A-C-513",
     "nombre": "Mantto y Adecuaciones Galpones -  G11",
-    "tipoCosto": "Admon",
+    "tipoCosto": "Mantto Infraestructura (OPEX)",
     "cliente": "Mantto y Adecuaciones Galpones -  G11",
     "ceco": ""
   },
@@ -9830,7 +9830,7 @@
   {
     "codigo": "TT-A-C-514",
     "nombre": "Mantto y Adecuaciones Galpones -  G12",
-    "tipoCosto": "Admon",
+    "tipoCosto": "Mantto Infraestructura (OPEX)",
     "cliente": "Mantto y Adecuaciones Galpones -  G12",
     "ceco": ""
   },

@@ -585,38 +585,51 @@ export function resolverCodigoCuentaAuxiliar(rawCta?: string, motivo?: string, d
   }
 }
 
+const CUENTAS_INFRA_OFICIALES = [
+  'TT-I-C-033', 'TT-G-C-032', 'TT-G-C-034', 'EE-G-C-016', 'SS-G-C-025',
+  'TT-A-C-207', 'TT-A-C-208', 'TT-H-C-031', 'TT-H-C-033', 'EE-H-C-015',
+  'SS-H-C-024', 'TT-A-C-512', 'TT-A-C-513', 'TT-A-C-514', 'TT-A-C-900'
+];
+
 export function determinarTipoGasto(cuenta?: string, tipoCostoExistente?: string): string {
   const c = (cuenta || '').toUpperCase().trim();
   if (!c || c === 'SIN-ASIGNAR' || c === 'SIN_CUENTA') return 'Otros-Otros';
 
-  // 1. Socio
-  if (c.startsWith('TT-S') || c.startsWith('AE-S') || c.startsWith('EE-S') || c.startsWith('EES-C-VH') || c.includes('SOCIO')) {
+  // 1. Proyectos Externos (Facturables a Clientes Comerciales)
+  if (c.startsWith('TTE') || c.startsWith('TSE') || c.startsWith('STE') || c.startsWith('ESE') || c.startsWith('ETE') || c.includes('PELLAS') || c.includes('PMH') || c.includes('BRIQUETAS') || c.includes('BOCA GRANDE') || c.includes('VISCO') || c.includes('SMB-EXT') || c.includes('IMPSA')) {
+    return 'Externo';
+  }
+
+  // 2. Socio
+  if ((c.startsWith('TT-S') && !c.includes('854')) || c.startsWith('AE-S') || c.startsWith('EE-S') || c.startsWith('EES-C-VH') || c.includes('SOCIO')) {
     return 'Socio';
   }
 
-  // 2. Administración y Departamentos de Soporte
-  if (c.startsWith('TT-A') || c.startsWith('AE-A') || c.startsWith('EE-A') || c.includes('ADMON') || c.includes('ADMIN') || c.includes('RECURSOS HUMANOS') || c.includes('GERENTE') || c.includes('PLANIFICAC')) {
-    return 'Admon';
-  }
-
-  // 3. Equipos Móviles, Maquinaria, Grúas y Flota (OPEX)
-  if (c.startsWith('EE') || c.startsWith('TT-F') || c.startsWith('TF-I-C-GP') || c.startsWith('TF-') || c.includes('FLOTA') || c.includes('EQUIPO M') || c.includes('GRUA') || c.includes('CAMION') || c.includes('MONTACARGA')) {
-    return 'Mantto Flota (OPEX)';
-  }
-
-  // 4. Mantenimiento de Infraestructura y Planta (OPEX)
-  if (c.startsWith('TT-I') || c.startsWith('TF-I') || c.startsWith('EE-G') || c.includes('INFRAESTRUCTURA') || c.includes('TALLER')) {
-    return 'Mantto Infraestructura (OPEX)';
-  }
-
-  // 5. Proyectos Internos (Inversiones de Capital y Obras Propias TIMACA)
+  // 3. Proyectos Internos (Inversiones de Capital y Obras Propias TIMACA)
   if (c.startsWith('TTI') || c.startsWith('TSI') || c.startsWith('STI') || c.startsWith('ESI')) {
     return 'Interno';
   }
 
-  // 6. Proyectos Externos (Facturables a Clientes Comerciales)
-  if (c.startsWith('TTE') || c.startsWith('TSE') || c.startsWith('STE') || c.startsWith('ESE') || c.startsWith('ETE') || c.includes('PELLAS') || c.includes('PMH') || c.includes('BRIQUETAS') || c.includes('BOCA GRANDE') || c.includes('VISCO') || c.includes('SMB') || c.includes('IMPSA')) {
-    return 'Externo';
+  // 4. Mantenimiento de Infraestructura y Planta (OPEX)
+  // DEBE evaluarse ANTES de Flota (EE) y Admon (TT-A) para que galpones y herramientas no se mezclen
+  if (
+    CUENTAS_INFRA_OFICIALES.includes(c) ||
+    c.startsWith('TT-I') || c.startsWith('TF-I') ||
+    c.startsWith('TT-G') || c.startsWith('EE-G') || c.startsWith('SS-G') ||
+    c.startsWith('TT-H') || c.startsWith('EE-H') || c.startsWith('SS-H') ||
+    c.includes('INFRAESTRUCTURA') || c.includes('GALPON') || c.includes('HERRAMIENTA') || c.includes('ADECUACION')
+  ) {
+    return 'Mantto Infraestructura (OPEX)';
+  }
+
+  // 5. Administración y Departamentos de Soporte
+  if (c.startsWith('TT-A') || c.startsWith('AE-A') || c.startsWith('EE-A') || c.startsWith('SS-A') || c.startsWith('AEA-') || c.includes('ADMON') || c.includes('ADMIN') || c.includes('RECURSOS HUMANOS') || c.includes('GERENTE') || c.includes('PLANIFICAC')) {
+    return 'Admon';
+  }
+
+  // 6. Equipos Móviles, Maquinaria, Grúas y Flota (OPEX)
+  if (c.startsWith('EE') || c.startsWith('TT-F') || c.startsWith('TF-') || c.includes('FLOTA') || c.includes('EQUIPO M') || c.includes('GRUA') || c.includes('CAMION') || c.includes('MONTACARGA') || c.includes('AUTOBUS') || c.includes('CHUTO') || c.includes('REMOLQUE')) {
+    return 'Mantto Flota (OPEX)';
   }
 
   if (tipoCostoExistente && tipoCostoExistente !== 'Externo' && tipoCostoExistente !== 'Interno' && tipoCostoExistente !== 'OPEX') {

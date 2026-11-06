@@ -110,7 +110,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
 
   // Estados para el Tablero Ejecutivo (Igual a Proyectos Externos)
   const [periodoDetalleBloques, setPeriodoDetalleBloques] = useState<'anual' | number>(10);
-  const [filtroBloqueAuditoria, setFiltroBloqueAuditoria] = useState<'todos' | 'capex' | 'activos' | 'flota' | 'infra'>('todos');
+  const [filtroBloqueAuditoria, setFiltroBloqueAuditoria] = useState<'todos' | 'capex' | 'activos' | 'flota' | 'infra' | 'admon'>('todos');
   const [filtroCategoriaAuditoria, setFiltroCategoriaAuditoria] = useState<'todos' | 'Materiales Directos' | 'Servicios' | 'MOD'>('todos');
   const [filtroMesAuditoria, setFiltroMesAuditoria] = useState<number | 'todos'>(10);
   const [selectedCuentasAuditoria, setSelectedCuentasAuditoria] = useState<string[]>([]);
@@ -196,13 +196,21 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
           cod.includes('VH52') || cod.includes('PA03') || cod.includes('TR01') || 
           cod.includes('CO19') || cod.includes('CO20');
 
-        let bloque: 'CAPEX Obras' | 'Activos Productivos (CAPEX)' | 'Mantto. Flota (OPEX)' | 'Infraestructura (OPEX)';
+        const CUENTAS_INFRA_OFICIALES = [
+          'TT-I-C-033', 'TT-G-C-032', 'TT-G-C-034', 'EE-G-C-016', 'SS-G-C-025',
+          'TT-A-C-207', 'TT-A-C-208', 'TT-H-C-031', 'TT-H-C-033', 'EE-H-C-015',
+          'SS-H-C-024', 'TT-A-C-512', 'TT-A-C-513', 'TT-A-C-514', 'TT-A-C-900'
+        ];
+
+        let bloque: 'CAPEX Obras' | 'Activos Productivos (CAPEX)' | 'Mantto. Flota (OPEX)' | 'Infraestructura (OPEX)' | 'Gastos Administrativos (ADMON)';
         if (isActivoProductivo) {
           bloque = 'Activos Productivos (CAPEX)';
-        } else if (cod.startsWith('TTI-') || cod.startsWith('TSI-')) {
+        } else if (cod.startsWith('TTI-') || cod.startsWith('TSI-') || cod.startsWith('STI-') || cod.startsWith('ESI-')) {
           bloque = 'CAPEX Obras';
-        } else if (cod.startsWith('TT-I-')) {
+        } else if (CUENTAS_INFRA_OFICIALES.includes(cod) || cod.startsWith('TT-G-') || cod.startsWith('EE-G-') || cod.startsWith('SS-G-') || cod.startsWith('TT-I-') || cod.startsWith('TT-H-') || cod.startsWith('EE-H-') || cod.startsWith('SS-H-')) {
           bloque = 'Infraestructura (OPEX)';
+        } else if (cod.startsWith('TT-A-') || cod.startsWith('EE-A-') || cod.startsWith('SS-A-') || cod.startsWith('AE-A-') || cod.startsWith('AEA-')) {
+          bloque = 'Gastos Administrativos (ADMON)';
         } else {
           bloque = 'Mantto. Flota (OPEX)';
         }
@@ -253,6 +261,8 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
       list = list.filter(s => s.bloque === 'Mantto. Flota (OPEX)');
     } else if (filtroBloqueAuditoria === 'infra') {
       list = list.filter(s => s.bloque === 'Infraestructura (OPEX)');
+    } else if (filtroBloqueAuditoria === 'admon') {
+      list = list.filter(s => s.bloque === 'Gastos Administrativos (ADMON)');
     }
 
     // Filtro por Categoría / Voz de Gasto
@@ -984,6 +994,24 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                 <ArrowRight className="w-3 h-3 text-neutral-400 group-hover:text-teal-600 transition-transform group-hover:translate-x-0.5" />
               </button>
 
+                <button
+                type="button"
+                onClick={() => {
+                  setFiltroBloqueAuditoria('admon');
+                  document.getElementById('tabla-auditoria-internos')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-2xs group ${
+                  filtroBloqueAuditoria === 'admon'
+                    ? 'bg-amber-50 border-amber-400 text-amber-900 ring-2 ring-amber-500/20'
+                    : 'bg-neutral-50 hover:bg-amber-50/50 border-neutral-200 text-neutral-800 hover:border-amber-300'
+                }`}
+                title="Filtrar comprobantes de Gastos Administrativos y Departamentos de Soporte"
+              >
+                <span className="w-3 h-3 rounded-sm shrink-0 bg-amber-600" />
+                <span className="font-bold group-hover:text-amber-700">5. Gastos Admon ($42,9k)</span>
+                <ArrowRight className="w-3 h-3 text-neutral-400 group-hover:text-amber-600 transition-transform group-hover:translate-x-0.5" />
+              </button>
+
               <button
                 type="button"
                 onClick={() => handleTabChange('mod')}
@@ -991,7 +1019,7 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                 title="Ir directamente a la auditoría de Mano de Obra Directa (MOD ECO 5.963 HH)"
               >
                 <span className="w-3 h-3 rounded-sm shrink-0 bg-purple-600" />
-                <span className="font-bold group-hover:text-purple-700">5. MOD ECO (5.963 HH)</span>
+                <span className="font-bold group-hover:text-purple-700">6. MOD ECO (5.963 HH)</span>
                 <ArrowRight className="w-3 h-3 text-neutral-400 group-hover:text-purple-600 transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
@@ -1839,6 +1867,17 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                 >
                   Infraestructura (OPEX)
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setFiltroBloqueAuditoria('admon')}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    filtroBloqueAuditoria === 'admon'
+                      ? 'bg-amber-600 text-white shadow-2xs font-bold'
+                      : 'bg-white text-amber-900 hover:bg-amber-50 border border-amber-200 shadow-2xs'
+                  }`}
+                >
+                  Gastos Administrativos (ADMON)
+                </button>
               </div>
 
               {/* Muestra Destacada del Total */}
@@ -2068,6 +2107,8 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
                         badgeBloqueColor = 'bg-emerald-100 text-emerald-900 border-emerald-300 font-extrabold';
                       } else if (s.bloque === 'Infraestructura (OPEX)') {
                         badgeBloqueColor = 'bg-teal-100 text-teal-800 border-teal-200';
+                      } else if (s.bloque === 'Gastos Administrativos (ADMON)') {
+                        badgeBloqueColor = 'bg-amber-100 text-amber-800 border-amber-200';
                       }
 
                       let badgeCatColor = 'bg-slate-100 text-slate-800 border-slate-200';
