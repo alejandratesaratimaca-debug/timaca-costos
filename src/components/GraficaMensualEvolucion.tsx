@@ -8,8 +8,8 @@ interface GraficaMensualEvolucionProps {
   onSelectCategoria?: (categoria: string) => void;
 }
 
-const MESES_NOMBRES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre'];
-const MESES_ABR = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep'];
+const MESES_NOMBRES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'];
+const MESES_ABR = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
 
 const CATEGORIA_COLORES: Record<string, { stroke: string; fill: string; bg: string; text: string }> = {
   'Materiales Directos': { stroke: '#2563eb', fill: '#3b82f6', bg: 'bg-blue-50', text: 'text-blue-700' },
@@ -104,7 +104,7 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
 
   // Cálculos consolidados mensuales
   const { dataMeses, maxTotalMes, maxCatMes, totalConsolidado } = useMemo(() => {
-    const arr = [0, 1, 2, 3, 4, 5, 6, 7, 8].map((mIdx) => {
+    const arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((mIdx) => {
       const nombre = MESES_NOMBRES[mIdx];
       const abr = MESES_ABR[mIdx];
       let total = 0;
@@ -308,7 +308,7 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
         <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
           <span className="text-[10px] text-slate-500 uppercase font-bold block">Mes Actual Auditado</span>
           <span className="text-sm font-bold font-mono text-slate-900 block mt-0.5">
-            ${(ultimoMes?.total || 0).toLocaleString('de-DE')} <span className="text-[10px] text-blue-600 font-sans font-bold">({ultimoMes?.nombre})</span>
+            ${(ultimoMes?.total || 0).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[10px] text-blue-600 font-sans font-bold">({ultimoMes?.nombre})</span>
           </span>
         </div>
         <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
@@ -320,7 +320,7 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
         <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
           <span className="text-[10px] text-slate-500 uppercase font-bold block">Total {numMeses} Meses</span>
           <span className="text-sm font-bold font-mono text-[#0b2545] block mt-0.5">
-            ${totalConsolidado.toLocaleString('de-DE')} <span className="text-[10px] text-emerald-600 font-sans font-bold">100%</span>
+            ${totalConsolidado.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[10px] text-emerald-600 font-sans font-bold">100%</span>
           </span>
         </div>
       </div>
@@ -444,13 +444,14 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
             </g>
           )}
 
-          {/* Columnas y Nodos Interactivos para cada uno de los 8 Meses */}
+          {/* Columnas y Nodos Interactivos para cada uno de los Meses */}
           {dataMeses.map((m, idx) => {
             const x = getX(idx);
             const y = getY(m.total);
             const isHover = hoverIndex === idx;
             const isJune = idx === 5;
-            const isAugust = idx === 7;
+            const isOctober = idx === 9;
+            const stepX = plotWidth / Math.max(1, dataMeses.length - 1);
 
             return (
               <g 
@@ -462,9 +463,9 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
               >
                 {/* Zona de hover vertical transparente */}
                 <rect
-                  x={x - (plotWidth / 14)}
+                  x={x - stepX / 2}
                   y={padTop}
-                  width={plotWidth / 7}
+                  width={stepX}
                   height={plotHeight}
                   fill={isHover ? '#3b82f6' : 'transparent'}
                   fillOpacity={isHover ? 0.06 : 0}
@@ -490,15 +491,15 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
                     <circle
                       cx={x}
                       cy={y}
-                      r={isHover ? 7 : isJune || isAugust ? 5.5 : 4}
-                      fill={isJune ? '#ea580c' : isAugust ? '#2563eb' : '#0b2545'}
+                      r={isHover ? 7 : isJune || isOctober ? 5.5 : 4}
+                      fill={isJune ? '#ea580c' : isOctober ? '#2563eb' : '#0b2545'}
                       stroke="#ffffff"
                       strokeWidth={isHover ? 2.5 : 2}
                       className="transition-all"
                     />
                     {/* Monto flotante encima del nodo con elevación vertical, ligero desvío en laderas y halo blanco anticolisión */}
                     <text
-                      x={x + (idx === 4 ? -8 : idx === 6 ? 8 : 0)}
+                      x={x + (idx === 4 ? -8 : idx === 6 ? 8 : idx === 9 ? -5 : 0)}
                       y={y - 15}
                       textAnchor="middle"
                       stroke="#ffffff"
@@ -506,7 +507,7 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
                       strokeLinejoin="round"
                       paintOrder="stroke fill"
                       className={`text-[10px] font-mono font-bold select-none ${
-                        isJune ? 'fill-orange-600' : isAugust ? 'fill-blue-700' : 'fill-slate-800'
+                        isJune ? 'fill-orange-600' : isOctober ? 'fill-blue-700' : 'fill-slate-800'
                       }`}
                     >
                       ${m.total >= 1000000 ? `${(m.total / 1000000).toFixed(2)}M` : `${Math.round(m.total / 1000)}k`}
@@ -522,7 +523,7 @@ export const GraficaMensualEvolucion: React.FC<GraficaMensualEvolucionProps> = (
                   className={`text-xs font-semibold tracking-tight transition-colors ${
                     isHover 
                       ? 'fill-blue-700 font-bold' 
-                      : isAugust 
+                      : isOctober 
                         ? 'fill-blue-800 font-black' 
                         : isJune 
                           ? 'fill-orange-700 font-bold' 

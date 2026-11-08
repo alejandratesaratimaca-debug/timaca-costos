@@ -158,12 +158,12 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
     });
   }, [filasFiltradasProyectos]);
 
-  // Nombres de los meses oficiales (Enero a Septiembre 2026)
-  const MESES_NOMBRES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre'];
+  // Nombres de los meses oficiales (Enero a Octubre 2026)
+  const MESES_NOMBRES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'];
 
   // Totales mensuales oficiales
   const totalesMensualesOficiales = useMemo(() => {
-    return [0, 1, 2, 3, 4, 5, 6, 7, 8].map(mIdx => {
+    return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(mIdx => {
       return TABLA_PPT_DISTRIBUCION_2026.reduce((sum, cat) => sum + (cat.meses[mIdx] || 0), 0);
     });
   }, []);
@@ -220,6 +220,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
         'Julio ($)': row.meses[6],
         'Agosto ($)': row.meses[7],
         'Septiembre ($)': row.meses[8],
+        'Octubre ($)': row.meses[9],
         'Total 2026 ($)': row.total2026,
         '% Participación': `${((row.total2026 / totalAnualGlobal) * 100).toFixed(2)}%`,
         'Variación': row.variacion
@@ -237,6 +238,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
         'Julio ($)': totalesMensualesOficiales[6],
         'Agosto ($)': totalesMensualesOficiales[7],
         'Septiembre ($)': totalesMensualesOficiales[8],
+        'Octubre ($)': totalesMensualesOficiales[9],
         'Total 2026 ($)': totalAnualGlobal,
         '% Participación': '100.00%',
         'Variación': '+3.7%'
@@ -313,7 +315,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
             </div>
             <p className="text-xs text-neutral-500 mt-0.5">
               {vistaActiva === 'categorias'
-                ? `Distribución consolidada en USD · 9 meses auditados (Enero - Septiembre 2026) · Total Acumulado: $${Math.round(totalAnualGlobal).toLocaleString('de-DE')} USD`
+                ? `Distribución consolidada en USD · 10 meses auditados (Enero - Octubre 2026) · Total Acumulado: $${Math.round(totalAnualGlobal).toLocaleString('de-DE')} USD`
                 : periodo === 'anual'
                 ? `Matriz oficial auditada Enero - Septiembre 2026 (5 Rubros Completos) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
                 : periodo === 'agosto'
@@ -471,7 +473,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               <span className="text-2xl font-bold font-mono tabular-nums text-neutral-900 block mt-1">
                 ${totalAnualGlobal.toLocaleString('de-DE')} USD
               </span>
-              <span className="text-[10px] text-neutral-500 mt-1 block">9 meses oficiales (Ene - Sep)</span>
+              <span className="text-[10px] text-neutral-500 mt-1 block">10 meses oficiales (Ene - Oct)</span>
             </div>
 
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs hover:border-blue-500 hover:shadow-md transition-all cursor-pointer">
@@ -487,7 +489,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                 ${(totalesMensualesOficiales[5] || 2663899).toLocaleString('de-DE')} USD
               </span>
               <span className="text-[10px] text-neutral-500 mt-1 block">
-                {totalAnualGlobal > 0 ? (((totalesMensualesOficiales[5] || 2663899) / totalAnualGlobal) * 100).toFixed(1) : '22.6'}% del total anual consolidado
+                {totalAnualGlobal > 0 ? (((totalesMensualesOficiales[5] || 2663899) / totalAnualGlobal) * 100).toFixed(1) : '18.1'}% del total anual consolidado
               </span>
             </div>
 
@@ -497,14 +499,14 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                   Mes Actual Auditado
                 </span>
                 <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200/60 px-1.5 py-0.2 rounded">
-                  Septiembre
+                  Octubre
                 </span>
               </div>
               <span className="text-2xl font-bold font-mono tabular-nums text-neutral-900 block mt-1">
-                ${(totalesMensualesOficiales[8] || 1097082).toLocaleString('de-DE')} USD
+                ${(totalesMensualesOficiales[9] || 2024040.10).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
               </span>
               <span className="text-[10px] text-neutral-500 mt-1 block">
-                {totalAnualGlobal > 0 ? (((totalesMensualesOficiales[8] || 1097082) / totalAnualGlobal) * 100).toFixed(1) : '8.8'}% del total anual consolidado
+                {totalAnualGlobal > 0 ? (((totalesMensualesOficiales[9] || 2024040.10) / totalAnualGlobal) * 100).toFixed(1) : '13.7'}% del total anual consolidado
               </span>
             </div>
 
@@ -514,14 +516,14 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                   Mayor Categoría de Inversión
                 </span>
                 <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.2 rounded">
-                  {totalAnualGlobal > 0 ? (((TABLA_PPT_DISTRIBUCION_2026[0]?.total2026 || 4073732) / totalAnualGlobal) * 100).toFixed(2) : '32.79'}%
+                  {totalAnualGlobal > 0 ? (((TABLA_PPT_DISTRIBUCION_2026[0]?.total2026 || 4589214) / totalAnualGlobal) * 100).toFixed(2) : '31.11'}%
                 </span>
               </div>
               <span className="text-2xl font-bold font-mono tabular-nums text-neutral-900 block mt-1">
-                ${(TABLA_PPT_DISTRIBUCION_2026[0]?.total2026 || 4073732).toLocaleString('de-DE')} USD
+                ${(TABLA_PPT_DISTRIBUCION_2026[0]?.total2026 || 4589214).toLocaleString('de-DE')} USD
               </span>
-              <span className="text-[10px] text-neutral-500 mt-1 block truncate" title="Materiales Directos · 9 meses auditados (Ene - Sep)">
-                Materiales Directos · 9 meses auditados (Ene - Sep)
+              <span className="text-[10px] text-neutral-500 mt-1 block truncate" title="Materiales Directos · 10 meses auditados (Ene - Oct)">
+                Materiales Directos · 10 meses auditados (Ene - Oct)
               </span>
             </div>
           </div>
@@ -539,11 +541,11 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                 <Info className="w-3.5 h-3.5" />
               </span>
               <span>
-                <strong>Distribución Operativa 2026:</strong> Tabla 3. Distribución mensual de costos por mes operativo (9 meses auditados: Enero a Septiembre 2026). Haz clic en cualquier categoría para auditar sus subconceptos.
+                <strong>Distribución Operativa 2026:</strong> Tabla 3. Distribución mensual de costos por mes operativo (10 meses auditados: Enero a Octubre 2026). Haz clic en cualquier categoría para auditar sus subconceptos.
               </span>
             </div>
             <span className="text-[11px] font-bold text-slate-800 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shrink-0 self-start sm:self-auto">
-              5 Categorías · 9 Meses
+              5 Categorías · 10 Meses
             </span>
           </div>
 
