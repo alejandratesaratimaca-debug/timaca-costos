@@ -1302,9 +1302,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 const sc = String(r.sc || '').trim().toUpperCase();
                 const oc = String(r.oc || '').trim().toUpperCase();
                 const cod = String(r.codigo || '').trim().toUpperCase();
-                const k1 = r.id != null ? String(r.id) : null;
-
-                const match = 
+                const candidate = 
                   (k1 && corrMap.get(k1)) ||
                   (doc && cod && corrMap.get(`${doc}-${cod}`)) ||
                   (ped && cod && corrMap.get(`${ped}-${cod}`)) ||
@@ -1315,11 +1313,33 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   (sc && corrMap.get(sc)) ||
                   (oc && corrMap.get(oc));
 
+                let match = null;
+                if (candidate) {
+                  const candDoc = String(candidate.documento || candidate.numero || candidate.sc || candidate.oc || '').trim().toUpperCase();
+                  const candTipo = String(candidate.tipoItem || candidate.tipo || '').toLowerCase();
+                  const rowTipo = String(r.tipo || '').toLowerCase();
+
+                  const docMatches = !candDoc || candDoc === doc || candDoc === ped || candDoc === sc || candDoc === oc;
+                  const tipoMatches = !candTipo || (candTipo.includes('serv') ? rowTipo.includes('serv') : (candTipo.includes('mat') ? rowTipo.includes('mat') : true));
+
+                  if (docMatches && tipoMatches) {
+                    match = candidate;
+                  }
+                }
+
                 if (match) {
                   const targetCuenta = (match.nuevaCuenta || r.cuenta_aux || '').toUpperCase().trim();
                   const targetDesc = match.nuevoProyecto || r.datos_descripcion;
                   const targetTipoCosto = determinarTipoGasto(targetCuenta, match.datos_tipo_costo || r.datos_tipo_costo);
                   const targetMes = match.nuevoMes ? match.nuevoMes.toLowerCase() : r.nombre_mes;
+
+                  const isValorizacionZero = String(match.motivo || '').toLowerCase().includes('valorizaci') || Number(r.precio_final || 0) === 0;
+                  const newPrecio = isValorizacionZero && (match.precio_final ?? match.costoUnitario) != null 
+                    ? Number(match.precio_final ?? match.costoUnitario) 
+                    : r.precio_final;
+                  const newTotal = isValorizacionZero && (match.precio_final ?? match.costoUnitario) != null
+                    ? (newPrecio * (Number(r.cantidad) || 1))
+                    : r.total_usd;
 
                   return {
                     ...r,
@@ -1329,8 +1349,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     datos_descripcion: targetDesc,
                     datos_tipo_costo: targetTipoCosto,
                     nombre_mes: targetMes,
-                    precio_final: (match.precio_final ?? match.costoUnitario) != null ? Number(match.precio_final ?? match.costoUnitario) : r.precio_final,
-                    total_usd: (match.precio_final ?? match.costoUnitario) != null ? (Number(match.precio_final ?? match.costoUnitario) * (Number(r.cantidad) || 1)) : r.total_usd,
+                    precio_final: newPrecio,
+                    total_usd: newTotal,
                     ajuste: 'CORREGIDO',
                     infoReclasificacion: match
                   };
@@ -1791,7 +1811,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             const cod = String(r.codigo || '').trim().toUpperCase();
             const k1 = r.id != null ? String(r.id) : null;
 
-            const match = 
+            const candidate = 
               (k1 && corrMap.get(k1)) ||
               (doc && cod && corrMap.get(`${doc}-${cod}`)) ||
               (ped && cod && corrMap.get(`${ped}-${cod}`)) ||
@@ -1801,6 +1821,20 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               (ped && corrMap.get(ped)) ||
               (sc && corrMap.get(sc)) ||
               (oc && corrMap.get(oc));
+
+            let match = null;
+            if (candidate) {
+              const candDoc = String(candidate.documento || candidate.numero || candidate.sc || candidate.oc || '').trim().toUpperCase();
+              const candTipo = String(candidate.tipoItem || candidate.tipo || '').toLowerCase();
+              const rowTipo = String(r.tipo || '').toLowerCase();
+
+              const docMatches = !candDoc || candDoc === doc || candDoc === ped || candDoc === sc || candDoc === oc;
+              const tipoMatches = !candTipo || (candTipo.includes('serv') ? rowTipo.includes('serv') : (candTipo.includes('mat') ? rowTipo.includes('mat') : true));
+
+              if (docMatches && tipoMatches) {
+                match = candidate;
+              }
+            }
 
             if (match) {
               const targetCuenta = (match.nuevaCuenta || r.cuenta_aux || '').toUpperCase().trim();
