@@ -4,6 +4,7 @@ import {
   TABLA_PPT_DISTRIBUCION_2026, 
   TOTALES_MESES_PPT, 
   CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026,
+  CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026,
   TOTALES_NOMINA_SEMANAL_SEPTIEMBRE,
   DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS 
 } from '../data/mockCostosTimaca';
@@ -52,6 +53,10 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     pellasMesData
   } = params;
 
+  const isOct = selectedMesNum === 10;
+  const mesTitle = isOct ? 'Octubre 2026' : (selectedMesNum === 8 ? 'Agosto 2026' : 'Septiembre 2026');
+  const mesUpper = mesTitle.toUpperCase();
+
   const PptxConstructor: any = (pptxgen as any).default || pptxgen;
   const pptx = new PptxConstructor();
 
@@ -60,7 +65,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
   pptx.layout = 'LAYOUT_16_9_HD';
   pptx.author = 'Ing. Civil Alejandra Tesara';
   pptx.company = 'TALLER INDUSTRIAL METALÚRGICO ANTONIO C.A. (TIMACA)';
-  pptx.title = 'Informe Ejecutivo de Costos - Septiembre 2026';
+  pptx.title = `Informe Ejecutivo de Costos - ${mesTitle}`;
   pptx.subject = 'Costos en Proyectos Externos y Cuentas Auxiliares';
 
   // Palette colors
@@ -264,7 +269,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       rectRadius: 0.08
     });
 
-    slide.addText('PERÍODO OPERATIVO: SEPTIEMBRE 2026', {
+    slide.addText(`PERÍODO OPERATIVO: ${mesUpper}`, {
       x: 4.66,
       y: 1.50,
       w: 4.0,
@@ -288,7 +293,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     // Subtitle
-    slide.addText('SEPTIEMBRE 2026', {
+    slide.addText(mesUpper, {
       x: 0.8,
       y: 2.45,
       w: 11.733,
@@ -301,9 +306,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
 
     // 3 Metadata KPI Chips
     const chips = [
-      { label: 'Ejecución del Mes:', val: '$1.613.225 USD' },
-      { label: 'Acumulado 2026:', val: '$12.052.176 USD' },
-      { label: 'Proyectos Activos:', val: '25 Cuentas Auxiliares' }
+      { label: 'Ejecución del Mes:', val: isOct ? '$1.428.905 USD' : (selectedMesNum === 8 ? '$1.197.600 USD' : '$1.613.225 USD') },
+      { label: 'Acumulado 2026:', val: isOct ? '$13.481.082 USD' : (selectedMesNum === 8 ? '$10.438.951 USD' : '$12.052.176 USD') },
+      { label: 'Proyectos Activos:', val: isOct ? `${cuentasAuxiliaresMes.length || 19} Cuentas Auxiliares` : (selectedMesNum === 8 ? '20 Cuentas Auxiliares' : '25 Cuentas Auxiliares') }
     ];
 
     chips.forEach((ch, idx) => {
@@ -880,11 +885,12 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
   {
     const slide = pptx.addSlide();
     slide.background = { color: C_BG_LIGHT };
+    const activeCuentas = isOct ? CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026 : CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026;
     addSlideHeader(
       slide,
       4,
-      '4. Total Proyectos Externos con Despachos (Septiembre 2026)',
-      `${CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026.length} Cuentas Auxiliares Activas · Distribución Pareto y Control Presupuestario`
+      `4. Total Proyectos Externos con Despachos (${mesTitle})`,
+      `${activeCuentas.length} Cuentas Auxiliares Activas · Distribución Pareto y Control Presupuestario`
     );
 
     const pryTable: any[][] = [
@@ -892,7 +898,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
         { text: '#', options: { bold: true, color: C_WHITE, fill: { color: C_DARK }, align: 'center', fontSize: 10.5 } },
         { text: 'Código', options: { bold: true, color: C_WHITE, fill: { color: C_DARK }, fontSize: 10.5 } },
         { text: 'Proyecto / OT (Cliente)', options: { bold: true, color: C_WHITE, fill: { color: C_DARK }, fontSize: 10.5 } },
-        { text: 'Monto Sep (USD)', options: { bold: true, color: C_WHITE, fill: { color: C_DARK }, align: 'right', fontSize: 10.5 } },
+        { text: `Monto ${isOct ? 'Oct' : 'Sep'} (USD)`, options: { bold: true, color: C_WHITE, fill: { color: C_DARK }, align: 'right', fontSize: 10.5 } },
         { text: '% Mes', options: { bold: true, color: C_WHITE, fill: { color: C_DARK }, align: 'right', fontSize: 10.5 } },
         { text: 'Presupuesto Total (USD)', options: { bold: true, color: C_WHITE, fill: { color: C_DARK }, align: 'right', fontSize: 10.5 } },
         { text: '% Uso Presup.', options: { bold: true, color: C_WHITE, fill: { color: C_DARK }, align: 'center', fontSize: 10.5 } }
@@ -900,26 +906,43 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     ];
 
     const pryBudgets: Record<string, { pres: string; pct: string }> = {
-      'TTE-C-0706': { pres: '$29.720.000', pct: '8,0%' },
-      'TTE-C-0671': { pres: '$3.260.000', pct: '35,5%' },
-      'TTE-C-0653': { pres: '$2.220.000', pct: '24,9%' },
+      'TTE-C-0706': { pres: '$29.720.000', pct: isOct ? '10,9%' : '8,0%' },
+      'TTE-C-0671': { pres: '$3.260.000', pct: isOct ? '43,8%' : '35,5%' },
+      'TTE-C-0653': { pres: '$2.220.000', pct: isOct ? '32,6%' : '24,9%' },
       'TTE-C-0668': { pres: '$1.850.000', pct: '38,2%' },
       'TTE-C-0694': { pres: '$450.000', pct: '23,2%' },
-      'TTE-C-0656': { pres: '$1.500.000', pct: '80,8%' },
+      'TTE-C-0656': { pres: '$1.500.000', pct: isOct ? '81,1%' : '80,8%' },
       'TTE-C-0678': { pres: '$680.000', pct: '47,2%' },
-      'TTE-C-0680': { pres: '$520.000', pct: '41,6%' },
+      'TTE-C-0680': { pres: '$520.000', pct: isOct ? '46,7%' : '41,6%' },
       'TTE-C-0640': { pres: '$180.000', pct: '38,9%' },
-      'TTE-C-0670': { pres: '$210.000', pct: '32,7%' }
+      'TTE-C-0670': { pres: '$210.000', pct: '32,7%' },
+      'TTE-C-0655': { pres: '$980.000', pct: '21,4%' },
+      'TTE-C-0641': { pres: '$820.000', pct: '18,5%' },
+      'TTE-C-0696': { pres: '$350.000', pct: '14,2%' },
+      'TTE-C-0682': { pres: '$420.000', pct: '9,8%' },
+      'TTE-C-0700': { pres: '$280.000', pct: '7,4%' },
+      'TTE-C-0697': { pres: '$1.091.248', pct: '90,0%' }
     };
 
-    CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026.slice(0, 10).forEach((c, i) => {
+    const top10 = activeCuentas.slice(0, 10);
+    const subtotalTop10 = top10.reduce((s, c) => s + ((c as any).montoOctubre ?? c.montoSeptiembre ?? 0), 0);
+    const pctTop10 = top10.reduce((s, c) => s + c.porcentaje, 0);
+
+    const resto = activeCuentas.slice(10);
+    const subtotalResto = resto.reduce((s, c) => s + ((c as any).montoOctubre ?? c.montoSeptiembre ?? 0), 0);
+    const pctResto = resto.reduce((s, c) => s + c.porcentaje, 0);
+
+    const grandTotal = subtotalTop10 + subtotalResto;
+
+    top10.forEach((c, i) => {
       const bInfo = pryBudgets[c.cuentaAuxiliar] || { pres: '-', pct: 'S/P' };
-      const cleanPry = c.proyecto.replace(/610TG1\s*\/\s*/g, '610TG1 / ').replace(/\s+/g, ' ').trim();
+      const cleanPry = (c.proyectoCorto || c.proyecto).replace(/610TG1\s*\/\s*/g, '610TG1 / ').replace(/\s+/g, ' ').trim();
+      const monto = Math.round((c as any).montoOctubre ?? c.montoSeptiembre ?? 0);
       pryTable.push([
         { text: (i + 1).toString(), options: { align: 'center', fontSize: 8.5, color: '64748B', margin: [1, 2, 1, 2] } },
         { text: c.cuentaAuxiliar, options: { bold: true, fontSize: 8.5, color: C_DARK, margin: [1, 2, 1, 2] } },
         { text: cleanPry, options: { fontSize: 8.5, color: C_SLATE, margin: [1, 2, 1, 2] } },
-        { text: `$${Math.round(c.montoSeptiembre).toLocaleString('de-DE')}`, options: { bold: true, align: 'right', fontSize: 8.5, margin: [1, 2, 1, 2] } },
+        { text: `$${monto.toLocaleString('de-DE')}`, options: { bold: true, align: 'right', fontSize: 8.5, margin: [1, 2, 1, 2] } },
         { text: `${c.porcentaje.toFixed(1).replace('.', ',')}%`, options: { align: 'right', fontSize: 8.5, color: C_SLATE, margin: [1, 2, 1, 2] } },
         { text: bInfo.pres, options: { align: 'right', fontSize: 8.5, color: '64748B', margin: [1, 2, 1, 2] } },
         { text: bInfo.pct, options: { align: 'center', bold: true, fontSize: 8.5, color: C_DARK, margin: [1, 2, 1, 2] } }
@@ -930,8 +953,8 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       { text: '', options: { fill: { color: 'F1F5F9' }, margin: [1, 2, 1, 2] } },
       { text: 'SUBTOTAL', options: { bold: true, fontSize: 8.0, fill: { color: 'F1F5F9' }, color: C_DARK, margin: [1, 2, 1, 2] } },
       { text: 'TOP 10 CUENTAS PRIORITARIAS (SEGUIMIENTO EJECUTIVO)', options: { bold: true, fontSize: 8.0, fill: { color: 'F1F5F9' }, color: C_DARK, margin: [1, 2, 1, 2] } },
-      { text: '$1.585.913', options: { bold: true, align: 'right', fontSize: 8.0, fill: { color: 'F1F5F9' }, color: C_NAVY, margin: [1, 2, 1, 2] } },
-      { text: '98,3%', options: { bold: true, align: 'right', fontSize: 8.0, fill: { color: 'F1F5F9' }, color: C_DARK, margin: [1, 2, 1, 2] } },
+      { text: `$${Math.round(subtotalTop10).toLocaleString('de-DE')}`, options: { bold: true, align: 'right', fontSize: 8.0, fill: { color: 'F1F5F9' }, color: C_NAVY, margin: [1, 2, 1, 2] } },
+      { text: `${pctTop10.toFixed(1).replace('.', ',')}%`, options: { bold: true, align: 'right', fontSize: 8.0, fill: { color: 'F1F5F9' }, color: C_DARK, margin: [1, 2, 1, 2] } },
       { text: '-', options: { align: 'right', fontSize: 8.0, fill: { color: 'F1F5F9' }, margin: [1, 2, 1, 2] } },
       { text: '-', options: { align: 'center', fontSize: 8.0, fill: { color: 'F1F5F9' }, margin: [1, 2, 1, 2] } }
     ]);
@@ -939,9 +962,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     pryTable.push([
       { text: '', options: { fill: { color: 'F8FAFC' }, margin: [1, 2, 1, 2] } },
       { text: 'RESTO', options: { fontSize: 8.0, fill: { color: 'F8FAFC' }, color: '64748B', margin: [1, 2, 1, 2] } },
-      { text: 'OTRAS 15 CUENTAS ACTIVAS MENORES (TALLERES / SERVICIOS AUXILIARES)', options: { fontSize: 8.0, fill: { color: 'F8FAFC' }, color: '64748B', margin: [1, 2, 1, 2] } },
-      { text: '$27.312', options: { align: 'right', fontSize: 8.0, fill: { color: 'F8FAFC' }, color: '64748B', margin: [1, 2, 1, 2] } },
-      { text: '1,7%', options: { align: 'right', fontSize: 8.0, fill: { color: 'F8FAFC' }, color: '64748B', margin: [1, 2, 1, 2] } },
+      { text: `OTRAS ${resto.length} CUENTAS ACTIVAS MENORES (TALLERES / SERVICIOS AUXILIARES)`, options: { fontSize: 8.0, fill: { color: 'F8FAFC' }, color: '64748B', margin: [1, 2, 1, 2] } },
+      { text: `$${Math.round(subtotalResto).toLocaleString('de-DE')}`, options: { align: 'right', fontSize: 8.0, fill: { color: 'F8FAFC' }, color: '64748B', margin: [1, 2, 1, 2] } },
+      { text: `${pctResto.toFixed(1).replace('.', ',')}%`, options: { align: 'right', fontSize: 8.0, fill: { color: 'F8FAFC' }, color: '64748B', margin: [1, 2, 1, 2] } },
       { text: '-', options: { align: 'right', fontSize: 8.0, fill: { color: 'F8FAFC' }, margin: [1, 2, 1, 2] } },
       { text: '-', options: { align: 'center', fontSize: 8.0, fill: { color: 'F8FAFC' }, margin: [1, 2, 1, 2] } }
     ]);
@@ -949,8 +972,8 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     pryTable.push([
       { text: '', options: { fill: { color: C_NAVY }, margin: [1, 2, 1, 2] } },
       { text: 'TOTAL', options: { bold: true, fontSize: 8.5, fill: { color: C_NAVY }, color: C_WHITE, margin: [1, 2, 1, 2] } },
-      { text: 'TOTAL 25 CUENTAS ACTIVAS EN SEPTIEMBRE', options: { bold: true, fontSize: 8.5, fill: { color: C_NAVY }, color: C_WHITE, margin: [1, 2, 1, 2] } },
-      { text: '$1.613.225 USD', options: { bold: true, align: 'right', fontSize: 8.5, fill: { color: C_NAVY }, color: 'FCD34D', margin: [1, 2, 1, 2] } },
+      { text: `CONSOLIDADO ${activeCuentas.length} PROYECTOS EXTERNOS ACTIVOS`, options: { bold: true, fontSize: 8.5, fill: { color: C_NAVY }, color: C_WHITE, margin: [1, 2, 1, 2] } },
+      { text: `$${Math.round(grandTotal).toLocaleString('de-DE')} USD`, options: { bold: true, align: 'right', fontSize: 8.5, fill: { color: C_NAVY }, color: 'FCD34D', margin: [1, 2, 1, 2] } },
       { text: '100,0%', options: { bold: true, align: 'right', fontSize: 8.5, fill: { color: C_NAVY }, color: C_WHITE, margin: [1, 2, 1, 2] } },
       { text: '-', options: { align: 'right', fontSize: 8.5, fill: { color: C_NAVY }, margin: [1, 2, 1, 2] } },
       { text: '-', options: { align: 'center', fontSize: 8.5, fill: { color: C_NAVY }, margin: [1, 2, 1, 2] } }
@@ -976,10 +999,15 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      'OBSERVACIONES PARETO Y CONTROL PRESUPUESTARIO:\n' +
-      '• Concentración Top 3 (72,5%): Proyecto Pellas Línea 1 ($663.316 USD · 41,1%), Segunda Línea PMH ($307.436 USD · 19,1%) y Rueda DRAVO ($199.356 USD · 12,4%) concentran el 72,5% de la ejecución mensual de TIMACA.\n' +
-      '• Conciliación de Cuentas Activas: Las 10 cuentas principales suman $1.585.913 USD (98,3%) y los 15 frentes auxiliares complementarios suman $27.312 USD (1,7%), totalizando $1.613.225 USD de costo total ejecutado a través de las 25 cuentas activas (incluyendo la absorción de CIF).\n' +
-      '• Control Contractual TTE-C-0656 (Rehabilitación Bandas PMH): Acumula $1.211.440 USD sobre un presupuesto contractual de $1.500.000 USD (80,8% de ejecución). Se recomienda tramitar preventivamente ante Junta Directiva la solicitud de adenda antes de superar el 90% del techo presupuestario.',
+      isOct
+        ? 'OBSERVACIONES PARETO Y CONTROL PRESUPUESTARIO:\n' +
+          '• Concentración Top 3 (91,6%): Proyecto Pellas Línea 1 ($867.861 USD · 60,7%), Segunda Línea PMH ($270.730 USD · 18,9%) y Rueda DRAVO ($170.941 USD · 12,0%) concentran el 91,6% de la inversión de TIMACA en proyectos externos.\n' +
+          '• Conciliación de Cuentas Activas: Las 10 cuentas principales suman $1.416.950 USD (99,2%) y los 9 frentes auxiliares complementarios suman $11.955 USD (0,8%), totalizando los $1.428.905 USD ejecutados en los 19 proyectos externos activos (TTE-C).\n' +
+          '• Proyecto Tractor Pellas Línea 1 (TTE-C-0706): Servicios especializados de ingeniería, instrumentación y control con Yokogawa ($686K) y Henan Front ($40K) lideran el avance físico y alistamiento preoperativo para el comisionamiento de planta.'
+        : 'OBSERVACIONES PARETO Y CONTROL PRESUPUESTARIO:\n' +
+          '• Concentración Top 3 (72,5%): Proyecto Pellas Línea 1 ($663.316 USD · 41,1%), Segunda Línea PMH ($307.436 USD · 19,1%) y Rueda DRAVO ($199.356 USD · 12,4%) concentran el 72,5% de la ejecución mensual de TIMACA.\n' +
+          '• Conciliación de Cuentas Activas: Las 10 cuentas principales suman $1.585.913 USD (98,3%) y los 15 frentes auxiliares complementarios suman $27.312 USD (1,7%), totalizando $1.613.225 USD de costo total ejecutado a través de las 25 cuentas activas (incluyendo la absorción de CIF).\n' +
+          '• Control Contractual TTE-C-0656 (Rehabilitación Bandas PMH): Acumula $1.211.440 USD sobre un presupuesto contractual de $1.500.000 USD (80,8% de ejecución). Se recomienda tramitar preventivamente ante Junta Directiva la solicitud de adenda antes de superar el 90% del techo presupuestario.',
       {
         x: 0.8,
         y: 4.88,
