@@ -106,18 +106,23 @@ export function getMacroCategoriaSip(item: SipItem): string {
   const desc = (item.descripcion || '').toLowerCase();
   const unid = (item.unidad || '').toUpperCase();
 
-  if (tipo.includes('serv') || cat.includes('serv') || cod.startsWith('SE') || unid === 'USE' || unid === 'SERV' || desc.includes('servicio') || desc.includes('alquiler') || desc.includes('traslado')) {
-    return 'Servicios';
-  }
+  // 1. Mano de Obra Directa (Nómina y Mano de Obra ECO tienen máxima prioridad)
   if (tipo.includes('mano') || tipo.includes('mdo') || cat.includes('mano de obra') || desc.includes('nómina') || desc.includes('nomina')) {
     return 'Mano de Obra Directa';
   }
+  // 2. Horas Máquina
   if (tipo.includes('hora') || tipo.includes('maquina') || cat.includes('horas maquina') || desc.includes('hora maquina')) {
     return 'Horas Maquina';
   }
+  // 3. Costos Indirectos
   if (tipo.includes('indirect') || cat.includes('indirect') || tipo.includes('cif') || desc.includes('costo indirecto')) {
     return 'Costos Indirectos';
   }
+  // 4. Servicios
+  if (tipo.includes('serv') || cat.includes('serv') || cod.startsWith('SE') || unid === 'USE' || unid === 'SERV' || desc.includes('servicio') || desc.includes('alquiler') || desc.includes('traslado')) {
+    return 'Servicios';
+  }
+  // 5. Materiales Directos
   return 'Materiales Directos';
 }
 

@@ -230,7 +230,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
   const is8Months = true;
 
   // Month names for the PPT matrix
-  const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep'];
+  const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
 
   // Current month object & Previous month object
   const mesActualObj = useMemo(() => {
@@ -348,7 +348,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
       // 1. CASO ESPECIAL EXCLUSIVO: COSTOS INDIRECTOS (100% PRORRATEO CORPORATIVO OFICIAL, CERO VALES SIP)
       if (selectedCat === 'Costos Indirectos') {
-        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'] as const;
+        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct'] as const;
         const curMKey = mesActIdx >= 0 && mesActIdx < mesesKeys.length ? mesesKeys[mesActIdx] : 'sep';
         const antMKey = mesAntIdx >= 0 && mesAntIdx < mesesKeys.length ? mesesKeys[mesAntIdx] : 'ago';
 
@@ -394,9 +394,11 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
           .sort((a, b) => b.montoActual - a.montoActual || b.montoAnterior - a.montoAnterior);
       }
 
-      const cuentasBase = selectedMesNum === 9 
-        ? CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 
-        : CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026;
+      const cuentasBase = selectedMesNum === 10
+        ? CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026
+        : selectedMesNum === 9 
+          ? CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 
+          : CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026;
 
       const list = cuentasBase.map(p => {
         const cod = p.cuentaAuxiliar;
@@ -534,7 +536,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
           : `CONSOLIDADO GLOBAL: ${selectedCat.toUpperCase()} (ALMACÉN SIP)`
       };
     }
-    const cuentasLista = selectedMesNum === 9 ? CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 : CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026;
+    const cuentasLista = selectedMesNum === 10 ? CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026 : selectedMesNum === 9 ? CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 : CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026;
     const info = cuentasLista.find(c => c.cuentaAuxiliar === selectedProyectoCodigo) || CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.find(c => c.cuentaAuxiliar === selectedProyectoCodigo);
     const pCorto = info ? info.proyectoCorto : CUENTAS_CORTAS_MAP[selectedProyectoCodigo] || selectedProyectoCodigo;
     
@@ -634,14 +636,15 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
         fila.jul = Math.round(peso * (mesesMOD[6] || 0));
         fila.ago = Math.round(peso * (mesesMOD[7] || 0));
         fila.sep = Math.round(peso * (mesesMOD[8] ?? (selectedProyectoCodigo === 'TODOS' ? 378249 : 0)));
-        fila.total = (fila.ene || 0) + (fila.feb || 0) + (fila.mar || 0) + (fila.abr || 0) + (fila.may || 0) + (fila.jun || 0) + (fila.jul || 0) + (fila.ago || 0) + (fila.sep || 0);
+        fila.oct = Math.round(peso * (mesesMOD[9] ?? (selectedProyectoCodigo === 'TODOS' ? 235066 : 0)));
+        fila.total = (fila.ene || 0) + (fila.feb || 0) + (fila.mar || 0) + (fila.abr || 0) + (fila.may || 0) + (fila.jun || 0) + (fila.jul || 0) + (fila.ago || 0) + (fila.sep || 0) + (fila.oct || 0);
       });
 
       let list = Array.from(mapCargos.values()).sort((a, b) => b.total - a.total);
 
       // Conciliación contable mensual con la lámina PPT para Proyectos Externos
       if (selectedProyectoCodigo === 'TODOS' && alcanceProyectos === 'externos') {
-        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'] as const;
+        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct'] as const;
         const difs: Record<string, number> = {};
         let hayDif = false;
         mesesKeys.forEach((k, idx) => {
@@ -795,7 +798,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
       // Conciliación mensual oficial con la lámina PPT para Proyectos Externos (Ene - Sep 2026)
       if (selectedProyectoCodigo === 'TODOS' && alcanceProyectos === 'externos') {
-        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'] as const;
+        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct'] as const;
         const difs: Record<string, number> = {};
         let hayDif = false;
         mesesKeys.forEach((k, idx) => {
@@ -903,7 +906,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
       // Conciliación con la lámina PPT para Proyectos Externos (Ene - Sep 2026)
       if (selectedProyectoCodigo === 'TODOS' && alcanceProyectos === 'externos') {
-        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'] as const;
+        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct'] as const;
         const difs: Record<string, number> = {};
         let hayDif = false;
         mesesKeys.forEach((k, idx) => {
@@ -1001,7 +1004,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
 
     // Conciliación contable oficial con la lámina PPT para Proyectos Externos en Materiales Directos (Ene - Sep 2026):
     if (selectedCat === 'Materiales Directos' && selectedProyectoCodigo === 'TODOS' && alcanceProyectos === 'externos') {
-      const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'] as const;
+      const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct'] as const;
       const difs: Record<string, number> = {};
       let hayDif = false;
       mesesKeys.forEach((k, idx) => {
@@ -1324,7 +1327,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                 className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 max-w-[340px]"
               >
                 <option value="TODOS">TODOS · {alcanceProyectos === 'externos' ? 'Proyectos Externos Clientes' : 'Consolidado General Almacén (Ene - Sep)'}</option>
-                {(selectedMesNum === 9 ? CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 : CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026).map(p => (
+                {(selectedMesNum === 10 ? CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026 : selectedMesNum === 9 ? CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026 : CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026).map(p => (
                   <option key={p.cuentaAuxiliar} value={p.cuentaAuxiliar}>
                     {p.cuentaAuxiliar} · {p.proyectoCorto} ({p.proyecto})
                   </option>
@@ -1822,7 +1825,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
           </span>
         </div>
 
-        <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 pt-1">
+        <div className="grid grid-cols-2 sm:grid-cols-5 md:grid-cols-10 gap-2 pt-1">
           {mesesNombres.map((mName, idx) => {
             const val = pptCatRow.meses[idx] || 0;
             const isCurrent = idx === selectedMesNum - 1;
@@ -2079,9 +2082,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                                   <button
                                     onClick={() => {
                                       if (selectedCat === 'Costos Indirectos') {
-                                        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'] as const;
-                                        const curMKey = selectedMesNum >= 1 && selectedMesNum <= 9 ? mesesKeys[selectedMesNum - 1] : 'sep';
-                                        const antMKey = mesAnteriorNum >= 1 && mesAnteriorNum <= 9 ? mesesKeys[mesAnteriorNum - 1] : 'ago';
+                                        const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct'] as const;
+                                        const curMKey = selectedMesNum >= 1 && selectedMesNum <= 10 ? mesesKeys[selectedMesNum - 1] : 'oct';
+                                        const antMKey = mesAnteriorNum >= 1 && mesAnteriorNum <= 10 ? mesesKeys[mesAnteriorNum - 1] : 'sep';
 
                                         const rawRubros = p.rubrosIndirectos && p.rubrosIndirectos.length > 0
                                           ? p.rubrosIndirectos
@@ -2174,9 +2177,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                             {(() => {
                               // CASO ESPECIAL: Costos Indirectos (Desglose de Rubros Contables Prorrateados)
                               if (selectedCat === 'Costos Indirectos') {
-                                const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'] as const;
-                                const curMKey = selectedMesNum >= 1 && selectedMesNum <= 9 ? mesesKeys[selectedMesNum - 1] : 'sep';
-                                const antMKey = mesAnteriorNum >= 1 && mesAnteriorNum <= 9 ? mesesKeys[mesAnteriorNum - 1] : 'ago';
+                                const mesesKeys = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct'] as const;
+                                const curMKey = selectedMesNum >= 1 && selectedMesNum <= 10 ? mesesKeys[selectedMesNum - 1] : 'oct';
+                                const antMKey = mesAnteriorNum >= 1 && mesAnteriorNum <= 10 ? mesesKeys[mesAnteriorNum - 1] : 'sep';
 
                                 const rawRubros = p.rubrosIndirectos && p.rubrosIndirectos.length > 0
                                   ? p.rubrosIndirectos

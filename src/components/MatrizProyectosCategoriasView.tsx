@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
+  PROYECTOS_CATEGORIAS_OCTUBRE_2026,
   PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026,
   PROYECTOS_CATEGORIAS_AGOSTO_2026, 
   PROYECTOS_CATEGORIAS_ANUAL_2026, 
@@ -110,7 +111,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
   // Lista de datos según período para la tabla de proyectos con los 5 Rubros Oficiales
   const datasetProyectos = useMemo(() => {
     if (periodo === 'octubre') {
-      return sipDataPorPeriodo['octubre'] || [];
+      return sipDataPorPeriodo['octubre'] || PROYECTOS_CATEGORIAS_OCTUBRE_2026;
     }
     if (periodo === 'sip_anual') {
       return sipDataPorPeriodo['sip_anual'] || [];

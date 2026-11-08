@@ -73,14 +73,38 @@ export const PROYECTOS_CATEGORIAS_SEPTIEMBRE_2026: FilaProyectoCategoriasPPT[] =
     };
   });
 
-// 3. Matriz Oficial de Total Acumulado Anual (Ene - Sep 2026 · 9 Meses) ($12.052.176 USD)
-const totalAnualGeneral = Math.round(proyectosList.reduce((acc, p) => acc + (p.totalAnual || 0), 0)) || 12052176;
+// 3. Matriz Oficial de Octubre 2026 ($1.228.222 USD)
+const totalOctubreGeneral = Math.round(proyectosList.reduce((acc, p) => acc + (p.meses[9] || 0), 0)) || 1228222;
+
+export const PROYECTOS_CATEGORIAS_OCTUBRE_2026: FilaProyectoCategoriasPPT[] = proyectosList
+  .filter(p => (p.meses[9] || 0) > 0)
+  .sort((a, b) => (b.meses[9] || 0) - (a.meses[9] || 0))
+  .map((p, idx) => {
+    const cat = p.byCategoriaMes[9] || {};
+    const tot = Math.round(p.meses[9] || 0);
+    return {
+      ranking: idx + 1,
+      cuentaAuxiliar: p.cuentaAuxiliar,
+      proyecto: p.descripcion,
+      proyectoCorto: CUENTAS_CORTAS_MAP[p.cuentaAuxiliar] || p.descripcion,
+      materiales: Math.round(cat['Materiales Directos'] || 0),
+      servicios: Math.round(cat['Servicios'] || 0),
+      manoDeObra: Math.round(cat['Mano de Obra Directa'] || 0),
+      horasMaquina: Math.round(cat['Horas Maquina'] || 0),
+      indirectos: Math.round(cat['Costos Indirectos'] || 0),
+      totalProyecto: tot,
+      porcentaje: Math.round((tot / totalOctubreGeneral) * 10000) / 100
+    };
+  });
+
+// 4. Matriz Oficial de Total Acumulado Anual (Ene - Oct 2026 · 10 Meses) ($13.496.521 USD)
+const totalAnualGeneral = Math.round(proyectosList.reduce((acc, p) => acc + (p.totalAnual || 0), 0)) || 13496521;
 
 export const PROYECTOS_CATEGORIAS_ANUAL_2026: FilaProyectoCategoriasPPT[] = proyectosList
   .sort((a, b) => b.totalAnual - a.totalAnual)
   .map((p, idx) => {
     const cat = { 'Materiales Directos': 0, 'Servicios': 0, 'Mano de Obra Directa': 0, 'Horas Maquina': 0, 'Costos Indirectos': 0 };
-    for (let m = 0; m < 9; m++) {
+    for (let m = 0; m < 10; m++) {
       for (const [c, val] of Object.entries(p.byCategoriaMes[m] || {})) {
         if (cat[c as keyof typeof cat] !== undefined) {
           cat[c as keyof typeof cat] += val;
@@ -102,3 +126,4 @@ export const PROYECTOS_CATEGORIAS_ANUAL_2026: FilaProyectoCategoriasPPT[] = proy
       porcentaje: Math.round((tot / totalAnualGeneral) * 10000) / 100
     };
   });
+
