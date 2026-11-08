@@ -202,7 +202,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       156318.95,
       88917.99,
       166673.18,
-      51616.31
+      73497.87
     ],
     "byCategoriaMes": [
       {
@@ -273,10 +273,10 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Servicios": 0,
         "Mano de Obra Directa": 18115,
         "Horas Maquina": 0,
-        "Costos Indirectos": 0
+        "Costos Indirectos": 21881.56
       }
     ],
-    "totalAnual": 1130087.56
+    "totalAnual": 1151969.12
   },
   "TTE-C-0641": {
     "cuentaAuxiliar": "TTE-C-0641",
@@ -469,7 +469,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       64711.33,
       109279.08,
       68164.44,
-      1678.99
+      4068.73
     ],
     "byCategoriaMes": [
       {
@@ -540,10 +540,10 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Servicios": 0,
         "Mano de Obra Directa": 1630.47,
         "Horas Maquina": 0,
-        "Costos Indirectos": 0
+        "Costos Indirectos": 2389.74
       }
     ],
-    "totalAnual": 1213119.29
+    "totalAnual": 1215509.03
   },
   "TTE-C-0655": {
     "cuentaAuxiliar": "TTE-C-0655",
@@ -736,7 +736,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       404983.93,
       596358.2,
       663316.15,
-      999051.31
+      1191389.08
     ],
     "byCategoriaMes": [
       {
@@ -807,10 +807,10 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Servicios": 778362.99,
         "Mano de Obra Directa": 131190.16,
         "Horas Maquina": 0,
-        "Costos Indirectos": 0
+        "Costos Indirectos": 192337.77
       }
     ],
-    "totalAnual": 3383005.58
+    "totalAnual": 3575343.35
   },
   "TTE-C-0671": {
     "cuentaAuxiliar": "TTE-C-0671",
@@ -825,7 +825,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       113294.28,
       197962.39,
       307435.5,
-      337912.01
+      453777.96
     ],
     "byCategoriaMes": [
       {
@@ -896,10 +896,10 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Servicios": 122029.88,
         "Mano de Obra Directa": 79030.19,
         "Horas Maquina": 0,
-        "Costos Indirectos": 0
+        "Costos Indirectos": 115865.95
       }
     ],
-    "totalAnual": 1496615.58
+    "totalAnual": 1612481.53
   },
   "TTE-C-0682": {
     "cuentaAuxiliar": "TTE-C-0682",
@@ -1982,7 +1982,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       102901.08,
       14200.42,
       69832.65,
-      5788.64
+      10465.5
     ],
     "byCategoriaMes": [
       {
@@ -2053,10 +2053,10 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Servicios": 0,
         "Mano de Obra Directa": 0,
         "Horas Maquina": 0,
-        "Costos Indirectos": 0
+        "Costos Indirectos": 4676.86
       }
     ],
-    "totalAnual": 1533765.44
+    "totalAnual": 1538442.3
   },
   "TTE-C-0711": {
     "cuentaAuxiliar": "TTE-C-0711",
@@ -2160,7 +2160,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       11116.18,
       16707,
       15323.5,
-      5100
+      12577.11
     ],
     "byCategoriaMes": [
       {
@@ -2231,10 +2231,10 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Servicios": 0,
         "Mano de Obra Directa": 5100,
         "Horas Maquina": 0,
-        "Costos Indirectos": 0
+        "Costos Indirectos": 7477.11
       }
     ],
-    "totalAnual": 102631.26
+    "totalAnual": 110108.37
   },
   "TTE-C-0663": {
     "cuentaAuxiliar": "TTE-C-0663",

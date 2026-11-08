@@ -1341,7 +1341,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                 className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500"
                 title="Filtrar por un mes específico o ver todos los meses"
               >
-                <option value="todos">Todos los Meses (Ene - Sep)</option>
+                <option value="todos">Todos los Meses (Ene - Oct)</option>
                 <option value="1">Enero</option>
                 <option value="2">Febrero</option>
                 <option value="3">Marzo</option>
@@ -1351,6 +1351,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
                 <option value="7">Julio</option>
                 <option value="8">Agosto</option>
                 <option value="9">Septiembre</option>
+                <option value="10">Octubre</option>
               </select>
             </div>
 
