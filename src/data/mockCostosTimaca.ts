@@ -431,6 +431,37 @@ export const DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS = [
   { cta: 'TTE-C-0678', proyecto: 'Proyecto Pila HA y HB (Suministro Apilador PMH)', monto: 350, hh: 96, pct: 0.2 }
 ];
 
+// AUDITORÍA REAL DE INPUTS DE NÓMINA OCTUBRE 2026 (SEMANAS 39 A 43: $235.066 USD · 64.585 HH)
+export const TOTALES_NOMINA_SEMANAL_OCTUBRE = {
+  sem39: 20339,
+  sem40: 53062,
+  sem41: 54658,
+  sem42: 52288,
+  sem43: 54718,
+  totalOctubre: 235066,
+  totalHorasHombre: 64585,
+  tarifaPromedio: 3.64,
+  explicacion: 'Comprende el corte de Semanas 39 (remanente devengo mensual) a 43 en Pellas Línea 1, 2da Línea PMH y Planta de Briquetas ($235.066 USD / 64.585 HH). La nómina de Boca Grande II (TTE-C-0680) se encuentra retrasada en RRHH y no está sumada en este total.'
+};
+
+export const DESGLOSE_NOMINA_OCTUBRE_PROYECTOS = [
+  { cta: 'TTE-C-0706', proyecto: 'Recuperación Línea 1 Planta de Pellas (VISCO ORINOCO)', monto: 131190, hh: 34888, pct: 55.8, retraso: false },
+  { cta: 'TTE-C-0671', proyecto: 'Segunda Línea PMH (Incremento Capacidad)', monto: 79030, hh: 22648, pct: 33.6, retraso: false },
+  { cta: 'TTE-C-0668', proyecto: 'Fase 2 Planta de Briquetas (FMO / VISCO ORINOCO)', monto: 18115, hh: 5048, pct: 7.7, retraso: false },
+  { cta: 'TTE-C-0670', proyecto: 'Mantenimiento Máquinas Briqueteras (Planta de Briquetas)', monto: 5100, hh: 1360, pct: 2.2, retraso: false },
+  { cta: 'TTE-C-0656', proyecto: 'Rehabilitación de Bandas PMH (Torre #3 a JD-8012)', monto: 1630, hh: 641, pct: 0.7, retraso: false },
+  { cta: 'TTE-C-0680', proyecto: 'Mantenimiento de Planta BG II (RETRASO RRHH)', monto: 0, hh: 0, pct: 0.0, retraso: true }
+];
+
+export const DESGLOSE_NOMINA_AGOSTO_PROYECTOS = OFICIAL_MOD_CUENTAS_AGOSTO_2026.map(p => ({
+  cta: p.ctaAuxiliar,
+  proyecto: p.nombreCuenta,
+  monto: p.modUsd,
+  hh: Math.round(p.modUsd / 3.56),
+  pct: Math.round(p.porcentaje * 10) / 10,
+  retraso: false
+}));
+
 // Aliases para compatibilidad
 export const CATEGORIAS_DEFAULT = CATEGORIAS_PPT_2026;
 export const PROYECTOS_DEFAULT = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.map(p => `${p.cuentaAuxiliar}: ${p.proyectoCorto}`);

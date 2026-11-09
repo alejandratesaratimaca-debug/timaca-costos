@@ -1,7 +1,19 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useCostos } from '../context/CostosContext';
 import { formatCurrency, formatNumber, formatUnitPriceRaw } from '../utils/dateHelpers';
-import { TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT, CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026, CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026, TOTALES_NOMINA_SEMANAL_SEPTIEMBRE, DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS } from '../data/mockCostosTimaca';
+import { 
+  TABLA_PPT_DISTRIBUCION_2026, 
+  TOTALES_MESES_PPT, 
+  CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026, 
+  CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026, 
+  CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026, 
+  TOTALES_NOMINA_SEMANAL_SEPTIEMBRE, 
+  DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS,
+  TOTALES_NOMINA_SEMANAL_OCTUBRE,
+  DESGLOSE_NOMINA_OCTUBRE_PROYECTOS,
+  TOTALES_NOMINA_SEMANAL_AGOSTO,
+  DESGLOSE_NOMINA_AGOSTO_PROYECTOS
+} from '../data/mockCostosTimaca';
 import { exportSalidasToExcel } from '../utils/excelHandler';
 import { exportInformeToPPTX } from '../utils/exportInformeToPPTX';
 import { TimacaLogo } from './TimacaLogo';
@@ -975,7 +987,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       }`}
                     >
                       <Users className="w-3.5 h-3.5" />
-                      <span>Auditoría de Nómina ($196K)</span>
+                      <span>Auditoría de Nómina ({selectedMesNum === 10 ? '$235K' : selectedMesNum === 8 ? '$278K' : '$196K'})</span>
                     </button>
                   </div>
                 </div>
@@ -1662,24 +1674,48 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     {/* 4 KPI Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Total Nómina Septiembre</span>
-                        <span className="text-2xl font-black font-mono text-[#002060] block mt-1">$196.665 USD</span>
-                        <span className="text-[11px] text-emerald-700 font-semibold block mt-0.5">Semanas 36 a 39 · Auditada al centavo</span>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                          Total Nómina {selectedMesNum === 10 ? 'Octubre (Devengada)' : selectedMesNum === 8 ? 'Agosto (Devengada)' : 'Septiembre'}
+                        </span>
+                        <span className="text-2xl font-black font-mono text-[#002060] block mt-1">
+                          {selectedMesNum === 10 ? '$235.066 USD' : selectedMesNum === 8 ? '$277.936 USD' : '$196.665 USD'}
+                        </span>
+                        <span className="text-[11px] text-emerald-700 font-semibold block mt-0.5">
+                          {selectedMesNum === 10 
+                            ? 'Semanas 39 a 43 · Devengo procesado' 
+                            : selectedMesNum === 8 
+                            ? 'Semanas 31 a 35 · Auditada al centavo' 
+                            : 'Semanas 36 a 39 · Auditada al centavo'}
+                        </span>
                       </div>
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Horas-Hombre Devengadas</span>
-                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">55.277 HH</span>
-                        <span className="text-[11px] text-blue-700 font-semibold block mt-0.5">Promedio 13.819 HH/semana</span>
+                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
+                          {selectedMesNum === 10 ? '64.585 HH' : selectedMesNum === 8 ? '78.072 HH' : '55.277 HH'}
+                        </span>
+                        <span className="text-[11px] text-blue-700 font-semibold block mt-0.5">
+                          {selectedMesNum === 10 ? 'Promedio 12.917 HH/semana' : selectedMesNum === 8 ? 'Promedio 15.614 HH/semana' : 'Promedio 13.819 HH/semana'}
+                        </span>
                       </div>
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Tarifa Promedio Efectiva</span>
-                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">$3,56 USD/HH</span>
+                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
+                          {selectedMesNum === 10 ? '$3,64 USD/HH' : '$3,56 USD/HH'}
+                        </span>
                         <span className="text-[11px] text-slate-500 font-semibold block mt-0.5">Costo integral de mano de obra</span>
                       </div>
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Proyectos con Cuadrilla</span>
-                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">10 Proyectos</span>
-                        <span className="text-[11px] text-amber-700 font-semibold block mt-0.5">65,2% en Pellas Línea 1</span>
+                        <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
+                          {selectedMesNum === 10 ? '5 Frentes' : '10 Proyectos'}
+                        </span>
+                        <span className="text-[11px] text-amber-700 font-semibold block mt-0.5">
+                          {selectedMesNum === 10 
+                            ? '55,8% Pellas · Boca Grande pendiente' 
+                            : selectedMesNum === 8 
+                            ? '60,2% en Pellas Línea 1' 
+                            : '65,2% en Pellas Línea 1'}
+                        </span>
                       </div>
                     </div>
 
@@ -1688,33 +1724,97 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="lg:col-span-5 bg-blue-50/70 p-5 rounded-2xl border border-blue-200 space-y-3">
                         <div className="flex items-center gap-2 text-[#002060]">
                           <Info className="w-5 h-5 shrink-0" />
-                          <h4 className="font-black text-sm uppercase tracking-wide">Criterio de Corte Contable y Trazabilidad</h4>
+                          <h4 className="font-black text-sm uppercase tracking-wide">
+                            Criterio de Corte Contable y Trazabilidad {selectedMesNum === 10 ? '(Octubre 2026)' : selectedMesNum === 8 ? '(Agosto 2026)' : '(Septiembre 2026)'}
+                          </h4>
                         </div>
-                        <div className="text-xs text-slate-700 space-y-2.5 leading-relaxed">
-                          <p>
-                            <strong className="text-[#002060]">Semana 35 ($56.584 USD / 15.619 HH):</strong> Tuvo fecha de inicio el 22/08/2026. Siguiendo el principio de devengo por fecha de inicio en el Master de Costos TIMACA, fue imputada contablemente al cierre de Agosto 2026, completando los <strong>$277.936 USD</strong> devengados en ese mes.
-                          </p>
-                          <div className="bg-white p-3 rounded-xl border border-blue-100 space-y-1 font-mono text-[11px]">
-                            <span className="font-bold text-[#002060] block font-sans text-xs mb-1">Semanas de Septiembre (Calendario Estricto):</span>
-                            <div className="flex justify-between"><span>Semana 36 (05/09):</span><strong className="text-slate-900">$54.804 USD (15.433 HH)</strong></div>
-                            <div className="flex justify-between"><span>Semana 37 (12/09):</span><strong className="text-slate-900">$54.173 USD (15.216 HH)</strong></div>
-                            <div className="flex justify-between"><span>Semana 38 (19/09):</span><strong className="text-slate-900">$53.833 USD (15.091 HH)</strong></div>
-                            <div className="flex justify-between"><span>Semana 39 (26/09):</span><strong className="text-slate-900">$33.856 USD (9.537 HH)</strong></div>
-                            <div className="border-t border-slate-200 pt-1 mt-1 flex justify-between font-bold text-[#002060]">
-                              <span>Total Septiembre:</span><span>$196.665 USD (55.277 HH)</span>
+
+                        {selectedMesNum === 10 ? (
+                          <div className="text-xs text-slate-700 space-y-2.5 leading-relaxed">
+                            <p>
+                              <strong className="text-[#002060]">Ciclo Operativo de Nómina Directa (Octubre):</strong> Incorpora los partes devengados de <strong>Semanas 39 a 43</strong> en los frentes activos de <em>Pellas Línea 1</em>, <em>2da Línea PMH</em> y <em>Planta de Briquetas</em>, totalizando <strong>$235.066 USD</strong> y <strong>64.585 HH</strong>.
+                            </p>
+                            <div className="bg-white p-3 rounded-xl border border-blue-100 space-y-1 font-mono text-[11px]">
+                              <span className="font-bold text-[#002060] block font-sans text-xs mb-1">Cortes Semanales Procesados (RRHH):</span>
+                              <div className="flex justify-between"><span>Semana 39 (Corte 24/09 PMH/Briq.):</span><strong className="text-slate-900">$20.339 USD (5.921 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 40 (Corte 03/10):</span><strong className="text-slate-900">$53.062 USD (14.963 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 41 (Corte 10/10):</span><strong className="text-slate-900">$54.658 USD (14.724 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 42 (Corte 17/10):</span><strong className="text-slate-900">$52.288 USD (14.116 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 43 (Corte 24/10):</span><strong className="text-slate-900">$54.718 USD (14.861 HH)</strong></div>
+                              <div className="border-t border-slate-200 pt-1 mt-1 flex justify-between font-bold text-[#002060]">
+                                <span>Total Devengado Octubre:</span><span>$235.066 USD (64.585 HH)</span>
+                              </div>
                             </div>
+
+                            {/* Alerta de Retraso de Nómina en Boca Grande y Horas Máquina */}
+                            <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 space-y-1.5">
+                              <div className="flex items-center gap-1.5 text-amber-900 font-bold text-xs">
+                                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                                <span>Alertas de Auditoría y Control Operativo:</span>
+                              </div>
+                              <p className="text-[11px] text-amber-800 leading-tight">
+                                <strong>• Nómina Boca Grande II (TTE-C-0680):</strong> Presenta retraso en el reporte de Recursos Humanos; actualmente figura en <strong>$0 USD</strong> devengados en el sistema (vs $11.870 USD en Sep y $9.307 USD en Ago). La cuenta sólo tiene registrados $5.772 USD de insumos SIP.
+                              </p>
+                              <p className="text-[11px] text-amber-800 leading-tight">
+                                <strong>• Horas Máquina:</strong> Pendiente reporte consolidado de horómetros de grúas y flota pesada (reflejado preliminarmente en $0 USD).
+                              </p>
+                            </div>
+
+                            <p className="text-[11px] text-slate-600">
+                              <strong>Conciliación Oficial:</strong> La nómina devengada por cuadrillas ($235.066 USD) sustenta operativamente la partida presupuestaria de Mano de Obra Directa del período ($476.866 USD).
+                            </p>
                           </div>
-                          <p className="text-[11px] text-slate-600">
-                            <strong>Conciliación Oficial:</strong> La sumatoria arroja exactamente <strong>$196.665,65 USD</strong>, coincidiendo con la tabla dinámica de Excel (<strong>$196.665,16 USD</strong>) y sirve de ancla proporcional para la asignación de los <strong>$393.375 USD</strong> de costos indirectos.
-                          </p>
-                        </div>
+                        ) : selectedMesNum === 8 ? (
+                          <div className="text-xs text-slate-700 space-y-2.5 leading-relaxed">
+                            <p>
+                              <strong className="text-[#002060]">Corte Contable de Agosto 2026:</strong> Comprende las Semanas 31 a 34 ($221.352 USD) más la <strong>Semana 35 ($56.584 USD / 15.619 HH)</strong> cuya fecha de inicio fue el 22/08/2026, consolidando los <strong>$277.936 USD</strong> oficiales de Agosto.
+                            </p>
+                            <div className="bg-white p-3 rounded-xl border border-blue-100 space-y-1 font-mono text-[11px]">
+                              <span className="font-bold text-[#002060] block font-sans text-xs mb-1">Semanas de Agosto (Master TIMACA):</span>
+                              <div className="flex justify-between"><span>Semana 31 (01/08):</span><strong className="text-slate-900">$55.206 USD (15.507 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 32 (08/08):</span><strong className="text-slate-900">$56.425 USD (15.850 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 33 (15/08):</span><strong className="text-slate-900">$56.399 USD (15.842 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 34 (22/08):</span><strong className="text-slate-900">$53.323 USD (15.254 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 35 (29/08):</span><strong className="text-slate-900">$56.584 USD (15.619 HH)</strong></div>
+                              <div className="border-t border-slate-200 pt-1 mt-1 flex justify-between font-bold text-[#002060]">
+                                <span>Total Agosto:</span><span>$277.936 USD (78.072 HH)</span>
+                              </div>
+                            </div>
+                            <p className="text-[11px] text-slate-600">
+                              <strong>Conciliación Oficial:</strong> Cierre de 10 cuentas auxiliares activas de obra directa, con Pellas Línea 1 representando el 60,17% del esfuerzo laboral.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="text-xs text-slate-700 space-y-2.5 leading-relaxed">
+                            <p>
+                              <strong className="text-[#002060]">Semana 35 ($56.584 USD / 15.619 HH):</strong> Tuvo fecha de inicio el 22/08/2026. Siguiendo el principio de devengo por fecha de inicio en el Master de Costos TIMACA, fue imputada contablemente al cierre de Agosto 2026, completando los <strong>$277.936 USD</strong> devengados en ese mes.
+                            </p>
+                            <div className="bg-white p-3 rounded-xl border border-blue-100 space-y-1 font-mono text-[11px]">
+                              <span className="font-bold text-[#002060] block font-sans text-xs mb-1">Semanas de Septiembre (Calendario Estricto):</span>
+                              <div className="flex justify-between"><span>Semana 36 (05/09):</span><strong className="text-slate-900">$54.804 USD (15.433 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 37 (12/09):</span><strong className="text-slate-900">$54.173 USD (15.216 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 38 (19/09):</span><strong className="text-slate-900">$53.833 USD (15.091 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 39 (26/09):</span><strong className="text-slate-900">$33.856 USD (9.537 HH)</strong></div>
+                              <div className="border-t border-slate-200 pt-1 mt-1 flex justify-between font-bold text-[#002060]">
+                                <span>Total Septiembre:</span><span>$196.665 USD (55.277 HH)</span>
+                              </div>
+                            </div>
+                            <p className="text-[11px] text-slate-600">
+                              <strong>Conciliación Oficial:</strong> La sumatoria arroja exactamente <strong>$196.665,65 USD</strong>, coincidiendo con la tabla dinámica de Excel (<strong>$196.665,16 USD</strong>) y sirve de ancla proporcional para la asignación de los <strong>$393.375 USD</strong> de costos indirectos.
+                            </p>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Right: Tabla de los 10 Proyectos */}
+                      {/* Right: Tabla de Nómina por Proyecto */}
                       <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
                         <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                          <span className="text-xs font-bold text-slate-800">Desglose de Nómina por Proyecto (10 Frentes Activos)</span>
-                          <span className="text-[11px] font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">55.277 Horas Totales</span>
+                          <span className="text-xs font-bold text-slate-800">
+                            Desglose de Nómina por Proyecto ({selectedMesNum === 10 ? 'Octubre 2026' : selectedMesNum === 8 ? 'Agosto 2026' : '10 Frentes Activos Sep'})
+                          </span>
+                          <span className="text-[11px] font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                            {selectedMesNum === 10 ? '64.585 Horas Totales' : selectedMesNum === 8 ? '78.072 Horas Totales' : '55.277 Horas Totales'}
+                          </span>
                         </div>
                         <div className="overflow-x-auto max-h-[360px] overflow-y-auto">
                           <table className="w-full text-left text-xs">
@@ -1728,19 +1828,41 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 text-slate-700">
-                              {DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS.map((p) => (
-                                <tr key={p.cta} className="hover:bg-blue-50/40 transition-colors">
+                              {(selectedMesNum === 10 
+                                ? DESGLOSE_NOMINA_OCTUBRE_PROYECTOS 
+                                : selectedMesNum === 8 
+                                ? DESGLOSE_NOMINA_AGOSTO_PROYECTOS 
+                                : DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS
+                              ).map((p: any) => (
+                                <tr key={p.cta} className={`hover:bg-blue-50/40 transition-colors ${p.retraso ? 'bg-amber-50/30' : ''}`}>
                                   <td className="py-2 px-3 font-mono font-bold text-[#002060]">{p.cta}</td>
-                                  <td className="py-2 px-3 font-medium text-slate-900">{p.proyecto}</td>
-                                  <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">${p.monto.toLocaleString('de-DE')}</td>
+                                  <td className="py-2 px-3 font-medium text-slate-900">
+                                    <span>{p.proyecto}</span>
+                                    {p.retraso && (
+                                      <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                        ⚠️ Retraso RRHH
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className={`py-2 px-3 text-right font-mono font-bold ${p.retraso ? 'text-amber-700' : 'text-slate-900'}`}>
+                                    ${p.monto.toLocaleString('de-DE')}
+                                  </td>
                                   <td className="py-2 px-3 text-right font-mono text-slate-600">{p.hh.toLocaleString('de-DE')}</td>
-                                  <td className="py-2 px-3 text-right font-mono font-bold text-blue-700">{p.pct}%</td>
+                                  <td className={`py-2 px-3 text-right font-mono font-bold ${p.retraso ? 'text-amber-700' : 'text-blue-700'}`}>
+                                    {p.pct}%
+                                  </td>
                                 </tr>
                               ))}
                               <tr className="bg-slate-100 font-black text-[#002060] border-t-2 border-slate-300">
-                                <td colSpan={2} className="py-2.5 px-3">TOTAL NÓMINA DIRECTA SEPTIEMBRE</td>
-                                <td className="py-2.5 px-3 text-right font-mono">$196.665 USD</td>
-                                <td className="py-2.5 px-3 text-right font-mono">55.277 HH</td>
+                                <td colSpan={2} className="py-2.5 px-3">
+                                  TOTAL NÓMINA DIRECTA {selectedMesNum === 10 ? 'OCTUBRE (DEVENGADA)' : selectedMesNum === 8 ? 'AGOSTO' : 'SEPTIEMBRE'}
+                                </td>
+                                <td className="py-2.5 px-3 text-right font-mono">
+                                  {selectedMesNum === 10 ? '$235.066 USD' : selectedMesNum === 8 ? '$277.936 USD' : '$196.665 USD'}
+                                </td>
+                                <td className="py-2.5 px-3 text-right font-mono">
+                                  {selectedMesNum === 10 ? '64.585 HH' : selectedMesNum === 8 ? '78.072 HH' : '55.277 HH'}
+                                </td>
                                 <td className="py-2.5 px-3 text-right font-mono">100,0%</td>
                               </tr>
                             </tbody>

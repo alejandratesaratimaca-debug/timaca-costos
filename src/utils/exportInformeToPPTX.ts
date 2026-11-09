@@ -6,7 +6,9 @@ import {
   CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026,
   CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026,
   TOTALES_NOMINA_SEMANAL_SEPTIEMBRE,
-  DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS 
+  DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS,
+  TOTALES_NOMINA_SEMANAL_OCTUBRE,
+  DESGLOSE_NOMINA_OCTUBRE_PROYECTOS
 } from '../data/mockCostosTimaca';
 
 interface ExportPPTXParams {
@@ -789,17 +791,28 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     addSlideHeader(
       slide,
       3,
-      '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Septiembre 2026)',
-      'Total Nómina Septiembre: $196.665 USD · 55.277 Horas-Hombre · Cuadrilla Activa en 10 Proyectos Externos'
+      isOct
+        ? '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Octubre 2026)'
+        : '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Septiembre 2026)',
+      isOct
+        ? 'Total Nómina Octubre Devengada: $235.066 USD · 64.585 HH · Cuadrillas en Pellas, PMH y Briquetas (BG II en retraso)'
+        : 'Total Nómina Septiembre: $196.665 USD · 55.277 Horas-Hombre · Cuadrilla Activa en 10 Proyectos Externos'
     );
 
     // 4 KPI Cards
-    const modCards = [
-      { label: 'TOTAL NÓMINA DIRECTA SEP', val: '$196.665 USD', note: 'Semanas 36 a 39 · 4 cortes regulares de nómina' },
-      { label: 'VOLUMEN DE HORAS-HOMBRE', val: '55.277 HH', note: 'Promedio 13.819 HH/semana en campo' },
-      { label: 'TARIFA PROMEDIO EFECTIVA', val: '$3,56 USD/HH', note: 'Costo integral de mano de obra en obra' },
-      { label: 'FRENTES CON CUADRILLA', val: '10 Proyectos', note: '65,2% concentrado en Pellas Línea 1' }
-    ];
+    const modCards = isOct
+      ? [
+          { label: 'TOTAL NÓMINA DIRECTA OCT', val: '$235.066 USD', note: 'Semanas 39 a 43 · Devengo procesado' },
+          { label: 'VOLUMEN DE HORAS-HOMBRE', val: '64.585 HH', note: 'Promedio 12.917 HH/semana en campo' },
+          { label: 'TARIFA PROMEDIO EFECTIVA', val: '$3,64 USD/HH', note: 'Costo integral de mano de obra' },
+          { label: 'FRENTES CON CUADRILLA', val: '5 Frentes Devengados', note: '55,8% Pellas · Boca Grande pendiente' }
+        ]
+      : [
+          { label: 'TOTAL NÓMINA DIRECTA SEP', val: '$196.665 USD', note: 'Semanas 36 a 39 · 4 cortes regulares de nómina' },
+          { label: 'VOLUMEN DE HORAS-HOMBRE', val: '55.277 HH', note: 'Promedio 13.819 HH/semana en campo' },
+          { label: 'TARIFA PROMEDIO EFECTIVA', val: '$3,56 USD/HH', note: 'Costo integral de mano de obra en obra' },
+          { label: 'FRENTES CON CUADRILLA', val: '10 Proyectos', note: '65,2% concentrado en Pellas Línea 1' }
+        ];
 
     modCards.forEach((c, idx) => {
       const xPos = 0.6 + (idx * 3.08);
@@ -905,10 +918,12 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       ]
     ];
 
-    DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS.forEach(p => {
+    const activeNominaProjects = isOct ? DESGLOSE_NOMINA_OCTUBRE_PROYECTOS : DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS;
+
+    activeNominaProjects.forEach(p => {
       modTableRows.push([
         { text: p.cta, options: { bold: true, fontSize: 8.8, color: C_DARK, margin: [2, 3, 2, 3] } },
-        { text: p.proyecto, options: { fontSize: 8.8, color: C_SLATE, margin: [2, 3, 2, 3] } },
+        { text: p.retraso ? `${p.proyecto} (RETRASO RRHH)` : p.proyecto, options: { fontSize: 8.8, color: p.retraso ? 'DC2626' : C_SLATE, margin: [2, 3, 2, 3] } },
         { text: `$${p.monto.toLocaleString('de-DE')}`, options: { bold: true, align: 'right', fontSize: 8.8, color: C_NAVY, margin: [2, 3, 2, 3] } },
         { text: p.hh.toLocaleString('de-DE'), options: { align: 'right', fontSize: 8.8, color: '64748B', margin: [2, 3, 2, 3] } },
         { text: `${p.pct.toFixed(1).replace('.', ',')}%`, options: { align: 'right', fontSize: 8.8, color: C_DARK, bold: true, margin: [2, 3, 2, 3] } }
@@ -917,9 +932,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
 
     modTableRows.push([
       { text: 'TOTAL', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
-      { text: '10 PROYECTOS EXTERNOS ACTIVOS', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
-      { text: '$196.665 USD', options: { bold: true, fontSize: 9.0, color: 'FCD34D', fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
-      { text: '55.277 HH', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
+      { text: isOct ? 'NÓMINA OCTUBRE (DEVENGADA)' : '10 PROYECTOS EXTERNOS ACTIVOS', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
+      { text: isOct ? '$235.066 USD' : '$196.665 USD', options: { bold: true, fontSize: 9.0, color: 'FCD34D', fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
+      { text: isOct ? '64.585 HH' : '55.277 HH', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
       { text: '100,0%', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } }
     ]);
 
