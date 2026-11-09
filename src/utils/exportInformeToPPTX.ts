@@ -920,7 +920,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
 
     const activeNominaProjects = isOct ? DESGLOSE_NOMINA_OCTUBRE_PROYECTOS : DESGLOSE_NOMINA_SEPTIEMBRE_PROYECTOS;
 
-    activeNominaProjects.forEach(p => {
+    activeNominaProjects.forEach((p: any) => {
       modTableRows.push([
         { text: p.cta, options: { bold: true, fontSize: 8.8, color: C_DARK, margin: [2, 3, 2, 3] } },
         { text: p.retraso ? `${p.proyecto} (RETRASO RRHH)` : p.proyecto, options: { fontSize: 8.8, color: p.retraso ? 'DC2626' : C_SLATE, margin: [2, 3, 2, 3] } },
