@@ -23,7 +23,7 @@ def get_code():
       if (typeof window !== 'undefined' && window.location?.origin) {
         return `${window.location.origin}${assetUrl}`;
       }
-      return assetUrl;
+      return `./public${assetUrl.startsWith('/') ? assetUrl : '/' + assetUrl}`;
     };
     try {
       slide.addImage({
