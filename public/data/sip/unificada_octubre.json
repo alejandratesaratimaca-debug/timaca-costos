@@ -11845,7 +11845,7 @@
       "fecha": "05/10/2026",
       "numero": "DP0041901",
       "pedido": "PA43615",
-      "cuenta_aux": "TTE-C-0676",
+      "cuenta_aux": "TTE-C-0706",
       "ceco": "TIM-1",
       "codigo": "SI0006164",
       "descripcion": "GORRO DE DENIM PARA SOLDADOR",
@@ -11866,7 +11866,9 @@
       "ano": 2026,
       "nombre_mes": "octubre",
       "datos_tipo_costo": "Externo",
-      "datos_descripcion": "Segunda linea de Planta de Pellas (VISCO ORINOCO)"
+      "datos_descripcion": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+      "esReclasificado": true,
+      "motivo_correccion": "Corrección de imputación: Gorros para Planta de Pellas reasignados a Línea 1 (Línea 2 inactiva)"
     },
     {
       "id": 330395,
@@ -34691,7 +34693,7 @@
       "fecha": "14/10/2026",
       "numero": "DP0042489",
       "pedido": "PA44481",
-      "cuenta_aux": "TTE-C-0676",
+      "cuenta_aux": "TTE-C-0706",
       "ceco": "MON-3",
       "codigo": "SI0005775",
       "descripcion": "BOTAS DE SEGURIDAD SUPERVISOR FION 70040 T-35",
@@ -34712,7 +34714,9 @@
       "ano": 2026,
       "nombre_mes": "octubre",
       "datos_tipo_costo": "Externo",
-      "datos_descripcion": "Segunda linea de Planta de Pellas (VISCO ORINOCO)"
+      "datos_descripcion": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+      "esReclasificado": true,
+      "motivo_correccion": "Corrección de imputación: Botas de seguridad Planta de Pellas reasignadas a Línea 1 (Línea 2 inactiva)"
     },
     {
       "id": 331152,

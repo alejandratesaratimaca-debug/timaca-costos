@@ -750,7 +750,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
-                            ? 'Ejecución auditada al centavo en 19 frentes de proyectos externos activos (TTE-C). Cierre oficial de despachos y compras con Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO como frentes de mayor inversión.'
+                            ? 'Ejecución auditada al centavo en 18 frentes de proyectos externos activos (TTE-C). Cierre oficial de despachos y compras con Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO como frentes de mayor inversión.'
                             : 'Fuerza laboral técnica devengada en frentes de obra. En septiembre cerró en $196.665 USD en 10 proyectos externos, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Rehabilitación Bandas PMH ($28.142 USD · 12,7%).'}
                         </p>
                       </div>

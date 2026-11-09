@@ -1799,14 +1799,16 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
             {selectedCat === 'Mano de Obra Directa' && selectedMesNum === 8 
               ? '10 Cuentas / OTs'
               : alcanceProyectos === 'externos'
-              ? `${selectedMesNum === 9 ? 25 : (selectedMesNum === 8 ? 20 : proyectosImputados.length)} Cuentas Clientes (TTE)`
+              ? `${selectedMesNum === 10 ? 18 : (selectedMesNum === 9 ? 25 : (selectedMesNum === 8 ? 20 : proyectosImputados.length))} Cuentas Clientes (TTE)`
               : `${proyectosImputados.length} Cuentas / OTs (Almacén Global)`}
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
             {selectedCat === 'Mano de Obra Directa'
               ? `10 cuentas auxiliares activas en ${mesActualObj?.mesLabel || 'Septiembre'} (de las 25 cuentas anuales registradas en TIMACA)`
               : alcanceProyectos === 'externos'
-              ? selectedMesNum === 9
+              ? selectedMesNum === 10
+                ? '18 proyectos externos de clientes activos en Octubre 2026 (Oficial TIMACA)'
+                : selectedMesNum === 9
                 ? '25 proyectos externos de clientes activos en Septiembre 2026 (con imputación operativa directa en TTE-C-0706 Línea 1 Pellas por $55.578 USD)'
                 : `20 proyectos externos de clientes activos con imputación en Agosto 2026 (Oficial TIMACA)`
               : `Total de cuentas (incluyendo 84 internas de taller, flota y planta) con salidas en almacén`}

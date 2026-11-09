@@ -227,8 +227,10 @@ export const CUENTAS_AUXILIARES_EXACTAS_SEPTIEMBRE_2026: CuentaAuxiliarProyecto[
     };
   });
 
-// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE OCTUBRE 2026 ($1.228.221,75 USD)
-const totOctExacto = 1228221.75;
+// LISTADO OFICIAL DE PROYECTOS EXTERNOS DE OCTUBRE 2026 (18 CUENTAS AUXILIARES ACTIVAS)
+const totOctExacto = projsListAll
+  .filter(p => p.cuentaAuxiliar.startsWith('TTE-C-') && (p.meses[9] || 0) > 0)
+  .reduce((s, p) => s + (p.meses[9] || 0), 0);
 
 export const CUENTAS_AUXILIARES_EXACTAS_OCTUBRE_2026: CuentaAuxiliarProyecto[] = projsListAll
   .filter(p => p.cuentaAuxiliar.startsWith('TTE-C-') && (p.meses[9] || 0) > 0)

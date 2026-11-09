@@ -308,7 +308,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     const chips = [
       { label: 'Ejecución del Mes:', val: isOct ? '$1.428.905 USD' : (selectedMesNum === 8 ? '$1.197.600 USD' : '$1.613.225 USD') },
       { label: 'Acumulado 2026:', val: isOct ? '$13.481.082 USD' : (selectedMesNum === 8 ? '$10.438.951 USD' : '$12.052.176 USD') },
-      { label: 'Proyectos Activos:', val: isOct ? `${cuentasAuxiliaresMes.length || 19} Cuentas Auxiliares` : (selectedMesNum === 8 ? '20 Cuentas Auxiliares' : '25 Cuentas Auxiliares') }
+      { label: 'Proyectos Activos:', val: isOct ? `${cuentasAuxiliaresMes.length || 18} Cuentas Auxiliares` : (selectedMesNum === 8 ? '20 Cuentas Auxiliares' : '25 Cuentas Auxiliares') }
     ];
 
     chips.forEach((ch, idx) => {
@@ -1043,7 +1043,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       isOct
         ? 'OBSERVACIONES PARETO Y CONTROL PRESUPUESTARIO:\n' +
           '• Concentración Top 3 (91,6%): Proyecto Pellas Línea 1 ($867.861 USD · 60,7%), Segunda Línea PMH ($270.730 USD · 18,9%) y Rueda DRAVO ($170.941 USD · 12,0%) concentran el 91,6% de la inversión de TIMACA en proyectos externos.\n' +
-          '• Conciliación de Cuentas Activas: Las 10 cuentas principales suman $1.416.950 USD (99,2%) y los 9 frentes auxiliares complementarios suman $11.955 USD (0,8%), totalizando los $1.428.905 USD ejecutados en los 19 proyectos externos activos (TTE-C).\n' +
+          '• Conciliación de Cuentas Activas: Las 10 cuentas principales suman $1.416.950 USD (99,2%) y los 8 frentes auxiliares complementarios suman $11.955 USD (0,8%), totalizando los $1.428.905 USD ejecutados en los 18 proyectos externos activos (TTE-C).\n' +
           '• Proyecto Tractor Pellas Línea 1 (TTE-C-0706): Servicios especializados de ingeniería, instrumentación y control con Yokogawa ($686K) y Henan Front ($40K) lideran el avance físico y alistamiento preoperativo para el comisionamiento de planta.'
         : 'OBSERVACIONES PARETO Y CONTROL PRESUPUESTARIO:\n' +
           '• Concentración Top 3 (72,5%): Proyecto Pellas Línea 1 ($663.316 USD · 41,1%), Segunda Línea PMH ($307.436 USD · 19,1%) y Rueda DRAVO ($199.356 USD · 12,4%) concentran el 72,5% de la ejecución mensual de TIMACA.\n' +
