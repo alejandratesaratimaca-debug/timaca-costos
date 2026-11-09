@@ -397,11 +397,13 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       slide,
       1,
       '1. Distribución Mensual por Categoría de Costo (Consolidado 2026)',
-      'Evolución histórica Ene-Sep 2026 · Total 9 Meses: $12.052.176 USD'
+      'Evolución histórica Ene-Oct 2026 · Total 10 Meses: $14.753.270 USD'
     );
 
     // Native Table (13.333" width)
-    const headers = ['Categoría', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Total 2026', 'Var. %'];
+    const shortMonths = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
+    const varHeader = selectedMesNum > 1 ? `Var. % (${shortMonths[selectedMesNum - 1]} vs ${shortMonths[selectedMesNum - 2]})` : 'Var. %';
+    const headers = ['Categoría', 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Total 2026', varHeader];
     const tableRows: any[][] = [];
 
     tableRows.push(
@@ -438,12 +440,36 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
         text: row.total2026.toLocaleString('de-DE'),
         options: { bold: true, fontSize: 9.0, color: C_DARK, fill: { color: 'F1F5F9' }, align: 'right' }
       });
+
+      const mIdx = Math.max(0, Math.min(row.meses.length - 1, selectedMesNum - 1));
+      const prevIdx = mIdx > 0 ? mIdx - 1 : null;
+      const valActivo = row.meses[mIdx] || 0;
+      const valAnterior = prevIdx !== null ? (row.meses[prevIdx] || 0) : null;
+      let varText = '-';
+      let esPositiva = false;
+
+      if (valAnterior !== null && valAnterior > 0) {
+        if (row.categoria.toLowerCase().includes('máquina') && valActivo === 0) {
+          varText = '0,0%';
+        } else {
+          const diff = valActivo - valAnterior;
+          const varPct = Math.round((diff / valAnterior) * 1000) / 10;
+          esPositiva = varPct > 0;
+          varText = (varPct > 0 ? '+' : '') + varPct.toFixed(1).replace('.', ',') + '%';
+        }
+      } else if (valAnterior !== null && valAnterior === 0 && valActivo > 0) {
+        varText = '+100%';
+        esPositiva = true;
+      } else if (valAnterior !== null && valAnterior === 0 && valActivo === 0) {
+        varText = '0,0%';
+      }
+
       cells.push({
-        text: row.variacion,
+        text: varText,
         options: {
           bold: true,
           fontSize: 9.0,
-          color: row.esPositiva ? C_EMERALD : 'B45309',
+          color: esPositiva ? C_EMERALD : 'B45309',
           align: 'center'
         }
       });
@@ -472,9 +498,24 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       text: Math.round(grandTotal2026).toLocaleString('de-DE'),
       options: { bold: true, fontSize: 9.5, color: C_WHITE, fill: { color: '0F172A' }, align: 'right' }
     });
+
+    const mIdx = Math.max(0, Math.min(TOTALES_MESES_PPT.length - 1, selectedMesNum - 1));
+    const prevIdx = mIdx > 0 ? mIdx - 1 : null;
+    const totActivo = TOTALES_MESES_PPT[mIdx]?.total || 0;
+    const totAnterior = prevIdx !== null ? (TOTALES_MESES_PPT[prevIdx]?.total || 0) : null;
+    let totVarText = '-';
+    let totPositiva = false;
+
+    if (totAnterior !== null && totAnterior > 0) {
+      const totDiff = totActivo - totAnterior;
+      const totPct = Math.round((totDiff / totAnterior) * 1000) / 10;
+      totPositiva = totPct > 0;
+      totVarText = (totPct > 0 ? '+' : '') + totPct.toFixed(1).replace('.', ',') + '%';
+    }
+
     totalCells.push({
-      text: '-10,5%',
-      options: { bold: true, fontSize: 9.5, color: 'FCD34D', fill: { color: '0F172A' }, align: 'center' }
+      text: totVarText,
+      options: { bold: true, fontSize: 9.5, color: totPositiva ? '34D399' : 'FCD34D', fill: { color: '0F172A' }, align: 'center' }
     });
     tableRows.push(totalCells);
 

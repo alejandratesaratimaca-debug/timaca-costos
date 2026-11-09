@@ -676,9 +676,19 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     <h2 className="text-2xl font-black text-[#0b2545] tracking-tight">
                       Distribución Mensual por Categoría de Costo (2026)
                     </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Cifras consolidadas en USD · Modelo Estrella TIMACA · Total Acumulado Oficial: <strong className="text-[#0b2545]">${TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0).toLocaleString('de-DE')} USD</strong> · Mes Activo: <strong className="text-amber-600 font-bold">{activeMonth?.mesLabel}</strong>
-                    </p>
+                    <div className="text-xs text-slate-500 mt-0.5 flex flex-wrap items-center gap-2">
+                      <span>Cifras consolidadas en USD · Modelo Estrella TIMACA · Total Acumulado Oficial: <strong className="text-[#0b2545]">${TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0).toLocaleString('de-DE')} USD</strong> · Mes Activo: <strong className="text-amber-600 font-bold">{activeMonth?.mesLabel}</strong></span>
+                      {selectedMesNum !== (TOTALES_MESES_PPT[TOTALES_MESES_PPT.length - 1]?.mesNum || 10) && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedMesNum(TOTALES_MESES_PPT[TOTALES_MESES_PPT.length - 1]?.mesNum || 10)}
+                          className="px-2 py-0.5 text-[10px] font-bold text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors cursor-pointer"
+                          title="Restablecer vista al mes actual (Octubre)"
+                        >
+                          Restablecer a {TOTALES_MESES_PPT[TOTALES_MESES_PPT.length - 1]?.mesNombre || 'Octubre 2026'} (Mes Actual)
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold shrink-0 shadow-2xs">
@@ -755,46 +765,87 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           {mesesHeaders.map((m, idx) => (
                             <th 
                               key={m} 
-                              className={`py-2.5 px-3 text-right transition-colors ${
+                              onClick={() => setSelectedMesNum(idx + 1)}
+                              className={`py-2.5 px-3 text-right transition-colors cursor-pointer select-none ${
                                 idx + 1 === selectedMesNum 
                                   ? 'bg-amber-400 text-[#0b2545] font-black' 
-                                  : ''
+                                  : 'hover:bg-[#123866] hover:text-amber-300'
                               }`}
+                              title={`Haz clic para seleccionar ${m} como mes activo`}
                             >
                               {m}
                             </th>
                           ))}
                           <th className="py-2.5 px-3 text-right bg-[#081c33]">Total 2026</th>
-                          <th className="py-2.5 px-3 text-center bg-[#081c33]">Variación</th>
+                          <th 
+                            className="py-2.5 px-3 text-center bg-[#081c33] min-w-[125px] select-none"
+                            title={selectedMesNum > 1 ? `Variación porcentual de ${mesesHeaders[selectedMesNum - 1]} vs ${mesesHeaders[selectedMesNum - 2]}` : 'Mes de apertura'}
+                          >
+                            {selectedMesNum > 1 ? `Variación (${mesesHeaders[selectedMesNum - 1]} vs ${mesesHeaders[selectedMesNum - 2]})` : 'Variación (Apertura)'}
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
-                        {TABLA_PPT_DISTRIBUCION_2026.map((row) => (
-                          <tr key={row.categoria} className="hover:bg-blue-50/40 transition-colors">
-                            <td className="py-2 px-3 font-bold text-slate-900">{row.categoria}</td>
-                            {row.meses.map((val, idx) => (
-                              <td 
-                                key={idx} 
-                                className={`py-2 px-3 text-right font-mono tabular-nums transition-colors ${
-                                  idx + 1 === selectedMesNum 
-                                    ? 'bg-amber-50 text-[#0b2545] font-black border-x border-amber-200' 
-                                    : 'text-slate-700'
-                                }`}
-                              >
-                                {val.toLocaleString('de-DE')}
+                        {TABLA_PPT_DISTRIBUCION_2026.map((row) => {
+                          const mIdx = Math.max(0, Math.min(row.meses.length - 1, selectedMesNum - 1));
+                          const prevIdx = mIdx > 0 ? mIdx - 1 : null;
+                          const valActivo = row.meses[mIdx] || 0;
+                          const valAnterior = prevIdx !== null ? (row.meses[prevIdx] || 0) : null;
+
+                          let varPct: number | null = null;
+                          let varText = '-';
+                          let esPositiva = false;
+                          let esNegativa = false;
+
+                          if (valAnterior !== null && valAnterior > 0) {
+                            if (row.categoria.toLowerCase().includes('máquina') && valActivo === 0) {
+                              varText = '0,0%';
+                              varPct = 0;
+                            } else {
+                              const diff = valActivo - valAnterior;
+                              varPct = Math.round((diff / valAnterior) * 1000) / 10;
+                              esPositiva = varPct > 0;
+                              esNegativa = varPct < 0;
+                              varText = (varPct > 0 ? `+${varPct.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%` : `${varPct.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`);
+                            }
+                          } else if (valAnterior !== null && valAnterior === 0 && valActivo > 0) {
+                            varText = '+100%';
+                            esPositiva = true;
+                            varPct = 100;
+                          } else if (valAnterior !== null && valAnterior === 0 && valActivo === 0) {
+                            varText = '0,0%';
+                            varPct = 0;
+                          }
+
+                          return (
+                            <tr key={row.categoria} className="hover:bg-blue-50/40 transition-colors">
+                              <td className="py-2 px-3 font-bold text-slate-900">{row.categoria}</td>
+                              {row.meses.map((val, idx) => (
+                                <td 
+                                  key={idx} 
+                                  onClick={() => setSelectedMesNum(idx + 1)}
+                                  className={`py-2 px-3 text-right font-mono tabular-nums transition-colors cursor-pointer ${
+                                    idx + 1 === selectedMesNum 
+                                      ? 'bg-amber-50 text-[#0b2545] font-black border-x border-amber-200' 
+                                      : 'text-slate-700 hover:bg-amber-50/50'
+                                  }`}
+                                  title={`Seleccionar ${mesesHeaders[idx]} como mes activo`}
+                                >
+                                  {val.toLocaleString('de-DE')}
+                                </td>
+                              ))}
+                              <td className="py-2 px-3 text-right font-mono tabular-nums font-black text-[#0b2545] bg-blue-50/50">
+                                {row.total2026.toLocaleString('de-DE')}
                               </td>
-                            ))}
-                            <td className="py-2 px-3 text-right font-mono tabular-nums font-black text-[#0b2545] bg-blue-50/50">
-                              {row.total2026.toLocaleString('de-DE')}
-                            </td>
-                            <td className="py-2 px-3 text-center font-mono font-bold text-xs bg-blue-50/30">
-                              <span className={row.esPositiva ? 'text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded' : row.variacionNum < 0 ? 'text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded' : 'text-slate-600'}>
-                                {row.variacionNum > 0 ? '▲ ' : row.variacionNum < 0 ? '▼ ' : '▼ '}
-                                {row.variacion}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
+                              <td className="py-2 px-3 text-center font-mono font-bold text-xs bg-blue-50/30">
+                                <span className={esPositiva ? 'text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded' : esNegativa ? 'text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded' : 'text-slate-600'}>
+                                  {esPositiva ? '▲ ' : esNegativa ? '▼ ' : ''}
+                                  {varText}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                       <tfoot>
                         <tr className="bg-[#0b2545] text-white font-black border-t-2 border-[#0b2545]">
@@ -802,11 +853,13 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           {TOTALES_MESES_PPT.map((tm, idx) => (
                             <td 
                               key={tm.mesNum} 
-                              className={`py-2.5 px-3 text-right font-mono tabular-nums text-xs transition-colors ${
+                              onClick={() => setSelectedMesNum(idx + 1)}
+                              className={`py-2.5 px-3 text-right font-mono tabular-nums text-xs transition-colors cursor-pointer ${
                                 idx + 1 === selectedMesNum 
                                   ? 'bg-amber-400 text-[#0b2545] font-black' 
-                                  : ''
+                                  : 'hover:bg-[#123866] hover:text-amber-300'
                               }`}
+                              title={`Seleccionar ${tm.mesNombre} como mes activo`}
                             >
                               {tm.total.toLocaleString('de-DE')}
                             </td>
@@ -814,9 +867,34 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <td className="py-2.5 px-3 text-right font-mono tabular-nums text-xs text-amber-300">
                             {TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0).toLocaleString('de-DE')}
                           </td>
-                          <td className="py-2.5 px-3 text-center font-mono text-xs text-amber-300">
-                            ▼ 2%
-                          </td>
+                          {(() => {
+                            const mIdx = Math.max(0, Math.min(TOTALES_MESES_PPT.length - 1, selectedMesNum - 1));
+                            const prevIdx = mIdx > 0 ? mIdx - 1 : null;
+                            const totActivo = TOTALES_MESES_PPT[mIdx]?.total || 0;
+                            const totAnterior = prevIdx !== null ? (TOTALES_MESES_PPT[prevIdx]?.total || 0) : null;
+
+                            if (totAnterior === null || totAnterior === 0) {
+                              return (
+                                <td className="py-2.5 px-3 text-center font-mono text-xs text-slate-300">
+                                  Base
+                                </td>
+                              );
+                            }
+
+                            const totDiff = totActivo - totAnterior;
+                            const totPct = Math.round((totDiff / totAnterior) * 1000) / 10;
+                            const isPos = totPct > 0;
+                            const isNeg = totPct < 0;
+                            const txt = `${isPos ? '▲ +' : isNeg ? '▼ ' : ''}${Math.abs(totPct).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
+
+                            return (
+                              <td className={`py-2.5 px-3 text-center font-mono text-xs font-black ${
+                                isPos ? 'text-emerald-300 bg-emerald-950/40' : isNeg ? 'text-amber-300 bg-amber-950/40' : 'text-slate-300'
+                              }`}>
+                                {txt}
+                              </td>
+                            );
+                          })()}
                         </tr>
                       </tfoot>
                     </table>
@@ -3964,48 +4042,124 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                 <thead>
                   <tr className="bg-[#0b2545] text-white font-bold">
                     <th className="py-2.5 px-3 min-w-[170px]">Distribución</th>
-                    {mesesHeaders.map((m) => (
-                      <th key={m} className="py-2.5 px-3 text-right">{m}</th>
+                    {mesesHeaders.map((m, idx) => (
+                      <th 
+                        key={m} 
+                        className={`py-2.5 px-3 text-right ${idx + 1 === selectedMesNum ? 'bg-amber-400 text-[#0b2545] font-black' : ''}`}
+                      >
+                        {m}
+                      </th>
                     ))}
                     <th className="py-2.5 px-3 text-right bg-[#081c33]">Total 2026</th>
-                    <th className="py-2.5 px-3 text-center bg-[#081c33]">Variación</th>
+                    <th className="py-2.5 px-3 text-center bg-[#081c33] min-w-[125px]">
+                      {selectedMesNum > 1 ? `Variación (${mesesHeaders[selectedMesNum - 1]} vs ${mesesHeaders[selectedMesNum - 2]})` : 'Variación (Apertura)'}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-200">
-                  {TABLA_PPT_DISTRIBUCION_2026.map((row) => (
-                    <tr key={row.categoria} className="hover:bg-neutral-50">
-                      <td className="py-2 px-3 font-semibold text-neutral-900">{row.categoria}</td>
-                      {row.meses.map((val, idx) => (
-                        <td key={idx} className="py-2 px-3 text-right font-mono tabular-nums text-neutral-700">
-                          {val.toLocaleString('de-DE')}
+                  {TABLA_PPT_DISTRIBUCION_2026.map((row) => {
+                    const mIdx = Math.max(0, Math.min(row.meses.length - 1, selectedMesNum - 1));
+                    const prevIdx = mIdx > 0 ? mIdx - 1 : null;
+                    const valActivo = row.meses[mIdx] || 0;
+                    const valAnterior = prevIdx !== null ? (row.meses[prevIdx] || 0) : null;
+
+                    let varPct: number | null = null;
+                    let varText = '-';
+                    let esPositiva = false;
+                    let esNegativa = false;
+
+                    if (valAnterior !== null && valAnterior > 0) {
+                      if (row.categoria.toLowerCase().includes('máquina') && valActivo === 0) {
+                        varText = '0,0%';
+                        varPct = 0;
+                      } else {
+                        const diff = valActivo - valAnterior;
+                        varPct = Math.round((diff / valAnterior) * 1000) / 10;
+                        esPositiva = varPct > 0;
+                        esNegativa = varPct < 0;
+                        varText = (varPct > 0 ? `+${varPct.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%` : `${varPct.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`);
+                      }
+                    } else if (valAnterior !== null && valAnterior === 0 && valActivo > 0) {
+                      varText = '+100%';
+                      esPositiva = true;
+                      varPct = 100;
+                    } else if (valAnterior !== null && valAnterior === 0 && valActivo === 0) {
+                      varText = '0,0%';
+                      varPct = 0;
+                    }
+
+                    return (
+                      <tr key={row.categoria} className="hover:bg-neutral-50">
+                        <td className="py-2 px-3 font-semibold text-neutral-900">{row.categoria}</td>
+                        {row.meses.map((val, idx) => (
+                          <td 
+                            key={idx} 
+                            className={`py-2 px-3 text-right font-mono tabular-nums ${
+                              idx + 1 === selectedMesNum 
+                                ? 'bg-amber-50 text-[#0b2545] font-black' 
+                                : 'text-neutral-700'
+                            }`}
+                          >
+                            {val.toLocaleString('de-DE')}
+                          </td>
+                        ))}
+                        <td className="py-2 px-3 text-right font-mono tabular-nums font-bold text-neutral-900 bg-neutral-50">
+                          {row.total2026.toLocaleString('de-DE')}
                         </td>
-                      ))}
-                      <td className="py-2 px-3 text-right font-mono tabular-nums font-bold text-neutral-900 bg-neutral-50">
-                        {row.total2026.toLocaleString('de-DE')}
-                      </td>
-                      <td className="py-2 px-3 text-center font-mono font-bold text-xs bg-neutral-50">
-                        <span className={row.esPositiva ? 'text-emerald-700' : row.variacionNum < 0 ? 'text-amber-700' : 'text-neutral-600'}>
-                          {row.variacionNum > 0 ? '▲ ' : '▼ '}
-                          {row.variacion}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                        <td className="py-2 px-3 text-center font-mono font-bold text-xs bg-neutral-50">
+                          <span className={esPositiva ? 'text-emerald-700' : esNegativa ? 'text-amber-700' : 'text-neutral-600'}>
+                            {esPositiva ? '▲ ' : esNegativa ? '▼ ' : ''}
+                            {varText}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
                 <tfoot>
                   <tr className="bg-neutral-100 text-neutral-900 font-bold border-t-2 border-neutral-300">
                     <td className="py-2.5 px-3">Total</td>
-                    {TOTALES_MESES_PPT.map((tm) => (
-                      <td key={tm.mesNum} className="py-2.5 px-3 text-right font-mono tabular-nums text-xs">
+                    {TOTALES_MESES_PPT.map((tm, idx) => (
+                      <td 
+                        key={tm.mesNum} 
+                        className={`py-2.5 px-3 text-right font-mono tabular-nums text-xs ${
+                          idx + 1 === selectedMesNum ? 'bg-amber-400 text-[#0b2545] font-black' : ''
+                        }`}
+                      >
                         {tm.total.toLocaleString('de-DE')}
                       </td>
                     ))}
                     <td className="py-2.5 px-3 text-right font-mono tabular-nums text-blue-700 font-bold">
                       {TOTALES_MESES_PPT.reduce((a, b) => a + b.total, 0).toLocaleString('de-DE')}
                     </td>
-                    <td className="py-2.5 px-3 text-center font-mono text-xs text-emerald-700 font-bold">
-                      ▲ 37%
-                    </td>
+                    {(() => {
+                      const mIdx = Math.max(0, Math.min(TOTALES_MESES_PPT.length - 1, selectedMesNum - 1));
+                      const prevIdx = mIdx > 0 ? mIdx - 1 : null;
+                      const totActivo = TOTALES_MESES_PPT[mIdx]?.total || 0;
+                      const totAnterior = prevIdx !== null ? (TOTALES_MESES_PPT[prevIdx]?.total || 0) : null;
+
+                      if (totAnterior === null || totAnterior === 0) {
+                        return (
+                          <td className="py-2.5 px-3 text-center font-mono text-xs text-slate-500">
+                            Base
+                          </td>
+                        );
+                      }
+
+                      const totDiff = totActivo - totAnterior;
+                      const totPct = Math.round((totDiff / totAnterior) * 1000) / 10;
+                      const isPos = totPct > 0;
+                      const isNeg = totPct < 0;
+                      const txt = `${isPos ? '▲ +' : isNeg ? '▼ ' : ''}${Math.abs(totPct).toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
+
+                      return (
+                        <td className={`py-2.5 px-3 text-center font-mono text-xs font-bold ${
+                          isPos ? 'text-emerald-700' : isNeg ? 'text-amber-700' : 'text-neutral-600'
+                        }`}>
+                          {txt}
+                        </td>
+                      );
+                    })()}
                   </tr>
                 </tfoot>
               </table>
