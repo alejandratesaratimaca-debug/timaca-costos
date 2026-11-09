@@ -13,17 +13,17 @@ def get_code():
         ? '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Octubre 2026)'
         : '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Septiembre 2026)',
       isOct
-        ? 'Total Nómina Octubre Devengada: $235.066 USD · 64.585 HH · Cuadrillas en Pellas, PMH y Briquetas (BG II en retraso)'
+        ? 'Total Nómina Octubre Devengada: $257.751 USD · 69.635 HH · 6 Frentes Activos (Boca Grande II regularizada)'
         : 'Total Nómina Septiembre: $196.665 USD · 55.277 Horas-Hombre · Cuadrilla Activa en 10 Proyectos Externos'
     );
 
     // 4 KPI Cards
     const modCards = isOct
       ? [
-          { label: 'TOTAL NÓMINA DIRECTA OCT', val: '$235.066 USD', note: 'Semanas 39 a 43 · Devengo procesado' },
-          { label: 'VOLUMEN DE HORAS-HOMBRE', val: '64.585 HH', note: 'Promedio 12.917 HH/semana en campo' },
-          { label: 'TARIFA PROMEDIO EFECTIVA', val: '$3,64 USD/HH', note: 'Costo integral de mano de obra' },
-          { label: 'FRENTES CON CUADRILLA', val: '5 Frentes Devengados', note: '55,8% Pellas · Boca Grande pendiente' }
+          { label: 'TOTAL NÓMINA DIRECTA OCT', val: '$257.751 USD', note: 'Semanas 39 a 43 · 6 Frentes devengados' },
+          { label: 'VOLUMEN DE HORAS-HOMBRE', val: '69.635 HH', note: 'Promedio 13.927 HH/semana en campo' },
+          { label: 'TARIFA PROMEDIO EFECTIVA', val: '$3,70 USD/HH', note: 'Costo integral de mano de obra' },
+          { label: 'FRENTES CON CUADRILLA', val: '6 Frentes Devengados', note: '50,9% Pellas · 6 Frentes devengados' }
         ]
       : [
           { label: 'TOTAL NÓMINA DIRECTA SEP', val: '$196.665 USD', note: 'Semanas 36 a 39 · 4 cortes regulares de nómina' },
@@ -98,9 +98,11 @@ def get_code():
     slide.addText(
       isOct
         ? '• Ciclo Operativo de Nómina Directa (Octubre 2026):\\n' +
-          '  La nómina procesada incorpora 4 cortes semanales regulares (Semanas 40 a 43) en los frentes de Planta de Pellas Línea 1, FMO PMH y Planta de Briquetas.\\n\\n' +
-          '• Alerta de Control: Nómina Boca Grande II (TTE-C-0680):\\n' +
-          '  Se registra retraso en la entrega de la nómina de cuadrilla de Boca Grande II por parte de Recursos Humanos; actualmente la cuenta solo refleja $5.772,32 USD en insumos de almacén SIP. Se incluirá en la consolidación final tras recibir el soporte de RRHH.\\n\\n' +
+          '  La nómina procesada incorpora las Semanas 39 a 43 en los 6 frentes activos: Pellas Línea 1, 2da Línea PMH, Fase 2 Briquetas, Boca Grande II, Briqueteras y Bandas.\\n\\n' +
+          '• Regularización Nómina Boca Grande II (TTE-C-0680):\\n' +
+          '  Se incorporaron los 4 cortes semanales (Sem 40 a 43) por $13.685 USD y 3.946 HH (23 trabajadores en sitio), activando el frente en la contabilidad devengada.\\n\\n' +
+          '• Incorporación Nómina Refractario Briquetas (TTE-C-0668):\\n' +
+          '  Se sumó el reporte de refractario ($9.000 USD y 1.104 HH), consolidando el frente de Briquetas en $27.115 USD y 6.152 HH.\\n\\n' +
           '• Alerta de Maquinaria: Horas Máquina en Conciliación:\\n' +
           '  El renglón de Horas Máquina registra retraso en los partes de horómetros de grúas y flota pesada, figurando preliminarmente en $0,00 USD.'
         : '• Ciclo Operativo de Nómina Directa:\\n' +
@@ -151,8 +153,8 @@ def get_code():
     modTableRows.push([
       { text: 'TOTAL', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
       { text: isOct ? 'NÓMINA OCTUBRE (DEVENGADA)' : '10 PROYECTOS EXTERNOS ACTIVOS', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
-      { text: isOct ? '$235.066 USD' : '$196.665 USD', options: { bold: true, fontSize: 9.0, color: 'FCD34D', fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
-      { text: isOct ? '64.585 HH' : '55.277 HH', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
+      { text: isOct ? '$257.751 USD' : '$196.665 USD', options: { bold: true, fontSize: 9.0, color: 'FCD34D', fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
+      { text: isOct ? '69.635 HH' : '55.277 HH', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
       { text: '100,0%', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } }
     ]);
 

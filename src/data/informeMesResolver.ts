@@ -580,8 +580,8 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     totalMes: TOTALES_NOMINA_SEMANAL_OCTUBRE.totalOctubre,
     totalHoras: TOTALES_NOMINA_SEMANAL_OCTUBRE.totalHorasHombre,
     tarifaPromedio: TOTALES_NOMINA_SEMANAL_OCTUBRE.tarifaPromedio,
-    frentesCount: 5,
-    alertaRetrasoBocaGrande: true,
+    frentesCount: 6,
+    alertaRetrasoBocaGrande: false,
     totalesSemanales: TOTALES_NOMINA_SEMANAL_OCTUBRE,
     desgloseProyectos: DESGLOSE_NOMINA_OCTUBRE_PROYECTOS
   } : selectedMesNum === 8 ? {

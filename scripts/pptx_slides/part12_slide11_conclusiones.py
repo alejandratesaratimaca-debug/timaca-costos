@@ -77,7 +77,7 @@ def get_code():
     slide.addText(
       isOct
         ? '• Conciliación de Horas Máquina (Octubre): Retraso en entrega de partes de horómetros de maquinaria pesada y grúas; rubro figura en $0,00 USD a la espera de regularización técnica.\\n' +
-          '• Procesamiento Nómina Boca Grande II: Cuenta TTE-C-0680 registra retraso en nómina devengada por parte de RRHH; actualmente solo computa $5.772 USD en materiales SIP.\\n' +
+          '• Regularización Nómina Boca Grande II: Cuenta TTE-C-0680 regularizada tras incorporar los 4 cortes semanales de RRHH ($13.685 USD / 3.946 HH), activando la cuenta con 23 trabajadores.\\n' +
           '• Auditoría de Vales de Almacén: Seguimiento a vales de salida pendientes de descargo físico en almacenes de obra.'
         : '• Conciliación Horómetros de Equipos Propios: Se requiere mayor celeridad en la entrega de reportes semanales de horómetros para evitar imputaciones tardías.\\n' +
           '• Seguimiento a Cuentas en Cierre: Frentes que alcanzan el 90%+ de ejecución requieren verificación de garantías y finiquitos técnicos.\\n' +

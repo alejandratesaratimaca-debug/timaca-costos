@@ -636,7 +636,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
         fila.jul = Math.round(peso * (mesesMOD[6] || 0));
         fila.ago = Math.round(peso * (mesesMOD[7] || 0));
         fila.sep = Math.round(peso * (mesesMOD[8] ?? (selectedProyectoCodigo === 'TODOS' ? 378249 : 0)));
-        fila.oct = Math.round(peso * (mesesMOD[9] ?? (selectedProyectoCodigo === 'TODOS' ? 235066 : 0)));
+        fila.oct = Math.round(peso * (mesesMOD[9] ?? (selectedProyectoCodigo === 'TODOS' ? 257751 : 0)));
         fila.total = (fila.ene || 0) + (fila.feb || 0) + (fila.mar || 0) + (fila.abr || 0) + (fila.may || 0) + (fila.jun || 0) + (fila.jul || 0) + (fila.ago || 0) + (fila.sep || 0) + (fila.oct || 0);
       });
 

@@ -165,7 +165,7 @@ def get_code():
           '• Servicios Especializados (+872% vs sep): Inyección estratégica en instrumentación, ingeniería y automatización para Línea 1 Pellas con Yokogawa ($686K) y Henan Front ($40K).\\n' +
           '• Materiales Directos: Procura SIP ($476.866 USD) para calderería y tolvas en Pellas Línea 1 ($174K), Segunda Línea PMH ($258K) y Rueda DRAVO ($106K).\\n' +
           '• Costos Indirectos (CIF): $344.629 USD en estructura corporativa de administración, talleres centrales, combustible y soporte de flota.\\n' +
-          '• Mano de Obra Directa (MOD): Devengado procesado de cuadrillas en Pellas, PMH y Briquetas. Nota de control: Se registra retraso en la recepción de la nómina de cuadrilla en Boca Grande II (TTE-C-0680), que se incorporará al recibir el corte de RRHH.\\n' +
+          '• Mano de Obra Directa (MOD): Devengado consolidado de cuadrillas en 6 frentes activos ($257.751 USD / 69.635 HH), integrando la nómina regularizada de Boca Grande II ($13.685 USD) y Refractario Briquetas ($9.000 USD).\\n' +
           '• Horas Máquina: El rubro se mantiene preliminarmente en $0,00 USD debido a retraso operativo en la consolidación de partes de horómetros y reporte de utilización de maquinaria pesada.'
         : 'NOTAS OPERATIVAS DE CONTROL (JUSTIFICACIÓN DE VARIACIONES):\\n' +
           '• Materiales Directos (+133,4% / +$496.140 USD): Incremento neto mensual de $371.927 USD a $868.067 USD concentrado en tres frentes: Segunda Línea PMH ($249.494 USD en perfiles A36, apoyos, conduit y concreto), Rueda DRAVO ($182.885 USD en planchas Hardox 450/500 y componentes mecánicos) y Pellas Línea 1 ($173.833 USD en calderería y tolvas), sumando entre los tres $606.212 USD (69,8% de los materiales del mes).\\n' +
@@ -268,7 +268,7 @@ def get_code():
       'Materiales Directos': 'Procura SIP de calderería, tolvas y aceros para Pellas Línea 1 ($174K), Segunda Línea PMH ($258K) y Rueda DRAVO ($106K). Se reduce (-42,1%) tras el pico récord de abastecimiento mayor de Septiembre.',
       'Servicios Directos': 'Crecimiento extraordinario (+872%) impulsado por contratos de instrumentación, automatización y control en Pellas Línea 1 con Yokogawa ($686K) y Henan Front ($40K).',
       'Servicios': 'Crecimiento extraordinario (+872%) impulsado por contratos de instrumentación, automatización y control en Pellas Línea 1 con Yokogawa ($686K) y Henan Front ($40K).',
-      'Mano de Obra Directa': 'Incorpora nóminas de Pellas, PMH y Briquetas (Semanas 40 a 43). ⚠️ Alerta de control: Registra retraso la entrega de nómina de Boca Grande II (TTE-C-0680) por RRHH, que se sumará al corte definitivo.',
+      'Mano de Obra Directa': 'Consolida nóminas de 6 frentes activos (Semanas 39 a 43: $257.751 USD · 69.635 HH), integrando los 4 cortes semanales de Boca Grande II ($13.685 USD) y Refractario Briquetas ($9.000 USD).',
       'Horas Máquina': '⚠️ En $0,00 USD temporalmente debido a retraso operativo en la consolidación de partes de horómetros y reporte de utilización de maquinaria pesada de campo.',
       'Costos Indirectos': 'Estructura corporativa estable (+1,0%), absorbiendo nómina fija de administración, talleres centrales, combustible y soporte logístico.'
     } : {
@@ -455,7 +455,7 @@ def get_code():
       'Materiales Directos': 'Despachos de procura SIP ($476.866 USD) concentrados en aceros, tolvas y calderería en Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO.',
       'Servicios Directos': 'Servicios especializados ($967.479 USD) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).',
       'Servicios': 'Servicios especializados ($967.479 USD) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).',
-      'Mano de Obra Directa': 'MOD procesada en Pellas, PMH y Briquetas. Pendiente por retraso la nómina de cuadrilla en Boca Grande II (TTE-C-0680), que se incorporará al recibir el corte de RRHH.',
+      'Mano de Obra Directa': 'MOD devengada en 6 frentes activos ($257.751 USD / 69.635 HH), integrando las nóminas de Boca Grande II ($13.685 USD) y Refractario Briquetas ($9.000 USD).',
       'Horas Máquina': 'Pendiente por retraso operativo en el reporte de horómetros y valoración de maquinaria pesada. Temporalmente en $0,00 USD a la espera de conciliación técnica.',
       'Costos Indirectos': 'Costos indirectos y soporte corporativo de operaciones ($344.629 USD), integrando nómina fija de soporte, talleres centrales, combustible y sindicato.'
     } : {

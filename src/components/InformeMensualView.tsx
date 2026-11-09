@@ -1684,11 +1684,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           Total Nómina {selectedMesNum === 10 ? 'Octubre (Devengada)' : selectedMesNum === 8 ? 'Agosto (Devengada)' : 'Septiembre'}
                         </span>
                         <span className="text-2xl font-black font-mono text-[#002060] block mt-1">
-                          {selectedMesNum === 10 ? '$235.066 USD' : selectedMesNum === 8 ? '$277.936 USD' : '$196.665 USD'}
+                          {selectedMesNum === 10 ? '$257.751 USD' : selectedMesNum === 8 ? '$277.936 USD' : '$196.665 USD'}
                         </span>
                         <span className="text-[11px] text-emerald-700 font-semibold block mt-0.5">
                           {selectedMesNum === 10 
-                            ? 'Semanas 39 a 43 · Devengo procesado' 
+                            ? 'Semanas 39 a 43 · 6 Frentes devengados' 
                             : selectedMesNum === 8 
                             ? 'Semanas 31 a 35 · Auditada al centavo' 
                             : 'Semanas 36 a 39 · Auditada al centavo'}
@@ -1697,27 +1697,27 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Horas-Hombre Devengadas</span>
                         <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
-                          {selectedMesNum === 10 ? '64.585 HH' : selectedMesNum === 8 ? '78.072 HH' : '55.277 HH'}
+                          {selectedMesNum === 10 ? '69.635 HH' : selectedMesNum === 8 ? '78.072 HH' : '55.277 HH'}
                         </span>
                         <span className="text-[11px] text-blue-700 font-semibold block mt-0.5">
-                          {selectedMesNum === 10 ? 'Promedio 12.917 HH/semana' : selectedMesNum === 8 ? 'Promedio 15.614 HH/semana' : 'Promedio 13.819 HH/semana'}
+                          {selectedMesNum === 10 ? 'Promedio 13.927 HH/semana' : selectedMesNum === 8 ? 'Promedio 15.614 HH/semana' : 'Promedio 13.819 HH/semana'}
                         </span>
                       </div>
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Tarifa Promedio Efectiva</span>
                         <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
-                          {selectedMesNum === 10 ? '$3,64 USD/HH' : '$3,56 USD/HH'}
+                          {selectedMesNum === 10 ? '$3,70 USD/HH' : '$3,56 USD/HH'}
                         </span>
                         <span className="text-[11px] text-slate-500 font-semibold block mt-0.5">Costo integral de mano de obra</span>
                       </div>
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Proyectos con Cuadrilla</span>
                         <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
-                          {selectedMesNum === 10 ? '5 Frentes' : '10 Proyectos'}
+                          {selectedMesNum === 10 ? '6 Frentes' : '10 Proyectos'}
                         </span>
                         <span className="text-[11px] text-amber-700 font-semibold block mt-0.5">
                           {selectedMesNum === 10 
-                            ? '55,8% Pellas · Boca Grande pendiente' 
+                            ? '50,9% Pellas · 6 Frentes devengados' 
                             : selectedMesNum === 8 
                             ? '60,2% en Pellas Línea 1' 
                             : '65,2% en Pellas Línea 1'}
@@ -1738,36 +1738,39 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         {selectedMesNum === 10 ? (
                           <div className="text-xs text-slate-700 space-y-2.5 leading-relaxed">
                             <p>
-                              <strong className="text-[#002060]">Ciclo Operativo de Nómina Directa (Octubre):</strong> Incorpora los partes devengados de <strong>Semanas 39 a 43</strong> en los frentes activos de <em>Pellas Línea 1</em>, <em>2da Línea PMH</em> y <em>Planta de Briquetas</em>, totalizando <strong>$235.066 USD</strong> y <strong>64.585 HH</strong>.
+                              <strong className="text-[#002060]">Ciclo Operativo de Nómina Directa (Octubre):</strong> Incorpora los partes devengados de <strong>Semanas 39 a 43</strong> en los 6 frentes activos (<em>Pellas Línea 1</em>, <em>2da Línea PMH</em>, <em>Fase 2 Briquetas</em>, <em>Mantenimiento BG II</em>, <em>Mantenimiento Briqueteras</em> y <em>Bandas PMH</em>), totalizando <strong>$257.751 USD</strong> y <strong>69.635 HH</strong>.
                             </p>
                             <div className="bg-white p-3 rounded-xl border border-blue-100 space-y-1 font-mono text-[11px]">
                               <span className="font-bold text-[#002060] block font-sans text-xs mb-1">Cortes Semanales Procesados (RRHH):</span>
                               <div className="flex justify-between"><span>Semana 39 (Corte 24/09 PMH/Briq.):</span><strong className="text-slate-900">$20.339 USD (5.921 HH)</strong></div>
-                              <div className="flex justify-between"><span>Semana 40 (Corte 03/10):</span><strong className="text-slate-900">$53.062 USD (14.963 HH)</strong></div>
-                              <div className="flex justify-between"><span>Semana 41 (Corte 10/10):</span><strong className="text-slate-900">$54.658 USD (14.724 HH)</strong></div>
-                              <div className="flex justify-between"><span>Semana 42 (Corte 17/10):</span><strong className="text-slate-900">$52.288 USD (14.116 HH)</strong></div>
-                              <div className="flex justify-between"><span>Semana 43 (Corte 24/10):</span><strong className="text-slate-900">$54.718 USD (14.861 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 40 (Corte 03/10):</span><strong className="text-slate-900">$59.062 USD (16.843 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 41 (Corte 10/10):</span><strong className="text-slate-900">$61.323 USD (16.738 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 42 (Corte 17/10):</span><strong className="text-slate-900">$57.798 USD (15.119 HH)</strong></div>
+                              <div className="flex justify-between"><span>Semana 43 (Corte 24/10):</span><strong className="text-slate-900">$59.228 USD (15.910 HH)</strong></div>
                               <div className="border-t border-slate-200 pt-1 mt-1 flex justify-between font-bold text-[#002060]">
-                                <span>Total Devengado Octubre:</span><span>$235.066 USD (64.585 HH)</span>
+                                <span>Total Devengado Octubre:</span><span>$257.751 USD (69.635 HH)</span>
                               </div>
                             </div>
 
                             {/* Alerta de Retraso de Nómina en Boca Grande y Horas Máquina */}
-                            <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 space-y-1.5">
-                              <div className="flex items-center gap-1.5 text-amber-900 font-bold text-xs">
-                                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                                <span>Alertas de Auditoría y Control Operativo:</span>
+                            <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 space-y-1.5">
+                              <div className="flex items-center gap-1.5 text-emerald-900 font-bold text-xs">
+                                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                                <span>Regularización y Control Operativo:</span>
                               </div>
-                              <p className="text-[11px] text-amber-800 leading-tight">
-                                <strong>• Nómina Boca Grande II (TTE-C-0680):</strong> Presenta retraso en el reporte de Recursos Humanos; actualmente figura en <strong>$0 USD</strong> devengados en el sistema (vs $11.870 USD en Sep y $9.307 USD en Ago). La cuenta sólo tiene registrados $5.772 USD de insumos SIP.
+                              <p className="text-[11px] text-emerald-800 leading-tight">
+                                <strong>• Nómina Boca Grande II (TTE-C-0680):</strong> Incorporada formalmente tras recepción de los 4 cortes semanales (Sem 40 a 43) por RRHH, devengando <strong>$13.685 USD</strong> y <strong>3.946 HH</strong> con 23 trabajadores en sitio.
                               </p>
-                              <p className="text-[11px] text-amber-800 leading-tight">
+                              <p className="text-[11px] text-emerald-800 leading-tight">
+                                <strong>• Nómina Refractario Briquetas (TTE-C-0668):</strong> Sumada al frente de Briquetas (Sem 40 a 43) por <strong>$9.000 USD</strong> y <strong>1.104 HH</strong> (10 trabajadores).
+                              </p>
+                              <p className="text-[11px] text-amber-800 leading-tight border-t border-emerald-200 pt-1 mt-1">
                                 <strong>• Horas Máquina:</strong> Pendiente reporte consolidado de horómetros de grúas y flota pesada (reflejado preliminarmente en $0 USD).
                               </p>
                             </div>
 
                             <p className="text-[11px] text-slate-600">
-                              <strong>Conciliación Oficial:</strong> La nómina devengada por cuadrillas ($235.066 USD) sustenta operativamente la partida presupuestaria de Mano de Obra Directa del período ($476.866 USD).
+                              <strong>Conciliación Oficial:</strong> La nómina devengada por cuadrillas ($257.751 USD) sustenta operativamente la mano de obra directa del período a través de los 6 frentes activos.
                             </p>
                           </div>
                         ) : selectedMesNum === 8 ? (
@@ -3834,7 +3837,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           {(() => {
                             const radius = 66;
                             const circ = 2 * Math.PI * radius;
-                            const pellasPct = 0.602;
+                            const pellasPct = selectedMesNum === 10 ? 0.509 : 0.602;
                             const restoPct = 1 - pellasPct;
                             const pellasDash = pellasPct * circ;
                             const restoDash = restoPct * circ;
@@ -3891,10 +3894,10 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
 
                         <div className="mt-3 flex items-center gap-4 text-xs font-mono">
                           <span className="flex items-center gap-1.5 font-bold text-[#002060]">
-                            <span className="w-3 h-3 rounded-full bg-[#002060]" /> Pellas Línea 1 (60,2%)
+                            <span className="w-3 h-3 rounded-full bg-[#002060]" /> Pellas Línea 1 ({selectedMesNum === 10 ? '50,9%' : '60,2%'})
                           </span>
                           <span className="flex items-center gap-1.5 font-bold text-amber-600">
-                            <span className="w-3 h-3 rounded-full bg-[#f59e0b]" /> Resto Proyectos (39,8%)
+                            <span className="w-3 h-3 rounded-full bg-[#f59e0b]" /> Resto Proyectos ({selectedMesNum === 10 ? '49,1%' : '39,8%'})
                           </span>
                         </div>
                       </div>
@@ -3907,7 +3910,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             Ancla Horas-Hombre MOD (Metodología Oficial TIMACA)
                           </strong>
                           <p className="text-[11px] leading-relaxed text-slate-700">
-                            El modelo contable de TIMACA distribuye los costos indirectos de soporte técnico, supervisión y logística en estricta proporción a las horas-hombre devengadas por la fuerza laboral directa. Pellas Línea 1, al movilizar más de 250 obreros estables y el 60,2% de la nómina directa ($133.185 USD), absorbe legítimamente el 60,2% de la estructura indirecta ($236.688 USD).
+                            {selectedMesNum === 10
+                              ? 'El modelo contable de TIMACA distribuye los costos indirectos en función del volumen de nómina devengada por cuadrillas ($257.750 USD). Pellas Línea 1 concentra el 50,9% de la mano de obra ($131.190 USD), absorbiendo $175.410 USD de los costos indirectos ($344.629 USD), y los 6 frentes restantes absorben el 49,1% ($169.219 USD).'
+                              : 'El modelo contable de TIMACA distribuye los costos indirectos de soporte técnico, supervisión y logística en estricta proporción a las horas-hombre devengadas por la fuerza laboral directa. Pellas Línea 1, al movilizar más de 250 obreros estables y el 60,2% de la nómina directa ($133.185 USD), absorbe legítimamente el 60,2% de la estructura indirecta ($236.688 USD).'}
                           </p>
                         </div>
 
@@ -3915,20 +3920,20 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                             <span className="text-[10.5px] font-bold text-slate-500 uppercase block">Pellas Línea 1</span>
                             <strong className="text-lg font-black font-mono text-[#002060] block">
-                              ${Math.round((categoriasMesAnalisis[4]?.monto || 393375) * 0.602).toLocaleString('de-DE')} USD
+                              ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.509 : 0.602)).toLocaleString('de-DE')} USD
                             </strong>
                             <span className="text-[10px] text-slate-500">
-                              60,2% de absorción corporativa (anclada a MOD)
+                              {selectedMesNum === 10 ? '50,9%' : '60,2%'} de absorción corporativa (anclada a MOD)
                             </span>
                           </div>
 
                           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                            <span className="text-[10.5px] font-bold text-slate-500 uppercase block">Resto de Proyectos ({cuentasAuxiliaresMes.length - 1} obras)</span>
+                            <span className="text-[10.5px] font-bold text-slate-500 uppercase block">Resto de Proyectos ({selectedMesNum === 10 ? '6 frentes' : `${cuentasAuxiliaresMes.length - 1} obras`})</span>
                             <strong className="text-lg font-black font-mono text-amber-700 block">
-                              ${Math.round((categoriasMesAnalisis[4]?.monto || 393375) * 0.398).toLocaleString('de-DE')} USD
+                              ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.491 : 0.398)).toLocaleString('de-DE')} USD
                             </strong>
                             <span className="text-[10px] text-slate-500">
-                              39,8% distribuido en frentes activos restantes
+                              {selectedMesNum === 10 ? '49,1% prorrateado de mayor a menor' : '39,8% distribuido en frentes activos restantes'}
                             </span>
                           </div>
                         </div>
@@ -3937,8 +3942,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
 
                     <div className="p-3 rounded-xl bg-slate-100 border border-slate-300 text-xs text-slate-800 flex justify-between items-center">
                       <span><strong>Total Indirectos {activeMonth?.mesLabel?.split(' ')[0]}:</strong> ${categoriasMesAnalisis[4]?.monto.toLocaleString('de-DE')} USD</span>
-                      <span><strong>Pellas Línea 1 (60,2%):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || 393375) * 0.602).toLocaleString('de-DE')} USD</span>
-                      <span><strong>Demás Proyectos (39,8%):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || 393375) * 0.398).toLocaleString('de-DE')} USD</span>
+                      <span><strong>Pellas Línea 1 ({selectedMesNum === 10 ? '50,9%' : '60,2%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.509 : 0.602)).toLocaleString('de-DE')} USD</span>
+                      <span><strong>Demás Proyectos ({selectedMesNum === 10 ? '49,1%' : '39,8%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.491 : 0.398)).toLocaleString('de-DE')} USD</span>
                     </div>
                   </div>
                 )}

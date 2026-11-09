@@ -6,8 +6,8 @@ def get_code():
   {
     const slide = pptx.addSlide();
     slide.background = { color: C_BG_LIGHT };
-    const cifTotal = categoriasMesAnalisis[4]?.monto || (isOct ? 393375 : 378300);
-    const pellasCIF = Math.round(cifTotal * 0.602);
+    const cifTotal = isOct ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375);
+    const pellasCIF = Math.round(isOct ? 175410 : cifTotal * 0.602);
     const restoCIF = cifTotal - pellasCIF;
 
     addSlideHeader(
@@ -20,9 +20,9 @@ def get_code():
     // 4 KPI Cards across top
     const kpisCIF = [
       { label: `TOTAL CIF DEL MES (${mesTitle.split(' ')[0]})`, val: `$${Math.round(cifTotal).toLocaleString('de-DE')} USD`, note: 'Soporte y talleres TIMACA' },
-      { label: 'PELLAS LÍNEA 1 (60,2%)', val: `$${pellasCIF.toLocaleString('de-DE')} USD`, note: 'Mayor volumen de HH de MOD' },
-      { label: 'RESTO DE PROYECTOS (39,8%)', val: `$${restoCIF.toLocaleString('de-DE')} USD`, note: 'Distribuido en 9 frentes activos' },
-      { label: 'BASE DE ASIGNACIÓN', val: 'Horas-Hombre MOD', note: 'Criterio contable auditado' }
+      { label: isOct ? 'PELLAS LÍNEA 1 (50,9%)' : 'PELLAS LÍNEA 1 (60,2%)', val: `$${pellasCIF.toLocaleString('de-DE')} USD`, note: isOct ? 'Mayor volumen de MOD ($131K)' : 'Mayor volumen de HH de MOD' },
+      { label: isOct ? 'RESTO DE PROYECTOS (49,1%)' : 'RESTO DE PROYECTOS (39,8%)', val: `$${restoCIF.toLocaleString('de-DE')} USD`, note: isOct ? 'Distribuido en 6 frentes activos' : 'Distribuido en 9 frentes activos' },
+      { label: 'BASE DE ASIGNACIÓN', val: 'Mano de Obra Directa', note: 'Criterio contable auditado' }
     ];
 
     kpisCIF.forEach((kpi, idx) => {
@@ -108,7 +108,7 @@ def get_code():
       bold: true,
       color: C_NAVY
     });
-    slide.addText(`$${pellasCIF.toLocaleString('de-DE')} USD (60,2%)`, {
+    slide.addText(isOct ? `$${pellasCIF.toLocaleString('de-DE')} USD (50,9%)` : `$${pellasCIF.toLocaleString('de-DE')} USD (60,2%)`, {
       x: 1.0,
       y: 3.38,
       w: 4.8,
@@ -119,7 +119,9 @@ def get_code():
       color: C_BLUE
     });
     slide.addText(
-      'Absorbe la mayor proporción de indirectos debido a su volumen de fuerza laboral en campo (254 trabajadores directos) y a la dedicación intensiva de talleres centrales y supervisión técnica.',
+      isOct
+        ? 'Absorbe el 50,9% de los costos indirectos proporcional a su peso en la nómina directa devengada ($131.190 USD en Pellas Línea 1 vs $257.750 USD total de frentes activos).'
+        : 'Absorbe la mayor proporción de indirectos debido a su volumen de fuerza laboral en campo (254 trabajadores directos) y a la dedicación intensiva de talleres centrales y supervisión técnica.',
       {
         x: 1.0,
         y: 3.78,
@@ -150,7 +152,7 @@ def get_code():
       bold: true,
       color: '92400E'
     });
-    slide.addText(`$${restoCIF.toLocaleString('de-DE')} USD (39,8%)`, {
+    slide.addText(isOct ? `$${restoCIF.toLocaleString('de-DE')} USD (49,1%)` : `$${restoCIF.toLocaleString('de-DE')} USD (39,8%)`, {
       x: 1.0,
       y: 5.18,
       w: 4.8,
@@ -161,7 +163,9 @@ def get_code():
       color: C_AMBER
     });
     slide.addText(
-      'Distribuido entre Segunda Línea PMH, DRAVO PA-9020, Briqueteras, Bandas y proyectos en cierre en proporción directa a las horas-hombre devengadas en cada contrato.',
+      isOct
+        ? 'Prorrateado de mayor a menor: 2da Línea PMH ($105.668), Briquetas Fase 2 ($31.989), Boca Grande II ($18.298), Mtto Briqueteras ($6.819), Caldera ($4.265) y Bandas PMH ($2.179).'
+        : 'Distribuido entre Segunda Línea PMH, DRAVO PA-9020, Briqueteras, Bandas y proyectos en cierre en proporción directa a las horas-hombre devengadas en cada contrato.',
       {
         x: 1.0,
         y: 5.58,
