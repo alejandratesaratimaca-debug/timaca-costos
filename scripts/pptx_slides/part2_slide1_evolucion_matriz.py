@@ -34,9 +34,9 @@ def get_code():
         color: C_EMERALD
       },
       {
-        tag: 'PROYECTOS EXTERNOS',
+        tag: 'PROYECTOS EXTERNOS (99,4%)',
         val: '$2.092.260 USD',
-        desc: '18 Cuentas Auxiliares · 99,4% Absorción Directa',
+        desc: '18 Cuentas Activas · Remanente: $13K Centrales (0,6%)',
         color: C_AMBER
       }
     ];
@@ -192,8 +192,8 @@ def get_code():
       }
     );
 
-    // RIGHT COLUMN: HISTORICAL BAR CHART (10 MONTHS)
-    slide.addText('EVOLUCIÓN HISTÓRICA DEL GASTO MENSUAL (ENE - OCT 2026)', {
+    // RIGHT COLUMN: HISTORICAL LINE / CURVE CHART (10 MONTHS)
+    slide.addText('CURVA EVOLUTIVA HISTÓRICA DEL GASTO MENSUAL (ENE - OCT 2026)', {
       x: 7.1,
       y: 2.45,
       w: 5.6,
@@ -213,22 +213,27 @@ def get_code():
       }
     ];
 
-    slide.addChart(pptx.ChartType.bar, chartData, {
+    slide.addChart(pptx.ChartType.line, chartData, {
       x: 7.1,
-      y: 2.75,
+      y: 2.70,
       w: 5.6,
-      h: 2.30,
+      h: 2.35,
       chartColors: [C_NAVY],
+      lineDataSymbol: 'circle',
+      lineDataSymbolSize: 5,
+      lineSize: 2.5,
+      lineSmooth: true,
       showLegend: false,
-      dataLabelColor: '000000',
-      dataLabelPosition: 'outEnd',
+      dataLabelColor: '0F172A',
+      dataLabelPosition: 'top',
       dataLabelFormatCode: '$#,##0k',
       valAxisLabelFormatCode: '$#,##0k',
       showValue: true,
-      barGapWidthPct: 45
+      valAxisMinVal: 500,
+      valAxisMaxVal: 2800
     });
 
-    // Right Column Bottom Callout Box
+    // Right Column Bottom Callout Box (Explaining 99.4% and $13K central support)
     slide.addShape(pptx.ShapeType.roundRect, {
       x: 7.1,
       y: 5.20,
@@ -239,7 +244,7 @@ def get_code():
       rectRadius: 0.08
     });
 
-    slide.addText('COMPORTAMIENTO Y ABSORCIÓN EN PROYECTOS EXTERNOS', {
+    slide.addText('CONCILIACIÓN Y ABSORCIÓN EN PROYECTOS EXTERNOS', {
       x: 7.25,
       y: 5.28,
       w: 5.3,
@@ -250,9 +255,9 @@ def get_code():
     });
 
     slide.addText(
-      '• Concentración en Obras: Los 18 proyectos externos activos absorben $2.092.260 USD (99,4% del gasto total corporativo del mes).\\n' +
-      '• Ejes Principales de Inversión: Pellas Línea 1 ($1.235K · 59,0%) y Segunda Línea PMH ($444K · 21,2%) lideran la ejecución técnica y física.\\n' +
-      '• Estabilidad Financiera: La curva evidencia un crecimiento planificado de +23,3% acorde con la fase crítica de comisionamiento preoperativo.',
+      '• Conciliación del Total: Los 18 proyectos externos absorben $2.092.260 USD (99,4% del gasto) y los $12.965 USD restantes (0,6%) corresponden a compras y soporte corporativo general, sumando los $2.105.225 USD de la empresa.\\n' +
+      '• Ejes Principales de Inversión: Pellas Línea 1 ($1.235K · 59,0%) y Segunda Línea PMH ($444K · 21,2%) concentran el 80,2% de la ejecución técnica.\\n' +
+      '• Tendencia de Curva: La trayectoria gráfica refleja el repunte controlado de +23,3% acorde con la fase crítica de comisionamiento preoperativo.',
       {
         x: 7.25,
         y: 5.50,
