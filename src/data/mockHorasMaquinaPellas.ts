@@ -441,3 +441,189 @@ export const NOTAS_HORAS_MAQUINA_PELLAS_SEPTIEMBRE = [
   }
 ];
 
+// TABLA DE HORAS MÁQUINA PELLAS LÍNEA 1 - OCTUBRE 2026 (PROVISIÓN TEMPORAL · $58.500 USD · 821 H/M)
+// Provisión técnica estimada por continuidad de maniobras pesadas sujeta a reconciliación con horómetros finales
+export const TABLA_HORAS_MAQUINA_PELLAS_OCTUBRE_OFICIAL: FilaHorasMaquinaPellas[] = [
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR20',
+    equipo: 'Grúa Demag AC200 - 200TN (Provisión Temporal)',
+    tarifa: 190.21,
+    totalHM: 137.5,
+    costoTotalHM: 26154,
+    subcategoria: 'Grúas Industriales y Alto Tonelaje',
+    motivoTipico: 'Izaje pesado de virolas y ensamble mecánico de hornos de calcinación'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CH09',
+    equipo: 'Chuto Mack Granite (Provisión Temporal)',
+    tarifa: 100.00,
+    totalHM: 72.2,
+    costoTotalHM: 7220,
+    subcategoria: 'Transporte Pesado y Chutos',
+    motivoTipico: 'Flete y traslado de bateas y piezas estructurales pesadas a planta'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'RE02',
+    equipo: 'Retroexcavadora Case 580M Serie 2 Turbo',
+    tarifa: 62.00,
+    totalHM: 65.0,
+    costoTotalHM: 4030,
+    subcategoria: 'Movimiento de Tierra y Excavación',
+    motivoTipico: 'Excavación, canalizaciones y adecuación de fundaciones de soporte'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CA03',
+    equipo: 'Camión Plataforma Ford Cargo 815',
+    tarifa: 27.90,
+    totalHM: 136.8,
+    costoTotalHM: 3817,
+    subcategoria: 'Transporte Liviano y Logística',
+    motivoTipico: 'Distribución interna de repuestos, electrodos y materiales de taller'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CA09',
+    equipo: 'Camión Pickman Ford Cargo 1721',
+    tarifa: 36.20,
+    totalHM: 99.8,
+    costoTotalHM: 3613,
+    subcategoria: 'Transporte Mediano y Maniobras',
+    motivoTipico: 'Traslado continuo de suministros y cuadrillas a frentes de trabajo'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'MC09',
+    equipo: 'Montacarga Hyster H16.00XM-6 - 16TN',
+    tarifa: 44.10,
+    totalHM: 70.3,
+    costoTotalHM: 3100,
+    subcategoria: 'Equipos de Izaje y Carga en Patio',
+    motivoTipico: 'Movilización y estiba de perfiles estructurales en patio de acopio'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'TH01',
+    equipo: 'Telehandler Genie GTH-4013',
+    tarifa: 39.56,
+    totalHM: 69.3,
+    costoTotalHM: 2742,
+    subcategoria: 'Manipuladores Telescópicos',
+    motivoTipico: 'Posicionamiento y elevación de componentes mecánicos y ductos'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CA08',
+    equipo: 'Camión Plataforma Ford Cargo 1721',
+    tarifa: 34.10,
+    totalHM: 68.7,
+    costoTotalHM: 2343,
+    subcategoria: 'Transporte Mediano y Maniobras',
+    motivoTipico: 'Despacho y logística de insumos de almacén a frentes de montaje'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'MN01',
+    equipo: 'Motoniveladora John Deere 670G',
+    tarifa: 45.00,
+    totalHM: 31.0,
+    costoTotalHM: 1395,
+    subcategoria: 'Movimiento de Tierra y Vías',
+    motivoTipico: 'Mantenimiento y nivelación de vías de circulación de grúas de 200TN'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CH08',
+    equipo: 'Chuto Mack Granite',
+    tarifa: 100.00,
+    totalHM: 12.0,
+    costoTotalHM: 1200,
+    subcategoria: 'Transporte Pesado y Chutos',
+    motivoTipico: 'Traslado de gandolas con refractarios y vigas carril'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR21',
+    equipo: 'Grúa Liebherr LTM1140 - 140TN',
+    tarifa: 174.20,
+    totalHM: 6.0,
+    costoTotalHM: 1045,
+    subcategoria: 'Grúas Industriales y Alto Tonelaje',
+    motivoTipico: 'Montaje de tramos intermedios de chimeneas y conductos'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'MC11',
+    equipo: 'Montacarga Heli 7.0T Serie H',
+    tarifa: 23.57,
+    totalHM: 32.0,
+    costoTotalHM: 754,
+    subcategoria: 'Equipos de Levante y Maniobra',
+    motivoTipico: 'Acarreo de pallets de materiales consumibles y soldadura'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'MA01',
+    equipo: 'Manlift JLG 660SJ',
+    tarifa: 34.95,
+    totalHM: 14.5,
+    costoTotalHM: 507,
+    subcategoria: 'Equipos de Acceso en Altura',
+    motivoTipico: 'Trabajos de soldadura y torqueo en altura'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR07',
+    equipo: 'Grúa Móvil Grove RT 75S - 50TN',
+    tarifa: 78.50,
+    totalHM: 4.0,
+    costoTotalHM: 314,
+    subcategoria: 'Grúas Móviles de Terreno Difícil',
+    motivoTipico: 'Izaje en terreno no pavimentado de área de pellas'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'GR10',
+    equipo: 'Grúa Liebherr LTM1100/1 - 100TN',
+    tarifa: 181.00,
+    totalHM: 1.0,
+    costoTotalHM: 181,
+    subcategoria: 'Grúas Industriales y Alto Tonelaje',
+    motivoTipico: 'Montaje de precisión en estructuras críticas'
+  },
+  {
+    cuentaAux: 'TTE-C-0706',
+    codigo: 'CA20',
+    equipo: 'Camión Demag LTM1400 - 200TN',
+    tarifa: 190.21,
+    totalHM: 0.4,
+    costoTotalHM: 85,
+    subcategoria: 'Transporte y Soporte de Grúas Mayores',
+    motivoTipico: 'Soporte y traslado de contrapesos de grúa Demag'
+  }
+];
+
+export const TOTALES_HORAS_MAQUINA_PELLAS_OCTUBRE = {
+  totalHoras: 821,
+  totalCosto: 58500
+};
+
+export const NOTAS_HORAS_MAQUINA_PELLAS_OCTUBRE = [
+  {
+    titulo: 'Provisión Técnica Temporal (Octubre)',
+    descripcion: 'Se incorpora una provisión técnica estimada de $58.500 USD (820,5 H/M, +5,3% vs septiembre) por solicitud de Gerencia de Costos mientras se recibe el reporte oficial consolidado de horómetros de maquinaria pesada.'
+  },
+  {
+    titulo: 'Grúa Demag AC200 (Equipo Principal)',
+    descripcion: 'Concentra el 44,7% del costo estimado ($26.154 USD con 137,5 h) en izajes mecánicos pesados de virolas y hornos de Pellas.'
+  },
+  {
+    titulo: 'Regularización sin Impacto Presupuestario',
+    descripcion: 'El rubro está debidamente identificado como PROVISIÓN TEMPORAL y será ajustado al centavo contra los partes definitivos de campo en la conciliación del próximo corte mensual.'
+  }
+];
+
+

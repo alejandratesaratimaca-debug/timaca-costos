@@ -309,13 +309,14 @@ def get_code():
 
       tablaHM.forEach(eq => {
         const isGR20 = eq.codigo === 'GR20';
+        const costVal = eq.costoTotalHM ?? eq.costoTotal ?? 0;
         hmRows.push([
           { text: eq.cuentaAux, options: { align: 'left', fontSize: 7.5, fontFace: 'Consolas', color: '64748B' } },
           { text: eq.codigo, options: { align: 'center', fontSize: 7.5, bold: true, fontFace: 'Consolas', color: isGR20 ? C_AMBER : C_BLUE } },
           { text: eq.equipo, options: { align: 'left', fontSize: 7.5, bold: isGR20 } },
           { text: `$${eq.tarifa}`, options: { align: 'right', fontSize: 7.5, fontFace: 'Consolas' } },
           { text: `${eq.totalHM}`, options: { align: 'right', fontSize: 7.5, fontFace: 'Consolas', bold: true } },
-          { text: `$${Math.round(eq.costoTotal).toLocaleString('de-DE')}`, options: { align: 'right', fontSize: 7.5, bold: true, fontFace: 'Consolas', color: isGR20 ? '92400E' : C_DARK } }
+          { text: `$${Math.round(costVal).toLocaleString('de-DE')}`, options: { align: 'right', fontSize: 7.5, bold: true, fontFace: 'Consolas', color: isGR20 ? '92400E' : C_DARK } }
         ]);
       });
 

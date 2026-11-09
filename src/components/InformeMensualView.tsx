@@ -99,7 +99,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
   const [slide6Tab, setSlide6Tab] = useState<'servicios' | 'horasMaquina'>('servicios');
   const [slidePmhTab, setSlidePmhTab] = useState<'ambos' | 'materiales' | 'obras'>('ambos');
   const [slideDravoTab, setSlideDravoTab] = useState<'evolucion' | 'blindajes'>('evolucion');
-  const [slide7Tab, setSlide7Tab] = useState<'prorrateo' | 'subconceptos'>('prorrateo');
+  const [slide7Tab, setSlide7Tab] = useState<'tabla' | 'subconceptos' | 'prorrateo'>('tabla');
   const [slide8Tab, setSlide8Tab] = useState<'semaforo' | 'notas'>('semaforo');
 
   // Aspect ratio mode: '4:3' (Cuadrada, más balanceada y ejecutiva) o '16:9' (Panorámica estándar)
@@ -1764,8 +1764,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <p className="text-[11px] text-emerald-800 leading-tight">
                                 <strong>• Nómina Refractario Briquetas (TTE-C-0668):</strong> Sumada al frente de Briquetas (Sem 40 a 43) por <strong>$9.000 USD</strong> y <strong>1.104 HH</strong> (10 trabajadores).
                               </p>
-                              <p className="text-[11px] text-amber-800 leading-tight border-t border-emerald-200 pt-1 mt-1">
-                                <strong>• Horas Máquina:</strong> Pendiente reporte consolidado de horómetros de grúas y flota pesada (reflejado preliminarmente en $0 USD).
+                              <p className="text-[11px] text-emerald-800 leading-tight border-t border-emerald-200 pt-1 mt-1">
+                                <strong>• Horas Máquina (Provisión Temporal):</strong> Incorporada provisión técnica estimada de <strong>$58.500 USD</strong> y <strong>820,5 H/M</strong> en 16 equipos de Pellas Línea 1, garantizando continuidad contable a la espera de la entrega formal de partes de horómetros.
                               </p>
                             </div>
 
@@ -3334,6 +3334,13 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               </div>
                             </div>
 
+                            {selectedMesNum === 10 && (
+                              <div className="p-3 bg-amber-50/90 border-b border-amber-200 text-amber-950 text-xs flex items-center gap-2 font-medium">
+                                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                                <span><strong>Provisión Técnica Temporal:</strong> Estimación operativa de $58.500 USD (820,5 H/M, +5,3% vs septiembre) en 16 equipos activos asignados a Pellas Línea 1, sujeta a conciliación definitiva con los partes de horómetros de campo.</span>
+                              </div>
+                            )}
+
                             {/* Equipment Table matching Slide exactly */}
                             <div className="overflow-x-auto max-h-[360px] overflow-y-auto">
                               <table className="w-full text-left text-xs border-collapse">
@@ -3803,15 +3810,15 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                   {/* Tabs Switcher for Slide 7 */}
                   <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
                     <button
-                      onClick={() => setSlide7Tab('prorrateo')}
+                      onClick={() => setSlide7Tab('tabla')}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        slide7Tab === 'prorrateo'
+                        slide7Tab === 'tabla'
                           ? 'bg-[#0b2545] text-white shadow-xs'
                           : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                       }`}
                     >
-                      <PieIcon className="w-3.5 h-3.5" />
-                      <span>Prorrateo Pellas vs Resto</span>
+                      <TableProperties className="w-3.5 h-3.5" />
+                      <span>Matriz de Prorrateo por Proyecto</span>
                     </button>
                     <button
                       onClick={() => setSlide7Tab('subconceptos')}
@@ -3822,12 +3829,233 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       }`}
                     >
                       <Layers className="w-3.5 h-3.5" />
-                      <span>Subconceptos de Soporte</span>
+                      <span>Estructura Bolsa CIF ($344K)</span>
+                    </button>
+                    <button
+                      onClick={() => setSlide7Tab('prorrateo')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        slide7Tab === 'prorrateo'
+                          ? 'bg-[#0b2545] text-white shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                      }`}
+                    >
+                      <PieIcon className="w-3.5 h-3.5" />
+                      <span>Distribución Visual & Metodología</span>
                     </button>
                   </div>
                 </div>
 
-                {/* TAB 1: PRORRATEO Y ABSORCIÓN DONUT */}
+                {/* TAB 1: TABLA OFICIAL DE PRORRATEO POR PROYECTO (DE MAYOR A MENOR) */}
+                {slide7Tab === 'tabla' && (
+                  <div className="space-y-4 animate-fade-in">
+                    {/* 4 KPI Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase block">Bolsa Total CIF del Mes</span>
+                        <span className="text-xl font-black font-mono text-[#0b2545] block mt-0.5">
+                          ${(selectedMesNum === 10 ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')} USD
+                        </span>
+                        <span className="text-[10.5px] text-slate-500">Total general a distribuir</span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase block">Base de Asignación (MOD)</span>
+                        <span className="text-xl font-black font-mono text-emerald-800 block mt-0.5">
+                          ${(selectedMesNum === 10 ? 257750 : 229149).toLocaleString('de-DE')} USD
+                        </span>
+                        <span className="text-[10.5px] text-emerald-700">100% nómina directa devengada</span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase block">Mayor Absorción (Pellas 1)</span>
+                        <span className="text-xl font-black font-mono text-[#002060] block mt-0.5">
+                          ${(selectedMesNum === 10 ? 175410 : 236688).toLocaleString('de-DE')} USD
+                        </span>
+                        <span className="text-[10.5px] text-blue-700 font-semibold">{selectedMesNum === 10 ? '50,90%' : '60,17%'} de absorción total</span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase block">Resto de Proyectos</span>
+                        <span className="text-xl font-black font-mono text-amber-700 block mt-0.5">
+                          ${(selectedMesNum === 10 ? 169219 : 156687).toLocaleString('de-DE')} USD
+                        </span>
+                        <span className="text-[10.5px] text-amber-700 font-semibold">{selectedMesNum === 10 ? '49,10% en 6 frentes' : '39,83% restante'}</span>
+                      </div>
+                    </div>
+
+                    {/* Official Prorrateo Table */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+                      <div className="p-3 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+                            Matriz Contable de Prorrateo de Costos Indirectos (Ordenada de Mayor a Menor)
+                          </h4>
+                        </div>
+                        <span className="text-[11px] font-mono font-bold px-2.5 py-1 bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg">
+                          Fórmula: (MOD Proyecto ÷ MOD Total) × Bolsa CIF
+                        </span>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead className="bg-[#0b2545] text-white font-bold">
+                            <tr>
+                              <th className="py-2.5 px-3 text-center min-w-[45px]">#</th>
+                              <th className="py-2.5 px-3 min-w-[220px]">Proyecto / Frente de Obra</th>
+                              <th className="py-2.5 px-3 text-center font-mono min-w-[110px]">Cuenta Auxiliar</th>
+                              <th className="py-2.5 px-3 text-right font-mono min-w-[120px]">Mano de Obra (MOD)</th>
+                              <th className="py-2.5 px-3 text-center font-mono min-w-[90px]">% MOD</th>
+                              <th className="py-2.5 px-3 text-right font-mono bg-slate-900 min-w-[150px]">Prorrateo CIF (USD)</th>
+                              <th className="py-2.5 px-3 min-w-[140px]">Participación Visual</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 font-medium">
+                            {(selectedMesNum === 10 ? [
+                              { rank: 1, proyecto: 'Recuperación Línea 1 Pellas', cta: 'TTE-C-0706', mod: 131190, pct: 50.90, cif: 175409.81, color: '#002060' },
+                              { rank: 2, proyecto: 'Segunda Línea PMH', cta: 'TTE-C-0671', mod: 79030, pct: 30.66, cif: 105668.40, color: '#2563eb' },
+                              { rank: 3, proyecto: 'Fase 2 Planta Briquetas (incl. Refractario $9K)', cta: 'TTE-C-0668', mod: 23925, pct: 9.28, cif: 31989.33, color: '#059669' },
+                              { rank: 4, proyecto: 'Servicio Mantenimiento Boca Grande II', cta: 'TTE-C-0680', mod: 13685, pct: 5.31, cif: 18297.76, color: '#d97706' },
+                              { rank: 5, proyecto: 'Mantenimiento Briqueteadoras', cta: 'TTE-C-0670', mod: 5100, pct: 1.98, cif: 6819.04, color: '#0891b2' },
+                              { rank: 6, proyecto: 'Suministro Caldera Briquetas', cta: 'TTE-C-0694', mod: 3190, pct: 1.24, cif: 4265.24, color: '#7c3aed' },
+                              { rank: 7, proyecto: 'Rehabilitación de Bandas PMH', cta: 'TTE-C-0656', mod: 1630, pct: 0.63, cif: 2179.42, color: '#e11d48' },
+                            ] : [
+                              { rank: 1, proyecto: 'Recuperación Línea 1 Pellas', cta: 'TTE-C-0706', mod: 137878, pct: 60.17, cif: 236688.09, color: '#002060' },
+                              { rank: 2, proyecto: 'Servicio Mantenimiento Boca Grande II', cta: 'TTE-C-0680', mod: 28551, pct: 12.46, cif: 49007.60, color: '#d97706' },
+                              { rank: 3, proyecto: 'Fase 2 Planta Briquetas', cta: 'TTE-C-0668', mod: 23400, pct: 10.21, cif: 40166.75, color: '#059669' },
+                              { rank: 4, proyecto: 'Segunda Línea PMH', cta: 'TTE-C-0671', mod: 23003, pct: 10.04, cif: 39485.45, color: '#2563eb' },
+                              { rank: 5, proyecto: 'Rehabilitación de Bandas PMH', cta: 'TTE-C-0656', mod: 16340, pct: 7.13, cif: 28027.11, color: '#e11d48' },
+                            ]).map((r) => (
+                              <tr 
+                                key={r.rank} 
+                                className={r.rank === 1 ? 'bg-blue-50/50 hover:bg-blue-100/50 font-semibold' : 'hover:bg-slate-50 transition-colors'}
+                              >
+                                <td className="py-2.5 px-3 text-center font-mono font-bold text-slate-500">{r.rank}</td>
+                                <td className="py-2.5 px-3 text-slate-900 font-bold flex items-center gap-2">
+                                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: r.color }} />
+                                  <span>{r.proyecto}</span>
+                                </td>
+                                <td className="py-2.5 px-3 text-center font-mono text-slate-600 font-medium">{r.cta}</td>
+                                <td className="py-2.5 px-3 text-right font-mono text-slate-700">${Math.round(r.mod).toLocaleString('de-DE')} USD</td>
+                                <td className="py-2.5 px-3 text-center font-mono font-bold text-blue-800">{r.pct.toFixed(2)}%</td>
+                                <td className="py-2.5 px-3 text-right font-mono font-black text-emerald-900 bg-emerald-50/40">
+                                  ${r.cif.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                                </td>
+                                <td className="py-2.5 px-3">
+                                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                    <div style={{ width: `${r.pct}%`, backgroundColor: r.color }} className="h-full rounded-full" />
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                          <tfoot className="bg-slate-100 border-t-2 border-slate-300 font-black text-xs text-slate-900">
+                            <tr>
+                              <td className="py-3 px-3 text-center font-mono">—</td>
+                              <td className="py-3 px-3">TOTAL GENERAL PRORRATEADO</td>
+                              <td className="py-3 px-3 text-center font-mono text-slate-600">7 Cuentas</td>
+                              <td className="py-3 px-3 text-right font-mono text-slate-900">
+                                ${(selectedMesNum === 10 ? 257750 : 229149).toLocaleString('de-DE')} USD
+                              </td>
+                              <td className="py-3 px-3 text-center font-mono text-blue-900">100,00%</td>
+                              <td className="py-3 px-3 text-right font-mono text-emerald-900 bg-emerald-100/80 text-sm">
+                                ${(selectedMesNum === 10 ? 344629 : 393375).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                              </td>
+                              <td className="py-3 px-3 text-[11px] text-emerald-800 font-bold">Cuadre exacto al centavo ($0,00)</td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200 text-xs text-blue-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span><strong>Trazabilidad Contable:</strong> Sincronizado al 100% con la Hoja 2 (Q5:V16) del archivo maestro <em>3 Analisis Costos Indirectos.xlsx</em>.</span>
+                      </div>
+                      <span className="text-[11px] font-mono text-slate-600">Base auditada de nómina devengada: $257.750,00 USD</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: SUBCONCEPTOS DE SOPORTE (CUENTAS REALES DE EXCEL) */}
+                {slide7Tab === 'subconceptos' && (
+                  <div className="space-y-4 animate-fade-in">
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <div>
+                          <span className="text-xs font-bold text-[#0b2545] uppercase tracking-wider block">
+                            Estructura Real de la Bolsa de Costos Indirectos y Soporte ({activeMonth?.mesLabel})
+                          </span>
+                          <span className="text-[11px] text-slate-500">
+                            Desglose de las cuentas contables de la Hoja 2 del Excel de Costos Indirectos
+                          </span>
+                        </div>
+                        <span className="text-sm font-mono font-black text-[#0b2545] bg-slate-100 px-3 py-1 rounded-lg">
+                          Total: ${(selectedMesNum === 10 ? 344629 : 393375).toLocaleString('de-DE')} USD
+                        </span>
+                      </div>
+
+                      <div className="space-y-2.5 pt-1">
+                        {(selectedMesNum === 10 ? [
+                          { num: 1, concept: 'Nómina - Talleres Centrales TIMACA', monto: 123000, pct: 35.69, desc: 'Cuadrillas de mecánicos, torneros, mantenimiento de grúas y pailería central de talleres.' },
+                          { num: 2, concept: 'Nómina Personal TIMACA (Dirección Técnica)', monto: 75000, pct: 21.76, desc: 'Ingenieros residentes, supervisores de seguridad, control de calidad y analistas de costo en planta.' },
+                          { num: 3, concept: 'Sindicato (Aporte y Gestión Gremial)', monto: 59000, pct: 17.12, desc: 'Obligaciones contractuales de convención colectiva, dotaciones reglamentarias y bienestar laboral.' },
+                          { num: 4, concept: 'Combustible y Lubricantes de Flota', monto: 50000, pct: 14.51, desc: 'Abastecimiento de gasoil y lubricantes para transporte de soporte, plantas y generadores auxiliares.' },
+                          { num: 5, concept: 'Otros Servicios Contratados de Admón.', monto: 9900, pct: 2.87, desc: 'Servicios de soporte administrativo externo, consultoría técnica y soporte corporativo.' },
+                          { num: 6, concept: 'Timbres Fiscales / Notarías / Registros', monto: 7600, pct: 2.21, desc: 'Trámites legales, notarizaciones y sellado fiscal de contratos de obra.' },
+                          { num: 7, concept: 'Incentivos Laborales (Bonos de Obra)', monto: 7000, pct: 2.03, desc: 'Bonificaciones por cumplimiento de metas de producción, paradas y turnos extendidos.' },
+                          { num: 8, concept: 'Vigilancia Perimetral y Custodia 24/7', monto: 4803, pct: 1.39, desc: 'Custodia patrimonial y seguridad perimetral 24/7 en instalaciones centrales, talleres y almacenes.' },
+                          { num: 9, concept: 'Gastos de Viajes y Viáticos Nacionales', monto: 4500, pct: 1.31, desc: 'Movilización técnica de ingenieros especialistas e inspecciones en frentes de obra.' },
+                          { num: 10, concept: 'Servicios Públicos (Electricidad, Agua)', monto: 2600, pct: 0.75, desc: 'Suministro de energía eléctrica e instalaciones sanitarias de talleres centrales.' },
+                          { num: 11, concept: 'Servicios de Telecomunicaciones', monto: 600, pct: 0.17, desc: 'Telefonía corporativa, enlaces satelitales y conectividad de campo.' },
+                          { num: 12, concept: 'Gastos de Seguro y Pólizas', monto: 270, pct: 0.08, desc: 'Pólizas de responsabilidad civil y coberturas auxiliares.' },
+                          { num: 13, concept: 'Honorarios Profesionales', monto: 250, pct: 0.07, desc: 'Asesorías especializadas legales y tributarias.' },
+                          { num: 14, concept: 'Gastos de Asociación / Suscripción', monto: 56, pct: 0.02, desc: 'Cuotas de colegios gremiales y cámaras industriales.' },
+                          { num: 15, concept: 'Gastos de Servicios Bancarios', monto: 50, pct: 0.01, desc: 'Comisiones y mantenimiento operativo de cuentas bancarias.' }
+                        ] : [
+                          { num: 1, concept: 'Nómina Interna y Dirección Técnica TIMACA', monto: 125000, pct: 31.78, desc: 'Ingenieros residentes, supervisores de seguridad industrial, control de proyectos y gerencia técnica en planta y campo.' },
+                          { num: 2, concept: 'Nómina de Talleres y Mantenimiento Central', monto: 122000, pct: 31.01, desc: 'Mecánicos, electricistas de planta, torneros, mantenimiento de grúas y soporte de pailería central.' },
+                          { num: 3, concept: 'Aporte y Gestión Sindical', monto: 58952, pct: 14.99, desc: 'Obligaciones contractuales de convención colectiva, aportes gremiales, dotaciones reglamentarias y bienestar laboral.' },
+                          { num: 4, concept: 'Combustible y Lubricantes de Soporte', monto: 50413, desc: 'Abastecimiento de gasoil y lubricantes para transporte de soporte, generadores auxiliares y logística de planta.', pct: 12.82 },
+                          { num: 5, concept: 'Otros Costos Indirectos y Operativos', monto: 25507, pct: 6.48, desc: 'Mantenimiento menor de campamentos, consumibles de oficina de obra, ferretería auxiliar y gastos de soporte.' },
+                          { num: 6, concept: 'Bonificaciones de Productividad y Campo', monto: 6700, pct: 1.70, desc: 'Incentivos por cumplimiento de metas de producción, paradas de planta y turnos extendidos.' },
+                          { num: 7, concept: 'Seguridad y Vigilancia Perimetral', monto: 4803, pct: 1.22, desc: 'Custodia patrimonial y seguridad perimetral 24/7 en instalaciones centrales, talleres y almacenes.' }
+                        ]).map((sub, idx) => {
+                          const maxVal = 130000;
+                          const pctBar = Math.min(100, Math.round((sub.monto / maxVal) * 100));
+
+                          return (
+                            <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                              <div className="flex items-center justify-between text-xs">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-mono font-bold text-slate-400 w-4">{sub.num}.</span>
+                                  <strong className="text-slate-900 font-bold">{sub.concept}</strong>
+                                </div>
+                                <div className="flex items-center gap-2 font-mono">
+                                  <span className="text-[11px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                                    {sub.pct.toFixed(2)}%
+                                  </span>
+                                  <span className="font-bold text-[#0b2545] text-sm">
+                                    ${sub.monto.toLocaleString('de-DE')} USD
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                <div style={{ width: `${pctBar}%` }} className="h-full bg-[#002060] rounded-full" />
+                              </div>
+                              <p className="text-[10.5px] text-slate-500 leading-snug">
+                                {sub.desc}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: PRORRATEO Y ABSORCIÓN DONUT */}
                 {slide7Tab === 'prorrateo' && (
                   <div className="space-y-4 animate-fade-in">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
@@ -3886,7 +4114,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                             <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400">Total CIF</span>
                             <span className="text-xl font-black text-[#0b2545] font-mono leading-tight">
-                              ${categoriasMesAnalisis[4]?.monto.toLocaleString('de-DE')}
+                              ${(selectedMesNum === 10 ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')}
                             </span>
                             <span className="text-[10px] font-bold text-slate-500">USD</span>
                           </div>
@@ -3941,73 +4169,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     </div>
 
                     <div className="p-3 rounded-xl bg-slate-100 border border-slate-300 text-xs text-slate-800 flex justify-between items-center">
-                      <span><strong>Total Indirectos {activeMonth?.mesLabel?.split(' ')[0]}:</strong> ${categoriasMesAnalisis[4]?.monto.toLocaleString('de-DE')} USD</span>
+                      <span><strong>Total Indirectos {activeMonth?.mesLabel?.split(' ')[0]}:</strong> ${(selectedMesNum === 10 ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')} USD</span>
                       <span><strong>Pellas Línea 1 ({selectedMesNum === 10 ? '50,9%' : '60,2%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.509 : 0.602)).toLocaleString('de-DE')} USD</span>
                       <span><strong>Demás Proyectos ({selectedMesNum === 10 ? '49,1%' : '39,8%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.491 : 0.398)).toLocaleString('de-DE')} USD</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 2: SUBCONCEPTOS DE SOPORTE */}
-                {slide7Tab === 'subconceptos' && (
-                  <div className="space-y-4 animate-fade-in">
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-                      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                        <span className="text-xs font-bold text-[#0b2545] uppercase tracking-wider">
-                          Composición de Costos Indirectos de Fabricación y Soporte ({activeMonth?.mesLabel})
-                        </span>
-                        <span className="text-xs font-mono font-bold text-slate-500">
-                          Total: ${categoriasMesAnalisis[4]?.monto.toLocaleString('de-DE')} USD
-                        </span>
-                      </div>
-
-                      <div className="space-y-3 pt-1">
-                        {(selectedMesNum === 9 ? [
-                          { concept: 'Nómina Interna y Dirección Técnica TIMACA', monto: 125000, desc: 'Ingenieros residentes, supervisores de seguridad industrial, control de proyectos y gerencia técnica en planta y campo.' },
-                          { concept: 'Nómina de Talleres y Mantenimiento Central', monto: 122000, desc: 'Mecánicos, electricistas de planta, torneros, mantenimiento de grúas y soporte de pailería central.' },
-                          { concept: 'Aporte y Gestión Sindical', monto: 58952, desc: 'Obligaciones contractuales de convención colectiva, aportes gremiales, dotaciones reglamentarias y bienestar laboral.' },
-                          { concept: 'Combustible y Lubricantes de Soporte', monto: 50413, desc: 'Abastecimiento de gasoil y lubricantes para transporte de soporte, generadores auxiliares y logística de planta.' },
-                          { concept: 'Otros Costos Indirectos y Operativos', monto: 25507, desc: 'Mantenimiento menor de campamentos, consumibles de oficina de obra, ferretería auxiliar y gastos de soporte.' },
-                          { concept: 'Bonificaciones de Productividad y Campo', monto: 6700, desc: 'Incentivos por cumplimiento de metas de producción, paradas de planta y turnos extendidos.' },
-                          { concept: 'Seguridad y Vigilancia Perimetral', monto: 4803, desc: 'Custodia patrimonial y seguridad perimetral 24/7 en instalaciones centrales, talleres y almacenes.' }
-                        ] : [
-                          { concept: 'Nómina Interna y Dirección Técnica de Obra', monto: 125000, desc: 'Ingenieros residentes, supervisores de seguridad, control de calidad y analistas de costo en planta.' },
-                          { concept: 'Nómina de Talleres y Mantenimiento Central', monto: 122000, desc: 'Cuadrillas de mantenimiento de maquinaria, puente grúas de talleres y logística interna.' },
-                          { concept: 'Aporte y Gestión Sindical', monto: 57000, desc: 'Obligaciones contractuales de convención colectiva y bienestar laboral.' },
-                          { concept: 'Combustible y Lubricantes de Flota', monto: 28000, desc: 'Abastecimiento de gasoil y lubricantes para camiones de transporte y generadores auxiliares.' },
-                          { concept: 'Seguridad, Vigilancia Integral y Pólizas', monto: 18000, desc: 'Custodia perimetral 24/7 en talleres y frentes de obra de Puerto Ordaz.' }
-                        ]).map((sub, idx) => {
-                          const totalCif = categoriasMesAnalisis[4]?.monto || 393375;
-                          const pctDelTotal = Math.round((sub.monto / totalCif) * 1000) / 10;
-                          const maxVal = 130000;
-                          const pctBar = Math.min(100, Math.round((sub.monto / maxVal) * 100));
-
-                          return (
-                            <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
-                              <div className="flex items-center justify-between text-xs">
-                                <div className="flex items-center gap-2">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-[#002060]" />
-                                  <strong className="text-slate-900 font-bold">{sub.concept}</strong>
-                                </div>
-                                <div className="flex items-center gap-2 font-mono">
-                                  <span className="text-[11px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
-                                    {pctDelTotal}%
-                                  </span>
-                                  <span className="font-bold text-[#0b2545] text-sm">
-                                    ${sub.monto.toLocaleString('de-DE')} USD
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                                <div style={{ width: `${pctBar}%` }} className="h-full bg-[#002060] rounded-full" />
-                              </div>
-                              <p className="text-[11px] text-slate-500 leading-snug">
-                                {sub.desc}
-                              </p>
-                            </div>
-                          );
-                        })}
-                      </div>
                     </div>
                   </div>
                 )}

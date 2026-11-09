@@ -17,7 +17,10 @@ import {
   NOTAS_HORAS_MAQUINA_PELLAS,
   TABLA_HORAS_MAQUINA_PELLAS_SEPTIEMBRE_OFICIAL,
   TOTALES_HORAS_MAQUINA_PELLAS_SEPTIEMBRE,
-  NOTAS_HORAS_MAQUINA_PELLAS_SEPTIEMBRE
+  NOTAS_HORAS_MAQUINA_PELLAS_SEPTIEMBRE,
+  TABLA_HORAS_MAQUINA_PELLAS_OCTUBRE_OFICIAL,
+  TOTALES_HORAS_MAQUINA_PELLAS_OCTUBRE,
+  NOTAS_HORAS_MAQUINA_PELLAS_OCTUBRE
 } from './mockHorasMaquinaPellas';
 
 export const MESES_NOMBRES = [
@@ -520,17 +523,14 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   // 5. LÁMINA 6: SERVICIOS Y HORAS MÁQUINA
   // -------------------------------------------------------------
   const horasMaquina: HorasMaquinaModel = selectedMesNum === 10 ? {
-    estado: 'retraso',
-    totalHoras: 0,
-    totalCosto: 0,
-    mensajeAlerta: 'HORAS MÁQUINA EN CONCILIACIÓN: Se registra retraso en la recepción de partes de horómetros de maquinaria pesada y grúas de obra. El rubro figura preliminarmente en $0,00 USD en la matriz analítica de costos a la espera de la entrega técnica formal.',
-    tituloLámina: 'PROYECTO PELLAS 1: HORAS MÁQUINA (CONCILIACIÓN EN CURSO · OCTUBRE)',
-    subtituloLámina: 'Reporte consolidado de grúas y flota pesada en proceso de validación técnica',
-    tablaEquipos: [],
-    notas: [
-      { id: '1', texto: 'Se mantiene preliminarmente en $0,00 USD debido a retraso en partes de horómetros de taller y obra.' },
-      { id: '2', texto: 'Se incorporará en la reconciliación mensual definitiva una vez recibida la certificación de equipos.' }
-    ]
+    estado: 'disponible',
+    totalHoras: TOTALES_HORAS_MAQUINA_PELLAS_OCTUBRE.totalHoras,
+    totalCosto: TOTALES_HORAS_MAQUINA_PELLAS_OCTUBRE.totalCosto,
+    mensajeAlerta: 'PROVISIÓN TEMPORAL ESTIMADA: Se registra un valor provisional de $58.500 USD (820,5 H/M, +5,3% vs sep) a la espera de la entrega formal de partes de horómetros por parte de supervisión de equipos.',
+    tituloLámina: `PROYECTO PELLAS 1: HORAS MÁQUINA (PROVISIÓN TEMPORAL · ${TABLA_HORAS_MAQUINA_PELLAS_OCTUBRE_OFICIAL.length} EQUIPOS · OCTUBRE)`,
+    subtituloLámina: 'Estimación técnica provisional de 820,5 horas ($58.500 USD) en 16 equipos activos sujeta a reconciliación final',
+    tablaEquipos: TABLA_HORAS_MAQUINA_PELLAS_OCTUBRE_OFICIAL,
+    notas: NOTAS_HORAS_MAQUINA_PELLAS_OCTUBRE
   } : selectedMesNum === 9 ? {
     estado: 'disponible',
     totalHoras: TOTALES_HORAS_MAQUINA_PELLAS_SEPTIEMBRE.totalHoras,

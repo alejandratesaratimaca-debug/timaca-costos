@@ -76,7 +76,7 @@ def get_code():
 
     slide.addText(
       isOct
-        ? '• Conciliación de Horas Máquina (Octubre): Retraso en entrega de partes de horómetros de maquinaria pesada y grúas; rubro figura en $0,00 USD a la espera de regularización técnica.\\n' +
+        ? '• Conciliación de Horas Máquina (Octubre): Incorporada provisión técnica temporal de $58.500 USD (821 H/M en 16 equipos de Pellas) a la espera de conciliación con horómetros finales.\\n' +
           '• Regularización Nómina Boca Grande II: Cuenta TTE-C-0680 regularizada tras incorporar los 4 cortes semanales de RRHH ($13.685 USD / 3.946 HH), activando la cuenta con 23 trabajadores.\\n' +
           '• Auditoría de Vales de Almacén: Seguimiento a vales de salida pendientes de descargo físico en almacenes de obra.'
         : '• Conciliación Horómetros de Equipos Propios: Se requiere mayor celeridad en la entrega de reportes semanales de horómetros para evitar imputaciones tardías.\\n' +
@@ -202,7 +202,7 @@ def get_code():
     const dictamenDefault = isOct
       ? `Para el período correspondiente a Octubre 2026, el gasto operativo consolidado en proyectos externos alcanzó $1.444.345,28 USD (ocho proyectos activos con imputación contable purificada al 100%).\\n\\n` +
         `El proyecto con mayor ejecución fue Línea 1 Pellas (TTE-C-0706) con $867.861 USD (60,1% del total mensual), seguido por Planta PMH Segunda Línea (TTE-C-0671) con $73.300 USD y DRAVO PA-9020 con $106.812 USD.\\n\\n` +
-        `Se deja constancia formal de que el rubro Horas Máquina figura en $0,00 USD debido a retraso en la recepción de partes de horómetros por parte de la jefatura de equipos pesados, y la Nómina de Boca Grande II se mantiene pendiente de procesamiento por RRHH. Ambos rubros serán reconciliados sin impacto presupuestario adverso en el próximo cierre contable.`
+        `Se deja constancia formal de que el rubro Horas Máquina incluye una provisión técnica temporal de $58.500 USD (821 H/M en 16 equipos de Pellas Línea 1) para continuidad contable a la espera de la recepción final de partes de horómetros por parte de la jefatura de equipos pesados.`
       : `Para el período correspondiente a Septiembre 2026, el gasto operativo consolidado en proyectos externos se situó en $1.613.225 USD, distribuidos en 10 cuentas auxiliares activas.\\n\\n` +
         `El proyecto con mayor ejecución fue Línea 1 Pellas con $668.340 USD (40,8% del total mensual), seguido por DRAVO PA-9020 con $199.356 USD (parada técnica mayor con suministro concentrado de blindajes Hardox).\\n\\n` +
         `La distribución del costo por categorías se mantuvo alineada con las necesidades de procura y fuerza laboral directa (64.585 HH devengadas), orientada a la máxima eficiencia operativa y al estricto cumplimiento de los hitos de entrega con el cliente.`;

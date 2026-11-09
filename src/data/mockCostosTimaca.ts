@@ -152,11 +152,11 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Horas Máquina',
-    meses: [145113, 113686, 149030, 55110, 129625, 69063, 75933, 87975.46, 53398.08, 0],
-    total2026: 878933.54,
-    variacion: '0,0%',
-    variacionNum: 0,
-    esPositiva: false
+    meses: [145113, 113686, 149030, 55110, 129625, 69063, 75933, 87975.46, 53398.08, 58500.00],
+    total2026: 937433.54,
+    variacion: '+9,6%',
+    variacionNum: 9.6,
+    esPositiva: true
   },
   {
     categoria: 'Costos Indirectos',
