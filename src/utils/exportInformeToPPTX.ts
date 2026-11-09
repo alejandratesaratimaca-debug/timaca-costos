@@ -753,12 +753,19 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      'NOTAS OPERATIVAS DE CONTROL (JUSTIFICACIÓN DE VARIACIONES):\n' +
-      '• Materiales Directos (+133,4% / +$496.140 USD): Incremento neto mensual de $371.927 USD a $868.067 USD concentrado en tres frentes: Segunda Línea PMH ($249.494 USD en perfiles A36, apoyos, conduit y concreto), Rueda DRAVO ($182.885 USD en planchas Hardox 450/500 y componentes mecánicos) y Pellas Línea 1 ($173.833 USD en calderería y tolvas), sumando entre los tres $606.212 USD (69,8% de los materiales del mes).\n' +
-      '• Costos Indirectos CIF (+15,7% / +$53.397 USD): Variación neta mensual de $339.978 USD a $393.375 USD impulsada por los rubros operativos variables de soporte (combustible de flota auxiliar, compromisos sindicales y consumibles menores), manteniéndose estables las cuotas mensuales de nómina indirecta de estructura ($247.000 USD entre administración y taller central).\n' +
-      '• Servicios Directos (-15,6% / -$18.430 USD): Disminución neta en los restantes proyectos de obra (-$24.380 USD) tras culminar fletes extrapesados y ensayos END en agosto, mientras Pellas Línea 1 incrementó su logística de transporte de personal y vigilancia ($69.056 USD, +$5.950 USD vs agosto).\n' +
-      '• Mano de Obra Directa (-29,2% / -$81.271 USD): Agosto computó 5 semanas con sobretiempo extraordinario por parada de planta, mientras septiembre computó 4 semanas operativas regulares (55.277 HH @ $3,56 USD/HH sin pasivos diferidos).\n' +
-      '• Horas Máquina (-38,1% / -$34.211 USD): Culminación de maniobras pesadas de la Demag AC200 en agosto; en septiembre los 16 equipos activos en Pellas sumaron 811,7 h ($46.178 USD en 5 grúas y $9.400 USD en 11 equipos de soporte).',
+      isOct
+        ? 'NOTAS OPERATIVAS DE CONTROL (JUSTIFICACIÓN DE VARIACIONES - OCTUBRE 2026):\n' +
+          '• Servicios Especializados (+872% vs sep): Inyección estratégica en instrumentación, ingeniería y automatización para Línea 1 Pellas con Yokogawa ($686K) y Henan Front ($40K).\n' +
+          '• Materiales Directos: Procura SIP ($476.866 USD) para calderería y tolvas en Pellas Línea 1 ($174K), Segunda Línea PMH ($258K) y Rueda DRAVO ($106K).\n' +
+          '• Costos Indirectos (CIF): $344.629 USD en estructura corporativa de administración, talleres centrales, combustible y soporte de flota.\n' +
+          '• Mano de Obra Directa (MOD): Devengado procesado de cuadrillas en Pellas, PMH y Briquetas. Nota de control: Se registra retraso en la recepción de la nómina de cuadrilla en Boca Grande II (TTE-C-0680), que se incorporará al recibir el corte de RRHH.\n' +
+          '• Horas Máquina: El rubro se mantiene preliminarmente en $0,00 USD debido a retraso operativo en la consolidación de partes de horómetros y reporte de utilización de maquinaria pesada.'
+        : 'NOTAS OPERATIVAS DE CONTROL (JUSTIFICACIÓN DE VARIACIONES):\n' +
+          '• Materiales Directos (+133,4% / +$496.140 USD): Incremento neto mensual de $371.927 USD a $868.067 USD concentrado en tres frentes: Segunda Línea PMH ($249.494 USD en perfiles A36, apoyos, conduit y concreto), Rueda DRAVO ($182.885 USD en planchas Hardox 450/500 y componentes mecánicos) y Pellas Línea 1 ($173.833 USD en calderería y tolvas), sumando entre los tres $606.212 USD (69,8% de los materiales del mes).\n' +
+          '• Costos Indirectos CIF (+15,7% / +$53.397 USD): Variación neta mensual de $339.978 USD a $393.375 USD impulsada por los rubros operativos variables de soporte (combustible de flota auxiliar, compromisos sindicales y consumibles menores), manteniéndose estables las cuotas mensuales de nómina indirecta de estructura ($247.000 USD entre administración y taller central).\n' +
+          '• Servicios Directos (-15,6% / -$18.430 USD): Disminución neta en los restantes proyectos de obra (-$24.380 USD) tras culminar fletes extrapesados y ensayos END en agosto, mientras Pellas Línea 1 incrementó su logística de transporte de personal y vigilancia ($69.056 USD, +$5.950 USD vs agosto).\n' +
+          '• Mano de Obra Directa (-29,2% / -$81.271 USD): Agosto computó 5 semanas con sobretiempo extraordinario por parada de planta, mientras septiembre computó 4 semanas operativas regulares (55.277 HH @ $3,56 USD/HH sin pasivos diferidos).\n' +
+          '• Horas Máquina (-38,1% / -$34.211 USD): Culminación de maniobras pesadas de la Demag AC200 en agosto; en septiembre los 16 equipos activos en Pellas sumaron 811,7 h ($46.178 USD en 5 grúas y $9.400 USD en 11 equipos de soporte).',
       {
         x: 0.75,
         y: 5.34,
@@ -858,17 +865,24 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      '• Ciclo Operativo de Nómina Directa:\n' +
-      '  La nómina imputada a Septiembre totaliza 4 cortes semanales de pago del período contable (Semanas 36 a 39 de Recursos Humanos):\n' +
-      '    - Semana 36 (Corte 05/09): $54.804 USD (15.433 HH)\n' +
-      '    - Semana 37 (Corte 12/09): $54.173 USD (15.216 HH)\n' +
-      '    - Semana 38 (Corte 19/09): $53.833 USD (15.091 HH)\n' +
-      '    - Semana 39 (Cierre mensual): $33.855 USD (9.537 HH)\n' +
-      '  *Nota operativa Semana 39: El menor volumen de horas (-38%) obedece a la culminación del montaje de virolas en Pellas Línea 1 y al repliegue programado de cuadrillas de montaje previo al cierre del mes.\n\n' +
-      '• Conciliación Contable de Nómina:\n' +
-      '  La sumatoria de los 4 cortes regulares totaliza $196.665 USD y 55.277 HH, cuadrando con los registros de nómina directa de los libros mayores corporativos ($196.665 USD).\n\n' +
-      '• Matriz Corporativa de Distribución CIF:\n' +
-      '  La distribución de la nómina directa ($196.665 USD) y el despliegue de personal en campo sustentan la asignación de costos indirectos bajo la Matriz Corporativa de Distribución CIF (Pellas Línea 1 60,17% = $236.688 USD / Resto 39,83% = $156.687 USD).',
+      isOct
+        ? '• Ciclo Operativo de Nómina Directa (Octubre 2026):\n' +
+          '  La nómina procesada incorpora 4 cortes semanales regulares (Semanas 40 a 43) en los frentes de Planta de Pellas Línea 1, FMO PMH y Planta de Briquetas.\n\n' +
+          '• Alerta de Control: Nómina Boca Grande II (TTE-C-0680):\n' +
+          '  Se registra retraso en la entrega de la nómina de cuadrilla de Boca Grande II por parte de Recursos Humanos; actualmente la cuenta solo refleja $5.772,32 USD en insumos de almacén SIP. Se incluirá en la consolidación final tras recibir el soporte de RRHH.\n\n' +
+          '• Alerta de Maquinaria: Horas Máquina en Conciliación:\n' +
+          '  El renglón de Horas Máquina registra retraso en los partes de horómetros de grúas y flota pesada, figurando preliminarmente en $0,00 USD.'
+        : '• Ciclo Operativo de Nómina Directa:\n' +
+          '  La nómina imputada a Septiembre totaliza 4 cortes semanales de pago del período contable (Semanas 36 a 39 de Recursos Humanos):\n' +
+          '    - Semana 36 (Corte 05/09): $54.804 USD (15.433 HH)\n' +
+          '    - Semana 37 (Corte 12/09): $54.173 USD (15.216 HH)\n' +
+          '    - Semana 38 (Corte 19/09): $53.833 USD (15.091 HH)\n' +
+          '    - Semana 39 (Cierre mensual): $33.855 USD (9.537 HH)\n' +
+          '  *Nota operativa Semana 39: El menor volumen de horas (-38%) obedece a la culminación del montaje de virolas en Pellas Línea 1 y al repliegue programado de cuadrillas de montaje previo al cierre del mes.\n\n' +
+          '• Conciliación Contable de Nómina:\n' +
+          '  La sumatoria de los 4 cortes regulares totaliza $196.665 USD y 55.277 HH, cuadrando con los registros de nómina directa de los libros mayores corporativos ($196.665 USD).\n\n' +
+          '• Matriz Corporativa de Distribución CIF:\n' +
+          '  La distribución de la nómina directa ($196.665 USD) y el despliegue de personal en campo sustentan la asignación de costos indirectos bajo la Matriz Corporativa de Distribución CIF (Pellas Línea 1 60,17% = $236.688 USD / Resto 39,83% = $156.687 USD).',
       {
         x: 0.8,
         y: 2.95,

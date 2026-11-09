@@ -74,6 +74,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
   const [currentSlide, setCurrentSlide] = useState<number>(0); // Default to Slide 0 (Portada Oficial)
   const [slide1Tab, setSlide1Tab] = useState<'grafica' | 'tabla'>('grafica');
   const [slide2Tab, setSlide2Tab] = useState<'distribucion' | 'waterfall' | 'kpi' | 'nomina'>('distribucion');
+  const [vistaComparativaModo, setVistaComparativaModo] = useState<'barras' | 'cascada'>('barras');
   const [slide3Tab, setSlide3Tab] = useState<'pareto' | 'tabla'>('pareto');
   const [slide4Tab, setSlide4Tab] = useState<'variaciones' | 'mixProcura'>('variaciones');
   const [slide5Tab, setSlide5Tab] = useState<'contrato' | 'evolucion' | 'tabla-evolutivo'>('contrato');
@@ -316,7 +317,10 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
           `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.444.345,28 USD, acumulando un total anual consolidado de $13.496.521,32 USD en los 10 meses de 2026.\n\n` +
           `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $867.861,15 USD (60,1% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($686.040 USD), Henan Front ($40.000 USD), Mamusa ($4.920 USD) y compras de insumos directos de taller.\n\n` +
           `Le siguen Segunda Línea PMH (TTE-C-0671) con $258.881,82 USD (17,9%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $106.811,57 USD (7,4%) y Fase 2 Planta de Briquetas (TTE-C-0668) con $42.228,88 USD (2,9%).\n\n` +
-          `Por categorías operativas: Servicios Directos totalizó $967.478,81 USD (67,0%) y Materiales Directos alcanzó $476.866,47 USD (33,0%). Se incorporó la Mano de Obra Directa (MOD) entregada por RRHH por $103.875,66 USD (29.697 Horas Hombre) en FMO PMH ($80.000,66 USD) y FMO Briquetas ($23.875,00 USD) para las Semanas 39 a 43.`
+          `Por categorías operativas: Servicios Directos totalizó $967.478,81 USD (67,0%) y Materiales Directos alcanzó $476.866,47 USD (33,0%). Se incorporó la Mano de Obra Directa (MOD) entregada por RRHH por $103.875,66 USD (29.697 Horas Hombre) en FMO PMH ($80.000,66 USD) y FMO Briquetas ($23.875,00 USD) para las Semanas 39 a 43.\n\n` +
+          `NOTAS DE AUDITORÍA Y CONTROL DE GESTIÓN (PARTIDAS PENDIENTES):\n` +
+          `• Horas Máquina: Se registra retraso en la recepción de partes de horómetros y reporte de utilización de maquinaria pesada (flota de grúas y equipos de soporte), por lo que el rubro se mantiene preliminarmente en $0,00 USD a la espera de conciliación técnica.\n` +
+          `• Nómina de Boca Grande II (TTE-C-0680): Registra retraso en el procesamiento por parte de RRHH; actualmente la cuenta auxiliar solo computa $5.772,32 USD en insumos, dotaciones y consumibles de almacén SIP, quedando pendiente la incorporación de la mano de obra directa devengada en campo.`
         );
       } else {
         const mesNombre = activeMonth?.mesLabel || `Mes ${selectedMesNum}`;
@@ -946,9 +950,10 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           ? 'bg-[#0b2545] text-white shadow-xs'
                           : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                       }`}
+                      title="Comparativa analítica de variación entre el mes anterior y el mes activo"
                     >
                       <Activity className="w-3.5 h-3.5" />
-                      <span>Puente Variación (Waterfall)</span>
+                      <span>Comparativa de Variación</span>
                     </button>
                     <button
                       onClick={() => setSlide2Tab('kpi')}
@@ -1162,193 +1167,366 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                   </div>
                 )}
 
-                {/* TAB 2: WATERFALL (PUENTE DE VARIACIÓN MENSUAL) */}
+                {/* TAB 2: COMPARATIVA DE VARIACIÓN MENSUAL (CLARA Y EJECUTIVA) */}
                 {slide2Tab === 'waterfall' && (
                   <div className="space-y-4 animate-fade-in">
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+                      {/* Cabecera del Análisis Comparativo */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
                         <div>
-                          <h3 className="text-sm font-black text-[#0b2545] uppercase tracking-wider flex items-center gap-1.5">
-                            <Activity className="w-4 h-4 text-blue-600" />
-                            Puente de Variación Financiera (Waterfall Chart)
-                          </h3>
-                          <p className="text-xs text-slate-500">
-                            Explicación del delta de ${Math.abs((activeMonth?.totalMonto || 0) - (mesAnterior?.totalMonto || 0)).toLocaleString('de-DE')} USD entre {mesAnterior?.mesLabel?.split(' ')[0] || 'Mes Anterior'} y {activeMonth?.mesLabel?.split(' ')[0]}
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-black text-[#0b2545] uppercase tracking-wider flex items-center gap-1.5">
+                              <Activity className="w-4 h-4 text-blue-600" />
+                              Comparativa de Costos: {mesAnterior?.mesLabel?.split(' ')[0] || 'Mes Anterior'} vs {activeMonth?.mesLabel?.split(' ')[0]}
+                            </h3>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
+                              Variación por Rubro
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Explicación directa de cómo varió cada categoría operativa · Variación neta del mes: 
+                            <strong className="text-slate-900 ml-1">
+                              {((activeMonth?.totalMonto || 0) - (mesAnterior?.totalMonto || 0)) >= 0 ? '+' : '-'}
+                              ${Math.abs((activeMonth?.totalMonto || 0) - (mesAnterior?.totalMonto || 0)).toLocaleString('de-DE')} USD
+                            </strong>
                           </p>
                         </div>
-                        <div className="flex items-center gap-3 text-xs font-mono">
-                          <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-xs bg-[#002060]" /> Base / Cierre
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-xs bg-emerald-600" /> Incremento (+)
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-xs bg-amber-600" /> Reducción (-)
-                          </span>
+
+                        {/* Switcher: Tarjetas Comparativas Directas vs Gráfico Cascada */}
+                        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                          <button
+                            onClick={() => setVistaComparativaModo('barras')}
+                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                              vistaComparativaModo === 'barras'
+                                ? 'bg-[#0b2545] text-white shadow-2xs'
+                                : 'text-slate-600 hover:text-slate-900'
+                            }`}
+                          >
+                            <BarChart2 className="w-3.5 h-3.5" />
+                            <span>Tarjetas Comparativas</span>
+                          </button>
+                          <button
+                            onClick={() => setVistaComparativaModo('cascada')}
+                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                              vistaComparativaModo === 'cascada'
+                                ? 'bg-[#0b2545] text-white shadow-2xs'
+                                : 'text-slate-600 hover:text-slate-900'
+                            }`}
+                          >
+                            <Activity className="w-3.5 h-3.5" />
+                            <span>Gráfico Cascada</span>
+                          </button>
                         </div>
                       </div>
 
-                      {/* Pure SVG Waterfall Chart */}
-                      <div className="pt-4 overflow-x-auto">
+                      {/* KPI SUMMARY CARDS: ANTES vs AHORA vs DELTA */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 pb-2">
+                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                            Cierre {mesAnterior?.mesLabel?.split(' ')[0] || 'Mes Anterior'} (Base)
+                          </span>
+                          <span className="text-xl font-black font-mono text-slate-800 block mt-0.5">
+                            ${Math.round(mesAnterior?.totalMonto || 0).toLocaleString('de-DE')} USD
+                          </span>
+                        </div>
+                        <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200">
+                          <span className="text-[11px] font-bold text-blue-800 uppercase tracking-wider block">
+                            Cierre {activeMonth?.mesLabel?.split(' ')[0]} (Mes Activo)
+                          </span>
+                          <span className="text-xl font-black font-mono text-[#002060] block mt-0.5">
+                            ${Math.round(activeMonth?.totalMonto || 0).toLocaleString('de-DE')} USD
+                          </span>
+                        </div>
                         {(() => {
-                          const prevTotal = mesAnterior?.totalMonto || 1197600;
-                          const currTotal = activeMonth?.totalMonto || 1613225;
-
-                          // Compute individual category deltas
-                          const steps = [
-                            { label: `Base (${mesAnterior?.mesLabel?.split(' ')[0] || 'Ago'})`, delta: prevTotal, isTotal: true, color: '#002060' },
-                            ...categoriasMesAnalisis.map(cat => {
-                              const delta = cat.monto - cat.montoPrev;
-                              return {
-                                label: cat.categoria.replace(' Directos', '').replace(' Directa', '').replace(' Indirectos', ''),
-                                delta,
-                                isTotal: false,
-                                color: delta >= 0 ? '#059669' : '#d97706'
-                              };
-                            }),
-                            { label: `Cierre (${activeMonth?.mesLabel?.split(' ')[0]})`, delta: currTotal, isTotal: true, color: '#002060' }
-                          ];
-
-                          const maxVal = Math.max(prevTotal, currTotal) * 1.15;
-                          const chartHeight = 220;
-                          const chartWidth = 720;
-                          const barWidth = 64;
-                          const colSpacing = chartWidth / steps.length;
-
-                          let currentYVal = 0;
-
+                          const delta = (activeMonth?.totalMonto || 0) - (mesAnterior?.totalMonto || 0);
+                          const pct = mesAnterior?.totalMonto ? (delta / mesAnterior.totalMonto) * 100 : 0;
+                          const esPos = delta >= 0;
                           return (
-                            <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 50}`} className="w-full h-64 text-xs font-mono">
-                              {/* Grid lines */}
-                              {[0, 0.25, 0.5, 0.75, 1].map((pct, idx) => {
-                                const y = chartHeight - (pct * chartHeight);
-                                const val = Math.round((pct * maxVal) / 1000) * 1000;
-                                return (
-                                  <g key={idx}>
-                                    <line x1="30" y1={y} x2={chartWidth} y2={y} stroke="#f1f5f9" strokeDasharray="3 3" />
-                                    <text x="25" y={y + 4} textAnchor="end" fill="#94a3b8" fontSize="9">
-                                      ${Math.round(val / 1000)}k
-                                    </text>
-                                  </g>
-                                );
-                              })}
-
-                              {steps.map((s, idx) => {
-                                const x = 40 + idx * colSpacing;
-                                let y = 0;
-                                let h = 0;
-                                let prevLevel = currentYVal;
-
-                                if (s.isTotal) {
-                                  h = (s.delta / maxVal) * chartHeight;
-                                  y = chartHeight - h;
-                                  currentYVal = s.delta;
-                                } else {
-                                  const startVal = currentYVal;
-                                  currentYVal += s.delta;
-                                  const endVal = currentYVal;
-                                  
-                                  const topVal = Math.max(startVal, endVal);
-                                  const bottomVal = Math.min(startVal, endVal);
-                                  
-                                  y = chartHeight - (topVal / maxVal) * chartHeight;
-                                  h = Math.max(4, ((topVal - bottomVal) / maxVal) * chartHeight);
-                                }
-
-                                const prevConnectorY = chartHeight - (prevLevel / maxVal) * chartHeight;
-
-                                return (
-                                  <g key={idx} className="transition-all hover:opacity-90">
-                                    {/* Connector dashed line to previous step */}
-                                    {idx > 0 && !s.isTotal && (
-                                      <line
-                                        x1={x - (colSpacing - barWidth) / 2}
-                                        y1={prevConnectorY}
-                                        x2={x}
-                                        y2={prevConnectorY}
-                                        stroke="#cbd5e1"
-                                        strokeDasharray="2 2"
-                                      />
-                                    )}
-
-                                    {/* The Step Bar */}
-                                    <rect
-                                      x={x}
-                                      y={y}
-                                      width={barWidth}
-                                      height={h}
-                                      rx="6"
-                                      fill={s.color}
-                                      className="shadow-xs cursor-pointer"
-                                    />
-
-                                    {/* Value label on top of bar */}
-                                    <text
-                                      x={x + barWidth / 2}
-                                      y={Math.max(16, y - 6)}
-                                      textAnchor="middle"
-                                      fontWeight="bold"
-                                      fontSize="10"
-                                      fill={s.isTotal ? '#0b2545' : s.delta >= 0 ? '#047857' : '#b45309'}
-                                    >
-                                      {s.isTotal 
-                                        ? `$${Math.round(s.delta / 1000)}k` 
-                                        : `${s.delta >= 0 ? '+' : ''}$${Math.round(s.delta / 1000)}k`}
-                                    </text>
-
-                                    {/* Step X-axis label */}
-                                    <text
-                                      x={x + barWidth / 2}
-                                      y={chartHeight + 20}
-                                      textAnchor="middle"
-                                      fontSize="9"
-                                      fontWeight="600"
-                                      fill="#475569"
-                                    >
-                                      {s.label}
-                                    </text>
-                                  </g>
-                                );
-                              })}
-                            </svg>
+                            <div className={`p-3 rounded-xl border ${esPos ? 'bg-emerald-50/70 border-emerald-200' : 'bg-amber-50/70 border-amber-200'}`}>
+                              <span className={`text-[11px] font-bold uppercase tracking-wider block ${esPos ? 'text-emerald-800' : 'text-amber-800'}`}>
+                                Variación Neta Mensual
+                              </span>
+                              <span className={`text-xl font-black font-mono block mt-0.5 ${esPos ? 'text-emerald-950' : 'text-amber-950'}`}>
+                                {esPos ? '+' : ''}${Math.round(delta).toLocaleString('de-DE')} USD ({esPos ? '+' : ''}{pct.toFixed(1)}%)
+                              </span>
+                            </div>
                           );
                         })()}
                       </div>
+
+                      {/* VISTA 1: BARRAS COMPARATIVAS DIRECTAS (100% CLARA Y FÁCIL DE ENTENDER) */}
+                      {vistaComparativaModo === 'barras' && (
+                        <div className="pt-3 space-y-3">
+                          {categoriasMesAnalisis.map((cat) => {
+                            const delta = cat.monto - cat.montoPrev;
+                            const pct = cat.montoPrev > 0 ? (delta / cat.montoPrev) * 100 : (cat.monto > 0 ? 100 : 0);
+                            const esPos = delta > 0;
+                            const esNeg = delta < 0;
+                            const maxVal = Math.max(...categoriasMesAnalisis.map(c => Math.max(c.monto, c.montoPrev))) || 1;
+                            const wPrev = Math.min(100, Math.max(4, (cat.montoPrev / maxVal) * 100));
+                            const wCurr = Math.min(100, Math.max(4, (cat.monto / maxVal) * 100));
+
+                            // Texto explicativo específico y transparente
+                            let explicacion = '';
+                            if (selectedMesNum === 10) {
+                              if (cat.categoria.includes('Materiales')) {
+                                explicacion = 'Procura SIP de calderería, tolvas y aceros para Pellas Línea 1 ($174K), Segunda Línea PMH ($258K) y Rueda DRAVO ($106K). Se reduce (-42,1%) tras el pico récord de abastecimiento mayor de Septiembre.';
+                              } else if (cat.categoria.includes('Servicios')) {
+                                explicacion = 'Crecimiento extraordinario (+244,9%) impulsado por contratos de instrumentación, automatización y control en Pellas Línea 1 con Yokogawa ($686K) y Henan Front ($40K).';
+                              } else if (cat.categoria.includes('Mano de Obra')) {
+                                explicacion = 'Incorpora nóminas de Pellas, PMH y Briquetas (Semanas 40 a 43). ⚠️ Alerta de control: Registra retraso la entrega de nómina de Boca Grande II (TTE-C-0680) por RRHH, que se sumará al corte definitivo.';
+                              } else if (cat.categoria.includes('Máquina')) {
+                                explicacion = '⚠️ En $0,00 USD temporalmente debido a retraso operativo en la consolidación de partes de horómetros y reporte de utilización de maquinaria pesada de campo.';
+                              } else {
+                                explicacion = 'Estructura corporativa estable (+1,0%), absorbiendo nómina fija de administración, talleres centrales, combustible y soporte logístico.';
+                              }
+                            } else if (selectedMesNum === 9) {
+                              if (cat.categoria.includes('Materiales')) {
+                                explicacion = 'Récord histórico de procura por inyección masiva en aceros estructurales A36, tolvas y planchas antidesgaste para Segunda Línea PMH, DRAVO y Pellas Línea 1.';
+                              } else if (cat.categoria.includes('Servicios')) {
+                                explicacion = 'Normalización a nivel operativo base (-15,6%) tras la culminación de los fletes marítimos pesados y desaduanamiento de meses anteriores.';
+                              } else if (cat.categoria.includes('Mano de Obra')) {
+                                explicacion = '4 cortes regulares de nómina en 10 frentes con cuadrilla activa (55.277 HH @ $3,56 USD/HH), liderada por Pellas Línea 1 ($128K) y PMH ($30K).';
+                              } else if (cat.categoria.includes('Máquina')) {
+                                explicacion = '811,7 horas de maquinaria pesada propia asignadas a maniobras de izaje estructural y montaje en Pellas Línea 1 (Demag AC200).';
+                              } else {
+                                explicacion = 'Costos indirectos y soporte corporativo de operaciones ($393K), integrando nómina fija, sindicato ($59K) y combustible ($50K).';
+                              }
+                            } else {
+                              explicacion = `${cat.categoria} ejecutó $${cat.monto.toLocaleString('de-DE')} USD frente a $${cat.montoPrev.toLocaleString('de-DE')} USD del mes anterior.`;
+                            }
+
+                            return (
+                              <div key={cat.categoria} className="p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-white transition-all space-y-2">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-[#002060]" />
+                                    <strong className="text-slate-900 text-xs font-bold">{cat.categoria}</strong>
+                                    {cat.monto === 0 && (
+                                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300">
+                                        Pendiente por Retraso
+                                      </span>
+                                    )}
+                                    {selectedMesNum === 10 && cat.categoria.includes('Mano de Obra') && (
+                                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-100 text-blue-800 border border-blue-200">
+                                        Boca Grande Pendiente
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded border ${
+                                      esPos 
+                                        ? 'text-emerald-700 bg-emerald-50 border-emerald-200' 
+                                        : esNeg 
+                                        ? 'text-amber-700 bg-amber-50 border-amber-200' 
+                                        : 'text-slate-600 bg-slate-100 border-slate-200'
+                                    }`}>
+                                      {esPos ? '▲ +' : esNeg ? '▼ ' : ''}${Math.abs(delta).toLocaleString('de-DE')} USD ({esPos ? '+' : ''}{pct.toFixed(1).replace('.', ',')}%)
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Gráfico de barras paralelas: Antes vs Ahora */}
+                                <div className="space-y-1.5 text-xs font-mono">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-20 text-[10px] text-slate-500 font-sans truncate">{mesAnterior?.mesLabel?.split(' ')[0] || 'Anterior'}:</span>
+                                    <div className="flex-1 bg-slate-200/60 rounded-full h-3 overflow-hidden">
+                                      <div 
+                                        className="bg-slate-400 h-full rounded-full transition-all duration-500" 
+                                        style={{ width: `${wPrev}%` }}
+                                      />
+                                    </div>
+                                    <span className="w-24 text-right text-slate-600 font-bold text-[11px]">
+                                      ${cat.montoPrev.toLocaleString('de-DE')}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-20 text-[10px] text-[#002060] font-sans font-bold truncate">{activeMonth?.mesLabel?.split(' ')[0]}:</span>
+                                    <div className="flex-1 bg-slate-200/60 rounded-full h-3 overflow-hidden">
+                                      <div 
+                                        className={`h-full rounded-full transition-all duration-500 ${esPos ? 'bg-emerald-600' : esNeg ? 'bg-amber-600' : 'bg-[#002060]'}`} 
+                                        style={{ width: `${wCurr}%` }}
+                                      />
+                                    </div>
+                                    <span className={`w-24 text-right font-black text-[11px] ${esPos ? 'text-emerald-700' : esNeg ? 'text-amber-700' : 'text-slate-800'}`}>
+                                      ${cat.monto.toLocaleString('de-DE')}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Nota explicativa */}
+                                <p className="text-[11px] text-slate-600 leading-relaxed bg-white p-2 rounded-lg border border-slate-100">
+                                  {explicacion}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* VISTA 2: GRÁFICO CASCADA (WATERFALL CHART) */}
+                      {vistaComparativaModo === 'cascada' && (
+                        <div className="pt-4 overflow-x-auto">
+                          {(() => {
+                            const prevTotal = mesAnterior?.totalMonto || 1197600;
+                            const currTotal = activeMonth?.totalMonto || 1613225;
+
+                            const steps = [
+                              { label: `Base (${mesAnterior?.mesLabel?.split(' ')[0] || 'Sep'})`, delta: prevTotal, isTotal: true, color: '#002060' },
+                              ...categoriasMesAnalisis.map(cat => {
+                                const delta = cat.monto - cat.montoPrev;
+                                return {
+                                  label: cat.categoria.replace(' Directos', '').replace(' Directa', '').replace(' Indirectos', ''),
+                                  delta,
+                                  isTotal: false,
+                                  color: delta >= 0 ? '#059669' : '#d97706'
+                                };
+                              }),
+                              { label: `Cierre (${activeMonth?.mesLabel?.split(' ')[0]})`, delta: currTotal, isTotal: true, color: '#002060' }
+                            ];
+
+                            const maxVal = Math.max(prevTotal, currTotal) * 1.15;
+                            const chartHeight = 220;
+                            const chartWidth = 720;
+                            const barWidth = 64;
+                            const colSpacing = chartWidth / steps.length;
+
+                            let currentYVal = 0;
+
+                            return (
+                              <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 50}`} className="w-full h-64 text-xs font-mono">
+                                {[0, 0.25, 0.5, 0.75, 1].map((pct, idx) => {
+                                  const y = chartHeight - (pct * chartHeight);
+                                  const val = Math.round((pct * maxVal) / 1000) * 1000;
+                                  return (
+                                    <g key={idx}>
+                                      <line x1="30" y1={y} x2={chartWidth} y2={y} stroke="#f1f5f9" strokeDasharray="3 3" />
+                                      <text x="25" y={y + 4} textAnchor="end" fill="#94a3b8" fontSize="9">
+                                        ${Math.round(val / 1000)}k
+                                      </text>
+                                    </g>
+                                  );
+                                })}
+
+                                {steps.map((s, idx) => {
+                                  const x = 40 + idx * colSpacing;
+                                  let y = 0;
+                                  let h = 0;
+                                  let prevLevel = currentYVal;
+
+                                  if (s.isTotal) {
+                                    h = (s.delta / maxVal) * chartHeight;
+                                    y = chartHeight - h;
+                                    currentYVal = s.delta;
+                                  } else {
+                                    const startVal = currentYVal;
+                                    currentYVal += s.delta;
+                                    const endVal = currentYVal;
+                                    
+                                    const topVal = Math.max(startVal, endVal);
+                                    const bottomVal = Math.min(startVal, endVal);
+                                    
+                                    y = chartHeight - (topVal / maxVal) * chartHeight;
+                                    h = Math.max(4, ((topVal - bottomVal) / maxVal) * chartHeight);
+                                  }
+
+                                  const prevConnectorY = chartHeight - (prevLevel / maxVal) * chartHeight;
+
+                                  return (
+                                    <g key={idx} className="transition-all hover:opacity-90">
+                                      {idx > 0 && !s.isTotal && (
+                                        <line
+                                          x1={x - (colSpacing - barWidth) / 2}
+                                          y1={prevConnectorY}
+                                          x2={x}
+                                          y2={prevConnectorY}
+                                          stroke="#cbd5e1"
+                                          strokeDasharray="2 2"
+                                        />
+                                      )}
+
+                                      <rect
+                                        x={x}
+                                        y={y}
+                                        width={barWidth}
+                                        height={h}
+                                        rx="6"
+                                        fill={s.color}
+                                        className="shadow-xs cursor-pointer"
+                                      />
+
+                                      <text
+                                        x={x + barWidth / 2}
+                                        y={Math.max(16, y - 6)}
+                                        textAnchor="middle"
+                                        fontWeight="bold"
+                                        fontSize="10"
+                                        fill={s.isTotal ? '#0b2545' : s.delta >= 0 ? '#047857' : '#b45309'}
+                                      >
+                                        {s.isTotal 
+                                          ? `$${Math.round(s.delta / 1000)}k` 
+                                          : `${s.delta >= 0 ? '+' : ''}$${Math.round(s.delta / 1000)}k`}
+                                      </text>
+
+                                      <text
+                                        x={x + barWidth / 2}
+                                        y={chartHeight + 20}
+                                        textAnchor="middle"
+                                        fontSize="9"
+                                        fontWeight="600"
+                                        fill="#475569"
+                                      >
+                                        {s.label}
+                                      </text>
+                                    </g>
+                                  );
+                                })}
+                              </svg>
+                            );
+                          })()}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Explanatory notes of the waterfall */}
+                    {/* Tarjetas Explicativas de Variación Estratégica */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                      <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <strong className="text-slate-900 block font-bold mb-1">
-                          {selectedMesNum === 9 ? 'Inyección Masiva en Procura (+ $496K):' : 'Impacto Procura (+ $133K):'}
+                      <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200 space-y-1">
+                        <strong className="text-blue-950 block font-bold">
+                          {selectedMesNum === 10 ? 'Servicios Estratégicos (+ $687K / +245%):' : selectedMesNum === 9 ? 'Inyección Masiva en Procura (+ $496K):' : 'Impacto Procura (+ $133K):'}
                         </strong>
                         <p className="text-slate-600 text-[11px] leading-relaxed">
-                          {selectedMesNum === 9 ? (
+                          {selectedMesNum === 10 ? (
+                            'Salto impulsado por los contratos estratégicos de instrumentación, control y automatización de Planta de Pellas Línea 1 con Yokogawa ($686K) y Henan Front ($40K) para su comisionamiento.'
+                          ) : selectedMesNum === 9 ? (
                             'Materiales Directos subió a $868.067 USD (+133% vs agosto) por despacho mayor de aceros, tolvas de transferencia y componentes eléctricos para Segunda Línea PMH, DRAVO y Pellas.'
                           ) : (
                             'Materiales Directos subió a $371.927 USD impulsado por aceros estructurales para 2da Línea PMH y repuestos eléctricos de la rueda de cangilones DRAVO.'
                           )}
                         </p>
                       </div>
-                      <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <strong className="text-slate-900 block font-bold mb-1">
-                          {selectedMesNum === 9 ? 'Variación de Nómina y Servicios (- $75K):' : 'Consolidación de Nómina (+ $65K):'}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                        <strong className="text-slate-900 block font-bold">
+                          {selectedMesNum === 10 ? 'Normalización en Procura (- $347K / -42%):' : selectedMesNum === 9 ? 'Variación de Nómina y Servicios (- $75K):' : 'Consolidación de Nómina (+ $65K):'}
                         </strong>
                         <p className="text-slate-600 text-[11px] leading-relaxed">
-                          {selectedMesNum === 9 ? (
+                          {selectedMesNum === 10 ? (
+                            'Tras el récord de compras y aceros en septiembre ($823K), la procura de octubre se normalizó a $476K atendiendo calderería, tolvas y consumibles en PMH, DRAVO y Pellas.'
+                          ) : selectedMesNum === 9 ? (
                             'Mano de Obra Directa cerró en $196.665 USD (-$57K) en 10 proyectos con 5 semanas (Sem 35 a 39). Servicios Directos se normalizó a $99.540 USD (-$18K) con Pellas concentrando el 69%.'
                           ) : (
                             'La Mano de Obra se situó en $277.936 USD debido a la incorporación de la nómina de la semana 31 y el staff técnico continuo de Pellas Línea 1.'
                           )}
                         </p>
                       </div>
-                      <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <strong className="text-slate-900 block font-bold mb-1">
-                          {selectedMesNum === 9 ? 'Soporte y Horas Máquina (+ $19K):' : 'Ajuste CIF y HM (+ $127K):'}
+                      <div className="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200 space-y-1">
+                        <strong className="text-amber-950 block font-bold flex items-center gap-1">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                          {selectedMesNum === 10 ? 'Partidas Pendientes por Retraso:' : selectedMesNum === 9 ? 'Soporte y Horas Máquina (+ $19K):' : 'Ajuste CIF y HM (+ $127K):'}
                         </strong>
-                        <p className="text-slate-600 text-[11px] leading-relaxed">
-                          {selectedMesNum === 9 ? (
+                        <p className="text-amber-900 text-[11px] leading-relaxed">
+                          {selectedMesNum === 10 ? (
+                            'Horas Máquina se mantiene temporalmente en $0,00 USD (en espera de reporte de horómetros de grúas) y la nómina de Boca Grande II (TTE-C-0680) está en espera de recepción del corte semanal de RRHH.'
+                          ) : selectedMesNum === 9 ? (
                             'Los Costos Indirectos (CIF) subieron a $393.375 USD (+$53K) por combustible y sindicato, mientras Horas Máquina ajustó a $55.578 USD (-$34K) optimizada en izajes críticos de Pellas.'
                           ) : (
                             'Estructura de costos indirectos oficial de $339.978 USD y uso intensivo de maquinaria pesada ($89.789 USD) en montajes estructurales.'
@@ -1443,6 +1621,12 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               idx === 2 ? 'Nómina devengada en 5 semanas (Sem 35 a 39) en 10 proyectos externos ($196.665 USD), liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Bandas PMH ($28.142 USD · 12,7%).' :
                               idx === 3 ? '811,7 horas de maquinaria pesada propia ($55.578 USD), asignadas 100% a maniobras críticas de izaje y acarreo en Pellas Línea 1 (Grúa Demag AC200).' :
                               'Costos indirectos y soporte corporativo de operaciones ($393.375 USD), integrando Nómina TIMACA ($125K), Talleres ($122K), Sindicato ($59K) y Combustible ($50K).'
+                            ) : selectedMesNum === 10 ? (
+                              idx === 0 ? 'Despachos de procura SIP ($476.866 USD) concentrados en aceros, tolvas y calderería en Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO.' :
+                              idx === 1 ? 'Servicios especializados ($967.479 USD) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).' :
+                              idx === 2 ? 'MOD procesada en Pellas, PMH y Briquetas. Pendiente por retraso la nómina de cuadrilla en Boca Grande II (TTE-C-0680), que se incorporará al recibir el corte de RRHH.' :
+                              idx === 3 ? 'Pendiente por retraso operativo en el reporte de horómetros y valoración de maquinaria pesada. Temporalmente en $0,00 USD a la espera de conciliación técnica.' :
+                              'Costos indirectos y soporte corporativo de operaciones ($344.629 USD), integrando nómina fija de soporte, talleres centrales, combustible y sindicato.'
                             ) : (
                               `${Math.round((cat.monto / (activeMonth?.totalMonto || 1)) * 100)}% del gasto mensual. ${
                                 selectedMesNum > 1 
