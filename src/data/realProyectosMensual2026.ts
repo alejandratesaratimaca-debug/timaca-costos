@@ -4552,7 +4552,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
   },
   "TTE-C-0720": {
     "cuentaAuxiliar": "TTE-C-0720",
-    "descripcion": "Fabricación de Componentes e Interconexión General (VISCO ORINOCO)",
+    "descripcion": "Rehabilitación Oficinas de IMPSA Macagua I",
     "meses": [
       0,
       0,
