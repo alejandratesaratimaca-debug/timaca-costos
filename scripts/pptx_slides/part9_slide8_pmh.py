@@ -125,8 +125,7 @@ def get_code():
     });
 
     matRows.push([
-      { text: 'TOTAL MATERIALES CRÍTICOS', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL MATERIALES CRÍTICOS', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${matSum.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'center', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } },
       { text: 'SEGUNDA LÍNEA', options: { align: 'left', bold: true, fontSize: 8, color: '166534', fill: { color: 'F1F5F9' } } }
@@ -298,8 +297,7 @@ def get_code():
     });
 
     frentesRows.push([
-      { text: 'TOTAL COMPLEJO PMH', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL COMPLEJO PMH', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${totRedMes.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${totRedAcum.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: '166534', fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'center', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } }

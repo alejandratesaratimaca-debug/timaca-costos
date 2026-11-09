@@ -281,8 +281,7 @@ def get_code():
     const globalUso = totalPresupuestoConsolidado > 0 ? Math.round((totalMesCuentas / totalPresupuestoConsolidado) * 1000) / 10 : 0;
     cuentasRows.push([
       { text: '', options: { fill: { color: 'F1F5F9' } } },
-      { text: 'TOTAL GENERAL', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL GENERAL', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${Math.round(totalMesCuentas).toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } },
       { text: `$${Math.round(totalPresupuestoConsolidado).toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },

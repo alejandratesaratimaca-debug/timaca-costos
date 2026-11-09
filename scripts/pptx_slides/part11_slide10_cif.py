@@ -272,8 +272,7 @@ def get_code():
 
     cifRows.push([
       { text: '', options: { fill: { color: 'F1F5F9' } } },
-      { text: 'TOTAL GENERAL COSTOS INDIRECTOS (CIF)', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL GENERAL COSTOS INDIRECTOS (CIF)', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${totSubMonto.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'center', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } },
       { text: 'CONCILIADO AL 100%', options: { align: 'left', bold: true, fontSize: 8, color: '166534', fill: { color: 'DCFCE7' } } }

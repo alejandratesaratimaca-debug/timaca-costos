@@ -1784,8 +1784,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     const globalUso = totalPresupuestoConsolidado > 0 ? Math.round((totalMesCuentas / totalPresupuestoConsolidado) * 1000) / 10 : 0;
     cuentasRows.push([
       { text: '', options: { fill: { color: 'F1F5F9' } } },
-      { text: 'TOTAL GENERAL', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL GENERAL', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${Math.round(totalMesCuentas).toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } },
       { text: `$${Math.round(totalPresupuestoConsolidado).toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
@@ -2817,8 +2816,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     servRows.push([
-      { text: 'TOTAL SERVICIOS DEL MES', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL SERVICIOS DEL MES', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${sumServ.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'center', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } }
     ]);
@@ -3017,8 +3015,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
 
       // Total Row
       hmRows.push([
-        { text: 'TOTAL FLOTA PESADA Y EQUIPOS', options: { colSpan: 4, bold: true, fontSize: 8, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-        null, null, null,
+        { text: 'TOTAL FLOTA PESADA Y EQUIPOS', options: { colspan: 4, bold: true, fontSize: 8, color: C_NAVY, fill: { color: 'F1F5F9' } } },
         { text: `${totH.toLocaleString('de-DE')} H/M`, options: { align: 'right', bold: true, fontSize: 8, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
         { text: `$${Math.round(totC).toLocaleString('de-DE')} USD`, options: { align: 'right', bold: true, fontSize: 8, fontFace: 'Consolas', color: '166534', fill: { color: 'DCFCE7' } } }
       ]);
@@ -3175,8 +3172,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     matRows.push([
-      { text: 'TOTAL MATERIALES CRÍTICOS', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL MATERIALES CRÍTICOS', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${matSum.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'center', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } },
       { text: 'SEGUNDA LÍNEA', options: { align: 'left', bold: true, fontSize: 8, color: '166534', fill: { color: 'F1F5F9' } } }
@@ -3348,8 +3344,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     frentesRows.push([
-      { text: 'TOTAL COMPLEJO PMH', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL COMPLEJO PMH', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${totRedMes.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${totRedAcum.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: '166534', fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'center', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } }
@@ -4029,8 +4024,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
 
     cifRows.push([
       { text: '', options: { fill: { color: 'F1F5F9' } } },
-      { text: 'TOTAL GENERAL COSTOS INDIRECTOS (CIF)', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL GENERAL COSTOS INDIRECTOS (CIF)', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${totSubMonto.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'center', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } },
       { text: 'CONCILIADO AL 100%', options: { align: 'left', bold: true, fontSize: 8, color: '166534', fill: { color: 'DCFCE7' } } }

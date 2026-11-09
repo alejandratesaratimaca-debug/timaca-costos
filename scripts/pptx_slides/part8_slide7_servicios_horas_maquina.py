@@ -122,8 +122,7 @@ def get_code():
     });
 
     servRows.push([
-      { text: 'TOTAL SERVICIOS DEL MES', options: { colSpan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-      null,
+      { text: 'TOTAL SERVICIOS DEL MES', options: { colspan: 2, bold: true, fontSize: 8.5, color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: `$${sumServ.toLocaleString('de-DE')}`, options: { align: 'right', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
       { text: '100.0%', options: { align: 'center', bold: true, fontSize: 8.5, fontFace: 'Consolas', color: C_BLUE, fill: { color: 'F1F5F9' } } }
     ]);
@@ -322,8 +321,7 @@ def get_code():
 
       // Total Row
       hmRows.push([
-        { text: 'TOTAL FLOTA PESADA Y EQUIPOS', options: { colSpan: 4, bold: true, fontSize: 8, color: C_NAVY, fill: { color: 'F1F5F9' } } },
-        null, null, null,
+        { text: 'TOTAL FLOTA PESADA Y EQUIPOS', options: { colspan: 4, bold: true, fontSize: 8, color: C_NAVY, fill: { color: 'F1F5F9' } } },
         { text: `${totH.toLocaleString('de-DE')} H/M`, options: { align: 'right', bold: true, fontSize: 8, fontFace: 'Consolas', color: C_NAVY, fill: { color: 'F1F5F9' } } },
         { text: `$${Math.round(totC).toLocaleString('de-DE')} USD`, options: { align: 'right', bold: true, fontSize: 8, fontFace: 'Consolas', color: '166534', fill: { color: 'DCFCE7' } } }
       ]);
