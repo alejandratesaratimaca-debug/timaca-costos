@@ -146182,7 +146182,7 @@
       "fecha": "30/10/2026",
       "numero": "DP0043772",
       "pedido": "PA45757",
-      "cuenta_aux": "TTE-C-0681",
+      "cuenta_aux": "TTE-C-0706",
       "ceco": "MON-3",
       "codigo": "SI0000988",
       "descripcion": "GUANTES TEJIDO CON PUNTOS DE PVC",
@@ -146203,7 +146203,9 @@
       "ano": 2026,
       "nombre_mes": "octubre",
       "datos_tipo_costo": "Externo",
-      "datos_descripcion": "Adicionales Proyecto 2da linea de Planta de Pellas (VISCO ORINOCO)"
+      "datos_descripcion": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+      "esReclasificado": true,
+      "motivo_correccion": "Corrección de imputación: Dotación de Línea 2 (cuenta 0681 inactiva) reasignada a Línea 1 Pellas"
     },
     {
       "id": 334803,
@@ -146645,7 +146647,7 @@
       "fecha": "30/10/2026",
       "numero": "DP0043772",
       "pedido": "PA45757",
-      "cuenta_aux": "TTE-C-0681",
+      "cuenta_aux": "TTE-C-0706",
       "ceco": "MON-3",
       "codigo": "SI0000987",
       "descripcion": "MASCARILLA DESECHABLE PARA POLVO Y NEBLINA 3M 8210",
@@ -146666,7 +146668,9 @@
       "ano": 2026,
       "nombre_mes": "octubre",
       "datos_tipo_costo": "Externo",
-      "datos_descripcion": "Adicionales Proyecto 2da linea de Planta de Pellas (VISCO ORINOCO)"
+      "datos_descripcion": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+      "esReclasificado": true,
+      "motivo_correccion": "Corrección de imputación: Dotación de Línea 2 (cuenta 0681 inactiva) reasignada a Línea 1 Pellas"
     },
     {
       "id": 334818,
@@ -218031,7 +218035,7 @@
       "fecha": "2026-10-30",
       "numero": "SC27519",
       "pedido": "OC24313",
-      "cuenta_aux": "TTE-C-0652",
+      "cuenta_aux": "TTE-C-0720",
       "ceco": "",
       "codigo": "SE0053",
       "descripcion": "SERVICIO DE ROTULADO",
@@ -218060,7 +218064,7 @@
       "linea_prod_desc": "",
       "agrupador_linea": "",
       "linea_produccion": "",
-      "datos_descripcion": "Acople de reductor hidráulico (EDUARDO CHAVARRI)",
+      "datos_descripcion": "Rehabilitación Oficinas de IMPSA Macagua I",
       "datos_tipo_costo": "Externo",
       "datos_tipo_equipo": "",
       "datos_codigo_sysman": "",
@@ -218070,7 +218074,9 @@
       "sc": "SC27519",
       "oc": "OC24313",
       "comprador": "KEYSERLING GÓMEZ",
-      "asignado": ""
+      "asignado": "",
+      "esReclasificado": true,
+      "motivo_correccion": "Corrección de imputación: Servicio de rotulado vinil UV pertenece a Oficinas IMPSA Macagua I"
     },
     {
       "id": 340290,
@@ -218079,7 +218085,7 @@
       "fecha": "2026-10-30",
       "numero": "SC27518",
       "pedido": "OC24313",
-      "cuenta_aux": "TTE-C-0652",
+      "cuenta_aux": "TTE-C-0720",
       "ceco": "",
       "codigo": "SE0053",
       "descripcion": "SERVICIO DE ROTULADO",
@@ -218108,7 +218114,7 @@
       "linea_prod_desc": "",
       "agrupador_linea": "",
       "linea_produccion": "",
-      "datos_descripcion": "Acople de reductor hidráulico (EDUARDO CHAVARRI)",
+      "datos_descripcion": "Rehabilitación Oficinas de IMPSA Macagua I",
       "datos_tipo_costo": "Externo",
       "datos_tipo_equipo": "",
       "datos_codigo_sysman": "",
@@ -218118,7 +218124,9 @@
       "sc": "SC27518",
       "oc": "OC24313",
       "comprador": "KEYSERLING GÓMEZ",
-      "asignado": ""
+      "asignado": "",
+      "esReclasificado": true,
+      "motivo_correccion": "Corrección de imputación: Servicio de rotulado vinil UV pertenece a Oficinas IMPSA Macagua I"
     },
     {
       "id": 340291,
