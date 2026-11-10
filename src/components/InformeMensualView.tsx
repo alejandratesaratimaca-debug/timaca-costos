@@ -3147,6 +3147,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                 <th className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 9 ? 'bg-amber-500/80 font-black text-white' : ''}`}>
                                   septiembre
                                 </th>
+                                <th className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 10 ? 'bg-amber-500/80 font-black text-white' : ''}`}>
+                                  octubre
+                                </th>
                                 <th className="py-2.5 px-3 text-right font-mono bg-slate-900">Total</th>
                               </tr>
                             </thead>
@@ -3163,6 +3166,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                   </td>
                                   <td className={`py-1.5 px-2 text-right font-mono font-bold ${selectedMesNum === 9 ? 'text-amber-900 bg-amber-50/60' : 'text-slate-700'}`}>
                                     {srv.septiembre && srv.septiembre > 0 ? `$${srv.septiembre.toLocaleString('de-DE')}` : '-'}
+                                  </td>
+                                  <td className={`py-1.5 px-2 text-right font-mono font-bold ${selectedMesNum === 10 ? 'text-amber-900 bg-amber-50/60' : 'text-slate-700'}`}>
+                                    {srv.octubre && srv.octubre > 0 ? `$${srv.octubre.toLocaleString('de-DE')}` : '-'}
                                   </td>
                                   <td className="py-1.5 px-3 text-right font-mono font-bold text-slate-900 bg-slate-100/70">
                                     ${srv.total.toLocaleString('de-DE')}
@@ -3183,6 +3189,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                 <td className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 9 ? 'text-amber-900 bg-amber-200/80 font-black' : ''}`}>
                                   ${(TOTALES_SERVICIOS_DIRECTOS_PELLAS.septiembre || 69056).toLocaleString('de-DE')}
                                 </td>
+                                <td className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 10 ? 'text-amber-900 bg-amber-200/80 font-black' : ''}`}>
+                                  ${(TOTALES_SERVICIOS_DIRECTOS_PELLAS.octubre || 778363).toLocaleString('de-DE')}
+                                </td>
                                 <td className="py-2.5 px-3 text-right font-mono text-blue-900 bg-slate-200">
                                   ${TOTALES_SERVICIOS_DIRECTOS_PELLAS.total.toLocaleString('de-DE')}
                                 </td>
@@ -3200,7 +3209,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <TrendingUp className="w-4 h-4 text-blue-600" />
                               Evolutivo de Servicios
                             </span>
-                            <span className="text-[10px] font-mono text-slate-500 font-bold">Abr - Sep 2026</span>
+                            <span className="text-[10px] font-mono text-slate-500 font-bold">Abr - Oct 2026</span>
                           </div>
 
                           {/* Evolutivo Line / Stepped Chart */}
@@ -3211,9 +3220,10 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               { mes: 'Jun', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.junio, num: 6 },
                               { mes: 'Jul', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.julio, num: 7 },
                               { mes: 'Ago', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.agosto, num: 8 },
-                              { mes: 'Sep', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.septiembre || 69056, num: 9 }
+                              { mes: 'Sep', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.septiembre || 69056, num: 9 },
+                              { mes: 'Oct', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.octubre || 778363, num: 10 }
                             ].map((p) => {
-                              const pct = Math.max(10, Math.round((p.val / 75000) * 100));
+                              const pct = Math.max(8, Math.min(100, Math.round(Math.pow(p.val / (TOTALES_SERVICIOS_DIRECTOS_PELLAS.octubre || 778363), 0.6) * 100)));
                               const isCur = selectedMesNum === p.num;
                               return (
                                 <div key={p.mes} className="flex-1 flex flex-col items-center justify-end h-full group">
@@ -3243,14 +3253,14 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <strong className="text-sm font-black font-mono text-blue-950 block">
                                 ${TOTALES_SERVICIOS_DIRECTOS_PELLAS.total.toLocaleString('de-DE')}
                               </strong>
-                              <span className="text-[10px] text-blue-600">6 meses ejecutados</span>
+                              <span className="text-[10px] text-blue-600">7 meses ejecutados (Abr - Oct)</span>
                             </div>
                             <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200">
                               <span className="text-[10px] text-amber-800 block font-semibold uppercase">Cierre {activeMonth?.mesLabel?.split(' ')[0]}</span>
                               <strong className="text-sm font-black font-mono text-amber-950 block">
                                 ${datosMesInforme.servicios.totalMes.toLocaleString('de-DE')}
                               </strong>
-                              <span className="text-[10px] text-amber-700">{selectedMesNum === 10 ? 'Pico por Yokogawa' : selectedMesNum === 9 ? 'Pico operativo Sep' : '10 subcategorías'}</span>
+                              <span className="text-[10px] text-amber-700">{selectedMesNum === 10 ? 'Pico por Yokogawa ($686K)' : selectedMesNum === 9 ? 'Pico operativo Sep' : '10 subcategorías'}</span>
                             </div>
                           </div>
                         </div>

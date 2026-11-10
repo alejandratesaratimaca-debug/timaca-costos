@@ -10,6 +10,7 @@ export interface SubcategoriaServicioPellas {
   julio: number;
   agosto: number;
   septiembre?: number;
+  octubre?: number;
   total: number;
   responsable: string;
   solicitante: string;
@@ -20,6 +21,40 @@ export interface SubcategoriaServicioPellas {
 
 export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas[] = [
   {
+    id: 'yokogawa-dcs',
+    servicio: 'Yokogawa América do Sul (Sistemas DCS)',
+    abril: 0,
+    mayo: 0,
+    junio: 0,
+    julio: 0,
+    agosto: 0,
+    septiembre: 0,
+    octubre: 686040,
+    total: 686040,
+    responsable: 'Gerencia de Automatización',
+    solicitante: 'Dirección Técnica Pellas',
+    motivoTipico: 'Ingeniería, instrumentación y control distribuido DCS Pellas Línea 1',
+    descripcionTipica: 'Contrato estratégico de automatización y sistemas de control DCS Yokogawa',
+    um: 'contrato'
+  },
+  {
+    id: 'henan-front',
+    servicio: 'Henan Front (Asistencia Técnica)',
+    abril: 0,
+    mayo: 0,
+    junio: 0,
+    julio: 0,
+    agosto: 0,
+    septiembre: 0,
+    octubre: 40000,
+    total: 40000,
+    responsable: 'Gerencia Técnica',
+    solicitante: 'Ingeniería de Planta',
+    motivoTipico: 'Asistencia técnica internacional especializada en calcinación',
+    descripcionTipica: 'Supervisión de alineación de hornos y sistemas de calcinación',
+    um: 'servicio'
+  },
+  {
     id: 'traslado-personal',
     servicio: 'Servicio traslado de personal',
     abril: 0,
@@ -28,7 +63,8 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
     julio: 39995,
     agosto: 44270,
     septiembre: 45878,
-    total: 201203,
+    octubre: 38600,
+    total: 239803,
     responsable: 'Logística & Transporte TIMACA',
     solicitante: 'Coordinación de Logística y Cuadrillas Pellas',
     motivoTipico: 'Traslado diario de cuadrillas operativas en campo (254 trabajadores activos)',
@@ -60,7 +96,8 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
     julio: 10582,
     agosto: 10582,
     septiembre: 13182,
-    total: 34346,
+    octubre: 13723,
+    total: 48069,
     responsable: 'Seguridad Patrimonial TIMACA',
     solicitante: 'Gerencia de Protección Integral y SIAHO',
     motivoTipico: 'Esquema de resguardo físico y control de accesos Línea 1 Pellas',
@@ -316,7 +353,8 @@ export const TOTALES_SERVICIOS_DIRECTOS_PELLAS = {
   julio: 56907,
   agosto: 63106,
   septiembre: 69056,
-  total: 254323
+  octubre: 778363,
+  total: 1032686
 };
 
 export const ANALISIS_SERVICIOS_DIRECTOS_PELLAS = [
