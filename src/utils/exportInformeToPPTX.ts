@@ -426,7 +426,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       slide,
       '1',
       `1. Visión General y Distribución Consolidada de Costos (${mesTitle})`,
-      `Gasto Total Oficial: $${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD (${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'}) · Acumulado 2026: $14.654.524 USD (10 Meses)`
+      `Gasto Total Oficial Proyectos Externos: $${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD (${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'}) · Acumulado 2026: $14.823.374 USD (10 Meses)`
     );
 
     // 4 KPI Cards (Top Row)
@@ -434,13 +434,13 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       {
         tag: `GASTO TOTAL ${mesUpper}`,
         val: `$${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD`,
-        desc: `${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'} (+$397.947 USD)`,
+        desc: `${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'} (+$385.496 USD)`,
         color: C_NAVY
       },
       {
         tag: 'ACUMULADO CONSOLIDADO 2026',
-        val: '$14.654.524 USD',
-        desc: '10 Meses (Ene - Oct) · Modelo Estrella TIMACA',
+        val: '$14.823.374 USD',
+        desc: '10 Meses (Ene - Oct) · 100% Proyectos Externos',
         color: C_BLUE
       },
       {
@@ -450,9 +450,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
         color: C_EMERALD
       },
       {
-        tag: 'PROYECTOS EXTERNOS (99,4%)',
-        val: '$2.092.260 USD',
-        desc: '18 Cuentas Activas · Remanente: $13K Centrales (0,6%)',
+        tag: 'FRENTES CONTRACTUALES ACTIVOS',
+        val: '18 Cuentas Auxiliares',
+        desc: '100% Contratos Externos TTE-C Auditados',
         color: C_AMBER
       }
     ];
@@ -521,22 +521,22 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       ],
       [
         { text: 'Materiales Directos', options: { fontSize: 8.5, bold: true, color: C_DARK } },
-        { text: '$476.866', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '22,6%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '$475.060', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
+        { text: '22,7%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$823.463', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
-        { text: '-42,1%', options: { fontSize: 8.5, align: 'right', bold: true, color: 'B91C1C' } }
+        { text: '-42,3%', options: { fontSize: 8.5, align: 'right', bold: true, color: 'B91C1C' } }
       ],
       [
-        { text: 'Servicios Especializados', options: { fontSize: 8.5, bold: true, color: C_DARK } },
-        { text: '$967.479', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '46,0%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: 'Servicios Directos', options: { fontSize: 8.5, bold: true, color: C_DARK } },
+        { text: '$956.835', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
+        { text: '45,7%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$280.541', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
-        { text: '+244,9%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
+        { text: '+241,1%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
       [
         { text: 'Mano de Obra Directa (MOD)', options: { fontSize: 8.5, bold: true, color: C_DARK } },
         { text: '$257.751', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '12,2%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '12,3%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$208.501', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
         { text: '+23,6%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
@@ -550,16 +550,16 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       [
         { text: 'Costos Indirectos (CIF Bolsa)', options: { fontSize: 8.5, bold: true, color: C_DARK } },
         { text: '$344.629', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '16,4%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '16,5%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$341.375', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
         { text: '+1,0%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
       [
         { text: 'TOTAL CONSOLIDADO', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: C_NAVY } },
-        { text: '$2.105.225', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
+        { text: '$2.092.774', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
         { text: '100,0%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
         { text: '$1.707.278', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: '64748B', align: 'right' } },
-        { text: '+23,3%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: '059669', align: 'right' } }
+        { text: '+22,6%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: '059669', align: 'right' } }
       ]
     ];
 
@@ -594,9 +594,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      '• Servicios Especializados (+244,9%): Principal impulsor del mes por contratos preoperativos en Pellas Línea 1 (Yokogawa $686K en instrumentación y Henan Front $40K).\n' +
-      '• Mano de Obra (+23,6%): 402 obreros activos en campo e incorporación de Boca Grande II ($13,7K), sosteniendo calderería y montaje de virolas.\n' +
-      '• Provisión Horas Máquina ($58.500 USD): Refleja continuidad operativa (+5,3% Pellas) sujeta a conciliación de horómetros definitivos de planta.',
+      '• Servicios Especializados (+241,1%): Principal impulsor del mes ($956.835 USD) por contratos preoperativos en Pellas Línea 1 (Yokogawa $686K en instrumentación y Henan Front $40K).\n' +
+      '• Mano de Obra (+23,6%): 402 obreros activos en campo e incorporación de nómina de Boca Grande II ($13,7K), sosteniendo calderería y montaje de virolas.\n' +
+      '• Provisión Horas Máquina ($58.500 USD): Refleja continuidad operativa (+9,6% vs Sep) sujeta a conciliación de horómetros definitivos de planta.',
       {
         x: 0.75,
         y: 5.50,
@@ -620,7 +620,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     const monthLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
-    const monthValues = [1028, 1251, 1400, 1009, 874, 2591, 1088, 1781, 1707, 2105];
+    const monthValues = [1028, 1251, 1400, 1009, 874, 2591, 1088, 1781, 1707, 2093];
     const chartData = [
       {
         name: 'Gasto Mensual (Miles USD)',
@@ -649,7 +649,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       valAxisMaxVal: 2800
     });
 
-    // Right Column Bottom Callout Box (Explaining 99.4% and $13K central support)
+    // Right Column Bottom Callout Box (Purged non-external and 100% external accounts)
     slide.addShape(pptx.ShapeType.roundRect, {
       x: 7.1,
       y: 5.20,
@@ -660,7 +660,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       rectRadius: 0.08
     });
 
-    slide.addText('CONCILIACIÓN Y ABSORCIÓN EN PROYECTOS EXTERNOS', {
+    slide.addText('ALCANCE Y COBERTURA DE PROYECTOS EXTERNOS (100% TTE-C)', {
       x: 7.25,
       y: 5.28,
       w: 5.3,
@@ -671,9 +671,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      '• Conciliación del Total: Los 18 proyectos externos absorben $2.092.260 USD (99,4% del gasto) y los $12.965 USD restantes (0,6%) corresponden a compras y soporte corporativo general, sumando los $2.105.225 USD de la empresa.\n' +
-      '• Ejes Principales de Inversión: Pellas Línea 1 ($1.235K · 59,0%) y Segunda Línea PMH ($444K · 21,2%) concentran el 80,2% de la ejecución técnica.\n' +
-      '• Tendencia de Curva: La trayectoria gráfica refleja el repunte controlado de +23,3% acorde con la fase crítica de comisionamiento preoperativo.',
+      '• Conciliación 100% Proyectos Externos: Los 18 contratos auxiliares TTE-C absorben exactamente $2.092.774 USD, habiéndose depurado gastos no imputables a contratos externos (flota interna y soporte central corporativo).\n' +
+      '• Ejes Principales de Inversión: Pellas Línea 1 ($1.235.109 USD · 59,0%) y Segunda Línea PMH ($444.020 USD · 21,2%) concentran el 80,2% de la ejecución técnica de octubre.\n' +
+      '• Tendencia de Curva: La trayectoria gráfica refleja el repunte controlado de +22,6% ($2.093k), acorde con la fase crítica de comisionamiento preoperativo y frentes simultáneos.',
       {
         x: 7.25,
         y: 5.50,

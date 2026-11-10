@@ -332,13 +332,14 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
         );
       } else if (selectedMesNum === 10) {
         setNotasGestion(
-          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.444.345,28 USD, acumulando un total anual consolidado de $13.496.521,32 USD en los 10 meses de 2026.\n\n` +
-          `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $867.861,15 USD (60,1% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($686.040 USD), Henan Front ($40.000 USD), Mamusa ($4.920 USD) y compras de insumos directos de taller.\n\n` +
-          `Le siguen Segunda Línea PMH (TTE-C-0671) con $258.881,82 USD (17,9%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $106.811,57 USD (7,4%) y Fase 2 Planta de Briquetas (TTE-C-0668) con $42.228,88 USD (2,9%).\n\n` +
-          `Por categorías operativas: Servicios Directos totalizó $967.478,81 USD (67,0%) y Materiales Directos alcanzó $476.866,47 USD (33,0%). Se incorporó la Mano de Obra Directa (MOD) entregada por RRHH por $103.875,66 USD (29.697 Horas Hombre) en FMO PMH ($80.000,66 USD) y FMO Briquetas ($23.875,00 USD) para las Semanas 39 a 43.\n\n` +
-          `NOTAS DE AUDITORÍA Y CONTROL DE GESTIÓN (PARTIDAS PENDIENTES):\n` +
-          `• Horas Máquina: Se registra retraso en la recepción de partes de horómetros y reporte de utilización de maquinaria pesada (flota de grúas y equipos de soporte), por lo que el rubro se mantiene preliminarmente en $0,00 USD a la espera de conciliación técnica.\n` +
-          `• Nómina de Boca Grande II (TTE-C-0680): Registra retraso en el procesamiento por parte de RRHH; actualmente la cuenta auxiliar solo computa $5.772,32 USD en insumos, dotaciones y consumibles de almacén SIP, quedando pendiente la incorporación de la mano de obra directa devengada en campo.`
+          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $2.092.774,28 USD, acumulando un total anual consolidado de $14.823.373,92 USD en los 10 meses de 2026.\n\n` +
+          `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $1.235.109,14 USD (59,0% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($686.040 USD), Henan Front ($40.000 USD), cuadrillas de taller y campo ($131.298 USD), provisión de horas máquina ($56.242 USD) y prorrateo CIF ($203.298 USD).\n\n` +
+          `Le siguen Segunda Línea PMH (TTE-C-0671) con $444.020,38 USD (21,2%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $126.963,01 USD (6,1%), Fase 2 Planta de Briquetas (TTE-C-0668) con $73.064,72 USD (3,5%) y Boca Grande II (TTE-C-0680) con $22.253,30 USD (1,1%).\n\n` +
+          `Por categorías operativas consolidadas: Servicios Directos totalizó $956.834,82 USD (45,7%), Materiales Directos alcanzó $475.059,64 USD (22,7%), Costos Indirectos de Fabricación (CIF) $344.629,00 USD (16,5%), Mano de Obra Directa (MOD) $257.750,82 USD (12,3%) y Horas Máquina (provisión operativa) $58.500,00 USD (2,8%).\n\n` +
+          `NOTAS DE AUDITORÍA Y CONTROL DE GESTIÓN:\n` +
+          `• 100% Proyectos Externos: Se excluyeron rubros no atribuibles a frentes de clientes (flota interna y soporte central corporativo), garantizando conciliación al centavo en las 18 cuentas auxiliares TTE-C.\n` +
+          `• Mano de Obra Consolidada: Se incorporó la totalidad de frentes incluyendo la nómina regularizada de Boca Grande II ($13.722,86 USD devengados en 3.708 Horas Hombre), alcanzando 402 trabajadores activos en obra.\n` +
+          `• Horas Máquina: Se aplicó provisión técnica de $58.500 USD (+9,6% vs septiembre) sujeta a conciliación final de horómetros de planta.`
         );
       } else {
         const mesNombre = activeMonth?.mesLabel || `Mes ${selectedMesNum}`;
@@ -746,29 +747,29 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200 space-y-1">
                         <strong className="text-[#0b2545] block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                          Materiales Directos ({selectedMesNum === 10 ? '$476.866 USD · 33,0%' : '$3.967.415 USD · 32,6%'})
+                          Materiales Directos ({selectedMesNum === 10 ? '$475.060 USD · 22,7%' : '$3.967.415 USD · 32,6%'})
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10 
-                            ? 'Procura sostenida de aceros, planchas antidesgaste, tuberías y suministros directos en taller y campo, acumulando un total anual consolidado de $4.444.281 USD en 2026.'
+                            ? 'Procura sostenida de aceros, planchas antidesgaste, tuberías y suministros directos en taller y campo, acumulando un total anual consolidado de $4.587.408 USD en 2026.'
                             : 'Columna vertebral de la inversión física. En septiembre alcanzó su máximo anual de $868.067 USD (+133% vs agosto), impulsado por procura mayor de aceros, tolvas y componentes eléctricos para Segunda Línea PMH, DRAVO y Pellas.'}
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-orange-50/70 border border-orange-200 space-y-1">
                         <strong className="text-orange-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                          Servicios Especializados ({selectedMesNum === 10 ? '$967.479 USD · 67,0%' : '$2.904.145 USD · 23,8%'})
+                          Servicios Especializados ({selectedMesNum === 10 ? '$956.835 USD · 45,7%' : '$2.904.145 USD · 23,8%'})
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
-                            ? 'Salto presupuestario (+872% vs septiembre) por la inyección estratégica en servicios de ingeniería, instrumentación y control en Pellas Línea 1 con Yokogawa ($686K) y Henan Front ($40K).'
+                            ? 'Salto presupuestario (+241% vs septiembre) por la inyección estratégica en servicios de ingeniería, instrumentación y control en Pellas Línea 1 con Yokogawa ($686K) y Henan Front ($40K).'
                             : 'Concentró un pico en junio ($1.639.332 USD) por importaciones marítimas mayores. En septiembre se sitúa en $99.540 USD (-16%), concentrado un 69,4% en Pellas Línea 1 ($69.056 USD) para traslado diario de personal y vigilancia patrimonial.'}
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1">
                         <strong className="text-emerald-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($2.092.260 USD · 99,4%)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
+                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($2.092.774 USD · 100%)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
@@ -1640,11 +1641,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               idx === 3 ? '811,7 horas de maquinaria pesada propia ($55.578 USD), asignadas 100% a maniobras críticas de izaje y acarreo en Pellas Línea 1 (Grúa Demag AC200).' :
                               'Costos indirectos y soporte corporativo de operaciones ($393.375 USD), integrando Nómina TIMACA ($125K), Talleres ($122K), Sindicato ($59K) y Combustible ($50K).'
                             ) : selectedMesNum === 10 ? (
-                              idx === 0 ? 'Despachos de procura SIP ($476.866 USD) concentrados en aceros, tolvas y calderería en Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO.' :
-                              idx === 1 ? 'Servicios especializados ($967.479 USD) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).' :
-                              idx === 2 ? 'MOD procesada en Pellas, PMH y Briquetas. Pendiente por retraso la nómina de cuadrilla en Boca Grande II (TTE-C-0680), que se incorporará al recibir el corte de RRHH.' :
-                              idx === 3 ? 'Pendiente por retraso operativo en el reporte de horómetros y valoración de maquinaria pesada. Temporalmente en $0,00 USD a la espera de conciliación técnica.' :
-                              'Costos indirectos y soporte corporativo de operaciones ($344.629 USD), integrando nómina fija de soporte, talleres centrales, combustible y sindicato.'
+                              idx === 0 ? 'Despachos de procura SIP ($475.060 USD · 22,7%) concentrados en aceros, tolvas y calderería en Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO.' :
+                              idx === 1 ? 'Servicios especializados ($956.835 USD · 45,7%) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).' :
+                              idx === 2 ? 'Mano de obra directa auditada ($257.751 USD · 12,3%) con 402 obreros activos en 6 frentes e integración de cuadrilla en Boca Grande II ($13,7K).' :
+                              idx === 3 ? 'Provisión técnica de Horas Máquina ($58.500 USD · 2,8%) para Pellas Línea 1 ($56.242 USD) y frentes operativos sujeta a conciliación de horómetros.' :
+                              'Costos indirectos y soporte corporativo de operaciones ($344.629 USD · 16,5%), integrando nómina fija, talleres centrales y servicios de planta.'
                             ) : (
                               `${Math.round((cat.monto / (activeMonth?.totalMonto || 1)) * 100)}% del gasto mensual. ${
                                 selectedMesNum > 1 
@@ -4273,14 +4274,14 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Servicios Especializados ($967.479 USD):</strong> Concentran el 67,0% del gasto de octubre por compras estratégicas en Yokogawa ($686K) y Henan Front ($40K); auditar recepción de hitos técnicos.</>
+                              ? <><strong>Servicios Especializados ($956.835 USD):</strong> Concentran el 45,7% del gasto de octubre por compras estratégicas en Yokogawa ($686K) y Henan Front ($40K); auditar recepción de hitos técnicos.</>
                               : <><strong>Repunte Rueda DRAVO (+761%):</strong> Cierre en $199.356 USD (vs $23.149 USD en agosto) por reactivación operativa y componentes electromecánicos; auditar recepción física en almacén de obra.</>}
                             </span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Mano de Obra Directa (MOD) Incorporada:</strong> $103.875,66 USD devengados en 29.697 Horas Hombre (Semanas 39 a 43) en Segunda Línea PMH ($80.000,66 USD) y Briquetas Fase 2 ($23.875,00 USD) auditadas al 100%.</>
+                              ? <><strong>Mano de Obra Directa (MOD) Consolidada:</strong> $257.751 USD devengados con 402 trabajadores activos en 6 frentes de obra e integración regularizada de nómina en Boca Grande II ($13,7K).</>
                               : <><strong>Segunda Línea PMH en expansión (+47%):</strong> Cierre en $291.949 USD (vs $198.053 USD en agosto), consolidándose como el segundo frente de mayor inversión de TIMACA (17,8% del mes).</>}
                             </span>
                           </li>

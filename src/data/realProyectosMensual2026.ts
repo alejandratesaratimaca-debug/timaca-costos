@@ -1359,7 +1359,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       5388.35,
       10497.62,
       20785.64,
-      24173.46
+      24497.44
     ],
     "byCategoriaMes": [
       {
@@ -1433,7 +1433,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 170926.97
+    "totalAnual": 171250.95
   },
   "TTE-C-0678": {
     "cuentaAuxiliar": "TTE-C-0678",
@@ -4029,7 +4029,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       0,
       0,
       0,
-      11200
+      11390
     ],
     "byCategoriaMes": [
       {
@@ -4103,7 +4103,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
         "Costos Indirectos": 0
       }
     ],
-    "totalAnual": 11260
+    "totalAnual": 11450
   },
   "TTE-C-0667": {
     "cuentaAuxiliar": "TTE-C-0667",
