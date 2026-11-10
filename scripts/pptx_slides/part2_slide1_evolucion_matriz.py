@@ -10,7 +10,7 @@ def get_code():
       slide,
       '1',
       `1. Visión General y Distribución Consolidada de Costos (${mesTitle})`,
-      `Gasto Total Oficial Proyectos Externos: $${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD (${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'}) · Acumulado 2026: $14.823.374 USD (10 Meses)`
+      `Gasto Total Oficial Proyectos Externos: $${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD (${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'}) · Acumulado 2026: $14.792.289 USD (10 Meses)`
     );
 
     // 4 KPI Cards (Top Row)
@@ -18,12 +18,12 @@ def get_code():
       {
         tag: `GASTO TOTAL ${mesUpper}`,
         val: `$${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD`,
-        desc: `${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'} (+$385.496 USD)`,
+        desc: `+$355.781 USD (+20,8% vs Sep)`,
         color: C_NAVY
       },
       {
         tag: 'ACUMULADO CONSOLIDADO 2026',
-        val: '$14.823.374 USD',
+        val: '$14.792.289 USD',
         desc: '10 Meses (Ene - Oct) · 100% Proyectos Externos',
         color: C_BLUE
       },
@@ -133,17 +133,17 @@ def get_code():
       ],
       [
         { text: 'Costos Indirectos (CIF Bolsa)', options: { fontSize: 8.5, bold: true, color: C_DARK } },
-        { text: '$344.629', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '16,5%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '$314.914', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
+        { text: '15,3%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$341.375', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
-        { text: '+1,0%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
+        { text: '-7,7%', options: { fontSize: 8.5, align: 'right', bold: true, color: 'DC2626' } }
       ],
       [
         { text: 'TOTAL CONSOLIDADO', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: C_NAVY } },
-        { text: '$2.092.774', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
+        { text: '$2.063.059', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
         { text: '100,0%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
         { text: '$1.707.278', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: '64748B', align: 'right' } },
-        { text: '+22,6%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: '059669', align: 'right' } }
+        { text: '+20,8%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: '059669', align: 'right' } }
       ]
     ];
 
@@ -255,9 +255,9 @@ def get_code():
     });
 
     slide.addText(
-      '• Conciliación 100% Proyectos Externos: Los 18 contratos auxiliares TTE-C absorben exactamente $2.092.774 USD, habiéndose depurado gastos no imputables a contratos externos (flota interna y soporte central corporativo).\\n' +
-      '• Ejes Principales de Inversión: Pellas Línea 1 ($1.235.109 USD · 59,0%) y Segunda Línea PMH ($444.020 USD · 21,2%) concentran el 80,2% de la ejecución técnica de octubre.\\n' +
-      '• Tendencia de Curva: La trayectoria gráfica refleja el repunte controlado de +22,6% ($2.093k), acorde con la fase crítica de comisionamiento preoperativo y frentes simultáneos.',
+      '• Conciliación 100% Proyectos Externos: Los 18 contratos auxiliares TTE-C absorben exactamente $2.063.059 USD, habiéndose depurado gastos no imputables a contratos externos (flota interna y soporte central corporativo).\\n' +
+      '• Ejes Principales de Inversión: Pellas Línea 1 ($1.219.527 USD · 59,1%) y Segunda Línea PMH ($434.469 USD · 21,1%) concentran el 80,2% de la ejecución técnica de octubre.\\n' +
+      '• Tendencia de Curva: La trayectoria gráfica refleja el repunte controlado de +20,8% ($2.063k), acorde con la fase crítica de comisionamiento preoperativo y frentes simultáneos.',
       {
         x: 7.25,
         y: 5.50,

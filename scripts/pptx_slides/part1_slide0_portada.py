@@ -177,7 +177,7 @@ def get_code():
     slide.addText(
       '• Conciliación 100% Analítica: Base de datos oficial unificada cruzando los módulos de Materiales SIP, Nómina Directa (MOD), Horas Máquina de Flota Pesada y Costos Indirectos CIF.\\n' +
       '• Estructura de Proyectos Externos: Análisis auditado al centavo de los frentes de obra TTE-C ejecutados para VISCO ORINOCO (CVG Ferrominera Orinoco, Planta de Pellas, Complejo PMH, Briqueteras y Buque Boca Grande II).\\n' +
-      '• Prorrateo Riguroso CIF: Distribución corporativa oficial de la bolsa indirecta ($344.629 USD) anclada a la intensidad de Mano de Obra Directa devengada en campo.',
+      '• Prorrateo Riguroso CIF: Distribución corporativa oficial de la bolsa indirecta ($314.914 USD) anclada a la intensidad de Mano de Obra Directa devengada en campo.',
       {
         x: 1.05,
         y: 5.14,

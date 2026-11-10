@@ -7,9 +7,9 @@ def get_code():
   {
     const slide = pptx.addSlide();
     slide.background = { color: C_BG_LIGHT };
-    const cifTotal = isOct ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375);
+    const cifTotal = isOct ? 314913.80 : (categoriasMesAnalisis[4]?.monto || 393375);
     const modBase = isOct ? 257750.82 : 229149;
-    const pellasCIF = Math.round(isOct ? 175409.81 : cifTotal * 0.602);
+    const pellasCIF = Math.round(isOct ? 160285.32 : cifTotal * 0.602);
     const restoCIF = Math.round(cifTotal - pellasCIF);
 
     addSlideHeader(
@@ -70,7 +70,7 @@ def get_code():
     });
 
     // =========================================================================
-    // COLUMNA IZQUIERDA: COMPOSICIÓN DE LA BOLSA CIF ($344.629 USD)
+    // COLUMNA IZQUIERDA: COMPOSICIÓN DE LA BOLSA CIF ($314.914 USD)
     // =========================================================================
     slide.addText(`COMPOSICIÓN DE LA BOLSA CORPORATIVA CIF ($${Math.round(cifTotal).toLocaleString('de-DE')} USD)`, {
       x: 0.6,
@@ -246,8 +246,8 @@ def get_code():
     });
 
     slide.addText(
-      '• Cuadre Exacto al Céntimo ($0,00 descuadre): Los $344.629,00 USD se absorben 100% en las 18 cuentas auxiliares, asignando costo a los 7 proyectos con fuerza laboral directa.\\n' +
-      '• Concentración en Ejes Clave: Pellas Línea 1 ($175.410 USD · 50,9%) y Segunda Línea PMH ($105.668 USD · 30,7%) absorben el 81,6% de la bolsa indirecta.\\n' +
+      '• Cuadre Exacto al Céntimo ($0,00 descuadre): Los $314.913,80 USD se absorben 100% en las 18 cuentas auxiliares, asignando costo a los 7 proyectos con fuerza laboral directa.\\n' +
+      '• Concentración en Ejes Clave: Pellas Línea 1 ($160.285 USD · 50,9%) y Segunda Línea PMH ($96.557 USD · 30,7%) absorben el 81,6% de la bolsa indirecta.\\n' +
       '• Soporte Documental: Conciliado contra el archivo oficial "3 Analisis Costos Indirectos.xlsx" (Hoja 2, Q5:V16).',
       {
         x: 6.92,

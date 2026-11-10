@@ -3854,7 +3854,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[10px] font-bold text-slate-500 uppercase block">Bolsa Total CIF del Mes</span>
                         <span className="text-xl font-black font-mono text-[#0b2545] block mt-0.5">
-                          ${(selectedMesNum === 10 ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')} USD
+                          ${(selectedMesNum === 10 ? 314914 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')} USD
                         </span>
                         <span className="text-[10.5px] text-slate-500">Total general a distribuir</span>
                       </div>
@@ -3960,7 +3960,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               </td>
                               <td className="py-3 px-3 text-center font-mono text-blue-900">100,00%</td>
                               <td className="py-3 px-3 text-right font-mono text-emerald-900 bg-emerald-100/80 text-sm">
-                                ${(selectedMesNum === 10 ? 344629 : 393375).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                                ${(selectedMesNum === 10 ? 314914 : 393375).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
                               </td>
                               <td className="py-3 px-3 text-[11px] text-emerald-800 font-bold">Cuadre exacto al centavo ($0,00)</td>
                             </tr>
@@ -3993,27 +3993,27 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           </span>
                         </div>
                         <span className="text-sm font-mono font-black text-[#0b2545] bg-slate-100 px-3 py-1 rounded-lg">
-                          Total: ${(selectedMesNum === 10 ? 344629 : 393375).toLocaleString('de-DE')} USD
+                          Total: ${(selectedMesNum === 10 ? 314914 : 393375).toLocaleString('de-DE')} USD
                         </span>
                       </div>
 
                       <div className="space-y-2.5 pt-1">
                         {(selectedMesNum === 10 ? [
-                          { num: 1, concept: 'Nómina - Talleres Centrales TIMACA', monto: 123000, pct: 35.69, desc: 'Cuadrillas de mecánicos, torneros, mantenimiento de grúas y pailería central de talleres.' },
-                          { num: 2, concept: 'Nómina Personal TIMACA (Dirección Técnica)', monto: 75000, pct: 21.76, desc: 'Ingenieros residentes, supervisores de seguridad, control de calidad y analistas de costo en planta.' },
-                          { num: 3, concept: 'Sindicato (Aporte y Gestión Gremial)', monto: 59000, pct: 17.12, desc: 'Obligaciones contractuales de convención colectiva, dotaciones reglamentarias y bienestar laboral.' },
-                          { num: 4, concept: 'Combustible y Lubricantes de Flota', monto: 50000, pct: 14.51, desc: 'Abastecimiento de gasoil y lubricantes para transporte de soporte, plantas y generadores auxiliares.' },
-                          { num: 5, concept: 'Otros Servicios Contratados de Admón.', monto: 9900, pct: 2.87, desc: 'Servicios de soporte administrativo externo, consultoría técnica y soporte corporativo.' },
-                          { num: 6, concept: 'Timbres Fiscales / Notarías / Registros', monto: 7600, pct: 2.21, desc: 'Trámites legales, notarizaciones y sellado fiscal de contratos de obra.' },
-                          { num: 7, concept: 'Incentivos Laborales (Bonos de Obra)', monto: 7000, pct: 2.03, desc: 'Bonificaciones por cumplimiento de metas de producción, paradas y turnos extendidos.' },
-                          { num: 8, concept: 'Vigilancia Perimetral y Custodia 24/7', monto: 4803, pct: 1.39, desc: 'Custodia patrimonial y seguridad perimetral 24/7 en instalaciones centrales, talleres y almacenes.' },
-                          { num: 9, concept: 'Gastos de Viajes y Viáticos Nacionales', monto: 4500, pct: 1.31, desc: 'Movilización técnica de ingenieros especialistas e inspecciones en frentes de obra.' },
-                          { num: 10, concept: 'Servicios Públicos (Electricidad, Agua)', monto: 2600, pct: 0.75, desc: 'Suministro de energía eléctrica e instalaciones sanitarias de talleres centrales.' },
-                          { num: 11, concept: 'Servicios de Telecomunicaciones', monto: 600, pct: 0.17, desc: 'Telefonía corporativa, enlaces satelitales y conectividad de campo.' },
-                          { num: 12, concept: 'Gastos de Seguro y Pólizas', monto: 270, pct: 0.08, desc: 'Pólizas de responsabilidad civil y coberturas auxiliares.' },
-                          { num: 13, concept: 'Honorarios Profesionales', monto: 250, pct: 0.07, desc: 'Asesorías especializadas legales y tributarias.' },
-                          { num: 14, concept: 'Gastos de Asociación / Suscripción', monto: 56, pct: 0.02, desc: 'Cuotas de colegios gremiales y cámaras industriales.' },
-                          { num: 15, concept: 'Gastos de Servicios Bancarios', monto: 50, pct: 0.01, desc: 'Comisiones y mantenimiento operativo de cuentas bancarias.' }
+                          { num: 1, concept: 'Nómina - Talleres Centrales TIMACA', monto: 123000, pct: 39.06, desc: 'Cuadrillas de mecánicos, torneros, mantenimiento de grúas y pailería central de talleres.' },
+                          { num: 2, concept: 'Nómina Personal TIMACA (Dirección Técnica)', monto: 75000, pct: 23.82, desc: 'Ingenieros residentes, supervisores de seguridad, control de calidad y analistas de costo en planta.' },
+                          { num: 3, concept: 'Sindicato (Aporte y Gestión Gremial)', monto: 72633, pct: 23.06, desc: 'Obligaciones contractuales de convención colectiva, dotaciones reglamentarias y bienestar laboral.' },
+                          { num: 4, concept: 'Combustible y Lubricantes de Flota', monto: 23015, pct: 7.31, desc: 'Abastecimiento de gasoil y lubricantes para transporte de soporte, plantas y generadores auxiliares.' },
+                          { num: 5, concept: 'Incentivos Laborales (Bonos de Obra)', monto: 7000, pct: 2.22, desc: 'Bonificaciones por cumplimiento de metas de producción, paradas y turnos extendidos.' },
+                          { num: 6, concept: 'Vigilancia Perimetral y Custodia 24/7', monto: 6750, pct: 2.14, desc: 'Custodia patrimonial y seguridad perimetral 24/7 en instalaciones centrales, talleres y almacenes.' },
+                          { num: 7, concept: 'Timbres Fiscales / Notarías / Registros', monto: 2753, pct: 0.87, desc: 'Trámites legales, notarizaciones y sellado fiscal de contratos de obra.' },
+                          { num: 8, concept: 'Servicios Públicos (Electricidad, Agua)', monto: 1980, pct: 0.63, desc: 'Suministro de energía eléctrica e instalaciones sanitarias de talleres centrales.' },
+                          { num: 9, concept: 'Gastos de Viajes y Viáticos Nacionales', monto: 1115, pct: 0.35, desc: 'Movilización técnica de ingenieros especialistas e inspecciones en frentes de obra.' },
+                          { num: 10, concept: 'Servicios de Telecomunicaciones', monto: 602, pct: 0.19, desc: 'Telefonía corporativa, enlaces satelitales y conectividad de campo.' },
+                          { num: 11, concept: 'Gastos de Asociación / Suscripción', monto: 560, pct: 0.18, desc: 'Cuotas de colegios gremiales y cámaras industriales.' },
+                          { num: 12, concept: 'Honorarios Profesionales Soporte SIP', monto: 250, pct: 0.08, desc: 'Asesorías especializadas legales, tributarias y soporte de sistemas.' },
+                          { num: 13, concept: 'Otros Servicios Contratados de Admón.', monto: 193, pct: 0.06, desc: 'Servicios de soporte administrativo externo y consumibles de oficina.' },
+                          { num: 14, concept: 'Gastos de Servicios Bancarios', monto: 49, pct: 0.02, desc: 'Comisiones y mantenimiento operativo de cuentas bancarias.' },
+                          { num: 15, concept: 'Gastos de Seguro y Pólizas', monto: 14, pct: 0.004, desc: 'Pólizas de responsabilidad civil y coberturas auxiliares.' }
                         ] : [
                           { num: 1, concept: 'Nómina Interna y Dirección Técnica TIMACA', monto: 125000, pct: 31.78, desc: 'Ingenieros residentes, supervisores de seguridad industrial, control de proyectos y gerencia técnica en planta y campo.' },
                           { num: 2, concept: 'Nómina de Talleres y Mantenimiento Central', monto: 122000, pct: 31.01, desc: 'Mecánicos, electricistas de planta, torneros, mantenimiento de grúas y soporte de pailería central.' },
@@ -4115,7 +4115,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
                             <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400">Total CIF</span>
                             <span className="text-xl font-black text-[#0b2545] font-mono leading-tight">
-                              ${(selectedMesNum === 10 ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')}
+                              ${(selectedMesNum === 10 ? 314914 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')}
                             </span>
                             <span className="text-[10px] font-bold text-slate-500">USD</span>
                           </div>
@@ -4140,7 +4140,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           </strong>
                           <p className="text-[11px] leading-relaxed text-slate-700">
                             {selectedMesNum === 10
-                              ? 'El modelo contable de TIMACA distribuye los costos indirectos en función del volumen de nómina devengada por cuadrillas ($257.750 USD). Pellas Línea 1 concentra el 50,9% de la mano de obra ($131.190 USD), absorbiendo $175.410 USD de los costos indirectos ($344.629 USD), y los 6 frentes restantes absorben el 49,1% ($169.219 USD).'
+                              ? 'El modelo contable de TIMACA distribuye los costos indirectos en función del volumen de nómina devengada por cuadrillas ($257.750 USD). Pellas Línea 1 concentra el 50,9% de la mano de obra ($131.190 USD), absorbiendo $160.285 USD de los costos indirectos ($314.914 USD), y los 6 frentes restantes absorben el 49,1% ($154.629 USD).'
                               : 'El modelo contable de TIMACA distribuye los costos indirectos de soporte técnico, supervisión y logística en estricta proporción a las horas-hombre devengadas por la fuerza laboral directa. Pellas Línea 1, al movilizar más de 250 obreros estables y el 60,2% de la nómina directa ($133.185 USD), absorbe legítimamente el 60,2% de la estructura indirecta ($236.688 USD).'}
                           </p>
                         </div>
@@ -4149,7 +4149,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                             <span className="text-[10.5px] font-bold text-slate-500 uppercase block">Pellas Línea 1</span>
                             <strong className="text-lg font-black font-mono text-[#002060] block">
-                              ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.509 : 0.602)).toLocaleString('de-DE')} USD
+                              ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 314914 : 393375)) * (selectedMesNum === 10 ? 0.509 : 0.602)).toLocaleString('de-DE')} USD
                             </strong>
                             <span className="text-[10px] text-slate-500">
                               {selectedMesNum === 10 ? '50,9%' : '60,2%'} de absorción corporativa (anclada a MOD)
@@ -4159,7 +4159,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                             <span className="text-[10.5px] font-bold text-slate-500 uppercase block">Resto de Proyectos ({selectedMesNum === 10 ? '6 frentes' : `${cuentasAuxiliaresMes.length - 1} obras`})</span>
                             <strong className="text-lg font-black font-mono text-amber-700 block">
-                              ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.491 : 0.398)).toLocaleString('de-DE')} USD
+                              ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 314914 : 393375)) * (selectedMesNum === 10 ? 0.491 : 0.398)).toLocaleString('de-DE')} USD
                             </strong>
                             <span className="text-[10px] text-slate-500">
                               {selectedMesNum === 10 ? '49,1% prorrateado de mayor a menor' : '39,8% distribuido en frentes activos restantes'}
@@ -4170,9 +4170,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                     </div>
 
                     <div className="p-3 rounded-xl bg-slate-100 border border-slate-300 text-xs text-slate-800 flex justify-between items-center">
-                      <span><strong>Total Indirectos {activeMonth?.mesLabel?.split(' ')[0]}:</strong> ${(selectedMesNum === 10 ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')} USD</span>
-                      <span><strong>Pellas Línea 1 ({selectedMesNum === 10 ? '50,9%' : '60,2%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.509 : 0.602)).toLocaleString('de-DE')} USD</span>
-                      <span><strong>Demás Proyectos ({selectedMesNum === 10 ? '49,1%' : '39,8%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 344629 : 393375)) * (selectedMesNum === 10 ? 0.491 : 0.398)).toLocaleString('de-DE')} USD</span>
+                      <span><strong>Total Indirectos {activeMonth?.mesLabel?.split(' ')[0]}:</strong> ${(selectedMesNum === 10 ? 314914 : (categoriasMesAnalisis[4]?.monto || 393375)).toLocaleString('de-DE')} USD</span>
+                      <span><strong>Pellas Línea 1 ({selectedMesNum === 10 ? '50,9%' : '60,2%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 314914 : 393375)) * (selectedMesNum === 10 ? 0.509 : 0.602)).toLocaleString('de-DE')} USD</span>
+                      <span><strong>Demás Proyectos ({selectedMesNum === 10 ? '49,1%' : '39,8%'}):</strong> ${Math.round((categoriasMesAnalisis[4]?.monto || (selectedMesNum === 10 ? 314914 : 393375)) * (selectedMesNum === 10 ? 0.491 : 0.398)).toLocaleString('de-DE')} USD</span>
                     </div>
                   </div>
                 )}

@@ -363,7 +363,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     slide.addText(
       '• Conciliación 100% Analítica: Base de datos oficial unificada cruzando los módulos de Materiales SIP, Nómina Directa (MOD), Horas Máquina de Flota Pesada y Costos Indirectos CIF.\n' +
       '• Estructura de Proyectos Externos: Análisis auditado al centavo de los frentes de obra TTE-C ejecutados para VISCO ORINOCO (CVG Ferrominera Orinoco, Planta de Pellas, Complejo PMH, Briqueteras y Buque Boca Grande II).\n' +
-      '• Prorrateo Riguroso CIF: Distribución corporativa oficial de la bolsa indirecta ($344.629 USD) anclada a la intensidad de Mano de Obra Directa devengada en campo.',
+      '• Prorrateo Riguroso CIF: Distribución corporativa oficial de la bolsa indirecta ($314.914 USD) anclada a la intensidad de Mano de Obra Directa devengada en campo.',
       {
         x: 1.05,
         y: 5.14,
@@ -426,7 +426,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       slide,
       '1',
       `1. Visión General y Distribución Consolidada de Costos (${mesTitle})`,
-      `Gasto Total Oficial Proyectos Externos: $${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD (${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'}) · Acumulado 2026: $14.823.374 USD (10 Meses)`
+      `Gasto Total Oficial Proyectos Externos: $${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD (${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'}) · Acumulado 2026: $14.792.289 USD (10 Meses)`
     );
 
     // 4 KPI Cards (Top Row)
@@ -434,12 +434,12 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       {
         tag: `GASTO TOTAL ${mesUpper}`,
         val: `$${Math.round(datosMesInforme.totalMonto).toLocaleString('de-DE')} USD`,
-        desc: `${datosMesInforme.variacionTotalPct > 0 ? '+' : ''}${datosMesInforme.variacionTotalPct}% vs ${datosMesInforme.mesAnteriorLabel?.split(' ')[0] || 'mes anterior'} (+$385.496 USD)`,
+        desc: `+$355.781 USD (+20,8% vs Sep)`,
         color: C_NAVY
       },
       {
         tag: 'ACUMULADO CONSOLIDADO 2026',
-        val: '$14.823.374 USD',
+        val: '$14.792.289 USD',
         desc: '10 Meses (Ene - Oct) · 100% Proyectos Externos',
         color: C_BLUE
       },
@@ -549,17 +549,17 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       ],
       [
         { text: 'Costos Indirectos (CIF Bolsa)', options: { fontSize: 8.5, bold: true, color: C_DARK } },
-        { text: '$344.629', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '16,5%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '$314.914', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
+        { text: '15,3%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$341.375', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
-        { text: '+1,0%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
+        { text: '-7,7%', options: { fontSize: 8.5, align: 'right', bold: true, color: 'DC2626' } }
       ],
       [
         { text: 'TOTAL CONSOLIDADO', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: C_NAVY } },
-        { text: '$2.092.774', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
+        { text: '$2.063.059', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
         { text: '100,0%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: C_NAVY, align: 'right' } },
         { text: '$1.707.278', options: { fontSize: 9.0, bold: true, fontFace: 'Consolas', fill: { color: 'F1F5F9' }, color: '64748B', align: 'right' } },
-        { text: '+22,6%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: '059669', align: 'right' } }
+        { text: '+20,8%', options: { fontSize: 9.0, bold: true, fill: { color: 'F1F5F9' }, color: '059669', align: 'right' } }
       ]
     ];
 
@@ -671,9 +671,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      '• Conciliación 100% Proyectos Externos: Los 18 contratos auxiliares TTE-C absorben exactamente $2.092.774 USD, habiéndose depurado gastos no imputables a contratos externos (flota interna y soporte central corporativo).\n' +
-      '• Ejes Principales de Inversión: Pellas Línea 1 ($1.235.109 USD · 59,0%) y Segunda Línea PMH ($444.020 USD · 21,2%) concentran el 80,2% de la ejecución técnica de octubre.\n' +
-      '• Tendencia de Curva: La trayectoria gráfica refleja el repunte controlado de +22,6% ($2.093k), acorde con la fase crítica de comisionamiento preoperativo y frentes simultáneos.',
+      '• Conciliación 100% Proyectos Externos: Los 18 contratos auxiliares TTE-C absorben exactamente $2.063.059 USD, habiéndose depurado gastos no imputables a contratos externos (flota interna y soporte central corporativo).\n' +
+      '• Ejes Principales de Inversión: Pellas Línea 1 ($1.219.527 USD · 59,1%) y Segunda Línea PMH ($434.469 USD · 21,1%) concentran el 80,2% de la ejecución técnica de octubre.\n' +
+      '• Tendencia de Curva: La trayectoria gráfica refleja el repunte controlado de +20,8% ($2.063k), acorde con la fase crítica de comisionamiento preoperativo y frentes simultáneos.',
       {
         x: 7.25,
         y: 5.50,
@@ -1663,12 +1663,12 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       { mes: 'Feb', val: 1416, desc: 'Levantamiento topográfico' },
       { mes: 'Mar', val: 684, desc: 'Acondicionamiento taller' },
       { mes: 'Abr', val: 5583, desc: 'Llegada de primeros equipos' },
-      { mes: 'May', val: 305565, desc: 'Despliegue cuadrilla 220 trab.' },
-      { mes: 'Jun', val: 344115, desc: 'Montaje de refractario' },
-      { mes: 'Jul', val: 348507, desc: 'Calderería y tolvas' },
+      { mes: 'May', val: 305561, desc: 'Despliegue cuadrilla 220 trab.' },
+      { mes: 'Jun', val: 404215, desc: 'Montaje de refractario' },
+      { mes: 'Jul', val: 404984, desc: 'Calderería y tolvas' },
       { mes: 'Ago', val: 596358, desc: 'Rampa de montaje mecánico' },
-      { mes: 'Sep', val: 668340, desc: 'Pico histórico operativo' },
-      { mes: 'Oct', val: 867861, desc: 'Hito de servicios e instrumentación' }
+      { mes: 'Sep', val: 663316, desc: 'Mayor avance operativo previo' },
+      { mes: 'Oct', val: 1219527, desc: 'Nuevo pico histórico: instrumentación DCS, cuadrilla y montaje' }
     ];
 
     let pRun = 0;
@@ -3117,9 +3117,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
   {
     const slide = pptx.addSlide();
     slide.background = { color: C_BG_LIGHT };
-    const cifTotal = isOct ? 344629 : (categoriasMesAnalisis[4]?.monto || 393375);
+    const cifTotal = isOct ? 314913.80 : (categoriasMesAnalisis[4]?.monto || 393375);
     const modBase = isOct ? 257750.82 : 229149;
-    const pellasCIF = Math.round(isOct ? 175409.81 : cifTotal * 0.602);
+    const pellasCIF = Math.round(isOct ? 160285.32 : cifTotal * 0.602);
     const restoCIF = Math.round(cifTotal - pellasCIF);
 
     addSlideHeader(
@@ -3180,7 +3180,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     // =========================================================================
-    // COLUMNA IZQUIERDA: COMPOSICIÓN DE LA BOLSA CIF ($344.629 USD)
+    // COLUMNA IZQUIERDA: COMPOSICIÓN DE LA BOLSA CIF ($314.914 USD)
     // =========================================================================
     slide.addText(`COMPOSICIÓN DE LA BOLSA CORPORATIVA CIF ($${Math.round(cifTotal).toLocaleString('de-DE')} USD)`, {
       x: 0.6,
@@ -3356,8 +3356,8 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      '• Cuadre Exacto al Céntimo ($0,00 descuadre): Los $344.629,00 USD se absorben 100% en las 18 cuentas auxiliares, asignando costo a los 7 proyectos con fuerza laboral directa.\n' +
-      '• Concentración en Ejes Clave: Pellas Línea 1 ($175.410 USD · 50,9%) y Segunda Línea PMH ($105.668 USD · 30,7%) absorben el 81,6% de la bolsa indirecta.\n' +
+      '• Cuadre Exacto al Céntimo ($0,00 descuadre): Los $314.913,80 USD se absorben 100% en las 18 cuentas auxiliares, asignando costo a los 7 proyectos con fuerza laboral directa.\n' +
+      '• Concentración en Ejes Clave: Pellas Línea 1 ($160.285 USD · 50,9%) y Segunda Línea PMH ($96.557 USD · 30,7%) absorben el 81,6% de la bolsa indirecta.\n' +
       '• Soporte Documental: Conciliado contra el archivo oficial "3 Analisis Costos Indirectos.xlsx" (Hoja 2, Q5:V16).',
       {
         x: 6.92,

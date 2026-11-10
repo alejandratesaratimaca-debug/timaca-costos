@@ -120,12 +120,12 @@ def get_code():
       { mes: 'Feb', val: 1416, desc: 'Levantamiento topográfico' },
       { mes: 'Mar', val: 684, desc: 'Acondicionamiento taller' },
       { mes: 'Abr', val: 5583, desc: 'Llegada de primeros equipos' },
-      { mes: 'May', val: 305565, desc: 'Despliegue cuadrilla 220 trab.' },
-      { mes: 'Jun', val: 344115, desc: 'Montaje de refractario' },
-      { mes: 'Jul', val: 348507, desc: 'Calderería y tolvas' },
+      { mes: 'May', val: 305561, desc: 'Despliegue cuadrilla 220 trab.' },
+      { mes: 'Jun', val: 404215, desc: 'Montaje de refractario' },
+      { mes: 'Jul', val: 404984, desc: 'Calderería y tolvas' },
       { mes: 'Ago', val: 596358, desc: 'Rampa de montaje mecánico' },
-      { mes: 'Sep', val: 668340, desc: 'Pico histórico operativo' },
-      { mes: 'Oct', val: 867861, desc: 'Hito de servicios e instrumentación' }
+      { mes: 'Sep', val: 663316, desc: 'Mayor avance operativo previo' },
+      { mes: 'Oct', val: 1219527, desc: 'Nuevo pico histórico: instrumentación DCS, cuadrilla y montaje' }
     ];
 
     let pRun = 0;
