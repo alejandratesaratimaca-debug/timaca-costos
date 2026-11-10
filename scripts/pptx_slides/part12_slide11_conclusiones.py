@@ -37,9 +37,9 @@ def get_code():
 
     slide.addText(
       isOct
-        ? '• Purificación de Materiales al 100%: Base de datos de $1.444.345,28 USD auditada al centavo sin registros a destiempo ni duplicidades.\\n' +
-          '• Tracción Sostenida en Pellas Línea 1: Acumulado anual superó los $3,25M USD (10,96% del contrato marco de $29,72M USD) con 254 trabajadores estables.\\n' +
-          '• Continuidad en Segunda Línea PMH: Despacho sostenido de vigas y perfiles ASTM A36 con $205.894 USD acumulados en el año.'
+        ? '• Conciliación 100% Proyectos Externos: Gasto mensual auditado en $2.092.774,28 USD distribuidos en 18 frentes auxiliares (TTE-C) con exclusión estricta de flota y gastos centrales.\\n' +
+          '• Tracción Sostenida en Pellas Línea 1: Acumulado anual alcanzó $3.624.087 USD con 254 trabajadores estables y absorción de $175K en costos indirectos CIF.\\n' +
+          '• Expansión en Segunda Línea PMH: Inversión de $444.020 USD en el mes con cuadrilla y suministro masivo de vigas y perfiles ASTM A36.'
         : '• Mano de Obra Directa al Día: $196.665 USD devengados en 10 proyectos externos sin pasivos atrasados ni contingencias laborales.\\n' +
           '• Avance Sólido en Pellas Línea 1: Acumulado consolidado de $2.388.978 USD (8,0% sobre contrato marco) con 254 trabajadores y 812 horas grúa.\\n' +
           '• Eficiencia en Procura: Costos de flete mitigados mediante convenios de entrega directa en talleres de Puerto Ordaz.',
@@ -200,9 +200,9 @@ def get_code():
     });
 
     const dictamenDefault = isOct
-      ? `Para el período correspondiente a Octubre 2026, el gasto operativo consolidado en proyectos externos alcanzó $1.444.345,28 USD (ocho proyectos activos con imputación contable purificada al 100%).\\n\\n` +
-        `El proyecto con mayor ejecución fue Línea 1 Pellas (TTE-C-0706) con $867.861 USD (60,1% del total mensual), seguido por Planta PMH Segunda Línea (TTE-C-0671) con $73.300 USD y DRAVO PA-9020 con $106.812 USD.\\n\\n` +
-        `Se deja constancia formal de que el rubro Horas Máquina incluye una provisión técnica temporal de $58.500 USD (821 H/M en 16 equipos de Pellas Línea 1) para continuidad contable a la espera de la recepción final de partes de horómetros por parte de la jefatura de equipos pesados.`
+      ? `Para el período correspondiente a Octubre 2026, el gasto operativo consolidado en proyectos externos alcanzó $2.092.774,28 USD (18 contratos auxiliares TTE-C activos con imputación contable auditada al 100%).\\n\\n` +
+        `El proyecto con mayor ejecución fue Línea 1 Pellas (TTE-C-0706) con $1.235.109 USD (59,0% del total mensual), seguido por Planta PMH Segunda Línea (TTE-C-0671) con $444.020 USD (21,2%) y DRAVO PA-9020 con $126.963 USD (6,1%).\\n\\n` +
+        `Se deja constancia formal de que el rubro Horas Máquina incluye una provisión técnica temporal de $58.500 USD para continuidad contable a la espera de la recepción final de partes de horómetros por parte de la jefatura de equipos pesados.`
       : `Para el período correspondiente a Septiembre 2026, el gasto operativo consolidado en proyectos externos se situó en $1.613.225 USD, distribuidos en 10 cuentas auxiliares activas.\\n\\n` +
         `El proyecto con mayor ejecución fue Línea 1 Pellas con $668.340 USD (40,8% del total mensual), seguido por DRAVO PA-9020 con $199.356 USD (parada técnica mayor con suministro concentrado de blindajes Hardox).\\n\\n` +
         `La distribución del costo por categorías se mantuvo alineada con las necesidades de procura y fuerza laboral directa (64.585 HH devengadas), orientada a la máxima eficiencia operativa y al estricto cumplimiento de los hitos de entrega con el cliente.`;
