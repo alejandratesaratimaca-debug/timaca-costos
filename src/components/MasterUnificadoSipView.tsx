@@ -436,13 +436,54 @@ export function detectarMesRezagada(r: any): string | null {
   return null;
 }
 
+export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
+  if (nombreMes) {
+    const clean = nombreMes.trim();
+    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  }
+  if (!fechaStr) return 'Octubre';
+  const parts = fechaStr.split('-');
+  if (parts.length >= 2) {
+    const m = parts[1];
+    const map: Record<string, string> = {
+      '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
+      '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
+      '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
+    };
+    if (map[m]) return map[m];
+  }
+  return 'Octubre';
+}
+
 export function isRezagadaDestiempo(r: any, descartadasList?: string[]): boolean {
   if (!r) return false;
   if (descartadasList && isRowDescartada(r, descartadasList)) return false;
-  if (r.infoReclasificacion && (r.infoReclasificacion.nuevoMes || String(r.infoReclasificacion.motivo || '').toLowerCase().includes('rezagad'))) {
+
+  const mesActual = getMesFromFecha(r.fecha, r.nombre_mes).toLowerCase();
+
+  // Si tiene infoReclasificacion con nuevoMes explícito asignado por el usuario
+  if (r.infoReclasificacion?.nuevoMes) {
+    return r.infoReclasificacion.nuevoMes.trim().toLowerCase() !== mesActual;
+  }
+  if (r.infoReclasificacion?.motivo && String(r.infoReclasificacion.motivo).toLowerCase().includes('rezagad')) {
     return true;
   }
-  return detectarMesRezagada(r) !== null || detectarDesfaseFechaMotivo(r) !== null;
+
+  // 1. Desfase explícito detectado en fecha vs motivo (requiere que el mes detectado sea diferente al asentado)
+  const desfase = detectarDesfaseFechaMotivo(r);
+  if (desfase && desfase.tieneDesfase && desfase.mesDetectado) {
+    if (desfase.mesDetectado.toLowerCase() !== mesActual) {
+      return true;
+    }
+  }
+
+  // 2. Mes detectado por palabras clave en motivo (SOLO si difiere del mes contable donde está asentado)
+  const mesDest = detectarMesRezagada(r);
+  if (mesDest && mesDest.toLowerCase() !== mesActual) {
+    return true;
+  }
+
+  return false;
 }
 
 export function clasificarNormalizacion(r: any, descartadasList?: string[]): SubtipoNormalizacion | null {
@@ -461,25 +502,6 @@ export function clasificarNormalizacion(r: any, descartadasList?: string[]): Sub
     return 'vieja_historica';
   }
   return null;
-}
-
-export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
-  if (nombreMes) {
-    const clean = nombreMes.trim();
-    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
-  }
-  if (!fechaStr) return 'Septiembre';
-  const parts = fechaStr.split('-');
-  if (parts.length >= 2) {
-    const m = parts[1];
-    const map: Record<string, string> = {
-      '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
-      '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
-      '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
-    };
-    if (map[m]) return map[m];
-  }
-  return 'Septiembre';
 }
 
 export function resolverCodigoCuentaAuxiliar(rawCta?: string, motivo?: string, desc?: string, solicitante?: string): string {
