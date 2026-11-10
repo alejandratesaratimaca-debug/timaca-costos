@@ -13,17 +13,17 @@ def get_code():
         ? '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Octubre 2026)'
         : '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Septiembre 2026)',
       isOct
-        ? 'Total Nómina Octubre Devengada: $257.751 USD · 69.635 HH · 6 Frentes Activos (Boca Grande II regularizada)'
+        ? 'Total Nómina Octubre Devengada: $257.750 USD · 69.635 HH · 7 Frentes Activos (100% Regularizados y Conciliados con CIF)'
         : 'Total Nómina Septiembre: $196.665 USD · 55.277 Horas-Hombre · Cuadrilla Activa en 10 Proyectos Externos'
     );
 
     // 4 KPI Cards
     const modCards = isOct
       ? [
-          { label: 'TOTAL NÓMINA DIRECTA OCT', val: '$257.751 USD', note: 'Semanas 39 a 43 · 6 Frentes devengados' },
+          { label: 'TOTAL NÓMINA DIRECTA OCT', val: '$257.750 USD', note: 'Semanas 39 a 43 · 7 Frentes devengados' },
           { label: 'VOLUMEN DE HORAS-HOMBRE', val: '69.635 HH', note: 'Promedio 13.927 HH/semana en campo' },
           { label: 'TARIFA PROMEDIO EFECTIVA', val: '$3,70 USD/HH', note: 'Costo integral de mano de obra' },
-          { label: 'FRENTES CON CUADRILLA', val: '6 Frentes Devengados', note: '50,9% Pellas · 6 Frentes devengados' }
+          { label: 'FRENTES CON CUADRILLA', val: '7 Frentes Devengados', note: '50,9% Pellas · 7 Frentes devengados' }
         ]
       : [
           { label: 'TOTAL NÓMINA DIRECTA SEP', val: '$196.665 USD', note: 'Semanas 36 a 39 · 4 cortes regulares de nómina' },
@@ -97,14 +97,10 @@ def get_code():
 
     slide.addText(
       isOct
-        ? '• Ciclo Operativo de Nómina Directa (Octubre 2026):\\n' +
-          '  La nómina procesada incorpora las Semanas 39 a 43 en los 6 frentes activos: Pellas Línea 1, 2da Línea PMH, Fase 2 Briquetas, Boca Grande II, Briqueteras y Bandas.\\n\\n' +
-          '• Regularización Nómina Boca Grande II (TTE-C-0680):\\n' +
-          '  Se incorporaron los 4 cortes semanales (Sem 40 a 43) por $13.685 USD y 3.946 HH (23 trabajadores en sitio), activando el frente en la contabilidad devengada.\\n\\n' +
-          '• Incorporación Nómina Refractario Briquetas (TTE-C-0668):\\n' +
-          '  Se sumó el reporte de refractario ($9.000 USD y 1.104 HH), consolidando el frente de Briquetas en $27.115 USD y 6.152 HH.\\n\\n' +
-          '• Alerta de Maquinaria: Horas Máquina en Conciliación:\\n' +
-          '  El renglón de Horas Máquina registra retraso en los partes de horómetros de grúas y flota pesada, figurando preliminarmente en $0,00 USD.'
+        ? '• Ciclo de Nómina (Octubre 2026): Semanas 39 a 43 en los 7 frentes activos: Pellas L1, 2da Línea PMH, Briquetas Fase 2, Boca Grande II, Briqueteras, Caldera y Bandas.\\n\\n' +
+          '• Regularización Boca Grande II (TTE-C-0680): Incorporación de los cortes semanales correspondientes al ciclo por $13.685 USD y 3.946 HH (23 trabajadores en sitio), activando el frente en la contabilidad devengada.\\n\\n' +
+          '• Desglose Briquetas Fase 2 y Caldera: Nómina de Briquetas conciliada en $23.925 USD (5.427 HH) y cuadrilla de Caldera en $3.190 USD (725 HH), sumando $27.115 USD.\\n\\n' +
+          '• Base de Prorrateo CIF ($257.750 USD): La nómina devengada constituye la base matemática unívoca para la distribución exacta de la bolsa corporativa indirecta ($314.914 USD).'
         : '• Ciclo Operativo de Nómina Directa:\\n' +
           '  La nómina imputada a Septiembre totaliza 4 cortes semanales de pago del período contable (Semanas 36 a 39 de Recursos Humanos):\\n' +
           '    - Semana 36 (Corte 05/09): $54.804 USD (15.433 HH)\\n' +
@@ -146,16 +142,16 @@ def get_code():
         { text: p.retraso ? `${p.proyecto} (RETRASO RRHH)` : p.proyecto, options: { fontSize: 8.8, color: p.retraso ? 'DC2626' : C_SLATE, margin: [2, 3, 2, 3] } },
         { text: `$${p.monto.toLocaleString('de-DE')}`, options: { bold: true, align: 'right', fontSize: 8.8, color: C_NAVY, margin: [2, 3, 2, 3] } },
         { text: p.hh.toLocaleString('de-DE'), options: { align: 'right', fontSize: 8.8, color: '64748B', margin: [2, 3, 2, 3] } },
-        { text: `${p.pct.toFixed(1).replace('.', ',')}%`, options: { align: 'right', fontSize: 8.8, color: C_DARK, bold: true, margin: [2, 3, 2, 3] } }
+        { text: `${p.pct.toFixed(2).replace('.', ',')}%`, options: { align: 'right', fontSize: 8.8, color: C_DARK, bold: true, margin: [2, 3, 2, 3] } }
       ]);
     });
 
     modTableRows.push([
       { text: 'TOTAL', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
-      { text: isOct ? 'NÓMINA OCTUBRE (DEVENGADA)' : '10 PROYECTOS EXTERNOS ACTIVOS', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
-      { text: isOct ? '$257.751 USD' : '$196.665 USD', options: { bold: true, fontSize: 9.0, color: 'FCD34D', fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
-      { text: isOct ? '69.635 HH' : '55.277 HH', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
-      { text: '100,0%', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } }
+      { text: isOct ? 'NÓMINA OCTUBRE DEVENGADA (7 FRENTES)' : '10 PROYECTOS EXTERNOS ACTIVOS', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
+      { text: isOct ? '$257.750' : '$196.665 USD', options: { bold: true, fontSize: 9.0, color: 'FCD34D', fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
+      { text: isOct ? '69.635' : '55.277 HH', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
+      { text: '100,00%', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } }
     ]);
 
     slide.addTable(modTableRows, {

@@ -332,14 +332,14 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
         );
       } else if (selectedMesNum === 10) {
         setNotasGestion(
-          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $2.092.774,28 USD, acumulando un total anual consolidado de $14.823.373,92 USD en los 10 meses de 2026.\n\n` +
-          `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $1.235.109,14 USD (59,0% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($686.040 USD), Henan Front ($40.000 USD), cuadrillas de taller y campo ($131.298 USD), provisión de horas máquina ($56.242 USD) y prorrateo CIF ($203.298 USD).\n\n` +
-          `Le siguen Segunda Línea PMH (TTE-C-0671) con $444.020,38 USD (21,2%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $126.963,01 USD (6,1%), Fase 2 Planta de Briquetas (TTE-C-0668) con $73.064,72 USD (3,5%) y Boca Grande II (TTE-C-0680) con $22.253,30 USD (1,1%).\n\n` +
-          `Por categorías operativas consolidadas: Servicios Directos totalizó $956.834,82 USD (45,7%), Materiales Directos alcanzó $475.059,64 USD (22,7%), Costos Indirectos de Fabricación (CIF) $344.629,00 USD (16,5%), Mano de Obra Directa (MOD) $257.750,82 USD (12,3%) y Horas Máquina (provisión operativa) $58.500,00 USD (2,8%).\n\n` +
+          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $2.063.059,00 USD (+20,8% vs septiembre $1.707.278 USD), acumulando un total anual consolidado de $14.823.374,00 USD en los 10 meses de 2026.\n\n` +
+          `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $1.219.527 USD (59,1% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($686.040 USD), Henan Front ($40.000 USD), cuadrillas en campo ($131.190 USD), provisión de horas máquina ($58.500 USD) y prorrateo CIF ($160.285 USD).\n\n` +
+          `Le siguen Segunda Línea PMH (TTE-C-0671) con $434.469 USD (21,1%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $106.812 USD (5,2%), Fase 2 Planta de Briquetas (TTE-C-0668) con $89.847 USD (4,4%) y Boca Grande II (TTE-C-0680) con $36.177 USD (1,8%).\n\n` +
+          `Por categorías operativas consolidadas: Servicios Directos totalizó $956.835 USD (46,4%), Materiales Directos alcanzó $475.060 USD (23,0%), Costos Indirectos de Fabricación (CIF) $314.914 USD (15,3%), Mano de Obra Directa (MOD) $257.750 USD (12,5%) y Horas Máquina (provisión operativa) $58.500 USD (2,8%).\n\n` +
           `NOTAS DE AUDITORÍA Y CONTROL DE GESTIÓN:\n` +
-          `• 100% Proyectos Externos: Se excluyeron rubros no atribuibles a frentes de clientes (flota interna y soporte central corporativo), garantizando conciliación al centavo en las 18 cuentas auxiliares TTE-C.\n` +
-          `• Mano de Obra Consolidada: Se incorporó la totalidad de frentes incluyendo la nómina regularizada de Boca Grande II ($13.722,86 USD devengados en 3.708 Horas Hombre), alcanzando 402 trabajadores activos en obra.\n` +
-          `• Horas Máquina: Se aplicó provisión técnica de $58.500 USD (+9,6% vs septiembre) sujeta a conciliación final de horómetros de planta.`
+          `• 100% Proyectos Externos: Se excluyeron rubros no atribuibles a frentes de clientes (flota interna y soporte central corporativo), garantizando conciliación al centavo en las 18 cuentas auxiliares TTE-C ($2.063.059 USD).\n` +
+          `• Mano de Obra Consolidada: Se incorporó la totalidad de frentes incluyendo la nómina regularizada de Boca Grande II ($13.685 USD devengados en 3.946 Horas Hombre), alcanzando 399 trabajadores auditados en 7 frentes de obra.\n` +
+          `• Horas Máquina: Se aplicó provisión técnica de $58.500 USD (+9,6% vs septiembre) en 16 equipos de Pellas Línea 1 sujeta a conciliación final de horómetros.`
         );
       } else {
         const mesNombre = activeMonth?.mesLabel || `Mes ${selectedMesNum}`;
@@ -747,7 +747,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200 space-y-1">
                         <strong className="text-[#0b2545] block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                          Materiales Directos ({selectedMesNum === 10 ? '$475.060 USD · 22,7%' : '$3.967.415 USD · 32,6%'})
+                          Materiales Directos ({selectedMesNum === 10 ? '$475.060 USD · 23,0%' : '$3.967.415 USD · 32,6%'})
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10 
@@ -758,7 +758,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-orange-50/70 border border-orange-200 space-y-1">
                         <strong className="text-orange-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                          Servicios Especializados ({selectedMesNum === 10 ? '$956.835 USD · 45,7%' : '$2.904.145 USD · 23,8%'})
+                          Servicios Especializados ({selectedMesNum === 10 ? '$956.835 USD · 46,4%' : '$2.904.145 USD · 23,8%'})
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
@@ -769,11 +769,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1">
                         <strong className="text-emerald-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($2.092.774 USD · 100%)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
+                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($2.063.059 USD · 100%)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
-                            ? 'Ejecución auditada al centavo en 18 frentes de proyectos externos activos (TTE-C). Absorción directa consolidada incluyendo procura, servicios, cuadrilla en campo ($257.751 USD) y prorrateo CIF ($344.629 USD).'
+                            ? 'Ejecución auditada al centavo en 18 frentes de proyectos externos activos (TTE-C). Absorción directa consolidada incluyendo procura, servicios, cuadrilla en campo ($257.750 USD) y prorrateo CIF ($314.914 USD).'
                             : 'Fuerza laboral técnica devengada en frentes de obra. En septiembre cerró en $196.665 USD en 10 proyectos externos, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Rehabilitación Bandas PMH ($28.142 USD · 12,7%).'}
                         </p>
                       </div>
@@ -940,7 +940,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       ) : selectedMesNum === 9 ? (
                         <>Cierre Consolidado Oficial (<strong className="text-emerald-700">+34,7%</strong>): El gasto del mes se situó en <strong className="text-[#0b2545]">$1,61M USD ($1.613.225 USD)</strong>, acumulando <strong className="text-blue-900">$12.052.176 USD</strong> en el ejercicio 2026 con aceleración en Línea 1 Pellas ($668K), 2da Línea PMH ($292K) y DRAVO ($199K).</>
                       ) : selectedMesNum === 10 ? (
-                        <>Cierre Auditado Proyectos Externos: Gasto mensual de <strong className="text-[#0b2545]">$1,44M USD ($1.444.345,28 USD)</strong>, acumulando <strong className="text-blue-900">$13.496.521,32 USD</strong> en el ejercicio 2026 con fuerte tracción en Línea 1 Pellas ($867.861 USD · 60,1%), 2da Línea PMH ($258.882 USD · 17,9%) y DRAVO ($106.812 USD · 7,4%).</>
+                        <>Cierre Auditado Proyectos Externos: Gasto mensual de <strong className="text-[#0b2545]">$2,06M USD ($2.063.059 USD)</strong>, acumulando <strong className="text-blue-900">$14.823.374 USD</strong> en el ejercicio 2026 con fuerte tracción en Línea 1 Pellas ($1.219.527 USD · 59,1%), 2da Línea PMH ($434.469 USD · 21,1%) y DRAVO ($106.812 USD · 5,2%).</>
                       ) : selectedMesNum > 1 ? (
                         <>Ejecución mensual de <strong className="text-[#0b2545]">{formatCurrency(activeMonth?.totalMonto || 0)}</strong> ({variacionTotalMes >= 0 ? `+${variacionTotalMes}%` : `${variacionTotalMes}%`} respecto a {mesAnterior?.mesLabel?.split(' ')[0]}) con {cuentasAuxiliaresMes.length} cuentas activas.</>
                       ) : (
@@ -994,7 +994,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       }`}
                     >
                       <Users className="w-3.5 h-3.5" />
-                      <span>Auditoría de Nómina ({selectedMesNum === 10 ? '$235K' : selectedMesNum === 8 ? '$278K' : '$196K'})</span>
+                      <span>Auditoría de Nómina ({selectedMesNum === 10 ? '$258K' : selectedMesNum === 8 ? '$278K' : '$196K'})</span>
                     </button>
                   </div>
                 </div>
@@ -1641,11 +1641,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               idx === 3 ? '811,7 horas de maquinaria pesada propia ($55.578 USD), asignadas 100% a maniobras críticas de izaje y acarreo en Pellas Línea 1 (Grúa Demag AC200).' :
                               'Costos indirectos y soporte corporativo de operaciones ($393.375 USD), integrando Nómina TIMACA ($125K), Talleres ($122K), Sindicato ($59K) y Combustible ($50K).'
                             ) : selectedMesNum === 10 ? (
-                              idx === 0 ? 'Despachos de procura SIP ($475.060 USD · 22,7%) concentrados en aceros, tolvas y calderería en Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO.' :
-                              idx === 1 ? 'Servicios especializados ($956.835 USD · 45,7%) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).' :
-                              idx === 2 ? 'Mano de obra directa auditada ($257.751 USD · 12,3%) con 402 obreros activos en 6 frentes e integración de cuadrilla en Boca Grande II ($13,7K).' :
-                              idx === 3 ? 'Provisión técnica de Horas Máquina ($58.500 USD · 2,8%) para Pellas Línea 1 ($56.242 USD) y frentes operativos sujeta a conciliación de horómetros.' :
-                              'Costos indirectos y soporte corporativo de operaciones ($344.629 USD · 16,5%), integrando nómina fija, talleres centrales y servicios de planta.'
+                              idx === 0 ? 'Despachos de procura SIP ($475.060 USD · 23,0%) concentrados en aceros, tolvas y calderería en Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO.' :
+                              idx === 1 ? 'Servicios especializados ($956.835 USD · 46,4%) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).' :
+                              idx === 2 ? 'Mano de obra directa auditada ($257.750 USD · 12,5%) con 399 trabajadores auditados en 7 frentes e integración de cuadrilla en Boca Grande II ($13,7K).' :
+                              idx === 3 ? 'Provisión técnica de Horas Máquina ($58.500 USD · 2,8%) para 16 equipos de Pellas Línea 1 (820,5 H/M) sujeta a conciliación de horómetros.' :
+                              'Costos indirectos y soporte corporativo de operaciones ($314.914 USD · 15,3%), distribuidos en los 7 frentes con nómina según horas hombre devengadas.'
                             ) : (
                               `${Math.round((cat.monto / (activeMonth?.totalMonto || 1)) * 100)}% del gasto mensual. ${
                                 selectedMesNum > 1 
@@ -1685,11 +1685,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           Total Nómina {selectedMesNum === 10 ? 'Octubre (Devengada)' : selectedMesNum === 8 ? 'Agosto (Devengada)' : 'Septiembre'}
                         </span>
                         <span className="text-2xl font-black font-mono text-[#002060] block mt-1">
-                          {selectedMesNum === 10 ? '$257.751 USD' : selectedMesNum === 8 ? '$277.936 USD' : '$196.665 USD'}
+                          {selectedMesNum === 10 ? '$257.750 USD' : selectedMesNum === 8 ? '$277.936 USD' : '$196.665 USD'}
                         </span>
                         <span className="text-[11px] text-emerald-700 font-semibold block mt-0.5">
                           {selectedMesNum === 10 
-                            ? 'Semanas 39 a 43 · 6 Frentes devengados' 
+                            ? 'Semanas 39 a 43 · 7 Frentes devengados' 
                             : selectedMesNum === 8 
                             ? 'Semanas 31 a 35 · Auditada al centavo' 
                             : 'Semanas 36 a 39 · Auditada al centavo'}
@@ -1714,11 +1714,11 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Proyectos con Cuadrilla</span>
                         <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
-                          {selectedMesNum === 10 ? '6 Frentes' : '10 Proyectos'}
+                          {selectedMesNum === 10 ? '7 Frentes' : '10 Proyectos'}
                         </span>
                         <span className="text-[11px] text-amber-700 font-semibold block mt-0.5">
                           {selectedMesNum === 10 
-                            ? '50,9% Pellas · 6 Frentes devengados' 
+                            ? '50,9% Pellas · 7 Frentes devengados' 
                             : selectedMesNum === 8 
                             ? '60,2% en Pellas Línea 1' 
                             : '65,2% en Pellas Línea 1'}
@@ -1739,7 +1739,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         {selectedMesNum === 10 ? (
                           <div className="text-xs text-slate-700 space-y-2.5 leading-relaxed">
                             <p>
-                              <strong className="text-[#002060]">Ciclo Operativo de Nómina Directa (Octubre):</strong> Incorpora los partes devengados de <strong>Semanas 39 a 43</strong> en los 6 frentes activos (<em>Pellas Línea 1</em>, <em>2da Línea PMH</em>, <em>Fase 2 Briquetas</em>, <em>Mantenimiento BG II</em>, <em>Mantenimiento Briqueteras</em> y <em>Bandas PMH</em>), totalizando <strong>$257.751 USD</strong> y <strong>69.635 HH</strong>.
+                              <strong className="text-[#002060]">Ciclo Operativo de Nómina Directa (Octubre):</strong> Incorpora los partes devengados de <strong>Semanas 39 a 43</strong> en los 7 frentes activos (<em>Pellas Línea 1</em>, <em>2da Línea PMH</em>, <em>Fase 2 Briquetas</em>, <em>Mantenimiento BG II</em>, <em>Mantenimiento Briqueteras</em>, <em>Caldera Briquetas</em> y <em>Bandas PMH</em>), totalizando <strong>$257.750 USD</strong> y <strong>69.635 HH</strong>.
                             </p>
                             <div className="bg-white p-3 rounded-xl border border-blue-100 space-y-1 font-mono text-[11px]">
                               <span className="font-bold text-[#002060] block font-sans text-xs mb-1">Cortes Semanales Procesados (RRHH):</span>
@@ -1749,7 +1749,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <div className="flex justify-between"><span>Semana 42 (Corte 17/10):</span><strong className="text-slate-900">$57.798 USD (15.119 HH)</strong></div>
                               <div className="flex justify-between"><span>Semana 43 (Corte 24/10):</span><strong className="text-slate-900">$59.228 USD (15.910 HH)</strong></div>
                               <div className="border-t border-slate-200 pt-1 mt-1 flex justify-between font-bold text-[#002060]">
-                                <span>Total Devengado Octubre:</span><span>$257.751 USD (69.635 HH)</span>
+                                <span>Total Devengado Octubre:</span><span>$257.750 USD (69.635 HH)</span>
                               </div>
                             </div>
 
@@ -1771,7 +1771,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             </div>
 
                             <p className="text-[11px] text-slate-600">
-                              <strong>Conciliación Oficial:</strong> La nómina devengada por cuadrillas ($257.751 USD) sustenta operativamente la mano de obra directa del período a través de los 6 frentes activos.
+                              <strong>Conciliación Oficial:</strong> La nómina devengada por cuadrillas ($257.750 USD) sustenta operativamente la mano de obra directa del período a través de los 7 frentes activos.
                             </p>
                           </div>
                         ) : selectedMesNum === 8 ? (
@@ -2068,7 +2068,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         </strong>
                         <p className="text-[11px] leading-relaxed text-slate-700">
                           {selectedMesNum === 10 ? (
-                            'Alcanza su récord histórico con $867.861 USD en el mes (60,1% del total) y un acumulado de $3.256.839 USD (10,96% sobre contrato marco de $29,72M USD), manteniendo 254 trabajadores estables.'
+                            'Alcanza su récord histórico con $1.219.527 USD en el mes (59,1% del total) y un acumulado de $3.603.481 USD (12,1% sobre contrato marco de $29,72M USD), manteniendo 207 trabajadores promedio en campo (pico de 254 transportados).'
                           ) : selectedMesNum === 9 ? (
                             'Continúa como el contrato de mayor envergadura con $668.340 USD en el mes (40,8%) y un acumulado de $2.388.978 USD (8,0% sobre el contrato total de $29,72M USD).'
                           ) : (
@@ -2547,10 +2547,10 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             { mes: 'Jul', val: 404984 },
                             { mes: 'Ago', val: 596358 },
                             { mes: 'Sep', val: 668340 },
-                            { mes: 'Oct', val: 867861 }
+                            { mes: 'Oct', val: 1219527 }
                           ];
 
-                          const maxVal = 900000;
+                          const maxVal = 1300000;
                           const chartWidth = 720;
                           const chartHeight = 140;
                           const colWidth = chartWidth / mesesPellas.length;
@@ -2639,8 +2639,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 7 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$404.984</td>
                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 8 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$596.358</td>
                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 9 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$668.340</td>
-                                <td className={`py-2 px-2 text-right ${selectedMesNum === 10 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$867.861</td>
-                                <td className="py-2 px-3 text-right font-black text-blue-900 bg-blue-50/50">$3.256.839</td>
+                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 10 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$1.219.527</td>
+                                <td className="py-2 px-3 text-right font-black text-blue-900 bg-blue-50/50">$3.603.481</td>
                               </tr>
                               <tr className="hover:bg-slate-50/60 bg-slate-50/20 text-slate-600">
                                 <td className="py-2 px-2.5 font-sans font-medium text-slate-700 flex items-center gap-1.5">
@@ -2659,12 +2659,12 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                   <Target className="w-3.5 h-3.5 text-amber-600" />
                                   Avance Contrato
                                 </td>
-                                {['0,01%', '0,01%', '0,01%', '0,03%', '1,06%', '2,42%', '3,78%', '5,79%', '8,04%', '10,96%'].map((pct, idx) => (
+                                {['0,01%', '0,01%', '0,01%', '0,03%', '1,06%', '2,42%', '3,78%', '5,79%', '8,04%', '12,1%'].map((pct, idx) => (
                                   <td key={idx} className={`py-2 px-2 text-right ${idx + 1 === selectedMesNum ? 'font-bold text-amber-700 bg-amber-50/40' : ''}`}>
                                     {pct}
                                   </td>
                                 ))}
-                                <td className="py-2 px-3 text-right font-bold text-emerald-700 bg-blue-50/50">10,96% ($29,72M)</td>
+                                <td className="py-2 px-3 text-right font-bold text-emerald-700 bg-blue-50/50">12,1% ($29,72M)</td>
                               </tr>
                             </tbody>
                           </table>
@@ -2969,8 +2969,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <td className="py-2.5 px-2 text-right">$404.984</td>
                               <td className="py-2.5 px-2 text-right">$596.358</td>
                               <td className="py-2.5 px-2 text-right">$668.340</td>
-                              <td className={`py-2.5 px-2 text-right text-xs ${selectedMesNum === 10 ? 'text-amber-800 bg-amber-100/70 font-black' : 'text-slate-900'}`}>$867.861</td>
-                              <td className="py-2.5 px-3 text-right text-blue-950 bg-blue-100 text-xs">$3.256.839</td>
+                              <td className={`py-2.5 px-2 text-right text-xs ${selectedMesNum === 10 ? 'text-amber-800 bg-amber-100/70 font-black' : 'text-slate-900'}`}>$1.219.527</td>
+                              <td className="py-2.5 px-3 text-right text-blue-950 bg-blue-100 text-xs">$3.603.481</td>
                               <td className="py-2.5 px-2 text-right">100,0%</td>
                             </tr>
 
@@ -2989,9 +2989,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <td className="py-2 px-2 text-right">$1.124.280</td>
                               <td className="py-2 px-2 text-right">$1.720.638</td>
                               <td className="py-2 px-2 text-right">$2.388.978</td>
-                              <td className={`py-2 px-2 text-right ${selectedMesNum === 10 ? 'text-amber-800 bg-amber-50/50 font-black' : 'text-slate-800'}`}>$3.256.839</td>
-                              <td className="py-2 px-3 text-right text-blue-900 bg-blue-50/50">$3.256.839</td>
-                              <td className="py-2 px-2 text-right text-emerald-700">10,96%</td>
+                              <td className={`py-2 px-2 text-right ${selectedMesNum === 10 ? 'text-amber-800 bg-amber-50/50 font-black' : 'text-slate-800'}`}>$3.603.481</td>
+                              <td className="py-2 px-3 text-right text-blue-900 bg-blue-50/50">$3.603.481</td>
+                              <td className="py-2 px-2 text-right text-emerald-700">12,1%</td>
                             </tr>
 
                             {/* Row 8: Cuadrilla Activa */}
@@ -3840,7 +3840,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       }`}
                     >
                       <Layers className="w-3.5 h-3.5" />
-                      <span>Estructura Bolsa CIF ($344K)</span>
+                      <span>Estructura Bolsa CIF ({selectedMesNum === 10 ? '$315K' : selectedMesNum === 8 ? '$340K' : '$393K'})</span>
                     </button>
                     <button
                       onClick={() => setSlide7Tab('prorrateo')}
@@ -4248,21 +4248,21 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <li className="flex items-start gap-2">
                             <span className="text-emerald-600 font-bold">✔</span>
                             <span>{selectedMesNum === 10 
-                              ? <><strong>Materiales y Servicios Purificados al 100%:</strong> Base de datos de $1.444.345,28 USD en proyectos externos auditada sin ceros, sin registros a destiempo y con imputación contable al centavo.</>
+                              ? <><strong>Materiales y Servicios Purificados al 100%:</strong> Base de datos de $1.431.895 USD en compras directas SIP ($475.060 USD en materiales y $956.835 USD en servicios) en proyectos externos auditada sin ceros, sin registros a destiempo y con imputación contable al centavo.</>
                               : <><strong>Mano de Obra Directa al día:</strong> $196.665 USD devengados en 10 proyectos externos sin pasivos atrasados ni contingencias, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Bandas PMH ($28.142 USD · 12,7%).</>}
                             </span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-emerald-600 font-bold">✔</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Proyecto Pellas Línea 1 superó los $3,25M USD:</strong> Acumulado consolidado de $3.256.839 USD (10,96% sobre contrato marco de $29.720.000 USD), manteniendo 254 trabajadores estables en campo.</>
+                              ? <><strong>Proyecto Pellas Línea 1 superó los $3,60M USD:</strong> Acumulado consolidado de $3.603.481 USD (12,1% sobre contrato marco de $29.720.235 USD), con una ejecución mensual de $1.219.527 USD (59,1% de TIMACA).</>
                               : <><strong>Proyecto Pellas Línea 1 con avance sostenido:</strong> Acumulado consolidado de $2.388.978 USD (8,0% sobre contrato marco de $29.720.000 USD), con 254 trabajadores directos y 812 horas máquina efectivas.</>}
                             </span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-emerald-600 font-bold">✔</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Tracción Operativa en PMH y DRAVO:</strong> Segunda Línea PMH ($258.882 USD) y Repotenciación DRAVO ($106.812 USD) consolidan el segundo y tercer polo de mayor avance físico.</>
+                              ? <><strong>Tracción Operativa en PMH y DRAVO:</strong> Segunda Línea PMH ($434.469 USD integral) y Repotenciación DRAVO ($106.812 USD) consolidan el segundo y tercer polo de mayor avance físico.</>
                               : <><strong>Aceleración Operativa Oficial:</strong> Cierre de septiembre en $1.613.225 USD (+36,8% vs agosto $1.197.600 USD), impulsado por la inversión en materiales directos ($868.067 USD) para asegurar las metas de avance físico.</>}
                             </span>
                           </li>
@@ -4284,14 +4284,14 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Servicios Especializados ($956.835 USD):</strong> Concentran el 45,7% del gasto de octubre por compras estratégicas en Yokogawa ($686K) y Henan Front ($40K); auditar recepción de hitos técnicos.</>
+                              ? <><strong>Servicios Especializados ($956.835 USD):</strong> Concentran el 46,4% del gasto de octubre por compras estratégicas en Yokogawa ($686K) y Henan Front ($40K); auditar recepción de hitos técnicos.</>
                               : <><strong>Repunte Rueda DRAVO (+761%):</strong> Cierre en $199.356 USD (vs $23.149 USD en agosto) por reactivación operativa y componentes electromecánicos; auditar recepción física en almacén de obra.</>}
                             </span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Mano de Obra Directa (MOD) Consolidada:</strong> $257.751 USD devengados con 402 trabajadores activos en 6 frentes de obra e integración regularizada de nómina en Boca Grande II ($13,7K).</>
+                              ? <><strong>Mano de Obra Directa (MOD) Consolidada:</strong> $257.750 USD devengados con 399 trabajadores activos y 69.635 HH en 7 frentes de obra e integración regularizada de nómina en Boca Grande II ($13,7K).</>
                               : <><strong>Segunda Línea PMH en expansión (+47%):</strong> Cierre en $291.949 USD (vs $198.053 USD en agosto), consolidándose como el segundo frente de mayor inversión de TIMACA (17,8% del mes).</>}
                             </span>
                           </li>

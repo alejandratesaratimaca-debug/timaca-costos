@@ -232,7 +232,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       color: C_NAVY
     });
 
-    slide.addText('TALLER INDUSTRIAL METALÚRGICO ANTONIO C.A. · RIF J-00000000-0', {
+    slide.addText('TALLER INDUSTRIAL METALÚRGICO ANTONIO C.A. · RIF J-09500315-9', {
       x: 2.7,
       y: 0.90,
       w: 6.5,
@@ -439,14 +439,14 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       },
       {
         tag: 'ACUMULADO CONSOLIDADO 2026',
-        val: '$14.792.289 USD',
+        val: '$14.823.374 USD',
         desc: '10 Meses (Ene - Oct) · 100% Proyectos Externos',
         color: C_BLUE
       },
       {
         tag: 'FUERZA LABORAL ACTIVA',
-        val: '402 Trabajadores',
-        desc: '399 Cédulas Auditadas · 6 Frentes en Planta',
+        val: '399 Trabajadores',
+        desc: '399 Cédulas Auditadas en 7 Frentes de Obra',
         color: C_EMERALD
       },
       {
@@ -522,21 +522,21 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       [
         { text: 'Materiales Directos', options: { fontSize: 8.5, bold: true, color: C_DARK } },
         { text: '$475.060', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '22,7%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '23,0%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$823.463', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
         { text: '-42,3%', options: { fontSize: 8.5, align: 'right', bold: true, color: 'B91C1C' } }
       ],
       [
         { text: 'Servicios Directos', options: { fontSize: 8.5, bold: true, color: C_DARK } },
         { text: '$956.835', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '45,7%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '46,4%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$280.541', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
         { text: '+241,1%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
       [
         { text: 'Mano de Obra Directa (MOD)', options: { fontSize: 8.5, bold: true, color: C_DARK } },
-        { text: '$257.751', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '12,3%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '$257.750', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
+        { text: '12,5%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$208.501', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
         { text: '+23,6%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
@@ -548,7 +548,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
         { text: '+9,6%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
       [
-        { text: 'Costos Indirectos (CIF Bolsa)', options: { fontSize: 8.5, bold: true, color: C_DARK } },
+        { text: 'Costos Indirectos', options: { fontSize: 8.5, bold: true, color: C_DARK } },
         { text: '$314.914', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
         { text: '15,3%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$341.375', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
@@ -594,9 +594,9 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      '• Servicios Especializados (+241,1%): Principal impulsor del mes ($956.835 USD) por contratos preoperativos en Pellas Línea 1 (Yokogawa $686K en instrumentación y Henan Front $40K).\n' +
-      '• Mano de Obra (+23,6%): 402 obreros activos en campo e incorporación de nómina de Boca Grande II ($13,7K), sosteniendo calderería y montaje de virolas.\n' +
-      '• Provisión Horas Máquina ($58.500 USD): Refleja continuidad operativa (+9,6% vs Sep) sujeta a conciliación de horómetros definitivos de planta.',
+      '• Servicios Especializados (+241,1%): Principal impulsor ($956.835 USD) por contratos en Pellas L1 (Yokogawa DCS $686K y Henan Front $40K).\n' +
+      '• Mano de Obra Directa (+23,6%): $257.750 USD y 69.635 HH con 399 trabajadores auditados tras regularizar nómina de Boca Grande II ($13,7K).\n' +
+      '• Provisión Horas Máquina ($58.500 USD): Continuidad operativa en 16 equipos de Pellas (820,5 H/M) sujeta a conciliación final de horómetros.',
       {
         x: 0.75,
         y: 5.50,
@@ -620,7 +620,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     const monthLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
-    const monthValues = [1028, 1251, 1400, 1009, 874, 2591, 1088, 1781, 1707, 2093];
+    const monthValues = [1028, 1251, 1400, 1009, 874, 2591, 1088, 1781, 1707, 2063];
     const chartData = [
       {
         name: 'Gasto Mensual (Miles USD)',
@@ -703,17 +703,17 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
         ? '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Octubre 2026)'
         : '3. Auditoría y Desglose de Mano de Obra Directa (Nómina Septiembre 2026)',
       isOct
-        ? 'Total Nómina Octubre Devengada: $257.751 USD · 69.635 HH · 6 Frentes Activos (Boca Grande II regularizada)'
+        ? 'Total Nómina Octubre Devengada: $257.750 USD · 69.635 HH · 7 Frentes Activos (100% Regularizados y Conciliados con CIF)'
         : 'Total Nómina Septiembre: $196.665 USD · 55.277 Horas-Hombre · Cuadrilla Activa en 10 Proyectos Externos'
     );
 
     // 4 KPI Cards
     const modCards = isOct
       ? [
-          { label: 'TOTAL NÓMINA DIRECTA OCT', val: '$257.751 USD', note: 'Semanas 39 a 43 · 6 Frentes devengados' },
+          { label: 'TOTAL NÓMINA DIRECTA OCT', val: '$257.750 USD', note: 'Semanas 39 a 43 · 7 Frentes devengados' },
           { label: 'VOLUMEN DE HORAS-HOMBRE', val: '69.635 HH', note: 'Promedio 13.927 HH/semana en campo' },
           { label: 'TARIFA PROMEDIO EFECTIVA', val: '$3,70 USD/HH', note: 'Costo integral de mano de obra' },
-          { label: 'FRENTES CON CUADRILLA', val: '6 Frentes Devengados', note: '50,9% Pellas · 6 Frentes devengados' }
+          { label: 'FRENTES CON CUADRILLA', val: '7 Frentes Devengados', note: '50,9% Pellas · 7 Frentes devengados' }
         ]
       : [
           { label: 'TOTAL NÓMINA DIRECTA SEP', val: '$196.665 USD', note: 'Semanas 36 a 39 · 4 cortes regulares de nómina' },
@@ -787,14 +787,10 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
 
     slide.addText(
       isOct
-        ? '• Ciclo Operativo de Nómina Directa (Octubre 2026):\n' +
-          '  La nómina procesada incorpora las Semanas 39 a 43 en los 6 frentes activos: Pellas Línea 1, 2da Línea PMH, Fase 2 Briquetas, Boca Grande II, Briqueteras y Bandas.\n\n' +
-          '• Regularización Nómina Boca Grande II (TTE-C-0680):\n' +
-          '  Se incorporaron los 4 cortes semanales (Sem 40 a 43) por $13.685 USD y 3.946 HH (23 trabajadores en sitio), activando el frente en la contabilidad devengada.\n\n' +
-          '• Incorporación Nómina Refractario Briquetas (TTE-C-0668):\n' +
-          '  Se sumó el reporte de refractario ($9.000 USD y 1.104 HH), consolidando el frente de Briquetas en $27.115 USD y 6.152 HH.\n\n' +
-          '• Alerta de Maquinaria: Horas Máquina en Conciliación:\n' +
-          '  El renglón de Horas Máquina registra retraso en los partes de horómetros de grúas y flota pesada, figurando preliminarmente en $0,00 USD.'
+        ? '• Ciclo de Nómina (Octubre 2026): Semanas 39 a 43 en los 7 frentes activos: Pellas L1, 2da Línea PMH, Briquetas Fase 2, Boca Grande II, Briqueteras, Caldera y Bandas.\n\n' +
+          '• Regularización Boca Grande II (TTE-C-0680): Incorporación de los cortes semanales correspondientes al ciclo por $13.685 USD y 3.946 HH (23 trabajadores en sitio), activando el frente en la contabilidad devengada.\n\n' +
+          '• Desglose Briquetas Fase 2 y Caldera: Nómina de Briquetas conciliada en $23.925 USD (5.427 HH) y cuadrilla de Caldera en $3.190 USD (725 HH), sumando $27.115 USD.\n\n' +
+          '• Base de Prorrateo CIF ($257.750 USD): La nómina devengada constituye la base matemática unívoca para la distribución exacta de la bolsa corporativa indirecta ($314.914 USD).'
         : '• Ciclo Operativo de Nómina Directa:\n' +
           '  La nómina imputada a Septiembre totaliza 4 cortes semanales de pago del período contable (Semanas 36 a 39 de Recursos Humanos):\n' +
           '    - Semana 36 (Corte 05/09): $54.804 USD (15.433 HH)\n' +
@@ -836,16 +832,16 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
         { text: p.retraso ? `${p.proyecto} (RETRASO RRHH)` : p.proyecto, options: { fontSize: 8.8, color: p.retraso ? 'DC2626' : C_SLATE, margin: [2, 3, 2, 3] } },
         { text: `$${p.monto.toLocaleString('de-DE')}`, options: { bold: true, align: 'right', fontSize: 8.8, color: C_NAVY, margin: [2, 3, 2, 3] } },
         { text: p.hh.toLocaleString('de-DE'), options: { align: 'right', fontSize: 8.8, color: '64748B', margin: [2, 3, 2, 3] } },
-        { text: `${p.pct.toFixed(1).replace('.', ',')}%`, options: { align: 'right', fontSize: 8.8, color: C_DARK, bold: true, margin: [2, 3, 2, 3] } }
+        { text: `${p.pct.toFixed(2).replace('.', ',')}%`, options: { align: 'right', fontSize: 8.8, color: C_DARK, bold: true, margin: [2, 3, 2, 3] } }
       ]);
     });
 
     modTableRows.push([
       { text: 'TOTAL', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
-      { text: isOct ? 'NÓMINA OCTUBRE (DEVENGADA)' : '10 PROYECTOS EXTERNOS ACTIVOS', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
-      { text: isOct ? '$257.751 USD' : '$196.665 USD', options: { bold: true, fontSize: 9.0, color: 'FCD34D', fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
-      { text: isOct ? '69.635 HH' : '55.277 HH', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
-      { text: '100,0%', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } }
+      { text: isOct ? 'NÓMINA OCTUBRE DEVENGADA (7 FRENTES)' : '10 PROYECTOS EXTERNOS ACTIVOS', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, margin: [2, 3, 2, 3] } },
+      { text: isOct ? '$257.750' : '$196.665 USD', options: { bold: true, fontSize: 9.0, color: 'FCD34D', fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
+      { text: isOct ? '69.635' : '55.277 HH', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } },
+      { text: '100,00%', options: { bold: true, fontSize: 9.0, color: C_WHITE, fill: { color: C_NAVY }, align: 'right', margin: [2, 3, 2, 3] } }
     ]);
 
     slide.addTable(modTableRows, {
@@ -3193,17 +3189,17 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     const subconceptos = isOct ? [
-      { num: '1', concepto: 'Nómina - Talleres Centrales TIMACA', monto: 123000, pct: '35,69%' },
-      { num: '2', concepto: 'Nómina Personal TIMACA (Dirección Técnica)', monto: 75000, pct: '21,76%' },
-      { num: '3', concepto: 'Sindicato (Aporte y Gestión Gremial)', monto: 59000, pct: '17,12%' },
-      { num: '4', concepto: 'Combustible y Lubricantes de Flota', monto: 50000, pct: '14,51%' },
-      { num: '5', concepto: 'Otros Servicios Contratados de Administración', monto: 9900, pct: '2,87%' },
-      { num: '6', concepto: 'Timbres Fiscales / Notarías / Registros', monto: 7600, pct: '2,21%' },
-      { num: '7', concepto: 'Incentivos Laborales (Bonos de Obra)', monto: 7000, pct: '2,03%' },
-      { num: '8', concepto: 'Vigilancia Perimetral y Custodia', monto: 4803, pct: '1,39%' },
-      { num: '9', concepto: 'Gastos de Viajes y Viáticos Nacionales', monto: 4500, pct: '1,31%' },
-      { num: '10', concepto: 'Servicios Públicos e Infraestructura', monto: 2600, pct: '0,75%' },
-      { num: '11', concepto: 'Otros Gastos Menores y Financieros', monto: 1226, pct: '0,36%' }
+      { num: '1', concepto: 'Nómina - Talleres Centrales TIMACA', monto: 123000, pct: '39,06%' },
+      { num: '2', concepto: 'Nómina Personal TIMACA (Dirección)', monto: 75000, pct: '23,82%' },
+      { num: '3', concepto: 'Sindicato (Aporte y Gestión Gremial)', monto: 72633, pct: '23,06%' },
+      { num: '4', concepto: 'Combustible y Lubricantes de Flota', monto: 23015, pct: '7,31%' },
+      { num: '5', concepto: 'Incentivos Laborales (Bonos de Obra)', monto: 7000, pct: '2,22%' },
+      { num: '6', concepto: 'Vigilancia Perimetral y Custodia', monto: 6750, pct: '2,14%' },
+      { num: '7', concepto: 'Timbres Fiscales / Notarías / Registros', monto: 2753, pct: '0,87%' },
+      { num: '8', concepto: 'Servicios Públicos (Luz / Agua / Aseo)', monto: 1980, pct: '0,63%' },
+      { num: '9', concepto: 'Gastos de Viajes y Viáticos Nacionales', monto: 1115, pct: '0,35%' },
+      { num: '10', concepto: 'Servicios Telecomunicaciones', monto: 602, pct: '0,19%' },
+      { num: '11', concepto: 'Otros Gastos Menores y Financieros', monto: 1066, pct: '0,35%' }
     ] : [
       { num: '1', concepto: 'Nómina Mensual Administrativa e Ingeniería', monto: 125000, pct: '31,78%' },
       { num: '2', concepto: 'Nómina Semanal Talleres Centrales TIMACA', monto: 122000, pct: '31,01%' },
@@ -3261,8 +3257,8 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      '• Núcleo Operativo (57,5%): Talleres Centrales ($123K) y Dirección Técnica ($75K) proveen pailería, mecanizado y supervisión de ingeniería a todos los contratos.\n' +
-      '• Logística y Bienestar: Sindicato ($59K) y Combustible ($50K) garantizan paz laboral, dotaciones y transporte.',
+      '• Núcleo Operativo (62,9%): Talleres Centrales ($123K) y Dirección Técnica ($75K) proveen pailería, mecanizado y supervisión de ingeniería a todos los contratos.\n' +
+      '• Logística y Bienestar: Sindicato ($72,6K) y Combustible ($23,0K) garantizan paz laboral, dotaciones y transporte.',
       {
         x: 0.72,
         y: isOct ? 6.15 : 5.82,
@@ -3288,13 +3284,13 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     const prorrateoRows = isOct ? [
-      { rank: '1', proyecto: 'Recuperación Línea 1 Pellas', cta: 'TTE-C-0706', mod: 131190, pct: '50,90%', cif: 175409.81 },
-      { rank: '2', proyecto: 'Segunda Línea PMH', cta: 'TTE-C-0671', mod: 79030, pct: '30,66%', cif: 105668.40 },
-      { rank: '3', proyecto: 'Fase 2 Planta Briquetas', cta: 'TTE-C-0668', mod: 23925, pct: '9,28%', cif: 31989.33 },
-      { rank: '4', proyecto: 'Mantenimiento Boca Grande II', cta: 'TTE-C-0680', mod: 13685, pct: '5,31%', cif: 18297.76 },
-      { rank: '5', proyecto: 'Mantenimiento Briqueteadoras', cta: 'TTE-C-0670', mod: 5100, pct: '1,98%', cif: 6819.04 },
-      { rank: '6', proyecto: 'Suministro Caldera Briquetas', cta: 'TTE-C-0694', mod: 3190, pct: '1,24%', cif: 4265.24 },
-      { rank: '7', proyecto: 'Rehabilitación de Bandas PMH', cta: 'TTE-C-0656', mod: 1630, pct: '0,63%', cif: 2179.42 }
+      { rank: '1', proyecto: 'Recuperación Línea 1 Pellas', cta: 'TTE-C-0706', mod: 131190, pct: '50,90%', cif: 160285.32 },
+      { rank: '2', proyecto: 'Segunda Línea PMH', cta: 'TTE-C-0671', mod: 79030, pct: '30,66%', cif: 96557.27 },
+      { rank: '3', proyecto: 'Fase 2 Planta Briquetas', cta: 'TTE-C-0668', mod: 23925, pct: '9,28%', cif: 29231.09 },
+      { rank: '4', proyecto: 'Mantenimiento Boca Grande II', cta: 'TTE-C-0680', mod: 13685, pct: '5,31%', cif: 16720.06 },
+      { rank: '5', proyecto: 'Mantenimiento Briqueteadoras', cta: 'TTE-C-0670', mod: 5100, pct: '1,98%', cif: 6231.08 },
+      { rank: '6', proyecto: 'Suministro Caldera Briquetas', cta: 'TTE-C-0694', mod: 3190, pct: '1,24%', cif: 3897.48 },
+      { rank: '7', proyecto: 'Rehabilitación de Bandas PMH', cta: 'TTE-C-0656', mod: 1630, pct: '0,63%', cif: 1991.50 }
     ] : [
       { rank: '1', proyecto: 'Recuperación Línea 1 Pellas', cta: 'TTE-C-0706', mod: 137878, pct: '60,17%', cif: 236688.09 },
       { rank: '2', proyecto: 'Servicio Mantenimiento Boca Grande II', cta: 'TTE-C-0680', mod: 28551, pct: '12,46%', cif: 49007.60 },
@@ -3356,9 +3352,8 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     });
 
     slide.addText(
-      '• Cuadre Exacto al Céntimo ($0,00 descuadre): Los $314.913,80 USD se absorben 100% en las 18 cuentas auxiliares, asignando costo a los 7 proyectos con fuerza laboral directa.\n' +
-      '• Concentración en Ejes Clave: Pellas Línea 1 ($160.285 USD · 50,9%) y Segunda Línea PMH ($96.557 USD · 30,7%) absorben el 81,6% de la bolsa indirecta.\n' +
-      '• Soporte Documental: Conciliado contra el archivo oficial "3 Analisis Costos Indirectos.xlsx" (Hoja 2, Q5:V16).',
+      '• Los $314.913,80 USD se absorben 100% en los 7 proyectos con fuerza laboral activa (MOD) con fuerza laboral directa.\n' +
+      '• Concentración en Ejes Clave: Pellas Línea 1 ($160.285 USD · 50,9%) y Segunda Línea PMH ($96.557 USD · 30,7%) absorben el 81,6% de la bolsa indirecta.',
       {
         x: 6.92,
         y: isOct ? 5.72 : 5.58,

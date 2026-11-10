@@ -23,14 +23,14 @@ def get_code():
       },
       {
         tag: 'ACUMULADO CONSOLIDADO 2026',
-        val: '$14.792.289 USD',
+        val: '$14.823.374 USD',
         desc: '10 Meses (Ene - Oct) · 100% Proyectos Externos',
         color: C_BLUE
       },
       {
         tag: 'FUERZA LABORAL ACTIVA',
-        val: '402 Trabajadores',
-        desc: '399 Cédulas Auditadas · 6 Frentes en Planta',
+        val: '399 Trabajadores',
+        desc: '399 Cédulas Auditadas en 7 Frentes de Obra',
         color: C_EMERALD
       },
       {
@@ -106,21 +106,21 @@ def get_code():
       [
         { text: 'Materiales Directos', options: { fontSize: 8.5, bold: true, color: C_DARK } },
         { text: '$475.060', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '22,7%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '23,0%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$823.463', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
         { text: '-42,3%', options: { fontSize: 8.5, align: 'right', bold: true, color: 'B91C1C' } }
       ],
       [
         { text: 'Servicios Directos', options: { fontSize: 8.5, bold: true, color: C_DARK } },
         { text: '$956.835', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '45,7%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '46,4%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$280.541', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
         { text: '+241,1%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
       [
         { text: 'Mano de Obra Directa (MOD)', options: { fontSize: 8.5, bold: true, color: C_DARK } },
-        { text: '$257.751', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
-        { text: '12,3%', options: { fontSize: 8.5, align: 'right', bold: true } },
+        { text: '$257.750', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
+        { text: '12,5%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$208.501', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
         { text: '+23,6%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
@@ -132,7 +132,7 @@ def get_code():
         { text: '+9,6%', options: { fontSize: 8.5, align: 'right', bold: true, color: '059669' } }
       ],
       [
-        { text: 'Costos Indirectos (CIF Bolsa)', options: { fontSize: 8.5, bold: true, color: C_DARK } },
+        { text: 'Costos Indirectos', options: { fontSize: 8.5, bold: true, color: C_DARK } },
         { text: '$314.914', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right' } },
         { text: '15,3%', options: { fontSize: 8.5, align: 'right', bold: true } },
         { text: '$341.375', options: { fontSize: 8.5, fontFace: 'Consolas', align: 'right', color: '64748B' } },
@@ -178,9 +178,9 @@ def get_code():
     });
 
     slide.addText(
-      '• Servicios Especializados (+241,1%): Principal impulsor del mes ($956.835 USD) por contratos preoperativos en Pellas Línea 1 (Yokogawa $686K en instrumentación y Henan Front $40K).\\n' +
-      '• Mano de Obra (+23,6%): 402 obreros activos en campo e incorporación de nómina de Boca Grande II ($13,7K), sosteniendo calderería y montaje de virolas.\\n' +
-      '• Provisión Horas Máquina ($58.500 USD): Refleja continuidad operativa (+9,6% vs Sep) sujeta a conciliación de horómetros definitivos de planta.',
+      '• Servicios Especializados (+241,1%): Principal impulsor ($956.835 USD) por contratos en Pellas L1 (Yokogawa DCS $686K y Henan Front $40K).\\n' +
+      '• Mano de Obra Directa (+23,6%): $257.750 USD y 69.635 HH con 399 trabajadores auditados tras regularizar nómina de Boca Grande II ($13,7K).\\n' +
+      '• Provisión Horas Máquina ($58.500 USD): Continuidad operativa en 16 equipos de Pellas (820,5 H/M) sujeta a conciliación final de horómetros.',
       {
         x: 0.75,
         y: 5.50,
@@ -204,7 +204,7 @@ def get_code():
     });
 
     const monthLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
-    const monthValues = [1028, 1251, 1400, 1009, 874, 2591, 1088, 1781, 1707, 2093];
+    const monthValues = [1028, 1251, 1400, 1009, 874, 2591, 1088, 1781, 1707, 2063];
     const chartData = [
       {
         name: 'Gasto Mensual (Miles USD)',

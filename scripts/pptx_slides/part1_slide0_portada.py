@@ -46,7 +46,7 @@ def get_code():
       color: C_NAVY
     });
 
-    slide.addText('TALLER INDUSTRIAL METALÚRGICO ANTONIO C.A. · RIF J-00000000-0', {
+    slide.addText('TALLER INDUSTRIAL METALÚRGICO ANTONIO C.A. · RIF J-09500315-9', {
       x: 2.7,
       y: 0.90,
       w: 6.5,

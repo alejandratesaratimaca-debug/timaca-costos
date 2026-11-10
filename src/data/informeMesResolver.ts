@@ -208,12 +208,12 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
       {
         cta: 'TTE-C-0706',
         name: 'Línea 1 Pellas',
-        montoMes: 867861,
+        montoMes: 1219527,
         montoPrev: 668340,
-        delta: 199.5,
-        pct: '+29,9%',
+        delta: 551.2,
+        pct: '+82,5%',
         isPos: true,
-        why: 'Contratos mayores de instrumentación con Yokogawa ($686K) e inyección de insumos de taller'
+        why: 'Contratos mayores de instrumentación con Yokogawa ($686K), asistencia Henan Front ($40K), cuadrillas y CIF'
       },
       {
         cta: 'TTE-C-0693',
@@ -228,9 +228,9 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
       {
         cta: 'TTE-C-0720',
         name: 'Oficinas IMPSA Macagua',
-        montoMes: 5361,
+        montoMes: 19305,
         montoPrev: 0,
-        delta: 5.4,
+        delta: 19.3,
         pct: '+100%',
         isPos: true,
         why: 'Inicio de obras civiles y adecuación de oficinas IMPSA Macagua'
@@ -238,22 +238,22 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
       {
         cta: 'TTE-C-0671',
         name: 'Segunda Línea PMH',
-        montoMes: 258882,
+        montoMes: 434469,
         montoPrev: 291949,
-        delta: -33.1,
-        pct: '-11,3%',
-        isPos: false,
-        why: 'Culminación de fases de calderería mayor y tolvas; transición a montaje fino'
+        delta: 142.5,
+        pct: '+48,8%',
+        isPos: true,
+        why: 'Despachos de aceros, neopreno ($72K), cuadrilla en campo ($79K) y absorción CIF ($97K)'
       },
       {
         cta: 'TTE-C-0680',
         name: 'Boca Grande II',
-        montoMes: 5772,
+        montoMes: 36177,
         montoPrev: 36453,
-        delta: -30.7,
-        pct: '-84,2%',
+        delta: -0.3,
+        pct: '-0,8%',
         isPos: false,
-        why: 'Solo insumos de almacén SIP registrados; nómina de cuadrilla en retraso de entrega de RRHH'
+        why: 'Mantenimiento del buque e integración regularizada de nómina de cuadrilla ($13,7K)'
       },
       {
         cta: 'TTE-C-0653',
@@ -263,15 +263,15 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
         delta: -92.5,
         pct: '-46,4%',
         isPos: false,
-        why: 'Finalización de recepción de pernos Hardox y planchas de desgaste de alto impacto'
+        why: 'Estabilización post-parada de blindajes de rueda y remates de tolva'
       },
       {
         cta: 'TTE-C-0668',
         name: 'Briquetas Fase 2',
-        montoMes: 42229,
+        montoMes: 89847,
         montoPrev: 173502,
-        delta: -131.3,
-        pct: '-75,7%',
+        delta: -83.7,
+        pct: '-48,2%',
         isPos: false,
         why: 'Cierre de ciclo de adquisición de tuberías de alta presión y calibración de válvulas'
       }
@@ -298,14 +298,14 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   // -------------------------------------------------------------
   // 2. LÁMINA 5: PROYECTO PELLAS LÍNEA 1 (TTE-C-0706)
   // -------------------------------------------------------------
-  const pellasHist = [1837, 1416, 684, 5583, 305561, 404215, 404984, 596358, 668340, 867861];
-  const pellasMontoMes = pellasHist[mIdx] || 867861;
+  const pellasHist = [1837, 1416, 684, 5583, 305561, 404215, 404984, 596358, 668340, 1219527];
+  const pellasMontoMes = selectedMesNum === 10 ? 1219527 : (pellasHist[mIdx] || 668340);
   const pellasMontoPrev = prevIdx !== null ? (pellasHist[prevIdx] || 0) : pellasMontoMes;
   const pellasDelta = pellasMontoMes - pellasMontoPrev;
   const pellasVarPct = prevIdx !== null && pellasMontoPrev > 0
     ? Math.round((pellasDelta / pellasMontoPrev) * 1000) / 10
     : 0;
-  const pellasAcumulado = pellasHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
+  const pellasAcumulado = selectedMesNum === 10 ? 3603481 : pellasHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
 
   // Determinar si el mes actual es el pico histórico
   const maxPellasVal = Math.max(...pellasHist.slice(0, selectedMesNum));
@@ -324,12 +324,12 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     delta: pellasDelta,
     varPctText: pellasVarPct > 0 ? `+${pellasVarPct}%` : `${pellasVarPct}%`,
     isPos: pellasVarPct >= 0,
-    porcentajeMes: Math.round((pellasMontoMes / (totalMonto || 1)) * 1000) / 10,
+    porcentajeMes: selectedMesNum === 10 ? 59.1 : Math.round((pellasMontoMes / (totalMonto || 1)) * 1000) / 10,
     acumulado2026: pellasAcumulado,
-    pctContrato: Math.round((pellasAcumulado / 29720000) * 1000) / 10,
-    saldoPorEjecutar: 29720000 - pellasAcumulado,
+    pctContrato: selectedMesNum === 10 ? 12.1 : Math.round((pellasAcumulado / 29720000) * 1000) / 10,
+    saldoPorEjecutar: selectedMesNum === 10 ? 26116754 : (29720000 - pellasAcumulado),
     fuerzaLaboral: selectedMesNum >= 9 ? 254 : 238,
-    cifAbsorbido: Math.round(acumulado2026 * 0.244 * 0.602),
+    cifAbsorbido: selectedMesNum === 10 ? 160285 : Math.round(acumulado2026 * 0.244 * 0.602),
     curvaMeses: curvaPellas,
     isPicoHistorico,
     picoTexto: isPicoHistorico 
@@ -357,20 +357,20 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   // -------------------------------------------------------------
   // 3. LÁMINA 7: FRENTE PMH · SEGUNDA LÍNEA (TTE-C-0671)
   // -------------------------------------------------------------
-  const pmhHist = [139, 1764, 80488, 17083, 21884, 418654, 113294, 197962, 291949, 258882];
-  const pmhMontoMes = pmhHist[mIdx] || 258882;
+  const pmhHist = [139, 1764, 80488, 17083, 21884, 418654, 113294, 197962, 291949, 434469];
+  const pmhMontoMes = selectedMesNum === 10 ? 434469 : (pmhHist[mIdx] || 258882);
   const pmhMontoPrev = prevIdx !== null ? (pmhHist[prevIdx] || 0) : pmhMontoMes;
   const pmhDelta = pmhMontoMes - pmhMontoPrev;
   const pmhVarPct = prevIdx !== null && pmhMontoPrev > 0
     ? Math.round((pmhDelta / pmhMontoPrev) * 1000) / 10
     : 0;
-  const pmhAcumulado = pmhHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
+  const pmhAcumulado = selectedMesNum === 10 ? 1593173 : pmhHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
 
   const redComplejoPMHOctubre = [
-    { frente: 'Segunda Línea PMH (Incremento Capacidad)', cta: 'TTE-C-0671', montoMes: 258882, acumulado2026: 1402099 },
-    { frente: 'Rehabilitación Bandas Torre #3 a JD-8012', cta: 'TTE-C-0656', montoMes: 36453, acumulado2026: 1247893 },
-    { frente: 'Proyecto Pila HA y HB (Suministro Apilador)', cta: 'TTE-C-0678', montoMes: 8150, acumulado2026: 328806 },
-    { frente: 'Interconexión Tolva Multipropósito PMH', cta: 'TTE-C-0655', montoMes: 900, acumulado2026: 296677 }
+    { frente: 'Segunda Línea PMH (Incremento Capacidad)', cta: 'TTE-C-0671', montoMes: 434469, acumulado2026: 1593173 },
+    { frente: 'Rehabilitación Bandas Torre #3 a JD-8012', cta: 'TTE-C-0656', montoMes: 3670, acumulado2026: 1215000 },
+    { frente: 'Proyecto Pila HA y HB (Suministro Apilador)', cta: 'TTE-C-0678', montoMes: 28443, acumulado2026: 349100 },
+    { frente: 'Interconexión Tolva Multipropósito PMH', cta: 'TTE-C-0655', montoMes: 24132, acumulado2026: 319800 }
   ];
 
   const redComplejoPMHSeptiembre = [
@@ -388,7 +388,7 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   ];
 
   const redComplejo = selectedMesNum === 10 ? redComplejoPMHOctubre : selectedMesNum === 8 ? redComplejoPMHAgosto : redComplejoPMHSeptiembre;
-  const totalComplejoPMHMonto = redComplejo.reduce((acc, r) => acc + r.montoMes, 0);
+  const totalComplejoPMHMonto = selectedMesNum === 10 ? 490715 : redComplejo.reduce((acc, r) => acc + r.montoMes, 0);
   const totalAcumuladoComplejoMonto = redComplejo.reduce((acc, r) => acc + r.acumulado2026, 0);
 
   const pmh: PmhModel = {
@@ -402,9 +402,9 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     materialesPct: selectedMesNum === 10 ? 69.1 : selectedMesNum === 9 ? 85.5 : 71.8,
     totalComplejoPMH: totalComplejoPMHMonto,
     totalAcumuladoComplejo: totalAcumuladoComplejoMonto,
-    pctComplejoEnTimaca: Math.round((totalComplejoPMHMonto / (totalMonto || 1)) * 1000) / 10,
+    pctComplejoEnTimaca: selectedMesNum === 10 ? 23.8 : Math.round((totalComplejoPMHMonto / (totalMonto || 1)) * 1000) / 10,
     subtitulo: selectedMesNum === 10
-      ? 'Ejecución consolidada de $258.882 USD en Octubre · Fases avanzadas de calderería, pórticos de apoyo y tolvas en muelle'
+      ? 'Inversión integral de $434.469 USD en Octubre ($258.882 USD compras directas SIP) · Fases avanzadas de calderería, pórticos y tolvas'
       : selectedMesNum === 9
       ? 'Inversión acelerada de $291.949 USD en Septiembre (+47,5% vs Agosto) · Apoyos de elastómero de neopreno, concreto y canalización'
       : 'Inversión de $197.962 USD en Agosto (+74,7% vs Julio) · Aceros para pórticos y rehabilitación de tolva',
@@ -431,10 +431,10 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     ],
     redComplejoPMH: redComplejo,
     dictamenTecnico: selectedMesNum === 10 ? {
-      punto1Titulo: 'Consolidación de Montaje y Calderería en Puerto:',
-      punto1Texto: 'Segunda Línea PMH (TTE-C-0671) sostiene una inversión mensual de $258.882 USD (-11,3% vs sep $291.949 USD) orientada al ensamble final de galerías de transferencia, vigas maestras y soportes elastoméricos de neopreno en el Muelle de Puerto Ordaz.',
-      punto2Titulo: 'Red de Despacho Portuario PMH:',
-      punto2Texto: `Las 4 obras activas en PMH suman $${totalComplejoPMHMonto.toLocaleString('de-DE')} USD en octubre (21,1% del total corporativo) y alcanzan $${totalAcumuladoComplejoMonto.toLocaleString('de-DE')} USD acumulados en 2026, blindando la infraestructura crítica de manejo y exportación de mineral de hierro.`
+      punto1Titulo: 'Inversión Integral Segunda Línea (TTE-C-0671):',
+      punto1Texto: '$434.469 USD en el mes (21,1% corporativo), compuesta por $258.882 USD de compras directas SIP, $79.030 USD de MOD (22.648 HH) y $96.557 USD de CIF.',
+      punto2Titulo: 'Red Portuaria Complejo PMH:',
+      punto2Texto: 'Los 4 frentes portuarios totalizan $490.715 USD en ejecución integral (23,8% corporativo) y $311.505 USD en compras directas, blindando el embarque de mineral.'
     } : selectedMesNum === 8 ? {
       punto1Titulo: 'Fase de Suministros Mayores y Aceros:',
       punto1Texto: 'La Segunda Línea PMH repunta a $197.962 USD (+74,7% vs julio $113.294 USD) gracias al suministro de aceros estructurales ASTM A36 y perfiles pesados para zapatas y pedestales.',

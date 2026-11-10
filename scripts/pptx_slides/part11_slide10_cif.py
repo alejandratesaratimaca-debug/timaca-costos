@@ -83,17 +83,17 @@ def get_code():
     });
 
     const subconceptos = isOct ? [
-      { num: '1', concepto: 'Nómina - Talleres Centrales TIMACA', monto: 123000, pct: '35,69%' },
-      { num: '2', concepto: 'Nómina Personal TIMACA (Dirección Técnica)', monto: 75000, pct: '21,76%' },
-      { num: '3', concepto: 'Sindicato (Aporte y Gestión Gremial)', monto: 59000, pct: '17,12%' },
-      { num: '4', concepto: 'Combustible y Lubricantes de Flota', monto: 50000, pct: '14,51%' },
-      { num: '5', concepto: 'Otros Servicios Contratados de Administración', monto: 9900, pct: '2,87%' },
-      { num: '6', concepto: 'Timbres Fiscales / Notarías / Registros', monto: 7600, pct: '2,21%' },
-      { num: '7', concepto: 'Incentivos Laborales (Bonos de Obra)', monto: 7000, pct: '2,03%' },
-      { num: '8', concepto: 'Vigilancia Perimetral y Custodia', monto: 4803, pct: '1,39%' },
-      { num: '9', concepto: 'Gastos de Viajes y Viáticos Nacionales', monto: 4500, pct: '1,31%' },
-      { num: '10', concepto: 'Servicios Públicos e Infraestructura', monto: 2600, pct: '0,75%' },
-      { num: '11', concepto: 'Otros Gastos Menores y Financieros', monto: 1226, pct: '0,36%' }
+      { num: '1', concepto: 'Nómina - Talleres Centrales TIMACA', monto: 123000, pct: '39,06%' },
+      { num: '2', concepto: 'Nómina Personal TIMACA (Dirección)', monto: 75000, pct: '23,82%' },
+      { num: '3', concepto: 'Sindicato (Aporte y Gestión Gremial)', monto: 72633, pct: '23,06%' },
+      { num: '4', concepto: 'Combustible y Lubricantes de Flota', monto: 23015, pct: '7,31%' },
+      { num: '5', concepto: 'Incentivos Laborales (Bonos de Obra)', monto: 7000, pct: '2,22%' },
+      { num: '6', concepto: 'Vigilancia Perimetral y Custodia', monto: 6750, pct: '2,14%' },
+      { num: '7', concepto: 'Timbres Fiscales / Notarías / Registros', monto: 2753, pct: '0,87%' },
+      { num: '8', concepto: 'Servicios Públicos (Luz / Agua / Aseo)', monto: 1980, pct: '0,63%' },
+      { num: '9', concepto: 'Gastos de Viajes y Viáticos Nacionales', monto: 1115, pct: '0,35%' },
+      { num: '10', concepto: 'Servicios Telecomunicaciones', monto: 602, pct: '0,19%' },
+      { num: '11', concepto: 'Otros Gastos Menores y Financieros', monto: 1066, pct: '0,35%' }
     ] : [
       { num: '1', concepto: 'Nómina Mensual Administrativa e Ingeniería', monto: 125000, pct: '31,78%' },
       { num: '2', concepto: 'Nómina Semanal Talleres Centrales TIMACA', monto: 122000, pct: '31,01%' },
@@ -151,8 +151,8 @@ def get_code():
     });
 
     slide.addText(
-      '• Núcleo Operativo (57,5%): Talleres Centrales ($123K) y Dirección Técnica ($75K) proveen pailería, mecanizado y supervisión de ingeniería a todos los contratos.\\n' +
-      '• Logística y Bienestar: Sindicato ($59K) y Combustible ($50K) garantizan paz laboral, dotaciones y transporte.',
+      '• Núcleo Operativo (62,9%): Talleres Centrales ($123K) y Dirección Técnica ($75K) proveen pailería, mecanizado y supervisión de ingeniería a todos los contratos.\\n' +
+      '• Logística y Bienestar: Sindicato ($72,6K) y Combustible ($23,0K) garantizan paz laboral, dotaciones y transporte.',
       {
         x: 0.72,
         y: isOct ? 6.15 : 5.82,
@@ -178,13 +178,13 @@ def get_code():
     });
 
     const prorrateoRows = isOct ? [
-      { rank: '1', proyecto: 'Recuperación Línea 1 Pellas', cta: 'TTE-C-0706', mod: 131190, pct: '50,90%', cif: 175409.81 },
-      { rank: '2', proyecto: 'Segunda Línea PMH', cta: 'TTE-C-0671', mod: 79030, pct: '30,66%', cif: 105668.40 },
-      { rank: '3', proyecto: 'Fase 2 Planta Briquetas', cta: 'TTE-C-0668', mod: 23925, pct: '9,28%', cif: 31989.33 },
-      { rank: '4', proyecto: 'Mantenimiento Boca Grande II', cta: 'TTE-C-0680', mod: 13685, pct: '5,31%', cif: 18297.76 },
-      { rank: '5', proyecto: 'Mantenimiento Briqueteadoras', cta: 'TTE-C-0670', mod: 5100, pct: '1,98%', cif: 6819.04 },
-      { rank: '6', proyecto: 'Suministro Caldera Briquetas', cta: 'TTE-C-0694', mod: 3190, pct: '1,24%', cif: 4265.24 },
-      { rank: '7', proyecto: 'Rehabilitación de Bandas PMH', cta: 'TTE-C-0656', mod: 1630, pct: '0,63%', cif: 2179.42 }
+      { rank: '1', proyecto: 'Recuperación Línea 1 Pellas', cta: 'TTE-C-0706', mod: 131190, pct: '50,90%', cif: 160285.32 },
+      { rank: '2', proyecto: 'Segunda Línea PMH', cta: 'TTE-C-0671', mod: 79030, pct: '30,66%', cif: 96557.27 },
+      { rank: '3', proyecto: 'Fase 2 Planta Briquetas', cta: 'TTE-C-0668', mod: 23925, pct: '9,28%', cif: 29231.09 },
+      { rank: '4', proyecto: 'Mantenimiento Boca Grande II', cta: 'TTE-C-0680', mod: 13685, pct: '5,31%', cif: 16720.06 },
+      { rank: '5', proyecto: 'Mantenimiento Briqueteadoras', cta: 'TTE-C-0670', mod: 5100, pct: '1,98%', cif: 6231.08 },
+      { rank: '6', proyecto: 'Suministro Caldera Briquetas', cta: 'TTE-C-0694', mod: 3190, pct: '1,24%', cif: 3897.48 },
+      { rank: '7', proyecto: 'Rehabilitación de Bandas PMH', cta: 'TTE-C-0656', mod: 1630, pct: '0,63%', cif: 1991.50 }
     ] : [
       { rank: '1', proyecto: 'Recuperación Línea 1 Pellas', cta: 'TTE-C-0706', mod: 137878, pct: '60,17%', cif: 236688.09 },
       { rank: '2', proyecto: 'Servicio Mantenimiento Boca Grande II', cta: 'TTE-C-0680', mod: 28551, pct: '12,46%', cif: 49007.60 },
@@ -246,9 +246,8 @@ def get_code():
     });
 
     slide.addText(
-      '• Cuadre Exacto al Céntimo ($0,00 descuadre): Los $314.913,80 USD se absorben 100% en las 18 cuentas auxiliares, asignando costo a los 7 proyectos con fuerza laboral directa.\\n' +
-      '• Concentración en Ejes Clave: Pellas Línea 1 ($160.285 USD · 50,9%) y Segunda Línea PMH ($96.557 USD · 30,7%) absorben el 81,6% de la bolsa indirecta.\\n' +
-      '• Soporte Documental: Conciliado contra el archivo oficial "3 Analisis Costos Indirectos.xlsx" (Hoja 2, Q5:V16).',
+      '• Los $314.913,80 USD se absorben 100% en los 7 proyectos con fuerza laboral activa (MOD) con fuerza laboral directa.\\n' +
+      '• Concentración en Ejes Clave: Pellas Línea 1 ($160.285 USD · 50,9%) y Segunda Línea PMH ($96.557 USD · 30,7%) absorben el 81,6% de la bolsa indirecta.',
       {
         x: 6.92,
         y: isOct ? 5.72 : 5.58,
