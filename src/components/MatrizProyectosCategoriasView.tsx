@@ -48,7 +48,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
   onVolver,
   onSelectProyecto,
   onSelectCategoria,
-  initialPeriodo = 'anual',
+  initialPeriodo = 'octubre',
   initialVista = 'mensual'
 }) => {
   const [vistaActiva, setVistaActiva] = useState<'categorias' | 'proyectos'>('proyectos');

@@ -885,9 +885,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [selectedMes, setSelectedMes] = useState<string>(() => {
     try {
       const saved = typeof window !== 'undefined' ? localStorage.getItem('TIMACA_MASTER_SELECTED_MES') : null;
-      return saved || 'noviembre';
+      return saved || 'octubre';
     } catch {
-      return 'noviembre';
+      return 'octubre';
     }
   });
   const [fechaDesde, setFechaDesde] = useState<string>('');
@@ -1086,7 +1086,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   } | null>(null);
   const [correccionNuevaCuenta, setCorreccionNuevaCuenta] = useState('');
   const [correccionNuevoProyecto, setCorreccionNuevoProyecto] = useState('');
-  const [correccionNuevoMes, setCorreccionNuevoMes] = useState('Agosto');
+  const [correccionNuevoMes, setCorreccionNuevoMes] = useState('Octubre');
   const [correccionMotivo, setCorreccionMotivo] = useState('');
 
   // Lista unificada de todas las cuentas auxiliares y sus proyectos asociados

@@ -643,13 +643,13 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                 <div className="relative z-10 py-6 text-center space-y-3 max-w-4xl mx-auto">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 border border-blue-200 text-[#002060] text-xs font-bold uppercase tracking-wider shadow-2xs">
                     <CalendarRange className="w-3.5 h-3.5 text-[#002060]" />
-                    <span>Período Operativo: {activeMonth?.mesLabel?.toUpperCase() || 'SEPTIEMBRE 2026'}</span>
+                    <span>Período Operativo: {activeMonth?.mesLabel?.toUpperCase() || 'OCTUBRE 2026'}</span>
                   </div>
                   <h1 className="text-3xl sm:text-5xl font-black text-black tracking-tight leading-tight uppercase font-sans">
                     INFORME GESTIÓN DE COSTOS
                   </h1>
                   <h2 className="text-xl sm:text-2xl font-bold text-slate-700 tracking-wider uppercase">
-                    {activeMonth?.mesLabel?.toUpperCase() || 'SEPTIEMBRE 2026'}
+                    {activeMonth?.mesLabel?.toUpperCase() || 'OCTUBRE 2026'}
                   </h2>
                   <div className="flex flex-wrap items-center justify-center gap-3 pt-2 text-xs font-mono text-slate-800">
                     <span className="bg-slate-50 px-3.5 py-1.5 rounded-lg border border-slate-300 shadow-2xs">

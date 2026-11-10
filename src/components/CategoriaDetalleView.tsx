@@ -197,9 +197,9 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
   // Alcance de proyectos: 'externos' (Exclusivamente Proyectos de Clientes TTE-C · Oficial PPT) o 'global' (Total Almacén SIP incluye internos)
   const [alcanceProyectos, setAlcanceProyectos] = useState<'externos' | 'global'>('externos');
 
-  // Selected Month for the audit KPI cards (Default to 9 = Septiembre 2026 or latest)
+  // Selected Month for the audit KPI cards (Default to 10 = Octubre 2026 or latest)
   const [selectedMesNum, setSelectedMesNum] = useState<number>(() => {
-    return resumenMeses.length > 0 ? resumenMeses[resumenMeses.length - 1].mes : 9;
+    return resumenMeses.length > 0 ? resumenMeses[resumenMeses.length - 1].mes : 10;
   });
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [subconceptoSearchTerm, setSubconceptoSearchTerm] = useState<string>('');

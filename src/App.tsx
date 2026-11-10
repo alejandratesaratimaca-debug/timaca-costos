@@ -715,7 +715,7 @@ function AppContent() {
 
                 {proyectosSubTab === 'matriz' && (
                   <MatrizProyectosCategoriasView
-                    initialPeriodo="anual"
+                    initialPeriodo="octubre"
                     initialVista="mensual"
                     onVolver={() => setProyectosSubTab('cuentas')}
                     onSelectProyecto={(cuentaAux) => {

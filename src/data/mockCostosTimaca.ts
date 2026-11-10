@@ -482,7 +482,7 @@ export const PROYECTOS_EXTERNOS_TIMACA = CUENTAS_AUXILIARES_EXACTAS_AGOSTO_2026.
 // Generador de base de datos con líneas de auditoría SIP y recepción correcta de nómina
 
 // Función estricta: Retorna exclusivamente los registros reales de almacén y nómina extraídos del Master Unificado
-// para todo el año 2026 (Enero a Septiembre), con cero datos simulados y trazabilidad contable 100%.
+// para el corte oficial 2026 (Enero a Octubre), con cero datos simulados y trazabilidad contable 100%.
 export function generateInitialMockCostos(): SalidaCosto[] {
   return [
     ...REGISTROS_REALES_MESES_1_A_7,

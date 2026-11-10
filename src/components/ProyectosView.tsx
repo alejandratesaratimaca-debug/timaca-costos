@@ -38,8 +38,8 @@ export const ProyectosView: React.FC<ProyectosViewProps> = ({
   initialMesNum,
   initialCategoria
 }) => {
-  // Período activo (por defecto Noviembre 2026, mes en curso)
-  const [selectedMesNum, setSelectedMesNum] = useState<number>(initialMesNum !== undefined ? initialMesNum : 11);
+  // Período activo (por defecto Octubre 2026, corte oficial)
+  const [selectedMesNum, setSelectedMesNum] = useState<number>(initialMesNum !== undefined ? initialMesNum : 10);
   
   // Cuenta seleccionada (por defecto TTE-C-0671)
   const [selectedCuentaCodigo, setSelectedCuentaCodigo] = useState<string>(initialCuentaCodigo || 'TTE-C-0671');
