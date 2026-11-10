@@ -332,7 +332,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
         );
       } else if (selectedMesNum === 10) {
         setNotasGestion(
-          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $2.063.059,00 USD (+20,8% vs septiembre $1.707.278 USD), acumulando un total anual consolidado de $14.823.374,00 USD en los 10 meses de 2026.\n\n` +
+          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $2.063.059,00 USD (+20,8% vs septiembre $1.707.278 USD), acumulando un total anual consolidado de $14.793.659,00 USD en los 10 meses de 2026.\n\n` +
           `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $1.219.527 USD (59,1% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($686.040 USD), Henan Front ($40.000 USD), cuadrillas en campo ($131.190 USD), provisión de horas máquina ($58.500 USD) y prorrateo CIF ($160.285 USD).\n\n` +
           `Le siguen Segunda Línea PMH (TTE-C-0671) con $434.469 USD (21,1%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $106.812 USD (5,2%), Fase 2 Planta de Briquetas (TTE-C-0668) con $89.847 USD (4,4%) y Boca Grande II (TTE-C-0680) con $36.177 USD (1,8%).\n\n` +
           `Por categorías operativas consolidadas: Servicios Directos totalizó $956.835 USD (46,4%), Materiales Directos alcanzó $475.060 USD (23,0%), Costos Indirectos de Fabricación (CIF) $314.914 USD (15,3%), Mano de Obra Directa (MOD) $257.750 USD (12,5%) y Horas Máquina (provisión operativa) $58.500 USD (2,8%).\n\n` +
@@ -940,7 +940,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       ) : selectedMesNum === 9 ? (
                         <>Cierre Consolidado Oficial (<strong className="text-emerald-700">+34,7%</strong>): El gasto del mes se situó en <strong className="text-[#0b2545]">$1,61M USD ($1.613.225 USD)</strong>, acumulando <strong className="text-blue-900">$12.052.176 USD</strong> en el ejercicio 2026 con aceleración en Línea 1 Pellas ($668K), 2da Línea PMH ($292K) y DRAVO ($199K).</>
                       ) : selectedMesNum === 10 ? (
-                        <>Cierre Auditado Proyectos Externos: Gasto mensual de <strong className="text-[#0b2545]">$2,06M USD ($2.063.059 USD)</strong>, acumulando <strong className="text-blue-900">$14.823.374 USD</strong> en el ejercicio 2026 con fuerte tracción en Línea 1 Pellas ($1.219.527 USD · 59,1%), 2da Línea PMH ($434.469 USD · 21,1%) y DRAVO ($106.812 USD · 5,2%).</>
+                        <>Cierre Auditado Proyectos Externos: Gasto mensual de <strong className="text-[#0b2545]">$2,06M USD ($2.063.059 USD)</strong>, acumulando <strong className="text-blue-900">$14.793.659 USD</strong> en el ejercicio 2026 con fuerte tracción en Línea 1 Pellas ($1.219.527 USD · 59,1%), 2da Línea PMH ($434.469 USD · 21,1%) y DRAVO ($106.812 USD · 5,2%).</>
                       ) : selectedMesNum > 1 ? (
                         <>Ejecución mensual de <strong className="text-[#0b2545]">{formatCurrency(activeMonth?.totalMonto || 0)}</strong> ({variacionTotalMes >= 0 ? `+${variacionTotalMes}%` : `${variacionTotalMes}%`} respecto a {mesAnterior?.mesLabel?.split(' ')[0]}) con {cuentasAuxiliaresMes.length} cuentas activas.</>
                       ) : (

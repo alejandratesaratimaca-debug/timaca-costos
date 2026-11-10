@@ -439,7 +439,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       },
       {
         tag: 'ACUMULADO CONSOLIDADO 2026',
-        val: '$14.823.374 USD',
+        val: '$14.793.659 USD',
         desc: '10 Meses (Ene - Oct) · 100% Proyectos Externos',
         color: C_BLUE
       },

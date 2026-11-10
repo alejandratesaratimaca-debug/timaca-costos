@@ -368,7 +368,7 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
 
   const redComplejoPMHOctubre = [
     { frente: 'Segunda Línea PMH (Incremento Capacidad)', cta: 'TTE-C-0671', montoMes: 434469, acumulado2026: 1593173 },
-    { frente: 'Rehabilitación Bandas Torre #3 a JD-8012', cta: 'TTE-C-0656', montoMes: 3670, acumulado2026: 1215000 },
+    { frente: 'Rehabilitación Bandas Torre #3 a JD-8012', cta: 'TTE-C-0656', montoMes: 3671, acumulado2026: 1215000 },
     { frente: 'Proyecto Pila HA y HB (Suministro Apilador)', cta: 'TTE-C-0678', montoMes: 28443, acumulado2026: 349100 },
     { frente: 'Interconexión Tolva Multipropósito PMH', cta: 'TTE-C-0655', montoMes: 24132, acumulado2026: 319800 }
   ];
