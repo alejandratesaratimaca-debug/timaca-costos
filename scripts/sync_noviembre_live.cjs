@@ -185,6 +185,25 @@ function resolverCuentaAuxiliar(rawCta, motivo, desc, solicitante, codigoMat) {
 }
 
 async function getSipCookie() {
+  // 1. Direct login to SIP
+  try {
+    const directRes = await fetch('http://sip.timaca.com/api/acceso/entrar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login: 'drivero', clave: '070717' })
+    });
+    if (directRes.ok) {
+      const cookieHeader = directRes.headers.get('set-cookie');
+      if (cookieHeader) {
+        console.log('[SIP] Autenticado directamente como drivero');
+        return cookieHeader.split(';')[0];
+      }
+    }
+  } catch (e) {
+    console.warn('[SIP] Falló login directo, intentando SSO:', e.message);
+  }
+
+  // 2. Fallback to SSO Núcleo ERP
   const token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6Ijk4MzgyZTNhLTZlZWQtNDU0OC05ZTY2LTM1NmRiNTM2Y2E2OSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Fra3p2bXBjeHdsaXFndXhybG9tLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkZDQ5NDVjMy0zYTAzLTRlZjctYTcwYS02NTAwMTA2N2Q4NzYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzkzODMwNTU0LCJpYXQiOjE3OTM4MjY5NTQsImVtYWlsIjoiYWxlamFuZHJhdGVzYXJhQHRpbWFjYS5jb20udmUiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7fSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc5MzgyNjk1NH1dLCJzZXNzaW9uX2lkIjoiNGQyYjVjNDktYzZmOS00YmQxLWJjZWEtMGVkNWFjNzQ0OGVjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.c993lFi4MyGXHjLI_toTlozjvhFfAfFooNDP93CSsn-MyRaDgdXDA3MaIOolNavFbtAOu-VkvujWvAPb45LK2g';
 
   const valeRes = await fetch('https://nucleo-erp-alpha.vercel.app/api/sip-vale', {
@@ -210,25 +229,31 @@ async function getSipCookie() {
 }
 
 async function runSyncNoviembre() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hoyIso = `${year}-${month}-${day}`;
+
   console.log('====================================================');
   console.log('TIMACA - SINCRONIZACION NOVIEMBRE 2026 DIRECTO SIP');
-  console.log('Fecha ejecución:', new Date().toISOString());
+  console.log(`Fecha ejecución: ${now.toISOString()} (Hasta hoy: ${hoyIso})`);
   console.log('====================================================');
 
   const cookie = await getSipCookie();
-  console.log('[SIP] Autenticado exitosamente en sip.timaca.com');
+  console.log('[SIP] Conexión establecida con sip.timaca.com');
 
-  // 1. Fetch Salidas Nov 1 to Nov 4
-  console.log('[SIP] Consultando Salidas de Almacén (01/11/2026 al 04/11/2026 - Todos los almacenes)...');
-  const salidasRes = await fetch('http://sip.timaca.com/api/movimientos/salidas?desde=2026-11-01&hasta=2026-11-04&almacen=%25', {
+  // 1. Fetch Salidas Nov 1 to Today
+  console.log(`[SIP] Consultando Salidas de Almacén (01/11/2026 al ${hoyIso} - Todos los almacenes)...`);
+  const salidasRes = await fetch(`http://sip.timaca.com/api/movimientos/salidas?desde=2026-11-01&hasta=${hoyIso}&almacen=%25`, {
     headers: { 'Host': 'sip.timaca.com', 'Cookie': cookie }
   });
   const rawSalidas = await salidasRes.json();
   console.log(`[SIP] Salidas obtenidas: ${rawSalidas.length}`);
 
-  // 2. Fetch Compras/Servicios Nov 1 to Nov 4
-  console.log('[SIP] Consultando Órdenes (01/11/2026 al 04/11/2026)...');
-  const ordRes = await fetch('http://sip.timaca.com/api/ordenes/renglones?desde=2026-11-01&hasta=2026-11-04', {
+  // 2. Fetch Compras/Servicios Nov 1 to Today
+  console.log(`[SIP] Consultando Órdenes (01/11/2026 al ${hoyIso})...`);
+  const ordRes = await fetch(`http://sip.timaca.com/api/ordenes/renglones?desde=2026-11-01&hasta=${hoyIso}`, {
     headers: { 'Host': 'sip.timaca.com', 'Cookie': cookie }
   });
   const rawCompras = await ordRes.json();
@@ -500,6 +525,27 @@ async function runSyncNoviembre() {
     console.log(`[OK] Guardado en: ${distFile}`);
   }
 
+  // Update public/data/sip/status.json and dist/data/sip/status.json
+  const statusPayload = {
+    sipConnected: true,
+    sipHost: "sip.timaca.com (Nuevo SIP NÚCLEO)",
+    sipUser: "drivero",
+    lastSync: now.toISOString(),
+    totalConsumosNoviembre: itemsConsumos.length,
+    totalServiciosNoviembre: itemsServicios.length,
+    totalNoviembre: allNovItems.length,
+    totalNoviembreUSD: Math.round(granTotal * 100) / 100
+  };
+  const statusFile = path.join(__dirname, '../public/data/sip/status.json');
+  fs.writeFileSync(statusFile, JSON.stringify(statusPayload, null, 2), 'utf8');
+  console.log(`[OK] Estado actualizado en: ${statusFile}`);
+
+  if (fs.existsSync(distDir)) {
+    const distStatusFile = path.join(distDir, 'status.json');
+    fs.writeFileSync(distStatusFile, JSON.stringify(statusPayload, null, 2), 'utf8');
+    console.log(`[OK] Estado actualizado en: ${distStatusFile}`);
+  }
+
   // Summary for Pellas
   const pellasRows = allNovItems.filter(r => r.cuenta_aux === 'TTE-C-0706');
   console.log('\n====================================================');
@@ -507,8 +553,17 @@ async function runSyncNoviembre() {
   console.log('Filas Pellas en Noviembre:', pellasRows.length);
   const pellasTotalUSD = pellasRows.reduce((a, b) => a + (b.total_usd || 0), 0);
   console.log('Monto USD Pellas en Noviembre:', pellasTotalUSD.toFixed(2));
-  console.log('Gran Total Noviembre USD (4 días):', granTotal.toFixed(2));
+  console.log(`Gran Total Noviembre USD (hasta ${hoyIso}):`, granTotal.toFixed(2));
   console.log('====================================================\n');
+
+  // Trigger canonical imputation
+  console.log('Ejecutando imputación canónica y normalización de cuentas...');
+  try {
+    const { execSync } = require('child_process');
+    execSync(`node "${path.join(__dirname, 'apply_canonical_imputation.cjs')}"`, { stdio: 'inherit' });
+  } catch (err) {
+    console.error('Error en imputación canónica:', err.message);
+  }
 }
 
 runSyncNoviembre().catch(console.error);

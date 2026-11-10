@@ -17,3 +17,5 @@ temp_actualizado.xlsx
 /data/
 !src/data/
 !public/data/
+__pycache__/
+*.pyc

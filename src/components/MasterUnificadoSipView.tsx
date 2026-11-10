@@ -810,9 +810,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [selectedMes, setSelectedMes] = useState<string>(() => {
     try {
       const saved = typeof window !== 'undefined' ? localStorage.getItem('TIMACA_MASTER_SELECTED_MES') : null;
-      return saved || 'octubre';
+      return saved || 'noviembre';
     } catch {
-      return 'octubre';
+      return 'noviembre';
     }
   });
   const [fechaDesde, setFechaDesde] = useState<string>('');

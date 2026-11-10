@@ -312,7 +312,8 @@ export const ProyectosHeader: React.FC<ProyectosHeaderProps> = ({
               className="text-xs font-bold text-slate-900 bg-transparent focus:outline-none cursor-pointer"
             >
               <option value={0}>Año 2026 (Consolidado)</option>
-              <option value={10}>Octubre 2026 (En Curso)</option>
+              <option value={11}>Noviembre 2026 (En Curso / Hoy)</option>
+              <option value={10}>Octubre 2026</option>
               <option value={9}>Septiembre 2026</option>
               <option value={8}>Agosto 2026</option>
               <option value={7}>Julio 2026</option>

@@ -214,7 +214,28 @@ export async function fetchSipMesItems(mesNum: number, forceRefresh = false): Pr
   const querySuffix = `?_t=${Date.now()}`;
   let items: SipItem[] = [];
 
-  if (mesNum === 10) {
+  if (mesNum === 11) {
+    // Noviembre (En Curso / Hoy)
+    try {
+      const res = await fetch(`/api/unificada?ano=2026&mes=noviembre&limit=15000&${querySuffix.replace('?', '')}`, { 
+        ...fetchOpts, 
+        signal: AbortSignal.timeout(2500) 
+      });
+      if (res.ok) {
+        const d = await res.json();
+        if (d.items) items = d.items;
+      }
+    } catch (e) {}
+    if (items.length === 0) {
+      try {
+        const res = await fetch(`/data/sip/unificada_noviembre.json${querySuffix}`, fetchOpts);
+        if (res.ok) {
+          const d = await res.json();
+          if (d.items) items = d.items;
+        }
+      } catch (e) {}
+    }
+  } else if (mesNum === 10) {
     // Octubre
     try {
       const res = await fetch(`/api/unificada?ano=2026&mes=octubre&limit=15000&${querySuffix.replace('?', '')}`, { 
@@ -291,6 +312,7 @@ export async function fetchSipMesItems(mesNum: number, forceRefresh = false): Pr
     } catch (e) {}
   } else if (mesNum === 0) {
     // Todo el Año 2026: combinar todos los meses
+    const m11 = await fetchSipMesItems(11, forceRefresh);
     const m10 = await fetchSipMesItems(10, forceRefresh);
     const m9 = await fetchSipMesItems(9, forceRefresh);
     const m8 = await fetchSipMesItems(8, forceRefresh);
@@ -302,7 +324,7 @@ export async function fetchSipMesItems(mesNum: number, forceRefresh = false): Pr
         hist = d.items || [];
       }
     } catch (e) {}
-    items = [...hist, ...m8, ...m9, ...m10];
+    items = [...hist, ...m8, ...m9, ...m10, ...m11];
   }
 
   memoryCache.mesesItems.set(cacheKey, items);
@@ -327,7 +349,8 @@ export async function getSipPeriodoData(mesNum: number, forceRefresh = false): P
     7: { nombre: 'Julio', label: 'Julio 2026' },
     8: { nombre: 'Agosto', label: 'Agosto 2026' },
     9: { nombre: 'Septiembre', label: 'Septiembre 2026' },
-    10: { nombre: 'Octubre', label: 'Octubre 2026' }
+    10: { nombre: 'Octubre', label: 'Octubre 2026' },
+    11: { nombre: 'Noviembre', label: 'Noviembre 2026 (En Curso)' }
   };
 
   const infoPeriodo = MESES_LABELS[mesNum] || { nombre: `Mes ${mesNum}`, label: `Mes ${mesNum} 2026` };
@@ -462,7 +485,8 @@ export async function getSipEvolutivoMensual(cuentaCodigo?: string, forceRefresh
     { num: 7, nombre: 'Jul', label: 'Julio 2026' },
     { num: 8, nombre: 'Ago', label: 'Agosto 2026' },
     { num: 9, nombre: 'Sep', label: 'Septiembre 2026' },
-    { num: 10, nombre: 'Oct', label: 'Octubre 2026' }
+    { num: 10, nombre: 'Oct', label: 'Octubre 2026' },
+    { num: 11, nombre: 'Nov', label: 'Noviembre 2026' }
   ];
 
   const mesesResults: MesEvolutivoData[] = [];
@@ -548,14 +572,15 @@ export async function getAuditCincoRubrosPeriodoData(mesNum: number, forceRefres
     7: { nombre: 'Julio', label: 'Julio 2026' },
     8: { nombre: 'Agosto', label: 'Agosto 2026' },
     9: { nombre: 'Septiembre', label: 'Septiembre 2026' },
-    10: { nombre: 'Octubre', label: 'Octubre 2026' }
+    10: { nombre: 'Octubre', label: 'Octubre 2026' },
+    11: { nombre: 'Noviembre', label: 'Noviembre 2026 (En Curso)' }
   };
 
   const infoPeriodo = MESES_LABELS[mesNum] || { nombre: `Mes ${mesNum}`, label: `Mes ${mesNum} 2026` };
 
-  // Si se selecciona Octubre (mes en curso), delegar a la data SIP directa
-  if (mesNum === 10) {
-    return getSipPeriodoData(10, forceRefresh);
+  // Si se selecciona Octubre o Noviembre (meses en curso con data SIP directa), delegar a la data SIP directa
+  if (mesNum === 10 || mesNum === 11) {
+    return getSipPeriodoData(mesNum, forceRefresh);
   }
 
   const allItems: SipItem[] = [];
@@ -727,7 +752,8 @@ export async function getAuditCincoRubrosEvolutivo(cuentaCodigo?: string): Promi
     { num: 7, nombre: 'Jul', label: 'Julio 2026' },
     { num: 8, nombre: 'Ago', label: 'Agosto 2026' },
     { num: 9, nombre: 'Sep', label: 'Septiembre 2026' },
-    { num: 10, nombre: 'Oct', label: 'Octubre 2026' }
+    { num: 10, nombre: 'Oct', label: 'Octubre 2026' },
+    { num: 11, nombre: 'Nov', label: 'Noviembre 2026' }
   ];
 
   const mesesResults: MesEvolutivoData[] = [];
@@ -827,6 +853,51 @@ export async function getAuditCincoRubrosEvolutivo(cuentaCodigo?: string): Promi
       mesNum: 10,
       mesNombre: 'Oct',
       mesLabel: 'Octubre 2026',
+      total: 0,
+      porCategoria: { 'Materiales Directos': 0, 'Servicios': 0, 'Mano de Obra Directa': 0, 'Horas Maquina': 0, 'Costos Indirectos': 0 },
+      movimientosCount: 0
+    });
+  }
+
+  // Mes 11 (Noviembre): Integrar con SIP en vivo
+  try {
+    const novItems = await fetchSipMesItems(11);
+    const novFiltrados = novItems.filter(r => {
+      const c = (r.cuenta_aux || '').trim().toUpperCase();
+      if (isConsolidado) {
+        return c.startsWith('TTE-') || (r.datos_tipo_costo || '').toLowerCase().includes('externo');
+      }
+      return c === cClean;
+    });
+    const novCatMes: Record<string, number> = {
+      'Materiales Directos': 0,
+      'Servicios': 0,
+      'Mano de Obra Directa': 0,
+      'Horas Maquina': 0,
+      'Costos Indirectos': 0
+    };
+    let novTotal = 0;
+    novFiltrados.forEach(r => {
+      const val = safeNumber(r.total_usd, 0);
+      novTotal += val;
+      const cat = getMacroCategoriaSip(r);
+      novCatMes[cat] = (novCatMes[cat] || 0) + val;
+      categoriasTotales[cat] = (categoriasTotales[cat] || 0) + val;
+    });
+    sumaTotalAnual += novTotal;
+    mesesResults.push({
+      mesNum: 11,
+      mesNombre: 'Nov',
+      mesLabel: 'Noviembre 2026 (En Curso)',
+      total: novTotal,
+      porCategoria: novCatMes,
+      movimientosCount: novFiltrados.length
+    });
+  } catch (e) {
+    mesesResults.push({
+      mesNum: 11,
+      mesNombre: 'Nov',
+      mesLabel: 'Noviembre 2026 (En Curso)',
       total: 0,
       porCategoria: { 'Materiales Directos': 0, 'Servicios': 0, 'Mano de Obra Directa': 0, 'Horas Maquina': 0, 'Costos Indirectos': 0 },
       movimientosCount: 0

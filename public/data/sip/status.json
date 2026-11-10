@@ -1,1 +1,10 @@
-{"sipConnected":true,"sipHost":"192.168.11.168:8087 (Nuevo SIP NÚCLEO)","sipUser":"drivero","lastSync":"2026-11-02T14:01:34.653Z","totalConsumos":3021,"totalCompras":2255,"totalProyectos":1579,"totalReclasificaciones":36685}
+{
+  "sipConnected": true,
+  "sipHost": "sip.timaca.com (Nuevo SIP NÚCLEO)",
+  "sipUser": "drivero",
+  "lastSync": "2026-11-10T16:53:07.633Z",
+  "totalConsumosNoviembre": 1398,
+  "totalServiciosNoviembre": 125,
+  "totalNoviembre": 1523,
+  "totalNoviembreUSD": 506040.19
+}
