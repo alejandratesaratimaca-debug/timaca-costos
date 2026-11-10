@@ -318,7 +318,7 @@ export function detectarDesfaseFechaMotivo(r: any): DesfaseFechaInfo | null {
   }
 
   if (m.includes('JULIO')) {
-    const isName = /JULIO\s+(VARGAS|ROMERO|ALVAREZ|CESAR|MORENO|GIL|ZAPATA|RODRIGUEZ|HERNANDEZ|CARGAS|TUERCA|MARTINEZ)/.test(m);
+    const isName = /JULIO\s+(VARGAS|ROMERO|ALVAREZ|CESAR|MORENO|GIL|ZAPATA|RODRIGUEZ|HERNANDEZ|CARGAS|TUERCA|MARTINEZ|L\b)/.test(m);
     if (!isName && fm !== 7) {
       return {
         tieneDesfase: true,
@@ -361,21 +361,32 @@ export function detectarDesfaseFechaMotivo(r: any): DesfaseFechaInfo | null {
   return null;
 }
 
-export function detectarMesRezagada(r: any): 'Junio' | 'Julio' | 'Agosto' | null {
+export function detectarMesRezagada(r: any): string | null {
   if (!r) return null;
+  if (r.infoReclasificacion?.nuevoMes) {
+    const nm = r.infoReclasificacion.nuevoMes.trim();
+    return nm.charAt(0).toUpperCase() + nm.slice(1).toLowerCase();
+  }
   const desfase = detectarDesfaseFechaMotivo(r);
   if (desfase && desfase.mesDetectado) {
-    const md = desfase.mesDetectado.toLowerCase();
-    if (md.includes('junio')) return 'Junio';
-    if (md.includes('julio')) return 'Julio';
-    if (md.includes('agosto')) return 'Agosto';
+    return desfase.mesDetectado;
   }
 
   const m = (r.motivo || '').toUpperCase();
-  // 1. Junio
+  // 1. Octubre
+  if (m.includes('OCTUBRE') || /\bOCT\b/.test(m) || m.includes('10-2026') || m.includes('10/2026') || /\b(0?[1-9]|[12][0-9]|3[01])[\/-]10\b/.test(m)) {
+    return 'Octubre';
+  }
+
+  // 2. Septiembre
+  if (m.includes('SEPTIEMBRE') || /\bSEP\b/.test(m) || /\bSEPT\b/.test(m) || m.includes('09-2026') || m.includes('09/2026') || /\b(0?[1-9]|[12][0-9]|3[01])[\/-]0?9\b/.test(m)) {
+    return 'Septiembre';
+  }
+
+  // 3. Junio
   if (m.includes('JUNIO') && !m.includes('JUNIOR')) return 'Junio';
   
-  // 2. Julio (excluyendo nombres propios de trabajadores)
+  // 4. Julio (excluyendo nombres propios de trabajadores)
   if (
     m.includes('JULIO') && 
     !m.includes('JULIO VARGAS') && 
@@ -389,12 +400,13 @@ export function detectarMesRezagada(r: any): 'Junio' | 'Julio' | 'Agosto' | null
     !m.includes('JULIO RODRIGUEZ') &&
     !m.includes('JULIO HERNANDEZ') &&
     !m.includes('JULIO CARGAS') &&
-    !m.includes('JULIO TUERCA')
+    !m.includes('JULIO TUERCA') &&
+    !/\bJULIO\s+L\b/.test(m)
   ) {
     return 'Julio';
   }
 
-  // 3. Agosto
+  // 5. Agosto
   if (
     m.includes('AGOSTO') ||
     /\bAG\b/.test(m) || 
@@ -427,6 +439,9 @@ export function detectarMesRezagada(r: any): 'Junio' | 'Julio' | 'Agosto' | null
 export function isRezagadaDestiempo(r: any, descartadasList?: string[]): boolean {
   if (!r) return false;
   if (descartadasList && isRowDescartada(r, descartadasList)) return false;
+  if (r.infoReclasificacion && (r.infoReclasificacion.nuevoMes || String(r.infoReclasificacion.motivo || '').toLowerCase().includes('rezagad'))) {
+    return true;
+  }
   return detectarMesRezagada(r) !== null || detectarDesfaseFechaMotivo(r) !== null;
 }
 
@@ -844,7 +859,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [filterNormalizacion, setFilterNormalizacion] = useState<
     'operativos' | 'todos' | 'rezagadas' | 'ajustes_historicos' | 'viejas_historicas' | 'operativas_campo' | 'todas_normalizaciones'
   >('operativos');
-  const [filterRezagadaSubmes, setFilterRezagadaSubmes] = useState<'todos' | 'agosto' | 'junio' | 'julio'>('todos');
+  const [filterRezagadaSubmes, setFilterRezagadaSubmes] = useState<string>('todos');
   const [filterEstadoRezagada, setFilterEstadoRezagada] = useState<'pendientes' | 'corregidos' | 'descartadas' | 'todos'>('pendientes');
   const [rezagadasDescartadas, setRezagadasDescartadas] = useState<string[]>(() => {
     try {
@@ -879,6 +894,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     rezagadas_pendientes_count?: number;
     rezagadas_corregidas_count?: number;
     rezagadas_descartadas_count?: number;
+    rezagadas_octubre_count?: number;
+    rezagadas_octubre_total?: number;
+    rezagadas_octubre_pendientes_count?: number;
+    rezagadas_octubre_corregidas_count?: number;
     rezagadas_agosto_count?: number;
     rezagadas_agosto_total?: number;
     rezagadas_agosto_pendientes_count?: number;
@@ -910,6 +929,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     norm_rezagadas_count: 0,
     rezagadas_pendientes_count: 0,
     rezagadas_corregidas_count: 0,
+    rezagadas_descartadas_count: 0,
+    rezagadas_octubre_count: 0,
+    rezagadas_octubre_total: 0,
+    rezagadas_octubre_pendientes_count: 0,
+    rezagadas_octubre_corregidas_count: 0,
     rezagadas_agosto_count: 0,
     rezagadas_agosto_total: 0,
     rezagadas_agosto_pendientes_count: 0,
@@ -1302,8 +1326,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 const sc = String(r.sc || '').trim().toUpperCase();
                 const oc = String(r.oc || '').trim().toUpperCase();
                 const cod = String(r.codigo || '').trim().toUpperCase();
+                const k1 = r.id != null ? String(r.id) : null;
                 const candidate = 
                   (k1 && corrMap.get(k1)) ||
+                  (k1 && corrMap.get(k1.toUpperCase())) ||
                   (doc && cod && corrMap.get(`${doc}-${cod}`)) ||
                   (ped && cod && corrMap.get(`${ped}-${cod}`)) ||
                   (sc && cod && corrMap.get(`${sc}-${cod}`)) ||
@@ -1359,7 +1385,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               });
 
               // Si se selecciona un mes específico, filtrar para que movimientos trasladados a otro mes no se queden en este
-              if (selectedMes !== 'todos' && !isVerAjustesHistoricos) {
+              // PERO si estamos auditando 'rezagadas', mantenerlos para ver estadísticas de 'Ya Corregidos' vs 'Solo Pendientes'
+              if (selectedMes !== 'todos' && !isVerAjustesHistoricos && filterNormalizacion !== 'rezagadas') {
                 items = items.filter((r: any) => (r.nombre_mes || '').toLowerCase() === selectedMes.toLowerCase());
               }
 
@@ -1375,19 +1402,26 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   const existingKeys = new Set(items.map((x: any) => x.id != null ? String(x.id) : `${x.numero}-${x.codigo}`));
                   const existingDocs = new Set(items.map((x: any) => x.numero));
 
-                  // Traer registros de Septiembre si no están en memoria para reconstruir las columnas oficiales
-                  let sepMap = new Map<string, any>();
+                  // Traer registros de los meses de origen (Septiembre, Noviembre, etc.) para reconstruir las columnas oficiales
+                  let sourceMaps = new Map<string, any>();
                   try {
-                    const resSep = await fetch(`/data/sip/unificada_septiembre.json?_t=${Date.now()}`, {
-                      cache: 'no-store',
-                      headers: ANTI_CACHE_HEADERS
-                    });
-                    if (resSep.ok) {
-                      const dSep = await resSep.json();
-                      for (const s of (dSep.items || [])) {
-                        if (s.id != null) sepMap.set(String(s.id), s);
-                        if (s.numero && s.codigo) sepMap.set(`${s.numero}-${s.codigo}`, s);
-                        if (s.numero) sepMap.set(String(s.numero), s);
+                    const sourceMonths = Array.from(new Set([
+                      'septiembre', 
+                      'noviembre', 
+                      ...matchingTransfers.map((c: any) => (c.mesOrigen || '').toLowerCase()).filter(Boolean)
+                    ]));
+                    for (const sm of sourceMonths) {
+                      const resSrc = await fetch(`/data/sip/unificada_${sm}.json?_t=${Date.now()}`, {
+                        cache: 'no-store',
+                        headers: ANTI_CACHE_HEADERS
+                      });
+                      if (resSrc.ok) {
+                        const dSrc = await resSrc.json();
+                        for (const s of (dSrc.items || [])) {
+                          if (s.id != null) sourceMaps.set(String(s.id), s);
+                          if (s.numero && s.codigo) sourceMaps.set(`${s.numero}-${s.codigo}`, s);
+                          if (s.numero) sourceMaps.set(String(s.numero), s);
+                        }
                       }
                     }
                   } catch (e) {}
@@ -1402,15 +1436,26 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       continue;
                     }
 
-                    const orig = (k1 && sepMap.get(k1)) || sepMap.get(k2) || (doc && sepMap.get(String(doc)));
+                    const orig = (k1 && sourceMaps.get(k1)) || sourceMaps.get(k2) || (doc && sourceMaps.get(String(doc)));
                     const targetCuenta = (c.nuevaCuenta || orig?.cuenta_aux || '').toUpperCase().trim();
                     const targetDesc = c.nuevoProyecto || c.proyectoAnterior || orig?.datos_descripcion || '';
                     const targetTipoCosto = determinarTipoGasto(targetCuenta, c.datos_tipo_costo || orig?.datos_tipo_costo);
 
+                    let targetFecha = c.fechaConsumoReal || orig?.fechaConsumoReal;
+                    if (!targetFecha) {
+                      const desfase = orig ? detectarDesfaseFechaMotivo(orig) : null;
+                      if (desfase && desfase.fechaTexto && desfase.fechaTexto.includes('/')) {
+                        const [d, m, y] = desfase.fechaTexto.split('/');
+                        targetFecha = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+                      } else {
+                        targetFecha = c.fechaMovimiento || (selectedMes === 'octubre' ? '2026-10-31' : '2026-08-31');
+                      }
+                    }
+
                     const baseRow = orig ? { ...orig } : {
                       tipo: c.tipoItem || 'Materiales Directos',
                       almacen: c.almacen || 'ALMPEI',
-                      fecha: c.fechaMovimiento || '2026-08-31',
+                      fecha: targetFecha,
                       numero: c.documento,
                       pedido: c.pedido || '',
                       cuenta_aux: targetCuenta,
@@ -1441,7 +1486,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       ajuste: 'CORREGIDO',
                       esReclasificado: true,
                       esTrasladado: true,
-                      mesOrigen: 'Septiembre',
+                      mesOrigen: c.mesOrigen || 'Noviembre',
                       infoReclasificacion: c
                     });
                     if (k1) existingKeys.add(k1);
@@ -1451,7 +1496,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 }
               }
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error('Error aplicando correcciones en Master:', e);
+          }
 
           // Calcular estadísticas globales de normalizaciones antes de filtrar
           let totalNormUSD = 0;
@@ -1460,6 +1507,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           let normRezagadasCount = 0;
           let rezagadasPendientesCount = 0;
           let rezagadasCorregidasCount = 0;
+          let rezagadasOctubreCount = 0;
+          let rezagadasOctubreUSD = 0;
+          let rezagadasOctubrePendientesCount = 0;
+          let rezagadasOctubreCorregidasCount = 0;
           let rezagadasAgostoCount = 0;
           let rezagadasAgostoUSD = 0;
           let rezagadasAgostoPendientesCount = 0;
@@ -1497,7 +1548,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 }
 
                 const mDest = detectarMesRezagada(r);
-                if (mDest === 'Agosto') {
+                if (mDest === 'Octubre') {
+                  rezagadasOctubreCount++;
+                  rezagadasOctubreUSD += val;
+                  if (isCorregido) rezagadasOctubreCorregidasCount++;
+                  else rezagadasOctubrePendientesCount++;
+                } else if (mDest === 'Agosto') {
                   rezagadasAgostoCount++;
                   rezagadasAgostoUSD += val;
                   if (isCorregido) rezagadasAgostoCorregidasCount++;
@@ -1525,8 +1581,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             // Excluir todas las regularizaciones de inventario físico y ajustes manuales (idéntico a desmarcar NORMALIZACION y MANUAL en Excel)
             items = items.filter(r => {
               if (isAjusteNormalizacionOManual(r)) return false;
-              // Si estamos auditando Septiembre y el registro fue trasladado a Agosto/Junio/Julio, no inflar Septiembre
-              if (selectedMes === 'septiembre' && r.nombre_mes && r.nombre_mes.toLowerCase() !== 'septiembre') return false;
+              // Si el registro fue trasladado a otro mes, no inflar este mes
+              if (selectedMes !== 'todos' && r.nombre_mes && r.nombre_mes.toLowerCase() !== selectedMes.toLowerCase()) return false;
               return true;
             });
           } else if (filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas' || filterNormalizacion === 'todas_normalizaciones') {
@@ -1671,6 +1727,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             rezagadas_pendientes_count: rezagadasPendientesCount,
             rezagadas_corregidas_count: rezagadasCorregidasCount,
             rezagadas_descartadas_count: rezagadasDescartadasCount,
+            rezagadas_octubre_count: rezagadasOctubreCount,
+            rezagadas_octubre_total: rezagadasOctubreUSD,
+            rezagadas_octubre_pendientes_count: rezagadasOctubrePendientesCount,
+            rezagadas_octubre_corregidas_count: rezagadasOctubreCorregidasCount,
             rezagadas_agosto_count: rezagadasAgostoCount,
             rezagadas_agosto_total: rezagadasAgostoUSD,
             rezagadas_agosto_pendientes_count: rezagadasAgostoPendientesCount,
@@ -2432,17 +2492,90 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     fetchCatalogFiltros();
   };
 
-  const handleAplicarCorreccionMasiva = async (mesDestino: 'Agosto' | 'Junio' | 'Julio' | 'auto', targetItems?: any[]) => {
+  const handleQuickCorregirRezagada = (item: any, targetMes?: string) => {
+    const rawId = item.id != null ? item.id : `unificada-${item.numero || ''}-${item.codigo || ''}`;
+    const docRef = item.numero || item.dp || item.sc || item.ordenCompra || item.codigo || '';
+    const desfase = detectarDesfaseFechaMotivo(item);
+    const assignedMes = targetMes || desfase?.mesDetectado || detectarMesRezagada(item) || (selectedMes === 'noviembre' ? 'Octubre' : 'Agosto');
+    const cuentaCode = resolverCodigoCuentaAuxiliar(item.cuenta_aux || '', item.motivo, item.descripcion, item.solicitante);
+    const projDesc = getDescripcionProyecto(cuentaCode) || item.datos_descripcion || '';
+
+    let fechaConsumoReal = '';
+    if (desfase && desfase.fechaTexto && desfase.fechaTexto.includes('/')) {
+      const [d, m, y] = desfase.fechaTexto.split('/');
+      fechaConsumoReal = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+    }
+
+    try {
+      const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') || '[]' : '[]';
+      const localList = JSON.parse(localStr);
+      const newEntry = {
+        recordId: rawId,
+        tipoItem: item.tipo || 'consumo',
+        documento: docRef,
+        codigo: item.codigo || '',
+        descripcion: item.descripcion || '',
+        cantidad: safeNumber(item.cantidad, 1),
+        unidad: item.unidad || 'UND',
+        costoUnitario: safeNumber(item.precio_final || item.costoUnitario || item.precio_dolar, 0),
+        precio_final: safeNumber(item.precio_final || item.costoUnitario || item.precio_dolar, 0),
+        totalUSD: safeNumber(item.total_usd, 0),
+        fechaMovimiento: item.fecha || '',
+        fechaConsumoReal: fechaConsumoReal,
+        cuentaAnterior: item.cuenta_aux || '',
+        proyectoAnterior: item.datos_descripcion || '',
+        nuevaCuenta: cuentaCode,
+        nuevoProyecto: projDesc,
+        nuevoMes: assignedMes,
+        mesOrigen: item.nombre_mes || selectedMes || 'noviembre',
+        motivo: `Consumo rezagado perteneciente a ${assignedMes}: ${item.motivo || ''}`,
+        solicitante: item.solicitante || 'S/D',
+        proveedor: item.proveedor || '',
+        comprador: item.comprador || '',
+        almacen: item.almacen || 'ALMCE',
+        ceco: item.ceco || 'MON-3',
+        categoria: item.categoria || item.linea_prod_desc || '',
+        datos_tipo_costo: determinarTipoGasto(cuentaCode, item.datos_tipo_costo),
+        fecha: new Date().toISOString(),
+        usuario: currentUser?.username || 'atesara'
+      };
+
+      const filtered = localList.filter((x: any) => 
+        (x.recordId || `${x.documento}-${x.codigo}`) !== (newEntry.recordId || `${newEntry.documento}-${newEntry.codigo}`) &&
+        x.recordId !== rawId &&
+        `${x.documento}-${x.codigo}` !== `${docRef}-${item.codigo}`
+      );
+      filtered.push(newEntry);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
+      }
+
+      setGlobalToast({
+        type: 'success',
+        message: `✓ Movimiento [${docRef}] trasladado exitosamente a ${assignedMes.toUpperCase()}.`
+      });
+      setTimeout(() => setGlobalToast(null), 4000);
+
+      fetchMasterData();
+      fetchReclasificaciones();
+      fetchStatus();
+    } catch (e: any) {
+      alert(`Error al trasladar rezagada: ${e.message}`);
+    }
+  };
+
+  const handleAplicarCorreccionMasiva = async (mesDestino: string | 'auto', targetItems?: any[]) => {
     let itemsToProcess = targetItems;
     if (!itemsToProcess || itemsToProcess.length === 0) {
       try {
-        const resStatic = await fetch(`/data/sip/unificada_septiembre.json?_t=${Date.now()}`, {
+        const curMes = (selectedMes || 'noviembre').toLowerCase();
+        const resStatic = await fetch(`/data/sip/unificada_${curMes}.json?_t=${Date.now()}`, {
           cache: 'no-store',
           headers: ANTI_CACHE_HEADERS
         });
         if (resStatic.ok) {
           const data = await resStatic.json();
-          let allItems = (data.items || []).filter((r: any) => clasificarNormalizacion(r) === 'rezagada');
+          let allItems = (data.items || []).filter((r: any) => clasificarNormalizacion(r, rezagadasDescartadas) === 'rezagada');
           if (mesDestino !== 'auto') {
             allItems = allItems.filter((r: any) => (detectarMesRezagada(r) || '').toLowerCase() === mesDestino.toLowerCase());
           } else if (filterRezagadaSubmes !== 'todos') {
@@ -2458,49 +2591,73 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       return;
     }
 
+    const defaultTarget = selectedMes === 'noviembre' ? 'Octubre' : 'Agosto';
     const count = itemsToProcess.length;
     const mesLabel = mesDestino === 'auto' 
-      ? 'sus meses correspondientes detectados (Agosto, Junio, Julio)' 
+      ? (selectedMes === 'noviembre' ? 'el mes de Octubre' : 'sus meses correspondientes detectados (Agosto, Junio, Julio)') 
       : `el mes de ${mesDestino}`;
-    const confirmMsg = `¿Deseas enviar ${count} registros rezagados a la sección de Correcciones con ${mesLabel}?`;
+    const confirmMsg = `¿Deseas trasladar ${count} registros rezagados a la sección de Correcciones con destino a ${mesLabel}?`;
     if (!window.confirm(confirmMsg)) return;
 
     try {
       const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') || '[]' : '[]';
       const localList = JSON.parse(localStr);
-      const existingKeys = new Set(localList.map((x: any) => x.recordId || `${x.documento}-${x.codigo}`));
 
       let addedCount = 0;
       for (const item of itemsToProcess) {
         const rawId = item.id != null ? item.id : `unificada-${item.numero || ''}-${item.codigo || ''}`;
         const key = rawId;
-        const assignedMes = mesDestino === 'auto' ? (detectarMesRezagada(item) || 'Agosto') : mesDestino;
-        if (!existingKeys.has(key)) {
-          localList.push({
-            recordId: rawId,
-            tipoItem: item.tipo || 'consumo',
-            documento: item.numero || item.dp || '',
-            codigo: item.codigo || '',
-            descripcion: item.descripcion || '',
-            cantidad: safeNumber(item.cantidad, 1),
-            unidad: item.unidad || 'UND',
-            costoUnitario: safeNumber(item.precio_final || item.costoUnitario || item.precio_dolar, 0),
-            precio_final: safeNumber(item.precio_final || item.costoUnitario || item.precio_dolar, 0),
-            totalUSD: safeNumber(item.total_usd, 0),
-            fechaMovimiento: item.fecha || '',
-            cuentaAnterior: item.cuenta_aux || '',
-            proyectoAnterior: item.datos_descripcion || '',
-            nuevaCuenta: item.cuenta_aux || 'TTE-C-0706',
-            nuevoProyecto: item.datos_descripcion || 'Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)',
-            nuevoMes: assignedMes,
-            motivo: `Consumo rezagado asignado al mes de ${assignedMes} (registrado a destiempo en SIP: ${item.motivo || ''})`,
-            solicitante: item.solicitante || 'S/D',
-            fecha: new Date().toISOString(),
-            usuario: currentUser?.username || 'atesara'
-          });
-          existingKeys.add(key);
-          addedCount++;
+        const desfase = detectarDesfaseFechaMotivo(item);
+        const assignedMes = mesDestino === 'auto' 
+          ? (desfase?.mesDetectado || detectarMesRezagada(item) || defaultTarget)
+          : mesDestino;
+        const targetCuenta = resolverCodigoCuentaAuxiliar(item.cuenta_aux || '', item.motivo, item.descripcion, item.solicitante);
+        const projDesc = getDescripcionProyecto(targetCuenta) || item.datos_descripcion || '';
+
+        let fechaConsumoReal = '';
+        if (desfase && desfase.fechaTexto && desfase.fechaTexto.includes('/')) {
+          const [d, m, y] = desfase.fechaTexto.split('/');
+          fechaConsumoReal = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
         }
+
+        const entryData = {
+          recordId: rawId,
+          tipoItem: item.tipo || 'consumo',
+          documento: item.numero || item.dp || '',
+          codigo: item.codigo || '',
+          descripcion: item.descripcion || '',
+          cantidad: safeNumber(item.cantidad, 1),
+          unidad: item.unidad || 'UND',
+          costoUnitario: safeNumber(item.precio_final || item.costoUnitario || item.precio_dolar, 0),
+          precio_final: safeNumber(item.precio_final || item.costoUnitario || item.precio_dolar, 0),
+          totalUSD: safeNumber(item.total_usd, 0),
+          fechaMovimiento: item.fecha || '',
+          fechaConsumoReal: fechaConsumoReal,
+          cuentaAnterior: item.cuenta_aux || '',
+          proyectoAnterior: item.datos_descripcion || '',
+          nuevaCuenta: targetCuenta,
+          nuevoProyecto: projDesc,
+          nuevoMes: assignedMes,
+          mesOrigen: item.nombre_mes || selectedMes || 'noviembre',
+          motivo: `Consumo rezagado asignado al mes de ${assignedMes} (registrado a destiempo en SIP: ${item.motivo || ''})`,
+          solicitante: item.solicitante || 'S/D',
+          proveedor: item.proveedor || '',
+          comprador: item.comprador || '',
+          almacen: item.almacen || 'ALMCE',
+          ceco: item.ceco || 'MON-3',
+          categoria: item.categoria || item.linea_prod_desc || '',
+          datos_tipo_costo: determinarTipoGasto(targetCuenta, item.datos_tipo_costo),
+          fecha: new Date().toISOString(),
+          usuario: currentUser?.username || 'atesara'
+        };
+
+        const existingIdx = localList.findIndex((x: any) => (x.recordId || `${x.documento}-${x.codigo}`) === key);
+        if (existingIdx >= 0) {
+          localList[existingIdx] = entryData;
+        } else {
+          localList.push(entryData);
+        }
+        addedCount++;
       }
 
       if (typeof window !== 'undefined') {
@@ -2509,7 +2666,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
       setGlobalToast({
         type: 'success',
-        message: `✓ Se enviaron exitosamente ${addedCount > 0 ? addedCount : count} registros a la sección de Correcciones con su mes asignado.`
+        message: `✓ Se trasladaron exitosamente ${addedCount > 0 ? addedCount : count} registros a la sección de Correcciones con destino a ${mesLabel}.`
       });
       setTimeout(() => setGlobalToast(null), 5000);
 
@@ -4154,13 +4311,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </div>
                     <div>
                       <div className="font-black uppercase tracking-wider text-indigo-950 text-sm flex items-center gap-2 flex-wrap">
-                        <span>Consumos Rezagados a Destiempo ({masterTotales.norm_rezagadas_count || 420} registros • {formatUSD(masterTotales.norm_rezagadas_total || 37327.39)})</span>
+                        <span>Consumos Rezagados a Destiempo ({masterTotales.norm_rezagadas_count || 0} registros • {formatUSD(masterTotales.norm_rezagadas_total || 0)})</span>
                         <span className="px-2 py-0.5 rounded-full text-[10px] bg-indigo-200 text-indigo-900 font-bold border border-indigo-300">
-                          PERTENECEN A JUNIO / JULIO / AGOSTO
+                          {selectedMes === 'noviembre' ? 'PERTENECEN A OCTUBRE' : 'PERTENECEN A JUNIO / JULIO / AGOSTO'}
                         </span>
                       </div>
                       <p className="text-indigo-800 text-xs mt-1 leading-relaxed max-w-4xl">
-                        Consumos cargados tardíamente en SIP con notas de regularización (incluyendo los <strong>56 registros con código "AG" ($9.106,74)</strong> y los <strong>100 de Junio ($983,07)</strong> en la OT <strong>TTE-C-0706</strong>). Permite filtrarlos por su mes real, auditarlos individualmente con el botón <strong>[Pasar a Corrección]</strong>, o transferirlos en bloque a la sección de <strong>Correcciones</strong> con su mes contable asignado.
+                        {selectedMes === 'noviembre'
+                          ? `Consumos cargados tardíamente en SIP con notas de regularización de Octubre (incluyendo ${masterTotales.rezagadas_octubre_count || 114} registros de Octubre • ${formatUSD(masterTotales.rezagadas_octubre_total || 6470.64)} en proyectos como Boca Grande y Pellas). Puedes trasladarlos individualmente con [Pasar a Octubre] o en bloque con [Trasladar Todas a Octubre].`
+                          : `Consumos cargados tardíamente en SIP con notas de regularización (incluyendo los 56 registros con código "AG" ($9.106,74) y los 100 de Junio ($983,07) en la OT TTE-C-0706). Permite filtrarlos por su mes real, auditarlos individualmente con el botón [Pasar a Corrección], o transferirlos en bloque a la sección de Correcciones con su mes contable asignado.`}
                       </p>
                     </div>
                   </div>
@@ -4168,12 +4327,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   {/* Acciones Rápidas Globales */}
                   <div className="flex items-center gap-2 shrink-0">
                     <button
-                      onClick={() => handleAplicarCorreccionMasiva('auto')}
+                      onClick={() => handleAplicarCorreccionMasiva(selectedMes === 'noviembre' ? 'Octubre' : 'auto')}
                       className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
-                      title="Enviar todos los registros rezagados a Correcciones con sus meses correspondientes (Agosto, Junio, Julio)"
+                      title={selectedMes === 'noviembre' ? 'Trasladar todas las rezagadas de noviembre a Octubre' : 'Enviar todos los registros rezagados a Correcciones con sus meses correspondientes'}
                     >
                       <CheckCircle2 className="w-4 h-4" />
-                      ⚡ Enviar Todas a Correcciones ({masterTotales.norm_rezagadas_count || 420})
+                      ⚡ {selectedMes === 'noviembre' ? 'Trasladar Todas a Octubre' : 'Enviar Todas a Correcciones'} ({masterTotales.norm_rezagadas_count || 0})
                     </button>
                     <button
                       onClick={() => setActiveTab('correcciones')}
@@ -4201,38 +4360,67 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           : 'bg-white text-indigo-900 border-indigo-200 hover:bg-indigo-100/50'
                       }`}
                     >
-                      Todos ({masterTotales.norm_rezagadas_count || 420})
+                      Todos ({masterTotales.norm_rezagadas_count || 0})
                     </button>
-                    <button
-                      onClick={() => { setFilterRezagadaSubmes('agosto'); setPageMaster(1); }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                        filterRezagadaSubmes === 'agosto'
-                          ? 'bg-amber-600 text-white border-amber-700 shadow-xs ring-2 ring-amber-200'
-                          : 'bg-white text-amber-900 border-amber-200 hover:bg-amber-50'
-                      }`}
-                    >
-                      📅 Agosto / "AG" ({masterTotales.rezagadas_agosto_count || 291} reg • {formatUSD(masterTotales.rezagadas_agosto_total || 35257.31)})
-                    </button>
-                    <button
-                      onClick={() => { setFilterRezagadaSubmes('junio'); setPageMaster(1); }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                        filterRezagadaSubmes === 'junio'
-                          ? 'bg-teal-600 text-white border-teal-700 shadow-xs ring-2 ring-teal-200'
-                          : 'bg-white text-teal-900 border-teal-200 hover:bg-teal-50'
-                      }`}
-                    >
-                      📅 Junio ({masterTotales.rezagadas_junio_count || 100} reg)
-                    </button>
-                    <button
-                      onClick={() => { setFilterRezagadaSubmes('julio'); setPageMaster(1); }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                        filterRezagadaSubmes === 'julio'
-                          ? 'bg-sky-600 text-white border-sky-700 shadow-xs ring-2 ring-sky-200'
-                          : 'bg-white text-sky-900 border-sky-200 hover:bg-sky-50'
-                      }`}
-                    >
-                      📅 Julio ({masterTotales.rezagadas_julio_count || 29} reg)
-                    </button>
+                    {selectedMes === 'noviembre' ? (
+                      <>
+                        <button
+                          onClick={() => { setFilterRezagadaSubmes('octubre'); setPageMaster(1); }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                            filterRezagadaSubmes === 'octubre'
+                              ? 'bg-amber-600 text-white border-amber-700 shadow-xs ring-2 ring-amber-200'
+                              : 'bg-white text-amber-900 border-amber-200 hover:bg-amber-50'
+                          }`}
+                        >
+                          📅 Octubre ({masterTotales.rezagadas_octubre_count || 0} reg • {formatUSD(masterTotales.rezagadas_octubre_total || 0)})
+                        </button>
+                        {(masterTotales.rezagadas_julio_count || 0) > 0 && (
+                          <button
+                            onClick={() => { setFilterRezagadaSubmes('julio'); setPageMaster(1); }}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                              filterRezagadaSubmes === 'julio'
+                                ? 'bg-sky-600 text-white border-sky-700 shadow-xs ring-2 ring-sky-200'
+                                : 'bg-white text-sky-900 border-sky-200 hover:bg-sky-50'
+                            }`}
+                          >
+                            📅 Julio ({masterTotales.rezagadas_julio_count || 0} reg)
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => { setFilterRezagadaSubmes('agosto'); setPageMaster(1); }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                            filterRezagadaSubmes === 'agosto'
+                              ? 'bg-amber-600 text-white border-amber-700 shadow-xs ring-2 ring-amber-200'
+                              : 'bg-white text-amber-900 border-amber-200 hover:bg-amber-50'
+                          }`}
+                        >
+                          📅 Agosto / "AG" ({masterTotales.rezagadas_agosto_count || 291} reg • {formatUSD(masterTotales.rezagadas_agosto_total || 35257.31)})
+                        </button>
+                        <button
+                          onClick={() => { setFilterRezagadaSubmes('junio'); setPageMaster(1); }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                            filterRezagadaSubmes === 'junio'
+                              ? 'bg-teal-600 text-white border-teal-700 shadow-xs ring-2 ring-teal-200'
+                              : 'bg-white text-teal-900 border-teal-200 hover:bg-teal-50'
+                          }`}
+                        >
+                          📅 Junio ({masterTotales.rezagadas_junio_count || 100} reg)
+                        </button>
+                        <button
+                          onClick={() => { setFilterRezagadaSubmes('julio'); setPageMaster(1); }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                            filterRezagadaSubmes === 'julio'
+                              ? 'bg-sky-600 text-white border-sky-700 shadow-xs ring-2 ring-sky-200'
+                              : 'bg-white text-sky-900 border-sky-200 hover:bg-sky-50'
+                          }`}
+                        >
+                          📅 Julio ({masterTotales.rezagadas_julio_count || 29} reg)
+                        </button>
+                      </>
+                    )}
                   </div>
 
                   {/* TOGGLE ESTADO DE AUDITORÍA: SOLO PENDIENTES vs YA CORREGIDOS vs TODOS */}
@@ -4250,10 +4438,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       title="Mostrar solo los consumos rezagados que aún no han sido imputados/corregidos"
                     >
                       ⏳ Solo Pendientes ({
+                        filterRezagadaSubmes === 'octubre' ? (masterTotales.rezagadas_octubre_pendientes_count ?? 0) :
                         filterRezagadaSubmes === 'agosto' ? (masterTotales.rezagadas_agosto_pendientes_count ?? 291) :
                         filterRezagadaSubmes === 'junio' ? (masterTotales.rezagadas_junio_pendientes_count ?? 100) :
                         filterRezagadaSubmes === 'julio' ? (masterTotales.rezagadas_julio_pendientes_count ?? 29) :
-                        (masterTotales.rezagadas_pendientes_count ?? 420)
+                        (masterTotales.rezagadas_pendientes_count ?? 0)
                       })
                     </button>
                     <button
@@ -4266,6 +4455,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       title="Mostrar los consumos ya corregidos y trasladados a su mes correspondiente"
                     >
                       ✓ Ya Corregidos ({
+                        filterRezagadaSubmes === 'octubre' ? (masterTotales.rezagadas_octubre_corregidas_count ?? 0) :
                         filterRezagadaSubmes === 'agosto' ? (masterTotales.rezagadas_agosto_corregidas_count ?? 0) :
                         filterRezagadaSubmes === 'junio' ? (masterTotales.rezagadas_junio_corregidas_count ?? 0) :
                         filterRezagadaSubmes === 'julio' ? (masterTotales.rezagadas_julio_corregidas_count ?? 0) :
@@ -4279,7 +4469,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           ? 'bg-rose-600 text-white shadow-xs'
                           : 'text-slate-600 hover:bg-slate-100'
                       }`}
-                      title="Mostrar los registros que sacaste de rezagadas para confirmarlos como movimientos normales de Septiembre"
+                      title="Mostrar los registros que sacaste de rezagadas para confirmarlos como movimientos normales de este mes"
                     >
                       🚫 Sacadas / No Rezagadas ({masterTotales.rezagadas_descartadas_count || 0})
                     </button>
@@ -4293,10 +4483,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       title="Mostrar todos los consumos rezagados sin importar su estado"
                     >
                       Todos ({
+                        filterRezagadaSubmes === 'octubre' ? (masterTotales.rezagadas_octubre_count ?? 0) :
                         filterRezagadaSubmes === 'agosto' ? (masterTotales.rezagadas_agosto_count || 291) :
                         filterRezagadaSubmes === 'junio' ? (masterTotales.rezagadas_junio_count || 100) :
                         filterRezagadaSubmes === 'julio' ? (masterTotales.rezagadas_julio_count || 29) :
-                        (masterTotales.norm_rezagadas_count || 420)
+                        (masterTotales.norm_rezagadas_count || 0)
                       })
                     </button>
                   </div>
@@ -4306,7 +4497,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   <div className="pt-2 flex justify-end">
                     <button
                       onClick={() => handleAplicarCorreccionMasiva(
-                        filterRezagadaSubmes === 'agosto' ? 'Agosto' : filterRezagadaSubmes === 'junio' ? 'Junio' : 'Julio'
+                        filterRezagadaSubmes === 'octubre' ? 'Octubre' : filterRezagadaSubmes === 'agosto' ? 'Agosto' : filterRezagadaSubmes === 'junio' ? 'Junio' : filterRezagadaSubmes === 'julio' ? 'Julio' : 'auto'
                       )}
                       className="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-700 hover:bg-indigo-800 text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
                     >
@@ -4650,16 +4841,23 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                     </div>
                                     <div className="flex items-center gap-1.5 mt-0.5">
                                       <button
-                                        onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
+                                        onClick={() => handleQuickCorregirRezagada(r, mesSug)}
                                         className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition-colors cursor-pointer"
-                                        title={`Pasar a corrección e imputar a ${mesSug}`}
+                                        title={`Mover inmediatamente a ${mesSug} (1 clic)`}
                                       >
-                                        <Edit3 className="w-2.5 h-2.5" /> Corregir ({mesSug})
+                                        <CheckCircle2 className="w-2.5 h-2.5" /> Pasar a {mesSug}
+                                      </button>
+                                      <button
+                                        onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
+                                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-2xs transition-colors cursor-pointer"
+                                        title="Abrir modal de edición"
+                                      >
+                                        <Edit3 className="w-2.5 h-2.5" /> Editar
                                       </button>
                                       <button
                                         onClick={() => handleDescartarRezagada(r)}
-                                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold bg-white hover:bg-rose-50 text-rose-700 hover:text-rose-800 border border-rose-300 shadow-2xs transition-colors cursor-pointer"
-                                        title="Sacar de rezagadas: confirmar que pertenece a Septiembre y no debe reclasificarse"
+                                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-semibold bg-white hover:bg-rose-50 text-rose-700 hover:text-rose-800 border border-rose-300 shadow-2xs transition-colors cursor-pointer"
+                                        title={`Sacar de rezagadas: confirmar que pertenece a ${selectedMes} y no debe reclasificarse`}
                                       >
                                         <XCircle className="w-2.5 h-2.5" /> Sacar
                                       </button>
@@ -4682,18 +4880,25 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                     </span>
                                     <div className="flex items-center gap-1">
                                       <button
-                                        onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
+                                        onClick={() => handleQuickCorregirRezagada(r, detected || (selectedMes === 'noviembre' ? 'Octubre' : 'Agosto'))}
                                         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition-colors cursor-pointer"
-                                        title="Consumo de meses anteriores (Jun/Jul/Ago): Pasar a corrección"
+                                        title={`Mover inmediatamente a ${detected || 'mes correspondiente'} (1 clic)`}
                                       >
-                                        <Edit3 className="w-2.5 h-2.5" /> Pasar a Corrección
+                                        <CheckCircle2 className="w-2.5 h-2.5" /> Corregir
+                                      </button>
+                                      <button
+                                        onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
+                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-2xs transition-colors cursor-pointer"
+                                        title="Abrir modal de edición"
+                                      >
+                                        <Edit3 className="w-2.5 h-2.5" />
                                       </button>
                                       <button
                                         onClick={() => handleDescartarRezagada(r)}
-                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 shadow-2xs transition-colors cursor-pointer"
+                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 shadow-2xs transition-colors cursor-pointer"
                                         title="Sacar de rezagadas"
                                       >
-                                        <XCircle className="w-2.5 h-2.5" /> Sacar
+                                        <XCircle className="w-2.5 h-2.5" />
                                       </button>
                                     </div>
                                   </div>
