@@ -257,9 +257,31 @@ export const isRowDescartada = (r: any, descartadasList: string[]): boolean => {
 
 export function detectarDesfaseFechaMotivo(r: any): DesfaseFechaInfo | null {
   if (!r || !r.motivo) return null;
-  const m = String(r.motivo).toUpperCase();
-  const f = r.fecha || '';
-  const [fy, fm, fd] = f ? f.split('-').map(Number) : [2026, 9, 1];
+  const m = String(r.motivo || '').toUpperCase();
+  const f = String(r.fecha || '').trim();
+  let fy = 2026, fm = 10, fd = 1;
+  if (f.includes('/')) {
+    const parts = f.split('/');
+    if (parts.length >= 3) {
+      fd = parseInt(parts[0], 10);
+      fm = parseInt(parts[1], 10);
+      fy = parseInt(parts[2], 10);
+      if (fy < 100) fy += 2000;
+    }
+  } else if (f.includes('-')) {
+    const parts = f.split('-');
+    if (parts.length >= 3) {
+      fy = parseInt(parts[0], 10);
+      fm = parseInt(parts[1], 10);
+      fd = parseInt(parts[2], 10);
+    }
+  } else if (r.nombre_mes) {
+    const mm: Record<string, number> = {
+      enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6,
+      julio: 7, agosto: 8, septiembre: 9, octubre: 10, noviembre: 11, diciembre: 12
+    };
+    fm = mm[String(r.nombre_mes).toLowerCase().trim()] || 10;
+  }
   const monthNames = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
   // 1. Fecha explícita completa DD/MM/YYYY o DD-MM-YYYY
@@ -284,8 +306,8 @@ export function detectarDesfaseFechaMotivo(r: any): DesfaseFechaInfo | null {
     }
   }
 
-  // 2. Fecha corta DD/MM al inicio o con palabra clave FECHA / DEL / AL
-  const matchShort = m.match(/(?:^|\bFECHA\s*:?\s*|\bDEL\s+|\bAL\s+)([0-2]?[1-9]|[12]0|3[01])[\/\-](0?[1-9]|1[0-2])\b/i);
+  // 2. Fecha corta DD/MM con palabra clave FECHA / DEL / AL / DIA / SABADO / DOMINGO o al inicio sin fracciones
+  const matchShort = m.match(/(?:^|\bFECHA\s*:?\s*|\bDEL\s+|\bAL\s+|\bDIA\s+|\bSABADO\s+|\bDOMINGO\s+)([0-2]?[1-9]|[12]0|3[01])[\/\-](0?[1-9]|1[0-2])(?!\s*["'\/]|\s*PULG|\s*INCH)\b/i);
   if (matchShort) {
     let day = parseInt(matchShort[1], 10);
     let month = parseInt(matchShort[2], 10);
@@ -318,8 +340,16 @@ export function detectarDesfaseFechaMotivo(r: any): DesfaseFechaInfo | null {
   }
 
   if (m.includes('JULIO')) {
-    const isName = /JULIO\s+(VARGAS|ROMERO|ALVAREZ|CESAR|MORENO|GIL|ZAPATA|RODRIGUEZ|HERNANDEZ|CARGAS|TUERCA|MARTINEZ|L\b)/.test(m);
-    if (!isName && fm !== 7) {
+    const isWorkerJulio = (
+      m.includes('SOLICITA JULIO') || m.includes('SUPERVISOR JULIO') || m.includes('MECANICO JULIO') ||
+      m.includes('JULIO GIL') || m.includes('JULIO GILL') || m.includes('JULIO ALVAREZ') || m.includes('JULIO VARGAS') ||
+      m.includes('JULIO HERNANDEZ') || m.includes('JULIO ROMERO') || m.includes('JULIO MORENO') ||
+      m.includes('JULIO ZAPATA') || m.includes('JULIO RODRIGUEZ') || m.includes('JULIO CARGAS') ||
+      m.includes('JULIO TUERCA') || m.includes('MARTINEZ JULIO') || m.includes('JULIO CESAR') ||
+      ((m.includes('CAMISA') || m.includes('PANTALON') || m.includes('BATA') || m.includes('BOTAS') || m.includes('CASCO') || m.includes('DOTACION')) && m.includes('JULIO')) ||
+      /JULIO\s+[A-Z]{3,}/.test(m)
+    );
+    if (!isWorkerJulio && fm !== 7) {
       return {
         tieneDesfase: true,
         tipo: 'nombre_mes',
@@ -386,24 +416,20 @@ export function detectarMesRezagada(r: any): string | null {
   // 3. Junio
   if (m.includes('JUNIO') && !m.includes('JUNIOR')) return 'Junio';
   
-  // 4. Julio (excluyendo nombres propios de trabajadores)
-  if (
-    m.includes('JULIO') && 
-    !m.includes('JULIO VARGAS') && 
-    !m.includes('JULIO ROMERO') && 
-    !m.includes('JULIO ALVAREZ') && 
-    !m.includes('JULIO CESAR') && 
-    !m.includes('JULIO MORENO') && 
-    !m.includes('JULIO GIL') && 
-    !m.includes('MARTINEZ JULIO') &&
-    !m.includes('JULIO ZAPATA') &&
-    !m.includes('JULIO RODRIGUEZ') &&
-    !m.includes('JULIO HERNANDEZ') &&
-    !m.includes('JULIO CARGAS') &&
-    !m.includes('JULIO TUERCA') &&
-    !/\bJULIO\s+L\b/.test(m)
-  ) {
-    return 'Julio';
+  // 4. Julio (excluyendo nombres propios de trabajadores y dotaciones)
+  if (m.includes('JULIO')) {
+    const isWorkerJulio = (
+      m.includes('SOLICITA JULIO') || m.includes('SUPERVISOR JULIO') || m.includes('MECANICO JULIO') ||
+      m.includes('JULIO GIL') || m.includes('JULIO GILL') || m.includes('JULIO ALVAREZ') || m.includes('JULIO VARGAS') ||
+      m.includes('JULIO HERNANDEZ') || m.includes('JULIO ROMERO') || m.includes('JULIO MORENO') ||
+      m.includes('JULIO ZAPATA') || m.includes('JULIO RODRIGUEZ') || m.includes('JULIO CARGAS') ||
+      m.includes('JULIO TUERCA') || m.includes('MARTINEZ JULIO') || m.includes('JULIO CESAR') ||
+      ((m.includes('CAMISA') || m.includes('PANTALON') || m.includes('BATA') || m.includes('BOTAS') || m.includes('CASCO') || m.includes('DOTACION')) && m.includes('JULIO')) ||
+      /JULIO\s+[A-Z]{3,}/.test(m)
+    );
+    if (!isWorkerJulio) {
+      return 'Julio';
+    }
   }
 
   // 5. Agosto
@@ -439,18 +465,30 @@ export function detectarMesRezagada(r: any): string | null {
 export function getMesFromFecha(fechaStr?: string, nombreMes?: string): string {
   if (nombreMes) {
     const clean = nombreMes.trim();
-    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+    if (clean) return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
   }
   if (!fechaStr) return 'Octubre';
-  const parts = fechaStr.split('-');
-  if (parts.length >= 2) {
-    const m = parts[1];
-    const map: Record<string, string> = {
-      '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
-      '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
-      '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
-    };
-    if (map[m]) return map[m];
+  const map: Record<string, string> = {
+    '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
+    '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
+    '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre',
+    '1': 'Enero', '2': 'Febrero', '3': 'Marzo', '4': 'Abril',
+    '5': 'Mayo', '6': 'Junio', '7': 'Julio', '8': 'Agosto',
+    '9': 'Septiembre'
+  };
+  const f = String(fechaStr).trim();
+  if (f.includes('/')) {
+    const parts = f.split('/');
+    if (parts.length >= 2) {
+      const m = parts[1];
+      if (map[m]) return map[m];
+    }
+  } else if (f.includes('-')) {
+    const parts = f.split('-');
+    if (parts.length >= 2) {
+      const m = parts[0].length === 4 ? parts[1] : parts[1];
+      if (map[m]) return map[m];
+    }
   }
   return 'Octubre';
 }
