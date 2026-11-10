@@ -19,3 +19,5 @@ temp_actualizado.xlsx
 !public/data/
 __pycache__/
 *.pyc
+
+public/data/sip/valorizaciones_sip_historicas.json
