@@ -317,7 +317,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               {vistaActiva === 'categorias'
                 ? `Distribución consolidada en USD · 10 meses auditados (Enero - Octubre 2026) · Total Acumulado: $${Math.round(totalAnualGlobal).toLocaleString('de-DE')} USD`
                 : periodo === 'anual'
-                ? `Matriz oficial auditada Enero - Septiembre 2026 (5 Rubros Completos) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
+                ? `Matriz oficial auditada Enero - Octubre 2026 (5 Rubros Completos) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
                 : periodo === 'agosto'
                 ? `Base oficial auditada de Agosto 2026 (5 Rubros Oficiales) · Total: $${Math.round(totalesProyectos.totalProyecto).toLocaleString('de-DE')} USD`
                 : periodo === 'septiembre'
@@ -370,9 +370,9 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
                     ? 'bg-blue-700 text-white shadow-2xs'
                     : 'text-blue-900 hover:text-blue-950 hover:bg-blue-100/60'
                 }`}
-                title="Consolidado acumulado 9 meses oficiales (Enero a Septiembre 2026)"
+                title="Consolidado acumulado 10 meses oficiales (Enero a Octubre 2026)"
               >
-                Acumulado 9M ($12.05M)
+                Acumulado 10M ($14.79M)
               </button>
               <button
                 onClick={() => setPeriodo('agosto')}
@@ -765,7 +765,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
               />
             </div>
             <div className="text-xs text-neutral-500 font-medium">
-              Mostrando <strong>{filasFiltradasProyectos.length}</strong> proyectos auditados en {periodo === 'septiembre' ? 'Septiembre 2026' : periodo === 'agosto' ? 'Agosto 2026' : periodo === 'octubre' ? 'Octubre 2026 (SIP en Vivo)' : periodo === 'sip_anual' ? 'Compras SIP Almacén (Todo el Año)' : 'Acumulado 2026 (Ene - Sep · 9 Meses Auditados)'}
+              Mostrando <strong>{filasFiltradasProyectos.length}</strong> proyectos auditados en {periodo === 'septiembre' ? 'Septiembre 2026' : periodo === 'agosto' ? 'Agosto 2026' : periodo === 'octubre' ? 'Octubre 2026 (SIP en Vivo)' : periodo === 'sip_anual' ? 'Compras SIP Almacén (Todo el Año)' : 'Acumulado 2026 (Ene - Oct · 10 Meses Auditados)'}
             </div>
           </div>
 

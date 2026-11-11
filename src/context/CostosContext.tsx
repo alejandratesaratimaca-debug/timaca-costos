@@ -678,9 +678,9 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         return mesData.promedioSemanal;
       }
     }
-    // Consolidado Anual Enero a Septiembre 2026: 39 semanas operativas oficiales (35 previas + 4 de Septiembre)
-    const totalSemanasEneSep = 39;
-    return Math.round((totalMontoGlobal / totalSemanasEneSep) * 100) / 100;
+    // Consolidado Anual Enero a Octubre 2026: 43 semanas operativas oficiales (39 previas + 4 de Octubre)
+    const totalSemanasEneOct = 43;
+    return Math.round((totalMontoGlobal / totalSemanasEneOct) * 100) / 100;
   }, [totalMontoGlobal, totalMontoFiltrado, selectedMes, selectedSemana, resumenMeses]);
 
   // Acciones CRUD

@@ -46,7 +46,7 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
   const cuentasPermitidas = currentUser.cuentasAsignadas || [];
 
   // Filtros locales
-  const [selectedMes, setSelectedMes] = useState<string>('9'); // Por defecto Septiembre (cierre contable activo)
+  const [selectedMes, setSelectedMes] = useState<string>('10'); // Por defecto Octubre (cierre contable activo)
   const [selectedRubro, setSelectedRubro] = useState<'todos' | 'Materiales Directos' | 'Servicios'>('todos');
   const [selectedEstado, setSelectedEstado] = useState<'todos' | 'Observado' | 'Conforme' | 'Pendiente'>('todos');
   const [selectedCuenta, setSelectedCuenta] = useState<string>('todos');
@@ -458,12 +458,20 @@ export const ValidacionGerenteView: React.FC<ValidacionGerenteViewProps> = ({
                 Todo el Año
               </button>
               <button
+                onClick={() => setSelectedMes('10')}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  selectedMes === '10' ? 'bg-blue-600 text-white font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Octubre 2026 (Activo)
+              </button>
+              <button
                 onClick={() => setSelectedMes('9')}
                 className={`px-2.5 py-1 rounded-lg transition-all ${
                   selectedMes === '9' ? 'bg-blue-600 text-white font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Septiembre 2026 (Activo)
+                Septiembre 2026
               </button>
               <button
                 onClick={() => setSelectedMes('8')}

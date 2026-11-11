@@ -167,7 +167,7 @@ def apply_natural_narrative(file_path):
         update_bullet_point(
             sh7.text_frame.paragraphs[1],
             "• Control Presupuestario: ",
-            "7 cuentas operan bajo modalidad S/P (Sin presupuesto marco, sumando $112.534 USD) por administración directa. En contratos con presupuesto, 9 están en nivel Normal (≤85%), TTE-C-0693 está en Alerta (89,4%) y TTE-C-0697 está Crítico (229,5%) a la espera de aprobación de adenda por mayor alcance. El consumo global de los contratos marco es de 15,2% ($9.243.000 USD de $60.766.352 USD)."
+            "7 cuentas operan bajo modalidad S/P (Sin presupuesto marco, sumando $112.534 USD) por administración directa. En contratos con presupuesto, 9 están en nivel Normal (≤85%), TTE-C-0693 está en Alerta (89,4%) y TTE-C-0697 está Crítico (229,5%) a la espera de aprobación de adenda por mayor alcance. El consumo global de los contratos marco es de 15,2% ($9.244.000 USD de $60.766.352 USD)."
         )
         print("[Slide 2] Updated Shape 7 Pareto and Budget Control.")
 

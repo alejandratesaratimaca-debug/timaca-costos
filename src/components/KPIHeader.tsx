@@ -48,28 +48,28 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
     const proyectosList = Object.values(MATRIZ_REAL_PROYECTOS_MENSUAL_2026);
     if (selectedMes !== 'all') {
       const mesIdx = parseInt(selectedMes, 10) - 1;
-      if (mesIdx >= 0 && mesIdx < 9) {
+      if (mesIdx >= 0 && mesIdx < 10) {
         const sorted = [...proyectosList].sort((a, b) => (b.meses[mesIdx] || 0) - (a.meses[mesIdx] || 0));
         const top = sorted[0];
         const mesTotal = TOTALES_MESES_PPT[mesIdx]?.total || displayMonto;
-        const monto = top ? (top.meses[mesIdx] || 0) : 636352;
+        const monto = top ? (top.meses[mesIdx] || 0) : 1219526.45;
         return {
           codigo: top?.cuentaAuxiliar || 'TTE-C-0706',
           nombre: top?.descripcion || 'Recuperación de Línea 1 de Planta de Pellas',
           monto,
-          porcentaje: mesTotal > 0 ? Math.round((monto / mesTotal) * 1000) / 10 : 47.3
+          porcentaje: mesTotal > 0 ? Math.round((monto / mesTotal) * 1000) / 10 : 59.1
         };
       }
     }
-    // Consolidado Anual 2026 (TTE-C-0706: $2.388.978 / 19.8%)
+    // Consolidado Anual 2026 (TTE-C-0706: $3.618.605 / 24.5%)
     const sorted = [...proyectosList].sort((a, b) => b.totalAnual - a.totalAnual);
     const top = sorted[0];
-    const topMontoAnual = top?.totalAnual || 2388978.27;
+    const topMontoAnual = top?.totalAnual || 3618605.21;
     return {
       codigo: top?.cuentaAuxiliar || 'TTE-C-0706',
       nombre: top?.descripcion || 'Recuperación de Línea 1 de Planta de Pellas',
       monto: topMontoAnual,
-      porcentaje: displayMonto > 0 ? Math.round((topMontoAnual / displayMonto) * 1000) / 10 : 19.8
+      porcentaje: displayMonto > 0 ? Math.round((topMontoAnual / displayMonto) * 1000) / 10 : 24.5
     };
   }, [selectedMes, displayMonto]);
 
@@ -86,14 +86,14 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
     return resumenMeses[resumenMeses.length - 1];
   }, [resumenMeses]);
 
-  const mesesHeaders = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep'];
+  const mesesHeaders = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
 
   return (
     <div className="space-y-4">
       {/* ========================================================================= */}
-      {/* 4 KPI CARDS: FINTECH EXECUTIVE STANDARD (STRIPE / LINEAR POLISH)          */}
+      {/* 3 KPI CARDS: FINTECH EXECUTIVE STANDARD (STRIPE / LINEAR POLISH)          */}
       {/* ========================================================================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         
         {/* KPI 1: Total Acumulado */}
         <div 
@@ -119,7 +119,7 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
             </span>
             {!isFiltered ? (
               <span className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200/80 rounded-md px-2 py-0.5 inline-block font-semibold mt-1">
-                * 9 meses auditados + mes en curso
+                * 10 meses y actual
               </span>
             ) : (
               <span className="text-[10px] text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-2 py-0.5 inline-block font-semibold mt-1">
@@ -139,39 +139,37 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
           </div>
         </div>
 
-        {/* KPI 2: Promedio Semanal */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-emerald-500/80 transition-all duration-200 group relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600" />
+        {/* KPI 2: Mes Actual (Octubre 2026) */}
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-sky-500/80 transition-all duration-200 group relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600" />
 
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-emerald-700 transition-colors">
-              Promedio Semanal
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-sky-700 transition-colors">
+              Mes Actual
             </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 transition-transform">
-              <TrendingUp className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 transition-transform">
+              <Calendar className="w-4 h-4" />
             </div>
           </div>
 
           <div className="my-2">
             <span className="text-2xl sm:text-[26px] font-black tracking-tight text-slate-900 font-mono tabular-nums block">
-              {safeFormatUSD(promedioSemanal, false)}
+              {ultimoMes ? safeFormatUSD(ultimoMes.totalMonto, false) : '$ 2,063,059'}
             </span>
-            <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/80 rounded-md px-2 py-0.5 inline-block mt-1">
-              Ritmo mensual: {safeFormatUSD(Math.round(displayMonto / (resumenMeses.length || 8)), false)}
+            <span className="text-[10px] font-bold text-sky-900 bg-sky-50 border border-sky-200/80 rounded-md px-2 py-0.5 inline-block mt-1">
+              {ultimoMes ? ultimoMes.mesLabel : 'Octubre 2026'}
             </span>
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="text-[11px] text-slate-400">
-              {isFiltered ? 'Período activo' : 'Base: 39 semanas operativas'}
-            </span>
-            <span className="text-[11px] font-mono font-bold text-emerald-700">
-              USD / semana
+            <span className="text-[11px] text-slate-400">Movimientos auditados</span>
+            <span className="text-[11px] font-mono font-bold text-slate-700">
+              {ultimoMes ? `${ultimoMes.totalSalidas.toLocaleString('de-DE')} salidas` : '10.055 salidas'}
             </span>
           </div>
         </div>
 
-        {/* KPI 3: Mes con Mayor Costo (Mes Pico) */}
+        {/* KPI 3: Mes con Mayor Desembolso */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-amber-500/80 transition-all duration-200 group relative overflow-hidden flex flex-col justify-between">
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600" />
 
@@ -196,37 +194,7 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
             <span className="text-[11px] text-slate-400">Pico histórico 2026</span>
             <span className="text-[11px] font-mono font-black text-amber-700">
-              {topMes && totalMontoGlobal > 0 ? `${Math.round((topMes.totalMonto / totalMontoGlobal) * 1000) / 10}% del total` : '19.2%'}
-            </span>
-          </div>
-        </div>
-
-        {/* KPI 4: Último Mes Auditado */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-sky-500/80 transition-all duration-200 group relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600" />
-
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-sky-700 transition-colors">
-              Último Mes Auditado
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center font-bold shadow-2xs group-hover:scale-105 transition-transform">
-              <Calendar className="w-4 h-4" />
-            </div>
-          </div>
-
-          <div className="my-2">
-            <span className="text-2xl sm:text-[26px] font-black tracking-tight text-slate-900 font-mono tabular-nums block">
-              {ultimoMes ? safeFormatUSD(ultimoMes.totalMonto, false) : '$ 0'}
-            </span>
-            <span className="text-[10px] font-bold text-sky-900 bg-sky-50 border border-sky-200/80 rounded-md px-2 py-0.5 inline-block mt-1">
-              {ultimoMes ? ultimoMes.mesLabel : 'Sin datos'}
-            </span>
-          </div>
-
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="text-[11px] text-slate-400">Movimientos auditados</span>
-            <span className="text-[11px] font-mono font-bold text-slate-700">
-              {ultimoMes ? `${ultimoMes.totalSalidas.toLocaleString('de-DE')} salidas` : '0'}
+              {topMes && totalMontoGlobal > 0 ? `${Math.round((topMes.totalMonto / totalMontoGlobal) * 1000) / 10}% del total` : '17.5% del total'}
             </span>
           </div>
         </div>
@@ -253,13 +221,13 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
             </span>
           </div>
 
-          <div className="hidden xl:flex items-center gap-2 pl-2 text-slate-400 text-xs">
+          <div className="hidden md:flex items-center gap-2 pl-2 text-slate-400 text-xs">
             <span>•</span>
-            <span>Corte Ene-Sep: <strong className="text-white font-mono">$2.388.978 USD</strong> (19.8%)</span>
+            <span>Corte Ene-Oct: <strong className="text-white font-mono">$3.618.605 USD</strong> (24.5%)</span>
             <span>•</span>
-            <span>Septiembre: <strong className="text-emerald-400 font-mono">$668.340 USD</strong> (41.4%)</span>
+            <span>Octubre: <strong className="text-emerald-400 font-mono">$1.219.526 USD</strong> (59.1%)</span>
             <span>•</span>
-            <span>Global TIMACA: <strong className="text-slate-200 font-mono">{safeFormatUSD(ultimoMes?.totalMonto || 1613225, false)}</strong></span>
+            <span>Global TIMACA: <strong className="text-slate-200 font-mono">{safeFormatUSD(ultimoMes?.totalMonto || 2063059, false)}</strong></span>
           </div>
         </div>
 
