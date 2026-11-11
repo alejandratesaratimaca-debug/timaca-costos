@@ -1731,7 +1731,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               (r.numero && String(r.numero).toLowerCase().includes(q)) ||
               (r.pedido && String(r.pedido).toLowerCase().includes(q)) ||
               (r.solicitante && String(r.solicitante).toLowerCase().includes(q)) ||
-              (r.motivo && String(r.motivo).toLowerCase().includes(q))
+              (r.motivo && String(r.motivo).toLowerCase().includes(q)) ||
+              (r.sc && String(r.sc).toLowerCase().includes(q)) ||
+              (r.oc && String(r.oc).toLowerCase().includes(q)) ||
+              (r.solicitudCompra && String(r.solicitudCompra).toLowerCase().includes(q)) ||
+              (r.ordenCompra && String(r.ordenCompra).toLowerCase().includes(q)) ||
+              (r.proveedor && String(r.proveedor).toLowerCase().includes(q)) ||
+              (r.almacen && String(r.almacen).toLowerCase().includes(q)) ||
+              (r.ceco && String(r.ceco).toLowerCase().includes(q)) ||
+              (r.recepcion && String(r.recepcion).toLowerCase().includes(q)) ||
+              (r.apellidos_nombres && String(r.apellidos_nombres).toLowerCase().includes(q)) ||
+              (r.datos_descripcion && String(r.datos_descripcion).toLowerCase().includes(q))
             );
           }
 
@@ -2074,7 +2084,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           (r.numero && String(r.numero).toLowerCase().includes(q)) ||
           (r.pedido && String(r.pedido).toLowerCase().includes(q)) ||
           (r.solicitante && String(r.solicitante).toLowerCase().includes(q)) ||
-          (r.motivo && String(r.motivo).toLowerCase().includes(q))
+          (r.motivo && String(r.motivo).toLowerCase().includes(q)) ||
+          (r.sc && String(r.sc).toLowerCase().includes(q)) ||
+          (r.oc && String(r.oc).toLowerCase().includes(q)) ||
+          (r.solicitudCompra && String(r.solicitudCompra).toLowerCase().includes(q)) ||
+          (r.ordenCompra && String(r.ordenCompra).toLowerCase().includes(q)) ||
+          (r.proveedor && String(r.proveedor).toLowerCase().includes(q)) ||
+          (r.almacen && String(r.almacen).toLowerCase().includes(q)) ||
+          (r.ceco && String(r.ceco).toLowerCase().includes(q)) ||
+          (r.recepcion && String(r.recepcion).toLowerCase().includes(q)) ||
+          (r.apellidos_nombres && String(r.apellidos_nombres).toLowerCase().includes(q)) ||
+          (r.datos_descripcion && String(r.datos_descripcion).toLowerCase().includes(q))
         );
       }
 
