@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react';
 import * as XLSX from 'xlsx';
 import { 
   Building2, 
@@ -41,7 +41,8 @@ import {
 } from 'lucide-react';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 import { safeNumber, safeFormatUSD, safeFormatQuantity, safePercent } from '../utils/numericHelpers';
-import { BandejaAlertasSipView } from './BandejaAlertasSipView';
+
+const BandejaAlertasSipView = lazy(() => import('./BandejaAlertasSipView').then(m => ({ default: m.BandejaAlertasSipView })));
 
 interface Proyecto {
   codigo: string;
@@ -7000,7 +7001,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
         {/* TAB 7: BANDEJA DE ALERTAS DE PRECIOS Y UNIDADES DE MEDIDA (PA vs DP vs OC) */}
         {activeTab === 'alertas' && (
-          <BandejaAlertasSipView />
+          <Suspense fallback={
+            <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-slate-200 shadow-sm text-center">
+              <div className="w-10 h-10 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-3" />
+              <p className="text-sm font-semibold text-slate-700">Cargando Bandeja de Alertas SIP...</p>
+              <p className="text-xs text-slate-400 mt-1">Optimizando datos de compras y almacén</p>
+            </div>
+          }>
+            <BandejaAlertasSipView />
+          </Suspense>
         )}
 
       </main>
