@@ -98,7 +98,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </span>
             <div className="space-y-0.5">
               <span className="font-bold text-amber-950 text-xs sm:text-sm block">
-                SesiÃ³n de Gerente de Proyecto Â· Vista Restringida a Cuentas Asignadas
+                Sesión de Gerente de Proyecto · Vista Restringida a Cuentas Asignadas
               </span>
               <p className="text-amber-900/90 text-xs">
                 Visualizando costos de tu frente de obra: <strong className="font-mono text-blue-900">{cuentasAsignadas.join(', ')}</strong> ({currentUser?.proyectosNombres?.join(', ') || 'Mis Proyectos'}).
@@ -111,7 +111,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* 1. Header con 4 KPI Cards Ejecutivas & Spotlight Banner */}
       <KPIHeader onOpenProyectosMatriz={onOpenProyectosMatriz} />
 
-      {/* 2. SecciÃ³n Principal: EvoluciÃ³n de Costos por CategorÃ­a */}
+      {/* 2. Sección Principal: Evolución de Costos por Categoría */}
       <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
         
         {/* Header of Section with Segmented Capsule Switcher */}
@@ -122,14 +122,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <BarChart2 className="w-4 h-4" />
               </div>
               <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                EvoluciÃ³n de Costos por CategorÃ­a (Cifras en USD)
+                Evolución de Costos por Categoría (Cifras en USD)
               </h2>
             </div>
             <p className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                 Consolidado 2026
               </span>
-              <span>DistribuciÃ³n oficial de los 5 rubros a lo largo de los meses y semanas operativas</span>
+              <span>Distribución oficial de los 5 rubros a lo largo de los meses y semanas operativas</span>
             </p>
           </div>
 
@@ -154,7 +154,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Por CategorÃ­a
+                Por Categoría
               </button>
               <button
                 onClick={() => setChartMode('semanal')}
@@ -214,11 +214,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Content Body */}
         {chartMode === 'por-categoria' ? (
-          /* View 1: Por CategorÃ­a Individual */
+          /* View 1: Por Categoría Individual */
           <div className="space-y-4 pt-2">
             <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-700">Examinando categorÃ­a:</span>
+                <span className="text-xs font-bold text-slate-700">Examinando categoría:</span>
                 <select
                   value={selectedCatFocus}
                   onChange={(e) => setSelectedCatFocus(e.target.value)}
@@ -259,7 +259,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         style={{ height: `${heightPct}%`, backgroundColor: categoryConfig[selectedCatFocus]?.color || '#2563eb' }}
                         className="w-10 rounded-t-lg shadow-xs transition-all hover:opacity-90 cursor-pointer"
                         onClick={() => setSelectedMesModal(m)}
-                        title={`${selectedCatFocus} en ${m.mesLabel}: ${safeFormatUSD(montoCat, false)} Â· Clic para ver mes`}
+                        title={`${selectedCatFocus} en ${m.mesLabel}: ${safeFormatUSD(montoCat, false)} · Clic para ver mes`}
                       />
                     </div>
 
@@ -337,7 +337,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
             </div>
             <div className="pt-2 flex items-center justify-between text-xs text-slate-500">
-              <span>â† Desplaza horizontalmente para examinar las {resumenSemanas.length} semanas operativas de 2026 â†’</span>
+              <span>← Desplaza horizontalmente para examinar las {resumenSemanas.length} semanas operativas de 2026 →</span>
               <span className="font-mono font-bold text-slate-900">Total Acumulado: {safeFormatUSD(totalMontoGlobal, false)}</span>
             </div>
           </div>
@@ -347,15 +347,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-3 text-xs text-slate-700 flex items-start gap-2">
               <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
               <span>
-                <strong>ConsolidaciÃ³n mensual oficial:</strong> Despachos SIP de almacÃ©n, compras directas y nÃ³mina devengada de frentes de obra. Haz clic en cualquier fila para inspeccionar el desglose del mes.
+                <strong>Consolidación mensual oficial:</strong> Despachos SIP de almacén, compras directas y nómina devengada de frentes de obra. Haz clic en cualquier fila para inspeccionar el desglose del mes.
               </span>
             </div>
 
             {/* Table Container */}
             <div className="bg-white rounded-2xl border border-slate-200/90 divide-y divide-slate-100 overflow-hidden shadow-xs">
               <div className="hidden md:flex items-center px-4 py-2.5 bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">
-                <span className="w-56 lg:w-60 shrink-0">Mes / PerÃ­odo</span>
-                <span className="flex-1 px-2">DistribuciÃ³n de las 5 CategorÃ­as</span>
+                <span className="w-56 lg:w-60 shrink-0">Mes / Período</span>
+                <span className="flex-1 px-2">Distribución de las 5 Categorías</span>
                 <span className="w-36 shrink-0 text-right">Promedio Semanal</span>
                 <span className="w-36 shrink-0 text-right">Total Mes (USD)</span>
               </div>
@@ -413,7 +413,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         />
                         <div 
                           style={{ width: `${widthPct * hmPct}%`, backgroundColor: categoryConfig['Horas Maquina']?.color }} 
-                          title={`Horas MÃ¡quina: ${safeFormatUSD(hmVal, false)} (${Math.round(hmPct * 100)}%)`} 
+                          title={`Horas Máquina: ${safeFormatUSD(hmVal, false)} (${Math.round(hmPct * 100)}%)`} 
                           className="hover:opacity-80 transition-opacity"
                         />
                         <div 
@@ -447,7 +447,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         )}
       </div>
 
-      {/* 3. Detalle TÃ©cnico de las 5 CategorÃ­as Oficiales */}
+      {/* 3. Detalle Técnico de las 5 Categorías Oficiales */}
       <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div>
@@ -456,7 +456,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <Layers className="w-4 h-4" />
               </div>
               <h3 className="text-base font-bold text-slate-900 tracking-tight">
-                Detalle TÃ©cnico de las 5 CategorÃ­as Oficiales
+                Detalle Técnico de las 5 Categorías Oficiales
               </h3>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -477,7 +477,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              â˜… Acumulado Anual
+              ⭐ Acumulado Anual
             </button>
             {MESES_CONFIG.map((m) => (
               <button
@@ -597,7 +597,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   {selectedMesModal.mesLabel}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  {selectedMesModal.totalSalidas} movimientos contabilizados en este perÃ­odo
+                  {selectedMesModal.totalSalidas} movimientos contabilizados en este período
                 </p>
               </div>
               <button
@@ -620,7 +620,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             <div className="space-y-2">
-              <span className="text-xs font-bold text-slate-700 block">DistribuciÃ³n en las 5 CategorÃ­as:</span>
+              <span className="text-xs font-bold text-slate-700 block">Distribución en las 5 Categorías:</span>
               {Object.entries(categoryConfig).map(([cat, cfg]) => {
                 const monto = selectedMesModal.porCategoria?.[cat] || 0;
                 const pct = selectedMesModal.totalMonto > 0 ? Math.round((monto / selectedMesModal.totalMonto) * 100) : 0;
