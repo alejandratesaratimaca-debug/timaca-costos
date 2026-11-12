@@ -1,0 +1,11 @@
+node_modules
+dist
+.git
+.vercel
+scratch
+*.pptx
+*.xlsx
+dist_test
+temp_pptx
+__pycache__
+*.pyc
