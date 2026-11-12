@@ -1756,7 +1756,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             {/* Alerta de Retraso de Nómina en Boca Grande y Horas Máquina */}
                             <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 space-y-1.5">
                               <div className="flex items-center gap-1.5 text-emerald-900 font-bold text-xs">
-                                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                                 <span>Regularización y Control Operativo:</span>
                               </div>
                               <p className="text-[11px] text-emerald-800 leading-tight">
