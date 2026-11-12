@@ -1761,20 +1761,27 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           let con_rc_count = 0;
           let con_rc_total = 0;
 
+          const isCandidateRC = (r: any) => {
+            const t = String(r.tipo || '').toUpperCase();
+            const p = String(r.pedido || '').toUpperCase();
+            const num = String(r.numero || '').toUpperCase();
+            const alm = String(r.almacen || '').toUpperCase();
+            return t.includes('SERV') || t.includes('COMP') || p.startsWith('OC') || num.startsWith('SC') || alm === 'ALMSE';
+          };
+
           for (const r of items) {
             const hasRC = Boolean(r.recepcion || r.rc);
-            const isCandidate = r.tipo === 'Servicios' || r.tipo === 'Compras' || Boolean(r.pedido);
             if (hasRC) {
               con_rc_count++;
               con_rc_total += Number(r.total_usd) || 0;
-            } else if (isCandidate) {
+            } else if (isCandidateRC(r)) {
               sin_rc_count++;
               sin_rc_total += Number(r.total_usd) || 0;
             }
           }
 
           if (filterEstadoRC === 'sin_rc') {
-            items = items.filter((r: any) => (!r.recepcion && !r.rc) && (r.tipo === 'Servicios' || r.tipo === 'Compras' || Boolean(r.pedido)));
+            items = items.filter((r: any) => (!r.recepcion && !r.rc) && isCandidateRC(r));
           } else if (filterEstadoRC === 'con_rc') {
             items = items.filter((r: any) => Boolean(r.recepcion || r.rc));
           }
@@ -2136,9 +2143,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         );
       }
 
+      const isCandidateRC = (r: any) => {
+        const t = String(r.tipo || '').toUpperCase();
+        const p = String(r.pedido || '').toUpperCase();
+        const num = String(r.numero || '').toUpperCase();
+        const alm = String(r.almacen || '').toUpperCase();
+        return t.includes('SERV') || t.includes('COMP') || p.startsWith('OC') || num.startsWith('SC') || alm === 'ALMSE';
+      };
+
       // 7.5 Filtro de Estado RC / Recepción
       if (filterEstadoRC === 'sin_rc') {
-        rows = rows.filter((r: any) => (!r.recepcion && !r.rc) && (r.tipo === 'Servicios' || r.tipo === 'Compras' || Boolean(r.pedido)));
+        rows = rows.filter((r: any) => (!r.recepcion && !r.rc) && isCandidateRC(r));
       } else if (filterEstadoRC === 'con_rc') {
         rows = rows.filter((r: any) => Boolean(r.recepcion || r.rc));
       }
@@ -2194,7 +2209,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       const ws = XLSX.utils.json_to_sheet(excelData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Unificada');
-      const filename = `Master_Unificado_${selectedAno}_${selectedMes}_${selectedCta !== 'TODAS' ? selectedCta : 'TODAS'}.xlsx`;
+      const filename = filterEstadoRC === 'sin_rc'
+        ? `TIMACA_Sin_RC_Pendientes_${selectedAno}_${selectedMes}_${selectedCta !== 'TODAS' ? selectedCta : 'TODAS'}.xlsx`
+        : filterEstadoRC === 'con_rc'
+        ? `TIMACA_Con_RC_${selectedAno}_${selectedMes}_${selectedCta !== 'TODAS' ? selectedCta : 'TODAS'}.xlsx`
+        : `Master_Unificado_${selectedAno}_${selectedMes}_${selectedCta !== 'TODAS' ? selectedCta : 'TODAS'}.xlsx`;
       XLSX.writeFile(wb, filename);
     } catch (e: any) {
       console.error('Error exportando Excel:', e);
@@ -4592,7 +4611,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0 w-full md:w-auto">
+                <div className="flex items-center gap-2 shrink-0 w-full md:w-auto flex-wrap">
+                  <button
+                    onClick={handleExportExcel}
+                    disabled={isExporting}
+                    className="w-full md:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                    title="Descargar este listado filtrado a Excel (.xlsx)"
+                  >
+                    <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce' : ''}`} />
+                    {isExporting ? 'Descargando Excel...' : '📥 Descargar Excel (.xlsx)'}
+                  </button>
+
                   {filterEstadoRC !== 'todos' ? (
                     <button
                       onClick={() => {
@@ -4856,7 +4885,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden flex flex-col">
               {/* Barra superior de la tabla */}
               <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                     <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
                     Sábana Unificada (Formato Oficial)
@@ -4864,6 +4893,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   <span className="text-xs text-slate-500">
                     • Mostrando filas {((pageMaster - 1) * limitMaster) + 1} a {Math.min(pageMaster * limitMaster, masterTotales.total_count)} de {formatNumber(masterTotales.total_count)}
                   </span>
+                  <button
+                    onClick={handleExportExcel}
+                    disabled={isExporting}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition-all cursor-pointer disabled:opacity-50 ml-1"
+                    title="Descargar toda la vista actual a Excel (.xlsx)"
+                  >
+                    <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce' : ''}`} />
+                    {isExporting ? 'Descargando...' : '📥 Descargar Excel (.xlsx)'}
+                  </button>
                   {isLoadingMaster && (
                     <span className="flex items-center gap-1 text-[11px] text-blue-600 ml-2 animate-pulse">
                       <RefreshCw className="w-3 h-3 animate-spin" /> Cargando...
