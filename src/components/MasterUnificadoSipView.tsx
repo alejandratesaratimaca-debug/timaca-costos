@@ -37,7 +37,8 @@ import {
   ArrowRightLeft,
   RotateCcw,
   CheckCircle,
-  XCircle
+  XCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 import { safeNumber, safeFormatUSD, safeFormatQuantity, safePercent } from '../utils/numericHelpers';
@@ -922,6 +923,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   >('operativos');
   const [filterRezagadaSubmes, setFilterRezagadaSubmes] = useState<string>('todos');
   const [filterEstadoRezagada, setFilterEstadoRezagada] = useState<'pendientes' | 'corregidos' | 'descartadas' | 'todos'>('pendientes');
+  const [filterEstadoRC, setFilterEstadoRC] = useState<'todos' | 'con_rc' | 'sin_rc'>('todos');
   const [rezagadasDescartadas, setRezagadasDescartadas] = useState<string[]>(() => {
     try {
       const s = typeof window !== 'undefined' ? localStorage.getItem('timaca_rezagadas_descartadas') : null;
@@ -948,6 +950,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     ext_total?: number;
     int_total?: number;
     opex_total?: number;
+    sin_rc_count?: number;
+    sin_rc_total?: number;
+    con_rc_count?: number;
+    con_rc_total?: number;
     norm_total?: number;
     norm_count?: number;
     norm_rezagadas_total?: number;
@@ -984,6 +990,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     ext_total: 0,
     int_total: 0,
     opex_total: 0,
+    sin_rc_count: 0,
+    sin_rc_total: 0,
+    con_rc_count: 0,
+    con_rc_total: 0,
     norm_total: 0,
     norm_count: 0,
     norm_rezagadas_total: 0,
@@ -1212,7 +1222,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     if (activeTab === 'unificada') {
       fetchMasterData();
     }
-  }, [selectedAno, selectedMes, selectedCta, selectedTipo, selectedClasificacion, selectedCategoria, filterNormalizacion, filterRezagadaSubmes, filterEstadoRezagada, fechaDesde, fechaHasta, sortMasterBy, sortMasterOrder, pageMaster, limitMaster]);
+  }, [selectedAno, selectedMes, selectedCta, selectedTipo, selectedClasificacion, selectedCategoria, filterNormalizacion, filterRezagadaSubmes, filterEstadoRezagada, filterEstadoRC, fechaDesde, fechaHasta, sortMasterBy, sortMasterOrder, pageMaster, limitMaster]);
 
   // Refetch filter catalogs when selected year changes
   useEffect(() => {
@@ -1745,6 +1755,30 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             );
           }
 
+          // 7.5 Conteo y filtro de Estado de Recepción (RC / Finiquito)
+          let sin_rc_count = 0;
+          let sin_rc_total = 0;
+          let con_rc_count = 0;
+          let con_rc_total = 0;
+
+          for (const r of items) {
+            const hasRC = Boolean(r.recepcion || r.rc);
+            const isCandidate = r.tipo === 'Servicios' || r.tipo === 'Compras' || Boolean(r.pedido);
+            if (hasRC) {
+              con_rc_count++;
+              con_rc_total += Number(r.total_usd) || 0;
+            } else if (isCandidate) {
+              sin_rc_count++;
+              sin_rc_total += Number(r.total_usd) || 0;
+            }
+          }
+
+          if (filterEstadoRC === 'sin_rc') {
+            items = items.filter((r: any) => (!r.recepcion && !r.rc) && (r.tipo === 'Servicios' || r.tipo === 'Compras' || Boolean(r.pedido)));
+          } else if (filterEstadoRC === 'con_rc') {
+            items = items.filter((r: any) => Boolean(r.recepcion || r.rc));
+          }
+
           // 8. Cálculo dinámico de totales de la vista filtrada
           const total_count = items.length;
           let gran_total = 0;
@@ -1804,6 +1838,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             ext_total,
             int_total,
             opex_total,
+            sin_rc_count,
+            sin_rc_total,
+            con_rc_count,
+            con_rc_total,
             norm_total: totalNormUSD,
             norm_count: totalNormCount,
             norm_rezagadas_total: normRezagadasUSD,
@@ -2096,6 +2134,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           (r.apellidos_nombres && String(r.apellidos_nombres).toLowerCase().includes(q)) ||
           (r.datos_descripcion && String(r.datos_descripcion).toLowerCase().includes(q))
         );
+      }
+
+      // 7.5 Filtro de Estado RC / Recepción
+      if (filterEstadoRC === 'sin_rc') {
+        rows = rows.filter((r: any) => (!r.recepcion && !r.rc) && (r.tipo === 'Servicios' || r.tipo === 'Compras' || Boolean(r.pedido)));
+      } else if (filterEstadoRC === 'con_rc') {
+        rows = rows.filter((r: any) => Boolean(r.recepcion || r.rc));
       }
 
       if (rows.length === 0) {
@@ -3930,8 +3975,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   </div>
                 </div>
 
-                {/* FILA 2: FILTROS DE CATÁLOGO Y CLASIFICACIÓN (3 COLUMNAS AMPLIAS) */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
+                {/* FILA 2: FILTROS DE CATÁLOGO Y CLASIFICACIÓN (4 COLUMNAS AMPLIAS) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t border-slate-100">
                   {/* 5. Selector de Tipo de Insumo (Elemento de Costo) */}
                   <div>
                     <label className="block text-[11px] font-semibold text-blue-700 uppercase tracking-wider mb-1">
@@ -3995,6 +4040,30 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           {cat.categoria} ({cat.count})
                         </option>
                       ))}
+                    </select>
+                  </div>
+
+                  {/* 8. Selector de Estado de Recepción (RC / Finiquito) */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-amber-700 uppercase tracking-wider mb-1 flex items-center justify-between">
+                      <span>8. Estado RC (Finiquito)</span>
+                      {masterTotales.sin_rc_count && masterTotales.sin_rc_count > 0 ? (
+                        <span className="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 rounded-full font-bold">
+                          {masterTotales.sin_rc_count} sin RC
+                        </span>
+                      ) : null}
+                    </label>
+                    <select
+                      value={filterEstadoRC}
+                      onChange={(e) => {
+                        setFilterEstadoRC(e.target.value as 'todos' | 'con_rc' | 'sin_rc');
+                        setPageMaster(1);
+                      }}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-amber-600 shadow-2xs font-medium"
+                    >
+                      <option value="todos">TODAS LAS RECEPCIONES (TODOS)</option>
+                      <option value="sin_rc">⚠️ Solo Sin RC (Pendientes Finiquito)</option>
+                      <option value="con_rc">✓ Solo Con RC (Recepcionadas)</option>
                     </select>
                   </div>
                 </div>
@@ -4120,7 +4189,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               </div>
 
               {/* BARRA DE FILTROS ACTIVOS CON UN CLIC PARA QUITAR */}
-              {(inputProyecto || selectedCta !== 'TODAS' || selectedMes !== 'todos' || selectedTipo !== 'TODOS' || selectedClasificacion !== 'TODAS' || selectedCategoria !== 'TODAS' || filterNormalizacion !== 'operativos' || searchMaster || fechaDesde || fechaHasta) && (
+              {(inputProyecto || selectedCta !== 'TODAS' || selectedMes !== 'todos' || selectedTipo !== 'TODOS' || selectedClasificacion !== 'TODAS' || selectedCategoria !== 'TODAS' || filterEstadoRC !== 'todos' || filterNormalizacion !== 'operativos' || searchMaster || fechaDesde || fechaHasta) && (
                 <div className="pt-2 border-t border-slate-200 flex flex-wrap items-center gap-2 text-xs">
                   <span className="font-bold text-slate-700 flex items-center gap-1">
                     <Filter className="w-3.5 h-3.5 text-blue-600" />
@@ -4198,6 +4267,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </span>
                   )}
 
+                  {filterEstadoRC !== 'todos' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-bold">
+                      Recepción: {filterEstadoRC === 'sin_rc' ? '⚠️ Solo Sin RC' : '✓ Con RC'}
+                      <button onClick={() => { setFilterEstadoRC('todos'); setPageMaster(1); }} className="hover:text-amber-700 ml-1 font-bold">×</button>
+                    </span>
+                  )}
+
                   {filterNormalizacion !== 'operativos' && (
                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border font-bold ${
                       filterNormalizacion === 'rezagadas' ? 'bg-indigo-100 text-indigo-900 border-indigo-300' :
@@ -4229,6 +4305,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       setSelectedTipo('TODOS');
                       setSelectedClasificacion('TODAS');
                       setSelectedCategoria('TODAS');
+                      setFilterEstadoRC('todos');
                       setFilterNormalizacion('operativos');
                       setSearchMaster('');
                       setFechaDesde('');
@@ -4453,6 +4530,97 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 ))}
               </div>
             )}
+
+            {/* ALERTA DESTACADA DE CONTROL DE RECEPCIONES (RC) */}
+            {((masterTotales.sin_rc_count && masterTotales.sin_rc_count > 0) || filterEstadoRC !== 'todos') && (
+              <div className={`rounded-xl p-3.5 border-2 shadow-xs transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-3 ${
+                filterEstadoRC === 'sin_rc'
+                  ? 'bg-amber-100/90 border-amber-400 text-amber-950 ring-2 ring-amber-300'
+                  : filterEstadoRC === 'con_rc'
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                  : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300 text-amber-950'
+              }`}>
+                <div className="flex items-start gap-3">
+                  <div className={`p-2.5 rounded-xl shrink-0 mt-0.5 ${
+                    filterEstadoRC === 'sin_rc'
+                      ? 'bg-amber-600 text-white shadow-sm'
+                      : filterEstadoRC === 'con_rc'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-amber-500 text-white shadow-sm'
+                  }`}>
+                    {filterEstadoRC === 'con_rc' ? (
+                      <CheckCircle2 className="w-5 h-5" />
+                    ) : (
+                      <AlertTriangle className="w-5 h-5" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-black uppercase tracking-wider text-xs flex items-center gap-2 flex-wrap">
+                      {filterEstadoRC === 'sin_rc' ? (
+                        <>
+                          <span>⚠️ Mostrando {masterTotales.sin_rc_count} Registros Sin Finiquito / Recepción (RC)</span>
+                          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-200 text-amber-950 font-bold border border-amber-400 font-mono">
+                            {formatUSD(masterTotales.sin_rc_total || 0)} PENDIENTE
+                          </span>
+                          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-700 text-white font-bold">
+                            FILTRANDO ACTIVAMENTE
+                          </span>
+                        </>
+                      ) : filterEstadoRC === 'con_rc' ? (
+                        <>
+                          <span>✓ Mostrando Solo Registros Con Recepción (RC / REC)</span>
+                          <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-900 font-bold border border-emerald-300 font-mono">
+                            {formatUSD(masterTotales.con_rc_total || 0)} ({masterTotales.con_rc_count || 0} ítems)
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span>⚠️ ALERTA DE CONTROL: {masterTotales.sin_rc_count} {masterTotales.sin_rc_count === 1 ? 'Servicio/Compra' : 'Servicios/Compras'} Sin Finiquito / Recepción (RC)</span>
+                          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-200 text-amber-950 font-black border border-amber-400 font-mono">
+                            {formatUSD(masterTotales.sin_rc_total || 0)} PENDIENTE
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-amber-900/90 mt-0.5 leading-relaxed">
+                      {filterEstadoRC === 'sin_rc'
+                        ? 'Estos servicios y compras cuentan con SC/OC aprobada pero aún no se les ha dado entrada de finiquito/recepción (RC) en SIP. Atácalos con almacén y compras para finiquitarlos antes del cierre de mes y evitar rezagadas.'
+                        : filterEstadoRC === 'con_rc'
+                        ? 'Mostrando exclusivamente los insumos y servicios con comprobante oficial de recepción ingresado en almacén SIP.'
+                        : 'Se detectaron órdenes aprobadas en el período que carecen de número de comprobante de recepción (RC / REC) en SIP. Te sugerimos atacarlas para finiquitarlas a tiempo y evitar que aparezcan a destiempo en meses futuros.'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0 w-full md:w-auto">
+                  {filterEstadoRC !== 'todos' ? (
+                    <button
+                      onClick={() => {
+                        setFilterEstadoRC('todos');
+                        setPageMaster(1);
+                      }}
+                      className="w-full md:w-auto px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold text-xs shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      Ver Todos los Registros
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setFilterEstadoRC('sin_rc');
+                        setPageMaster(1);
+                      }}
+                      className="w-full md:w-auto px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shrink-0"
+                      title="Filtrar solo los servicios y compras sin número de recepción"
+                    >
+                      <Filter className="w-3.5 h-3.5" />
+                      ⚡ Filtrar Solo Sin RC ({masterTotales.sin_rc_count})
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* AVISOS CONTEXTUALES DE NORMALIZACIÓN / AJUSTE SEGÚN FILTRO SELECCIONADO */}
             {(filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas' || filterNormalizacion === 'todas_normalizaciones') && (
               <div className="bg-rose-50 border-2 border-rose-300 rounded-xl p-4 text-xs text-rose-950 flex items-start gap-3 shadow-xs">
