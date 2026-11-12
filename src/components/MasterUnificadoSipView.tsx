@@ -2110,8 +2110,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'Tipo': r.tipo,
           'Almacen': r.almacen,
           'Fecha': r.fecha,
-          'Numero': r.numero, // Despacho DP
-          'Pedido': r.pedido, // Pedido PA
+          'Numero': r.numero, // Despacho DP / Solicitud SC
+          'Pedido': r.pedido, // Pedido PA / Orden OC
+          'RC / Recepcion': r.recepcion || r.rc || (r.tipo === 'Servicios' || r.tipo === 'Compras' ? 'Sin RC (Pendiente)' : '-'),
           'Cuenta-Aux': r.cuenta_aux,
           'Ceco': r.ceco,
           'Codigo': r.codigo,
@@ -4785,6 +4786,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       <th onClick={() => handleSortMaster('pedido')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Número de Pedido de Almacén (PA) para consumos, u Orden de Compra (OC) para compras/servicios">
                         Pedido {sortMasterBy === 'pedido' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
+                      <th onClick={() => handleSortMaster('recepcion')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none text-center bg-blue-50/50 text-blue-900" title="Comprobante de Recepción de Almacén / Finiquito de Servicio (RC / REC)">
+                        RC / REC {sortMasterBy === 'recepcion' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
                       <th onClick={() => handleSortMaster('cuenta_aux')} className="py-2.5 px-3 border-r border-slate-200 bg-purple-50 text-purple-900 cursor-pointer hover:bg-purple-100 transition-colors select-none" title="Cuenta Auxiliar (Haz clic en cualquier celda para corregir e imputar directamente)">
                         Cuenta-Aux ✎ {sortMasterBy === 'cuenta_aux' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
@@ -4894,6 +4898,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           </td>
                           <td className="py-2 px-3 text-slate-600 border-r border-slate-100">
                             {r.pedido}
+                          </td>
+                          <td className="py-2 px-3 border-r border-slate-100 font-mono text-[11px] text-center">
+                            {r.recepcion || r.rc ? (
+                              <span className="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                {r.recepcion || r.rc}
+                              </span>
+                            ) : r.tipo === 'Servicios' || r.tipo === 'Compras' ? (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-amber-50 text-amber-800 border border-amber-300 font-bold" title="Servicio/Compra sin comprobante de recepción (finiquito pendiente en SIP)">
+                                Sin RC (Pendiente)
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 font-mono">-</span>
+                            )}
                           </td>
                           <td className="py-2 px-3 border-r border-slate-100">
                             <div className="flex items-center gap-1.5 flex-wrap">
@@ -5838,6 +5855,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       <th className="py-2.5 px-3 border-r border-slate-200">Almacén</th>
                       <th className="py-2.5 px-3 border-r border-slate-200">SC</th>
                       <th className="py-2.5 px-3 border-r border-slate-200">OC</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 bg-blue-50/50 text-blue-900 text-center">RC / Recepción</th>
                       <th className="py-2.5 px-3 border-r border-slate-200">Fecha</th>
                       <th className="py-2.5 px-3 border-r border-slate-200 text-center">Mes</th>
                       <th className="py-2.5 px-3 border-r border-slate-200 bg-purple-50 text-purple-900" title="Haz clic en cualquier cuenta para corregir e imputar directamente">Cuenta Auxiliar ✎</th>
@@ -5855,14 +5873,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   <tbody className="divide-y divide-slate-100 text-[11px] font-sans">
                     {isLoadingCompras ? (
                       <tr>
-                        <td colSpan={15} className="py-12 text-center text-slate-400">
+                        <td colSpan={16} className="py-12 text-center text-slate-400">
                           <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-blue-600" />
                           Cargando compras y servicios...
                         </td>
                       </tr>
                     ) : compras.length === 0 ? (
                       <tr>
-                        <td colSpan={15} className="py-12 text-center text-slate-400 italic">
+                        <td colSpan={16} className="py-12 text-center text-slate-400 italic">
                           No se encontraron compras ni servicios con los filtros seleccionados.
                         </td>
                       </tr>
@@ -5877,6 +5895,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           </td>
                           <td className="py-2 px-3 font-mono font-bold text-slate-800 border-r border-slate-100">
                             {c.ordenCompra || '-'}
+                          </td>
+                          <td className="py-2 px-3 border-r border-slate-100 font-mono text-[11px] text-center">
+                            {(c as any).recepcion || (c as any).rc ? (
+                              <span className="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                {(c as any).recepcion || (c as any).rc}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-amber-50 text-amber-800 border border-amber-300 font-bold" title="Sin comprobante de recepción/finiquito en SIP">
+                                Sin RC (Pendiente)
+                              </span>
+                            )}
                           </td>
                           <td className="py-2 px-3 text-slate-700 font-mono text-[11px] border-r border-slate-100 whitespace-nowrap">
                             {formatFechaDDMMAAAA(c.fechaSolicitud || c.fechaOC)}
