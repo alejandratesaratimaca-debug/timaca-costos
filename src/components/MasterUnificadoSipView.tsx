@@ -4064,10 +4064,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                   {/* 8. Selector de Estado de Recepción (RC / Finiquito) */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-amber-700 uppercase tracking-wider mb-1 flex items-center justify-between">
-                      <span>8. Estado RC (Finiquito)</span>
+                    <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center justify-between">
+                      <span>8. Recepción (RC)</span>
                       {masterTotales.sin_rc_count && masterTotales.sin_rc_count > 0 ? (
-                        <span className="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 rounded-full font-bold">
+                        <span className="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.5 rounded font-medium">
                           {masterTotales.sin_rc_count} sin RC
                         </span>
                       ) : null}
@@ -4078,11 +4078,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         setFilterEstadoRC(e.target.value as 'todos' | 'con_rc' | 'sin_rc');
                         setPageMaster(1);
                       }}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-amber-600 shadow-2xs font-medium"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600 shadow-2xs"
                     >
-                      <option value="todos">TODAS LAS RECEPCIONES (TODOS)</option>
-                      <option value="sin_rc">⚠️ Solo Sin RC (Pendientes Finiquito)</option>
-                      <option value="con_rc">✓ Solo Con RC (Recepcionadas)</option>
+                      <option value="todos">TODAS LAS RECEPCIONES</option>
+                      <option value="sin_rc">Solo Sin RC (Pendientes)</option>
+                      <option value="con_rc">Solo Con RC (Recepcionadas)</option>
                     </select>
                   </div>
                 </div>
@@ -4287,9 +4287,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   )}
 
                   {filterEstadoRC !== 'todos' && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-bold">
-                      Recepción: {filterEstadoRC === 'sin_rc' ? '⚠️ Solo Sin RC' : '✓ Con RC'}
-                      <button onClick={() => { setFilterEstadoRC('todos'); setPageMaster(1); }} className="hover:text-amber-700 ml-1 font-bold">×</button>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 font-medium text-xs">
+                      Recepción: {filterEstadoRC === 'sin_rc' ? 'Sin RC' : 'Con RC'}
+                      <button onClick={() => { setFilterEstadoRC('todos'); setPageMaster(1); }} className="hover:text-amber-700 ml-1 font-bold text-sm">×</button>
                     </span>
                   )}
 
@@ -4550,76 +4550,75 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               </div>
             )}
 
-            {/* ALERTA DESTACADA DE CONTROL DE RECEPCIONES (RC) */}
+            {/* BARRA DISCRETA DE CONTROL DE RECEPCIONES (RC) */}
             {((masterTotales.sin_rc_count && masterTotales.sin_rc_count > 0) || filterEstadoRC !== 'todos') && (
-              <div className={`rounded-xl p-3.5 border-2 shadow-xs transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-3 ${
+              <div className={`rounded-lg px-3 py-2 border transition-all flex flex-wrap items-center justify-between gap-2.5 text-xs ${
                 filterEstadoRC === 'sin_rc'
-                  ? 'bg-amber-100/90 border-amber-400 text-amber-950 ring-2 ring-amber-300'
+                  ? 'bg-amber-50/60 border-amber-300/80 text-amber-950'
                   : filterEstadoRC === 'con_rc'
-                  ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
-                  : 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300 text-amber-950'
+                  ? 'bg-emerald-50/60 border-emerald-300/80 text-emerald-950'
+                  : 'bg-slate-50 border-slate-200 text-slate-700'
               }`}>
-                <div className="flex items-start gap-3">
-                  <div className={`p-2.5 rounded-xl shrink-0 mt-0.5 ${
-                    filterEstadoRC === 'sin_rc'
-                      ? 'bg-amber-600 text-white shadow-sm'
-                      : filterEstadoRC === 'con_rc'
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'bg-amber-500 text-white shadow-sm'
-                  }`}>
-                    {filterEstadoRC === 'con_rc' ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : (
-                      <AlertTriangle className="w-5 h-5" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="font-black uppercase tracking-wider text-xs flex items-center gap-2 flex-wrap">
-                      {filterEstadoRC === 'sin_rc' ? (
-                        <>
-                          <span>⚠️ Mostrando {masterTotales.sin_rc_count} Registros Sin Finiquito / Recepción (RC)</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-200 text-amber-950 font-bold border border-amber-400 font-mono">
-                            {formatUSD(masterTotales.sin_rc_total || 0)} PENDIENTE
-                          </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-700 text-white font-bold">
-                            FILTRANDO ACTIVAMENTE
-                          </span>
-                        </>
-                      ) : filterEstadoRC === 'con_rc' ? (
-                        <>
-                          <span>✓ Mostrando Solo Registros Con Recepción (RC / REC)</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-900 font-bold border border-emerald-300 font-mono">
-                            {formatUSD(masterTotales.con_rc_total || 0)} ({masterTotales.con_rc_count || 0} ítems)
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <span>⚠️ ALERTA DE CONTROL: {masterTotales.sin_rc_count} {masterTotales.sin_rc_count === 1 ? 'Servicio/Compra' : 'Servicios/Compras'} Sin Finiquito / Recepción (RC)</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-200 text-amber-950 font-black border border-amber-400 font-mono">
-                            {formatUSD(masterTotales.sin_rc_total || 0)} PENDIENTE
-                          </span>
-                        </>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-amber-900/90 mt-0.5 leading-relaxed">
-                      {filterEstadoRC === 'sin_rc'
-                        ? 'Estos servicios y compras cuentan con SC/OC aprobada pero aún no se les ha dado entrada de finiquito/recepción (RC) en SIP. Atácalos con almacén y compras para finiquitarlos antes del cierre de mes y evitar rezagadas.'
-                        : filterEstadoRC === 'con_rc'
-                        ? 'Mostrando exclusivamente los insumos y servicios con comprobante oficial de recepción ingresado en almacén SIP.'
-                        : 'Se detectaron órdenes aprobadas en el período que carecen de número de comprobante de recepción (RC / REC) en SIP. Te sugerimos atacarlas para finiquitarlas a tiempo y evitar que aparezcan a destiempo en meses futuros.'}
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {filterEstadoRC === 'sin_rc' ? (
+                    <>
+                      <span className="flex items-center gap-1.5 font-semibold text-amber-900">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                        Filtro activo: Sin recepción (RC)
+                      </span>
+                      <span className="text-slate-400">•</span>
+                      <span className="font-mono text-slate-700">
+                        <strong>{masterTotales.sin_rc_count}</strong> registros
+                      </span>
+                      <span className="text-slate-400">•</span>
+                      <span className="font-mono font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded text-[11px] border border-amber-200">
+                        {formatUSD(masterTotales.sin_rc_total || 0)}
+                      </span>
+                      <span className="text-[11px] text-slate-500 hidden md:inline">
+                        (órdenes pendientes por finiquito o entrada en almacén)
+                      </span>
+                    </>
+                  ) : filterEstadoRC === 'con_rc' ? (
+                    <>
+                      <span className="flex items-center gap-1.5 font-semibold text-emerald-900">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        Filtro activo: Con recepción (RC)
+                      </span>
+                      <span className="text-slate-400">•</span>
+                      <span className="font-mono text-slate-700">
+                        <strong>{masterTotales.con_rc_count || 0}</strong> registros
+                      </span>
+                      <span className="text-slate-400">•</span>
+                      <span className="font-mono font-bold text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded text-[11px] border border-emerald-200">
+                        {formatUSD(masterTotales.con_rc_total || 0)}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex items-center gap-1.5 text-slate-700">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        Pendientes por finiquitar / recepción (RC):
+                      </span>
+                      <span className="font-mono font-semibold text-slate-900">
+                        {masterTotales.sin_rc_count} órdenes
+                      </span>
+                      <span className="text-slate-400">•</span>
+                      <span className="font-mono font-semibold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded text-[11px] border border-amber-200">
+                        {formatUSD(masterTotales.sin_rc_total || 0)}
+                      </span>
+                    </>
+                  )}
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0 w-full md:w-auto flex-wrap">
+                <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={handleExportExcel}
                     disabled={isExporting}
-                    className="w-full md:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
-                    title="Descargar este listado filtrado a Excel (.xlsx)"
+                    className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                    title="Descargar este listado a Excel (.xlsx)"
                   >
                     <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce' : ''}`} />
-                    {isExporting ? 'Descargando Excel...' : '📥 Descargar Excel (.xlsx)'}
+                    {isExporting ? 'Descargando...' : 'Descargar Excel'}
                   </button>
 
                   {filterEstadoRC !== 'todos' ? (
@@ -4628,10 +4627,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         setFilterEstadoRC('todos');
                         setPageMaster(1);
                       }}
-                      className="w-full md:w-auto px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold text-xs shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                      className="px-2.5 py-1 rounded bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-medium text-xs shadow-2xs flex items-center gap-1 transition-all cursor-pointer"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      Ver Todos los Registros
+                      Quitar filtro
                     </button>
                   ) : (
                     <button
@@ -4639,11 +4638,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         setFilterEstadoRC('sin_rc');
                         setPageMaster(1);
                       }}
-                      className="w-full md:w-auto px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shrink-0"
+                      className="px-2.5 py-1 rounded bg-white hover:bg-amber-50 border border-amber-300 text-amber-900 font-medium text-xs shadow-2xs flex items-center gap-1 transition-all cursor-pointer"
                       title="Filtrar solo los servicios y compras sin número de recepción"
                     >
-                      <Filter className="w-3.5 h-3.5" />
-                      ⚡ Filtrar Solo Sin RC ({masterTotales.sin_rc_count})
+                      <Filter className="w-3.5 h-3.5 text-amber-600" />
+                      Filtrar Sin RC ({masterTotales.sin_rc_count})
                     </button>
                   )}
                 </div>
