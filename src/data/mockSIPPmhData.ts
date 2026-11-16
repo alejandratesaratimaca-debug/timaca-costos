@@ -6,8 +6,8 @@ export const MOCK_VALES_SIP_PMH: ValeSIPPmh[] = [
     numeroVale: 'VALE-PMH-2026-0412',
     fechaHora: '2026-10-05 08:30',
     frenteTrabajo: 'Muelle de Carga PMH (Ship Loader)',
-    cuentaAuxiliarCodigo: 'TTE-C-0706',
-    cuentaAuxiliarNombre: 'Mantenimiento Mayor Cargador de Barcos PMH',
+    cuentaAuxiliarCodigo: 'TTE-C-0671',
+    cuentaAuxiliarNombre: 'Segunda Línea PMH - Despacho Internacional',
     equipoIntervenido: 'Cinta Transportadora Pluma Ship Loader CV-03',
     solicitadoPor: 'Alexander Guanipa',
     cargoSolicitante: 'Supervisor de Frente de Obra',
@@ -97,14 +97,14 @@ export const MOCK_VALES_SIP_PMH: ValeSIPPmh[] = [
     id: 'sip-003',
     numeroVale: 'VALE-PMH-2026-0414',
     fechaHora: '2026-10-05 15:40',
-    frenteTrabajo: 'Línea de Pellas - Horno L2',
-    cuentaAuxiliarCodigo: 'TTE-C-0671',
-    cuentaAuxiliarNombre: 'Mantenimiento y Parada Planta de Pellas',
+    frenteTrabajo: 'Área de Recuperación PMH (Dravo PA-9020)',
+    cuentaAuxiliarCodigo: 'TTE-C-0653',
+    cuentaAuxiliarNombre: 'Repotenciación Recuperador Rueda Cangilones (DRAVO) PMH',
     equipoIntervenido: 'Ventilador de Tiro Inducido 21-FN-102',
     solicitadoPor: 'Pedro Rivas',
     cargoSolicitante: 'Técnico Mecánico de Campo',
     supervisorAprobador: 'Ing. Roberto Valdivieso',
-    despachadoPor: 'Caseta Móvil TIMACA Pellas',
+    despachadoPor: 'Caseta Móvil TIMACA PMH',
     estado: 'Despachado en Campo',
     esOffline: false,
     items: [
@@ -128,15 +128,15 @@ export const MOCK_VALES_SIP_PMH: ValeSIPPmh[] = [
       }
     ],
     montoTotalUsd: 4012,
-    observaciones: 'Despacho de emergencia para montaje nocturno en parada corta de línea 2.'
+    observaciones: 'Despacho de emergencia para montaje en rueda de cangilones DRAVO PA-9020.'
   },
   {
     id: 'sip-004',
     numeroVale: 'VALE-PMH-2026-0415',
     fechaHora: '2026-10-06 09:10',
     frenteTrabajo: 'Muelle de Carga PMH (Ship Loader)',
-    cuentaAuxiliarCodigo: 'TTE-C-0706',
-    cuentaAuxiliarNombre: 'Mantenimiento Mayor Cargador de Barcos PMH',
+    cuentaAuxiliarCodigo: 'TTE-C-0671',
+    cuentaAuxiliarNombre: 'Segunda Línea PMH - Cargador de Barcos',
     equipoIntervenido: 'Sistema de Winche y Polipasto de Pluma',
     solicitadoPor: 'Luis Morillo',
     cargoSolicitante: 'Soldador Calificado 6G',
@@ -207,8 +207,20 @@ export const MOCK_VALES_SIP_PMH: ValeSIPPmh[] = [
 ];
 
 export const CUENTAS_CAMPO_PMH = [
-  { codigo: 'TTE-C-0706', nombre: 'Mantenimiento Mayor Cargador de Barcos PMH', responsable: 'Ing. Carlos Mendoza', presupuestoUsd: 184500 },
-  { codigo: 'TTE-C-0656', nombre: 'Reparación Estructural Chutes y Tolvas PMH', responsable: 'Ing. Roberto Valdivieso', presupuestoUsd: 95400 },
-  { codigo: 'TTE-C-0671', nombre: 'Mantenimiento y Parada Planta de Pellas', responsable: 'Ing. Carlos Mendoza', presupuestoUsd: 320000 },
-  { codigo: 'TTE-C-0714', nombre: 'Montaje de Cintas Transportadoras CV-01 / CV-02', responsable: 'Ing. Alexander Guanipa', presupuestoUsd: 142000 }
+  { codigo: 'TTE-C-0671', nombre: 'Segunda Línea PMH - Despacho Internacional FMO', responsable: 'Ing. Carlos Mendoza', presupuestoUsd: 1250000 },
+  { codigo: 'TTE-C-0656', nombre: 'Rehabilitación Bandas Transportadoras Torre #3 a Banda JD-8012 PMH', responsable: 'Ing. Roberto Valdivieso', presupuestoUsd: 480000 },
+  { codigo: 'TTE-C-0653', nombre: 'Repotenciación Recuperador Rueda Cangilones (DRAVO) PA-9020 PMH', responsable: 'Ing. Alexander Guanipa', presupuestoUsd: 620000 },
+  { codigo: 'TTE-C-0654', nombre: 'Rehabilitación y Extensión Cinta JD-9021 y Carro PA-54108 PMH', responsable: 'Ing. Carlos Silva', presupuestoUsd: 310000 },
+  { codigo: 'TTE-C-0655', nombre: 'Interconexión Tolva Multipropósito a Carga Barcos PMH', responsable: 'Ing. Miguelángel López', presupuestoUsd: 295000 },
+  { codigo: 'TTE-C-0660', nombre: 'Construcción Cabinas para Operadores de Equipos Planta PMH', responsable: 'Ing. Carlos Silva', presupuestoUsd: 145000 },
+  { codigo: 'TTE-C-0662', nombre: 'Suministro y Fabricación Anillo Desgaste Triturador Primario PMH', responsable: 'Ing. Roberto Valdivieso', presupuestoUsd: 185000 },
+  { codigo: 'TTE-C-0666', nombre: 'Reparación Pista/Canales Guaya Empujador de Vagones PMH', responsable: 'Ing. Alexander Guanipa', presupuestoUsd: 175000 },
+  { codigo: 'TTE-C-0672', nombre: 'Extensión Banda Transportadora JD 8016A y JD 8016B PMH', responsable: 'Ing. Carlos Mendoza', presupuestoUsd: 380000 },
+  { codigo: 'TTE-C-0677', nombre: 'Fabricación de 20 Gamelas FMO-PMH', responsable: 'Ing. Roberto Valdivieso', presupuestoUsd: 210000 },
+  { codigo: 'TTE-C-0678', nombre: 'Proyecto Pila HA y HB (Apilador y Recuperador Cangilones PMH)', responsable: 'Ing. Alexander Guanipa', presupuestoUsd: 540000 },
+  { codigo: 'TTE-C-0679', nombre: 'Levantamiento y Reparación Apilador PA-9016 PMH', responsable: 'Ing. Carlos Silva', presupuestoUsd: 260000 },
+  { codigo: 'TTE-C-0684', nombre: 'Fabricación de Gamelas FMO-PMH', responsable: 'Ing. Miguelángel López', presupuestoUsd: 190000 },
+  { codigo: 'TTE-C-0687', nombre: 'Reparación Poleas Motriz y Quiebre Cola Cinta JD-8016 PMH', responsable: 'Ing. Roberto Valdivieso', presupuestoUsd: 165000 },
+  { codigo: 'TTE-C-0702', nombre: 'Modificación de Alcance INT-003 FMO-PMH', responsable: 'Ing. Carlos Mendoza', presupuestoUsd: 220000 },
+  { codigo: 'TTE-C-0711', nombre: 'Retirada e Instalación Módulos Eléctricos TH4 PMH', responsable: 'Ing. Alexander Guanipa', presupuestoUsd: 340000 }
 ];

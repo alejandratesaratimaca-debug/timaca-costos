@@ -45,6 +45,30 @@ const DATOS_CONCILIACION_2026 = [
   { mesNum: 10, mesNombre: 'Octubre', diasCal: 31, personas: 402, semRRHH: 257750.82, devengoReal: 257750.82, dif: 0.0, pellas: 131190.16, bg: 13685.00, briquetas: 32215.00, pmh: 80660.66, varios: 0.0, dinamicaOperativa: 'Libros oficiales Semanas 39 al 43 (Pellas, Boca Grande II, Briquetas y PMH)', nota: '1.721 registros con 69.635 Horas Hombre auditadas de nómina' }
 ];
 
+export const CUENTAS_OFICIALES_PMH = [
+  { codigo: 'TTE-C-0671', nombre: 'Segunda Línea PMH (Ingeniería y Suministro Despacho)', responsable: 'Ing. Carlos Mendoza', estado: 'Activa con Nómina' },
+  { codigo: 'TTE-C-0656', nombre: 'Rehabilitación Bandas Torre #3 a Banda JD-8012 PMH', responsable: 'Ing. Roberto Valdivieso', estado: 'Activa con Nómina' },
+  { codigo: 'TTE-C-0653', nombre: 'Repotenciación Recuperador Rueda Cangilones (DRAVO) PA-9020 PMH', responsable: 'Ing. Alexander Guanipa', estado: 'Compras / Servicios' },
+  { codigo: 'TTE-C-0654', nombre: 'Rehabilitación y Extensión Cinta JD-9021 y Carro PA-54108 PMH', responsable: 'Ing. Carlos Silva', estado: 'Compras / Servicios' },
+  { codigo: 'TTE-C-0655', nombre: 'Interconexión Tolva Multipropósito a Carga Barcos PMH', responsable: 'Ing. Miguelángel López', estado: 'Compras / Servicios' },
+  { codigo: 'TTE-C-0660', nombre: 'Construcción Cabinas Operadores Planta PMH', responsable: 'Ing. Carlos Silva', estado: 'En Espera' },
+  { codigo: 'TTE-C-0662', nombre: 'Fabricación Anillo Desgaste Triturador Primario PMH', responsable: 'Ing. Roberto Valdivieso', estado: 'Taller Central' },
+  { codigo: 'TTE-C-0666', nombre: 'Pista/Canales Guaya Empujador de Vagones PMH', responsable: 'Ing. Alexander Guanipa', estado: 'Compras / Servicios' },
+  { codigo: 'TTE-C-0672', nombre: 'Extensión Banda Transportadora JD 8016A y JD 8016B PMH', responsable: 'Ing. Carlos Mendoza', estado: 'En Espera' },
+  { codigo: 'TTE-C-0677', nombre: 'Fabricación de 20 Gamelas FMO-PMH', responsable: 'Ing. Roberto Valdivieso', estado: 'Taller Central' },
+  { codigo: 'TTE-C-0678', nombre: 'Proyecto Pila HA y HB (Apilador y Recuperador Cangilones PMH)', responsable: 'Ing. Alexander Guanipa', estado: 'En Espera' },
+  { codigo: 'TTE-C-0679', nombre: 'Levantamiento y Reparación Apilador PA-9016 PMH', responsable: 'Ing. Carlos Silva', estado: 'Compras / Servicios' },
+  { codigo: 'TTE-C-0684', nombre: 'Fabricación de Gamelas FMO-PMH', responsable: 'Ing. Miguelángel López', estado: 'Taller Central' },
+  { codigo: 'TTE-C-0687', nombre: 'Reparación Poleas Motriz y Quiebre Cola Cinta JD-8016 PMH', responsable: 'Ing. Roberto Valdivieso', estado: 'Taller Central' },
+  { codigo: 'TTE-C-0702', nombre: 'Modificación de Alcance INT-003 FMO-PMH', responsable: 'Ing. Carlos Mendoza', estado: 'Ingeniería' },
+  { codigo: 'TTE-C-0711', nombre: 'Retirada e Instalación Módulos Eléctricos TH4 PMH', responsable: 'Ing. Alexander Guanipa', estado: 'Compras / Servicios' }
+];
+
+const PMH_CODIGOS_SET = new Set([
+  '0653', '0654', '0655', '0656', '0660', '0662', '0666', '0671',
+  '0672', '0677', '0678', '0679', '0684', '0687', '0702', '0711'
+]);
+
 export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver }) => {
   // Base historical records
   const initialRegistros = useMemo(() => generateMockManoObraDiaria(), []);
@@ -71,6 +95,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
   const [selectedCuenta, setSelectedCuenta] = useState<string>('todas');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [showTodasCuentasPmh, setShowTodasCuentasPmh] = useState(false);
 
   // Filtered records according to Mode, Month, Project, Week, etc.
   const registrosFiltrados = useMemo(() => {
@@ -85,7 +110,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
         if (selectedProyecto === 'pellas') matchProj = pLow.includes('pella') || pLow.includes('0706') || pLow.includes('0676');
         else if (selectedProyecto === 'bg') matchProj = pLow.includes('bg') || pLow.includes('boca grande') || pLow.includes('0680') || pLow.includes('0663');
         else if (selectedProyecto === 'briquetas') matchProj = pLow.includes('briqueta') || pLow.includes('0668') || pLow.includes('0670') || pLow.includes('0694');
-        else if (selectedProyecto === 'pmh') matchProj = pLow.includes('pmh') || pLow.includes('0656') || pLow.includes('0671') || pLow.includes('0678') || pLow.includes('0653') || pLow.includes('0684');
+        else if (selectedProyecto === 'pmh') matchProj = pLow.includes('pmh') || Array.from(PMH_CODIGOS_SET).some(c => pLow.includes(c));
         else if (selectedProyecto === 'varios') matchProj = pLow.includes('proyecto') || pLow.includes('refractario');
       }
 
@@ -134,6 +159,42 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
 
   const trabajadoresUnicos = useMemo(() => {
     return new Set(registrosFiltrados.map(r => r.trabajador.trim().toUpperCase())).size;
+  }, [registrosFiltrados]);
+
+  // Resumen de Cuentas Auxiliares con Pago en los registros actuales
+  const cuentasConPago = useMemo(() => {
+    const mapa = new Map<string, {
+      codigo: string;
+      nombre: string;
+      trabajadores: Set<string>;
+      horasTotales: number;
+      montoTotal: number;
+      registrosCount: number;
+    }>();
+
+    registrosFiltrados.forEach(r => {
+      const cta = r.cuentaAuxiliar || 'Sin Cuenta';
+      if (!mapa.has(cta)) {
+        mapa.set(cta, {
+          codigo: cta,
+          nombre: CUENTAS_CORTAS_MAP[cta] || r.proyectoCorto || cta,
+          trabajadores: new Set(),
+          horasTotales: 0,
+          montoTotal: 0,
+          registrosCount: 0
+        });
+      }
+      const item = mapa.get(cta)!;
+      item.trabajadores.add(r.cedula || r.trabajador);
+      item.horasTotales += r.totalHoras || 0;
+      item.montoTotal += r.totalPagarUsd || 0;
+      item.registrosCount += 1;
+    });
+
+    return Array.from(mapa.values()).map(x => ({
+      ...x,
+      trabajadoresCount: x.trabajadores.size
+    })).sort((a, b) => b.montoTotal - a.montoTotal);
   }, [registrosFiltrados]);
 
   // Cantidad de personas/trabajadores únicos que trabajaron por mes
@@ -466,7 +527,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
       </div>
 
       {/* KPI Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
@@ -530,7 +591,28 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
             {trabajadoresUnicos} Trabajadores
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
-            En los 4 proyectos principales
+            En los proyectos con nómina
+          </span>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
+              Cuentas con Pago
+            </span>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800">
+              {cuentasConPago.length} Activas
+            </span>
+          </div>
+          <span className="text-2xl font-black font-mono tabular-nums text-indigo-900 block mt-1">
+            {cuentasConPago.length} Cuentas
+          </span>
+          <span className="text-[11px] text-neutral-500 mt-1 block">
+            {selectedProyecto === 'pmh'
+              ? '2 cuentas en nómina (de 16 registradas en PMH)'
+              : selectedMes === 10
+              ? '6 cuentas activas (PMH, Pellas, Briq, BG II)'
+              : 'Cuentas auxiliares con nómina activa'}
           </span>
         </div>
       </div>
@@ -753,6 +835,114 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Desglose Interactivo de Cuentas Auxiliares con Pago */}
+          <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-indigo-600" />
+                <span className="text-xs font-bold text-neutral-900">
+                  Cuentas Auxiliares con Pago ({cuentasConPago.length} cuentas con desembolso activo)
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                {selectedProyecto === 'pmh' && (
+                  <button
+                    onClick={() => setShowTodasCuentasPmh(!showTodasCuentasPmh)}
+                    className="text-[11px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                  >
+                    {showTodasCuentasPmh ? '▲ Ocultar catálogo 16 cuentas PMH' : '▼ Ver las 16 Cuentas Oficiales de PMH'}
+                  </button>
+                )}
+                {selectedCuenta !== 'todas' && (
+                  <button
+                    onClick={() => setSelectedCuenta('todas')}
+                    className="text-[11px] font-semibold text-rose-600 hover:text-rose-800 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded cursor-pointer"
+                  >
+                    ✕ Quitar filtro ({selectedCuenta})
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Badges de Cuentas con Pago */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+              {cuentasConPago.map(c => {
+                const isSelected = selectedCuenta === c.codigo;
+                return (
+                  <button
+                    key={c.codigo}
+                    type="button"
+                    onClick={() => setSelectedCuenta(isSelected ? 'todas' : c.codigo)}
+                    className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
+                      isSelected
+                        ? 'bg-blue-50 border-blue-500 ring-2 ring-blue-200 shadow-xs'
+                        : 'bg-neutral-50 hover:bg-neutral-100 border-neutral-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-black text-[11px] text-blue-900">{c.codigo}</span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-neutral-200 text-neutral-700">
+                        {c.trabajadoresCount} pers
+                      </span>
+                    </div>
+                    <div className="text-[11px] font-semibold text-neutral-800 truncate mt-0.5" title={c.nombre}>
+                      {c.nombre}
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-neutral-500 mt-1">
+                      <span>{Math.round(c.horasTotales).toLocaleString('de-DE')} hrs</span>
+                      <strong className="font-mono text-emerald-700">
+                        ${Math.round(c.montoTotal).toLocaleString('de-DE')} USD
+                      </strong>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Banner Expandible con las 16 Cuentas Oficiales de PMH */}
+            {selectedProyecto === 'pmh' && showTodasCuentasPmh && (
+              <div className="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-slate-800">
+                    Catálogo Oficial TIMACA: 16 Cuentas de Proyecto PMH (FMO / VISCO)
+                  </h4>
+                  <span className="text-[11px] text-slate-500">
+                    2 activas con nómina de campo en Octubre • 14 para contratos/compras/espera
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                  {CUENTAS_OFICIALES_PMH.map(pmh => {
+                    const conPago = cuentasConPago.find(cp => cp.codigo === pmh.codigo);
+                    return (
+                      <div
+                        key={pmh.codigo}
+                        onClick={() => conPago && setSelectedCuenta(pmh.codigo)}
+                        className={`p-2 rounded-lg border text-[11px] ${
+                          conPago
+                            ? 'bg-emerald-50 border-emerald-300 cursor-pointer hover:bg-emerald-100 ring-1 ring-emerald-200'
+                            : 'bg-white border-slate-200 opacity-80'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono font-bold text-slate-900">{pmh.codigo}</span>
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                            conPago ? 'bg-emerald-200 text-emerald-900' : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {conPago ? `Nómina: $${Math.round(conPago.montoTotal).toLocaleString('de-DE')} USD` : pmh.estado}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-700 font-medium line-clamp-2 mt-1" title={pmh.nombre}>
+                          {pmh.nombre}
+                        </p>
+                        <span className="text-[9px] text-slate-400 block mt-0.5">Resp: {pmh.responsable}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Granular Table */}
