@@ -2,6 +2,10 @@
 // Provee endpoints seguros bajo HTTPS, elimina Mixed Content y destruye la caché estática.
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function getSipDataPath(filename) {
   // Buscar en public/data/sip o dist/data/sip
