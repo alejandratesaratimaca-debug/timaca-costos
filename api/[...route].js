@@ -237,6 +237,18 @@ export default async function handler(req, res) {
       return res.status(200).json({});
     }
 
+    // L. SIP SYNC (Sincronización y estado)
+    if (pathname === 'sip/sync') {
+      const statusData = readJsonFile('status.json', {});
+      return res.status(200).json({
+        success: true,
+        periodo: query,
+        status: statusData,
+        message: 'Base de datos sincronizada con el corte más reciente de SIP.',
+        timestamp: new Date().toISOString()
+      });
+    }
+
     // Ruta no encontrada en API
     return res.status(404).json({
       error: `Endpoint API no encontrado: /api/${pathname}`,

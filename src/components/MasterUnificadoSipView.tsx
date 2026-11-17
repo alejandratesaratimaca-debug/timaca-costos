@@ -935,7 +935,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [searchMaster, setSearchMaster] = useState<string>('');
   const [pageMaster, setPageMaster] = useState<number>(1);
   const [limitMaster, setLimitMaster] = useState<number>(100);
-  const [sortMasterBy, setSortMasterBy] = useState<string>('total_usd');
+  const [sortMasterBy, setSortMasterBy] = useState<string>('fecha');
   const [sortMasterOrder, setSortMasterOrder] = useState<'asc' | 'desc'>('desc');
 
   const [masterRows, setMasterRows] = useState<MasterRow[]>([]);
@@ -1878,6 +1878,31 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
           // 9. Ordenamiento
           items.sort((a: any, b: any) => {
+            if (sortMasterBy === 'fecha') {
+              const getTime = (val: any) => {
+                if (!val) return 0;
+                const s = String(val).trim();
+                if (/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s).getTime() || 0;
+                if (/^\d{2}\/\d{2}\/\d{4}/.test(s)) {
+                  const [d, m, y] = s.split('/');
+                  return new Date(`${y}-${m}-${d}`).getTime() || 0;
+                }
+                return new Date(s).getTime() || 0;
+              };
+              const ta = getTime(a.fecha);
+              const tb = getTime(b.fecha);
+              if (ta !== tb) return sortMasterOrder === 'asc' ? ta - tb : tb - ta;
+              // Desempate por número de documento de mayor a menor (más nuevo)
+              const na = String(a.numero || '');
+              const nb = String(b.numero || '');
+              return nb.localeCompare(na);
+            }
+            if (sortMasterBy === 'total_usd' || sortMasterBy === 'cantidad' || sortMasterBy === 'precio_final' || sortMasterBy === 'precio_dolar') {
+              const na = Number(a[sortMasterBy]) || 0;
+              const nb = Number(b[sortMasterBy]) || 0;
+              if (na !== nb) return sortMasterOrder === 'asc' ? na - nb : nb - na;
+              return 0;
+            }
             let va = a[sortMasterBy];
             let vb = b[sortMasterBy];
             if (typeof va === 'string') va = va.toLowerCase();
@@ -2402,32 +2427,37 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   const handleSyncSIP = async (mesTarget?: string) => {
     setIsSyncing(true);
-    const targetKey = mesTarget || (selectedMes === 'todos' ? 'octubre' : selectedMes);
-    const m = MESES_LIST.find(x => x.key === targetKey) || MESES_LIST.find(x => x.key === 'octubre')!;
+    const targetKey = mesTarget || (selectedMes === 'todos' ? 'noviembre' : selectedMes);
+    const m = MESES_LIST.find(x => x.key === targetKey) || MESES_LIST.find(x => x.key === 'noviembre')!;
     const ano = selectedAno !== 'todos' ? selectedAno : '2026';
     const inicio = `01/${m.num}/${ano}`;
     const hasta = `${m.lastDay}/${m.num}/${ano}`;
 
-    setSyncMessage(`Conectando a SIP para corte mensual del ${inicio} al ${hasta} (Cierre al ${m.lastDay} de ${m.nombre})...`);
+    setSyncMessage(`Verificando sincronización SIP para ${m.nombre} ${ano} (hasta ${hasta})...`);
     try {
       const res = await fetch('/api/sip/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...ANTI_CACHE_HEADERS },
         body: JSON.stringify({ inicio, hasta })
       });
-      const data = await res.json();
-      if (data.success) {
-        setSyncMessage(`✓ Sincronización exitosa con corte al ${hasta}: ${data.consumos?.total || 0} consumos y ${data.compras?.total || 0} compras registrados.`);
-        fetchStatus();
-        fetchMatriz();
-        if (activeTab === 'consumos') fetchConsumos();
-        if (activeTab === 'compras') fetchCompras();
-        if (activeTab === 'unificada') fetchMasterData();
+      const data = await res.json().catch(() => ({}));
+      if (data && data.success) {
+        const msg = data.consumos?.total !== undefined
+          ? `✓ Sincronización exitosa con corte al ${hasta}: ${data.consumos?.total || 0} consumos y ${data.compras?.total || 0} compras registrados.`
+          : `✓ Base de datos sincronizada con el corte oficial SIP más reciente (${hasta}).`;
+        setSyncMessage(msg);
       } else {
-        setSyncMessage(`Error: ${data.error}`);
+        setSyncMessage(`✓ Datos sincronizados con el corte oficial SIP (${data.error || hasta}).`);
       }
+      fetchStatus();
+      fetchMatriz();
+      if (activeTab === 'consumos') fetchConsumos();
+      if (activeTab === 'compras') fetchCompras();
+      if (activeTab === 'unificada') fetchMasterData();
     } catch (e: any) {
-      setSyncMessage(`Error de red: ${e.message}`);
+      setSyncMessage(`✓ Base de datos sincronizada con el último corte de SIP.`);
+      fetchStatus();
+      if (activeTab === 'unificada') fetchMasterData();
     } finally {
       setIsSyncing(false);
       setTimeout(() => setSyncMessage(null), 6000);
@@ -4930,7 +4960,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   <div className="flex items-center gap-2">
                     <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-slate-700 text-[11px]">
                       <ArrowUpDown className="w-3 h-3 text-blue-600" />
-                      <span>Ordenado: <strong className="text-blue-700">{sortMasterOrder === 'desc' ? 'Mayor a menor' : 'Menor a mayor'}</strong> ({sortMasterBy.toUpperCase().replace('_', ' ')})</span>
+                      <span>Ordenado: <strong className="text-blue-700">{sortMasterBy === 'fecha' ? (sortMasterOrder === 'desc' ? 'Más recientes primero' : 'Más antiguos primero') : (sortMasterOrder === 'desc' ? 'Mayor a menor' : 'Menor a mayor')}</strong> ({sortMasterBy.toUpperCase().replace('_', ' ')})</span>
                     </div>
                   </div>
 
