@@ -5234,7 +5234,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                           {/* 11. Cantidad */}
                           <td className="py-2 px-3 text-right font-mono text-slate-800 border-r border-slate-100 font-semibold">
-                            {formatCantidad(r.cantidad)}
+                            {formatNumber(r.cantidad)}
                           </td>
 
                           {/* 12. Unidad */}
