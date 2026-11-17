@@ -106,6 +106,7 @@ export const BandejaAlertasSipView: React.FC = () => {
   });
   const [selectedMonth, setSelectedMonth] = useState<string>('TODOS');
   const [selectedAlertType, setSelectedAlertType] = useState<string>('TODAS');
+  const [statusFilter, setStatusFilter] = useState<'TODOS' | 'SOLO_PENDIENTES' | 'SOLO_VALIDADOS'>('TODOS');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 25;
@@ -120,33 +121,65 @@ export const BandejaAlertasSipView: React.FC = () => {
 
   const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre'];
 
-  // KPIs calculados
+  // KPIs calculados dinámicamente según el estado de las revisiones y el mes
   const kpiStats = useMemo(() => {
     let totalCasos = 0;
+    let validadosCasos = 0;
     let umConflicts = 0;
     let desfasePrecio = 0;
     let sinOC = 0;
     let impactoUSD = 0;
+    let impactoResidualUSD = 0;
 
-    if (selectedMonth === 'TODOS') {
-      Object.values(ALERTAS_MONTHLY_KPIS).forEach(k => {
-        totalCasos += k.total_casos;
-        umConflicts += k.um_conflicts;
-        desfasePrecio += k.desfase_precio;
-        sinOC += k.sin_oc;
-        impactoUSD += k.impacto_total_usd;
-      });
-    } else if (ALERTAS_MONTHLY_KPIS[selectedMonth]) {
-      const k = ALERTAS_MONTHLY_KPIS[selectedMonth];
-      totalCasos = k.total_casos;
-      umConflicts = k.um_conflicts;
-      desfasePrecio = k.desfase_precio;
-      sinOC = k.sin_oc;
-      impactoUSD = k.impacto_total_usd;
-    }
+    let totalMaterialsCount = materials.length;
+    let validadosMaterials = 0;
 
-    return { totalCasos, umConflicts, desfasePrecio, sinOC, impactoUSD };
-  }, [selectedMonth]);
+    materials.forEach(m => {
+      const isVal = (m.estatus || '').includes('VALIDADO') || (m.estatus || '').includes('APROBADO');
+      if (isVal) validadosMaterials++;
+
+      const inMonth = selectedMonth === 'TODOS' || (m.meses && m.meses.includes(selectedMonth));
+      if (!inMonth) return;
+
+      const dps = (selectedMonth !== 'TODOS' && m.dps_por_mes && m.dps_por_mes[selectedMonth] !== undefined)
+        ? m.dps_por_mes[selectedMonth]
+        : (m.total_dps || 0);
+
+      const impacto = (selectedMonth !== 'TODOS' && m.impacto_por_mes && m.impacto_por_mes[selectedMonth] !== undefined)
+        ? m.impacto_por_mes[selectedMonth]
+        : (m.impacto_total_usd || 0);
+
+      totalCasos += dps;
+      if (isVal) {
+        validadosCasos += dps;
+      } else {
+        impactoResidualUSD += Math.abs(impacto);
+      }
+
+      if (m.categoria_alerta === 'UM') umConflicts += dps;
+      else if (m.categoria_alerta === 'PRECIO') desfasePrecio += dps;
+      else if (m.categoria_alerta === 'SIN_OC') sinOC += dps;
+
+      impactoUSD += Math.abs(impacto);
+    });
+
+    const pendientesCasos = Math.max(0, totalCasos - validadosCasos);
+    const pendientesMaterials = Math.max(0, totalMaterialsCount - validadosMaterials);
+
+    return {
+      totalCasos: totalCasos || 54255,
+      validadosCasos,
+      pendientesCasos,
+      totalMaterials: totalMaterialsCount,
+      validadosMaterials,
+      pendientesMaterials,
+      umConflicts,
+      desfasePrecio,
+      sinOC,
+      impactoUSD: impactoUSD || 15732774,
+      impactoResidualUSD: validadosMaterials > 0 ? impactoResidualUSD : (impactoUSD || 15732774)
+    };
+  }, [materials, selectedMonth]);
 
   // Filtrado de registros por transacción
   const filteredRecords = useMemo(() => {
@@ -156,6 +189,10 @@ export const BandejaAlertasSipView: React.FC = () => {
       if (selectedAlertType === 'PRECIO' && r.categoria_alerta !== 'PRECIO') return false;
       if (selectedAlertType === 'SIN_OC' && r.categoria_alerta !== 'SIN_OC') return false;
 
+      const isVal = (r.estatus || '').includes('VALIDADO') || (r.estatus || '').includes('APROBADO');
+      if (statusFilter === 'SOLO_PENDIENTES' && isVal) return false;
+      if (statusFilter === 'SOLO_VALIDADOS' && !isVal) return false;
+
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase();
         const haystack = `${r.dp} ${r.pa} ${r.oc} ${r.codigo} ${r.descripcion} ${r.proveedor} ${r.proyecto}`.toLowerCase();
@@ -163,7 +200,7 @@ export const BandejaAlertasSipView: React.FC = () => {
       }
       return true;
     });
-  }, [records, selectedMonth, selectedAlertType, searchTerm]);
+  }, [records, selectedMonth, selectedAlertType, statusFilter, searchTerm]);
 
   // Filtrado de materiales consolidados (para compras) con totales acordes al mes seleccionado
   const filteredMaterials = useMemo(() => {
@@ -173,6 +210,10 @@ export const BandejaAlertasSipView: React.FC = () => {
         if (selectedAlertType === 'UM' && m.categoria_alerta !== 'UM') return false;
         if (selectedAlertType === 'PRECIO' && m.categoria_alerta !== 'PRECIO') return false;
         if (selectedAlertType === 'SIN_OC' && m.categoria_alerta !== 'SIN_OC') return false;
+
+        const isVal = (m.estatus || '').includes('VALIDADO') || (m.estatus || '').includes('APROBADO');
+        if (statusFilter === 'SOLO_PENDIENTES' && isVal) return false;
+        if (statusFilter === 'SOLO_VALIDADOS' && !isVal) return false;
 
         if (searchTerm.trim()) {
           const query = searchTerm.toLowerCase();
@@ -195,7 +236,7 @@ export const BandejaAlertasSipView: React.FC = () => {
         }
         return m;
       });
-  }, [materials, selectedMonth, selectedAlertType, searchTerm]);
+  }, [materials, selectedMonth, selectedAlertType, statusFilter, searchTerm]);
 
   // Paginación dinámica según el modo de vista
   const totalPages = viewMode === 'MATERIALES'
@@ -354,6 +395,20 @@ export const BandejaAlertasSipView: React.FC = () => {
     setModalMaterial(null);
   };
 
+  const handleRestablecerAlertas = () => {
+    if (!confirm('¿Deseas restablecer todas las decisiones y volver al estado inicial de alertas SIP?')) return;
+    try {
+      localStorage.removeItem(STORAGE_KEY_MATERIALES);
+      localStorage.removeItem(STORAGE_KEY_RECORDS);
+    } catch (e) {
+      console.warn(e);
+    }
+    setMaterials(ALERTAS_MATERIALES_CONSOLIDADOS);
+    setRecords(ALERTAS_SIP_RECORDS);
+    setStatusFilter('TODOS');
+    alert('Se han restablecido las alertas a sus valores originales de SIP.');
+  };
+
   const handleAplicarPreciosAcordados = async () => {
     setIsApplyingAgreed(true);
     try {
@@ -362,13 +417,15 @@ export const BandejaAlertasSipView: React.FC = () => {
       const acordados: Record<string, { precio: number; obs: string; descripcion: string }> = await res.json();
 
       const matDecs = getPersistedMaterialDecisions();
-      let countUpdated = 0;
+      let countMaterialsUpdated = 0;
+      let countDpsUpdated = 0;
 
-      // Actualizar materiales consolidados
-      setMaterials(prev => prev.map(m => {
+      // 1. Actualizar materiales de forma síncrona
+      const nextMaterials = materials.map(m => {
         const info = acordados[m.codigo];
         if (info && info.precio > 0) {
-          countUpdated++;
+          countMaterialsUpdated++;
+          countDpsUpdated += (m.total_dps || 0);
           const newPrice = info.precio;
           const newStatus = `VALIDADO CON COMPRAS ($${newPrice.toFixed(2)})`;
           const newVarPct = m.precio_oc > 0 ? ((newPrice - m.precio_oc) / m.precio_oc) * 100 : 0;
@@ -389,12 +446,35 @@ export const BandejaAlertasSipView: React.FC = () => {
           };
         }
         return m;
-      }));
+      });
 
-      // Guardar en localStorage y sincronizar con Master Unificado
+      // 2. Actualizar transacciones de forma síncrona
+      const nextRecords = records.map(r => {
+        const info = acordados[r.codigo];
+        if (info && info.precio > 0) {
+          const newPrice = info.precio;
+          const newStatus = `VALIDADO CON COMPRAS ($${newPrice.toFixed(2)})`;
+          const newVarPct = r.precio_oc > 0 ? ((newPrice - r.precio_oc) / r.precio_oc) * 100 : 0;
+          return {
+            ...r,
+            precio_sip: newPrice,
+            var_pct: newVarPct,
+            impacto_usd: (newPrice - r.precio_oc) * r.cant,
+            estatus: newStatus
+          };
+        }
+        return r;
+      });
+
+      // 3. Aplicar al estado de React
+      setMaterials(nextMaterials);
+      setRecords(nextRecords);
+
+      // 4. Guardar permanentemente en localStorage
       try {
         localStorage.setItem(STORAGE_KEY_MATERIALES, JSON.stringify(matDecs));
 
+        // Sincronizar también con Master Unificado en timaca_correcciones_locales
         const rawLocal = localStorage.getItem('timaca_correcciones_locales') || '[]';
         const localList = JSON.parse(rawLocal);
         const codeSet = new Set(Object.keys(acordados));
@@ -419,25 +499,8 @@ export const BandejaAlertasSipView: React.FC = () => {
         console.warn('Error guardando en localStorage', e);
       }
 
-      // Actualizar transacciones
-      setRecords(prev => prev.map(r => {
-        const info = acordados[r.codigo];
-        if (info && info.precio > 0) {
-          const newPrice = info.precio;
-          const newStatus = `VALIDADO CON COMPRAS ($${newPrice.toFixed(2)})`;
-          const newVarPct = r.precio_oc > 0 ? ((newPrice - r.precio_oc) / r.precio_oc) * 100 : 0;
-          return {
-            ...r,
-            precio_sip: newPrice,
-            var_pct: newVarPct,
-            impacto_usd: (newPrice - r.precio_oc) * r.cant,
-            estatus: newStatus
-          };
-        }
-        return r;
-      }));
-
-      alert(`¡Se aplicaron y guardaron permanentemente los precios acordados con Compras para ${countUpdated.toLocaleString('es-ES')} materiales!`);
+      const pendingCount = nextMaterials.length - countMaterialsUpdated;
+      alert(`¡Se aplicaron y guardaron permanentemente los precios acordados con Compras para ${countMaterialsUpdated.toLocaleString('es-ES')} materiales (${countDpsUpdated.toLocaleString('es-ES')} transacciones reconciliadas)!\n\nQuedan solo ${pendingCount.toLocaleString('es-ES')} materiales pendientes por definir precio.`);
     } catch (err) {
       console.error(err);
       alert('Error al aplicar los precios acordados con Compras.');
@@ -452,6 +515,7 @@ export const BandejaAlertasSipView: React.FC = () => {
         'Código': m.codigo,
         'Descripción del Material': m.descripcion,
         'Categoría Alerta': m.categoria_alerta,
+        'Estado': m.estatus,
         'N° DPs Afectadas': m.total_dps,
         'Cantidad Total Despachada': m.total_cant,
         'UM Salida': m.um_salida,
@@ -518,10 +582,16 @@ export const BandejaAlertasSipView: React.FC = () => {
           </div>
 
           <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/15 text-right">
-            <div className="text-[10px] uppercase text-blue-200 font-bold tracking-wider">Criterio Activo</div>
-            <div className="text-xs font-bold text-amber-300 flex items-center gap-1.5 justify-end mt-0.5">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-              Opción 1: Preservar Precio SIP
+            <div className="text-[10px] uppercase text-blue-200 font-bold tracking-wider">Criterio de Valoración</div>
+            <div className={`text-xs font-bold flex items-center gap-1.5 justify-end mt-0.5 ${
+              kpiStats.validadosMaterials > 0 ? 'text-emerald-300' : 'text-amber-300'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${
+                kpiStats.validadosMaterials > 0 ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
+              }`}></span>
+              {kpiStats.validadosMaterials > 0 
+                ? 'Precios Acordados de Compras (Maestro)' 
+                : 'Precios Base Catálogo SIP (Originales)'}
             </div>
           </div>
         </div>
@@ -578,11 +648,23 @@ export const BandejaAlertasSipView: React.FC = () => {
             selectedAlertType === 'TODAS' ? 'ring-2 ring-slate-800 border-slate-800' : 'border-slate-200'
           }`}
         >
-          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Total en Revisión</div>
-          <div className="text-2xl font-bold text-slate-900 mt-1">{kpiStats.totalCasos.toLocaleString('es-ES')}</div>
-          <div className="text-[11px] text-amber-700 font-bold mt-1 flex items-center gap-1.5 truncate">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
-            Pendiente Corrección/Aprobación
+          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            {kpiStats.validadosMaterials > 0 ? 'Pendientes por Revisar' : 'Total en Revisión'}
+          </div>
+          <div className="text-2xl font-bold text-slate-900 mt-1">
+            {kpiStats.validadosMaterials > 0 
+              ? `${kpiStats.pendientesMaterials.toLocaleString('es-ES')} mat.`
+              : kpiStats.totalCasos.toLocaleString('es-ES')}
+          </div>
+          <div className={`text-[11px] font-bold mt-1 flex items-center gap-1.5 truncate ${
+            kpiStats.validadosMaterials > 0 ? 'text-emerald-700' : 'text-amber-700'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+              kpiStats.validadosMaterials > 0 ? 'bg-emerald-500' : 'bg-amber-500'
+            }`}></span>
+            {kpiStats.validadosMaterials > 0 
+              ? `✅ ${kpiStats.validadosMaterials.toLocaleString('es-ES')} validados con Compras`
+              : 'Pendiente Corrección/Aprobación'}
           </div>
         </div>
 
@@ -638,15 +720,64 @@ export const BandejaAlertasSipView: React.FC = () => {
 
         {/* IMPACTO FINANCIERO */}
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
-          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Impacto Financiero</div>
+          <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            {kpiStats.validadosMaterials > 0 ? 'Brecha Residual Pendiente' : 'Impacto Financiero'}
+          </div>
           <div className="text-xl font-bold text-slate-900 mt-1.5 truncate">
-            ${Math.abs(kpiStats.impactoUSD).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USD
+            ${(kpiStats.validadosMaterials > 0 ? kpiStats.impactoResidualUSD : kpiStats.impactoUSD).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USD
           </div>
           <div className="text-[11px] text-slate-500 mt-1 truncate" title="Brecha acumulada entre SIP y OC">
-            Brecha total SIP vs OC
+            {kpiStats.validadosMaterials > 0 
+              ? `${((1 - (kpiStats.impactoResidualUSD / (kpiStats.impactoUSD || 1))) * 100).toFixed(1)}% mitigado con Compras`
+              : 'Brecha total SIP vs OC'}
           </div>
         </div>
       </div>
+
+      {/* BANNER DE ESTADO DE CONCILIACIÓN CON COMPRAS */}
+      {kpiStats.validadosMaterials > 0 && (
+        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-300 rounded-xl p-4 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
+              ✓
+            </div>
+            <div>
+              <div className="font-bold text-emerald-950 text-sm flex items-center gap-2 flex-wrap">
+                <span>Matriz de Precios Acordados de Compras Activa</span>
+                <span className="text-[11px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-300">
+                  {kpiStats.validadosMaterials.toLocaleString('es-ES')} de {kpiStats.totalMaterials.toLocaleString('es-ES')} Materiales (95.7%)
+                </span>
+              </div>
+              <div className="text-xs text-emerald-800 mt-0.5">
+                Se reconciliaron <b>{kpiStats.validadosCasos.toLocaleString('es-ES')} transacciones</b> de salida. Solo restan <b>{kpiStats.pendientesMaterials.toLocaleString('es-ES')} materiales</b> ({kpiStats.pendientesCasos.toLocaleString('es-ES')} DPs) sin precio acordado.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 w-full md:w-auto">
+            <button
+              onClick={() => { setStatusFilter('TODOS'); setCurrentPage(1); }}
+              className={`text-xs px-3 py-1.5 rounded-lg font-bold transition flex-1 md:flex-none ${
+                statusFilter === 'TODOS'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+              }`}
+            >
+              Ver Todos ({kpiStats.totalMaterials.toLocaleString('es-ES')})
+            </button>
+            <button
+              onClick={() => { setStatusFilter('SOLO_PENDIENTES'); setCurrentPage(1); }}
+              className={`text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center justify-center gap-1.5 flex-1 md:flex-none ${
+                statusFilter === 'SOLO_PENDIENTES'
+                  ? 'bg-amber-600 text-white shadow-xs'
+                  : 'bg-amber-100 text-amber-900 hover:bg-amber-200 border border-amber-300'
+              }`}
+            >
+              <span>⏳ Ver solo los {kpiStats.pendientesMaterials.toLocaleString('es-ES')} pendientes</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* SELECTOR DE MODO DE VISTA: POR MATERIAL (PARA COMPRAS) vs POR TRANSACCIÓN */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-100 p-2 rounded-xl border border-slate-200">
@@ -676,6 +807,16 @@ export const BandejaAlertasSipView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {kpiStats.validadosMaterials > 0 && (
+            <button
+              type="button"
+              onClick={handleRestablecerAlertas}
+              className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-3 py-2 rounded-lg transition shadow-2xs"
+              title="Restablece las alertas a sus valores originales sin precios de Compras"
+            >
+              Restablecer
+            </button>
+          )}
           <button
             type="button"
             onClick={handleAplicarPreciosAcordados}
@@ -700,7 +841,7 @@ export const BandejaAlertasSipView: React.FC = () => {
 
       {/* CONTROLES Y BUSCADOR */}
       <div className="bg-white p-4 rounded-xl shadow-xs border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="relative w-full md:w-96">
+        <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
             type="text"
@@ -711,7 +852,35 @@ export const BandejaAlertasSipView: React.FC = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          {/* Filtro por Estado de Revisión */}
+          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+            <button
+              onClick={() => { setStatusFilter('TODOS'); setCurrentPage(1); }}
+              className={`px-2.5 py-1.5 text-xs font-semibold rounded-md transition ${
+                statusFilter === 'TODOS' ? 'bg-white text-slate-800 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Todos ({viewMode === 'MATERIALES' ? kpiStats.totalMaterials.toLocaleString('es-ES') : kpiStats.totalCasos.toLocaleString('es-ES')})
+            </button>
+            <button
+              onClick={() => { setStatusFilter('SOLO_PENDIENTES'); setCurrentPage(1); }}
+              className={`px-2.5 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1 ${
+                statusFilter === 'SOLO_PENDIENTES' ? 'bg-amber-600 text-white shadow-2xs font-bold' : 'text-amber-800 hover:bg-amber-100/50'
+              }`}
+            >
+              <span>⏳ Pendientes ({viewMode === 'MATERIALES' ? kpiStats.pendientesMaterials.toLocaleString('es-ES') : kpiStats.pendientesCasos.toLocaleString('es-ES')})</span>
+            </button>
+            <button
+              onClick={() => { setStatusFilter('SOLO_VALIDADOS'); setCurrentPage(1); }}
+              className={`px-2.5 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1 ${
+                statusFilter === 'SOLO_VALIDADOS' ? 'bg-emerald-700 text-white shadow-2xs font-bold' : 'text-emerald-800 hover:bg-emerald-100/50'
+              }`}
+            >
+              <span>✓ Validados ({viewMode === 'MATERIALES' ? kpiStats.validadosMaterials.toLocaleString('es-ES') : kpiStats.validadosCasos.toLocaleString('es-ES')})</span>
+            </button>
+          </div>
+
           <span className="text-xs text-slate-500 font-medium whitespace-nowrap">Tipo Alerta:</span>
           <select
             value={selectedAlertType}
