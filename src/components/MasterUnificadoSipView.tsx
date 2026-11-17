@@ -137,6 +137,8 @@ interface MasterRow {
   cantidad: number;
   unidad: string;
   solicitante: string;
+  solicitante_real?: string;
+  creadaPor?: string;
   comprador?: string;
   motivo: string;
   ajuste: string;
@@ -1752,6 +1754,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               (r.numero && String(r.numero).toLowerCase().includes(q)) ||
               (r.pedido && String(r.pedido).toLowerCase().includes(q)) ||
               (r.solicitante && String(r.solicitante).toLowerCase().includes(q)) ||
+          (r.solicitante_real && String(r.solicitante_real).toLowerCase().includes(q)) ||
+          (r.creadaPor && String(r.creadaPor).toLowerCase().includes(q)) ||
+          (r.comprador && String(r.comprador).toLowerCase().includes(q)) ||
+              (r.solicitante_real && String(r.solicitante_real).toLowerCase().includes(q)) ||
+              (r.creadaPor && String(r.creadaPor).toLowerCase().includes(q)) ||
+              (r.comprador && String(r.comprador).toLowerCase().includes(q)) ||
               (r.motivo && String(r.motivo).toLowerCase().includes(q)) ||
               (r.sc && String(r.sc).toLowerCase().includes(q)) ||
               (r.oc && String(r.oc).toLowerCase().includes(q)) ||
@@ -2167,6 +2175,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           (r.numero && String(r.numero).toLowerCase().includes(q)) ||
           (r.pedido && String(r.pedido).toLowerCase().includes(q)) ||
           (r.solicitante && String(r.solicitante).toLowerCase().includes(q)) ||
+          (r.solicitante_real && String(r.solicitante_real).toLowerCase().includes(q)) ||
+          (r.creadaPor && String(r.creadaPor).toLowerCase().includes(q)) ||
+          (r.comprador && String(r.comprador).toLowerCase().includes(q)) ||
           (r.motivo && String(r.motivo).toLowerCase().includes(q)) ||
           (r.sc && String(r.sc).toLowerCase().includes(q)) ||
           (r.oc && String(r.oc).toLowerCase().includes(q)) ||
@@ -2205,11 +2216,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       const excelData = rows.map((r: MasterRow) => {
         const desfase = detectarDesfaseFechaMotivo(r);
         const projInfo = proyectoMap.get((r.cuenta_aux || '').toUpperCase().trim());
-        let compradorExport = r.comprador || '';
+        let compradorExport = (r.comprador || '').trim();
         if (r.tipo === 'Materiales Directos') {
-          compradorExport = 'Stock Almacén (Sin OC)';
-        } else if (!compradorExport || (r.solicitante && compradorExport.toUpperCase() === r.solicitante.toUpperCase())) {
-          compradorExport = `Gestión Directa Obra (${r.solicitante || 'Campo'})`;
+          compradorExport = 'Stock Almacén (Despacho Directo)';
+        } else if (!compradorExport) {
+          compradorExport = 'Sin Asignar en Procura';
         }
 
         return {
@@ -2228,8 +2239,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'Unidad': r.unidad,
           'Precio Unitario USD': r.precio_final,
           'Total USD': r.total_usd,
-          'Solicitante': r.solicitante,
-          'Comprador': compradorExport,
+          'Solicitante (Quién Solicita)': r.solicitante_real || r.solicitante || '',
+          'Generado Por (SIP)': r.creadaPor || r.solicitante || '',
+          'Comprador (Procura)': compradorExport,
           'Proveedor / Almacen': r.proveedor || (r.tipo === 'Materiales Directos' ? `Almacén ${r.almacen || ''}` : ''),
           'Descripcion del Item (SIP)': r.descripcion,
           'Auditoria / Ajuste': desfase ? desfase.detalle : (r.esReclasificado ? `Corregido a ${r.nombre_mes || 'otro mes'}` : (r.ajuste || 'Normal')),
@@ -3186,6 +3198,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           (r.nuevoMes && String(r.nuevoMes).toLowerCase().includes(q)) ||
           (r.motivo && String(r.motivo).toLowerCase().includes(q)) ||
           (r.solicitante && String(r.solicitante).toLowerCase().includes(q)) ||
+          (r.solicitante_real && String(r.solicitante_real).toLowerCase().includes(q)) ||
+          (r.creadaPor && String(r.creadaPor).toLowerCase().includes(q)) ||
+          (r.comprador && String(r.comprador).toLowerCase().includes(q)) ||
           (r.proveedor && String(r.proveedor).toLowerCase().includes(q)) ||
           (r.usuario && String(r.usuario).toLowerCase().includes(q));
         if (!match) return false;
@@ -5058,11 +5073,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       <th onClick={() => handleSortMaster('total_usd')} className="py-2.5 px-3 border-r border-slate-200 text-right font-bold text-slate-900 bg-slate-100 cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Total USD ($) {sortMasterBy === 'total_usd' ? (sortMasterOrder === 'desc' ? '▼ (Mayor a menor)' : '▲ (Menor a mayor)') : '↕'}
                       </th>
-                      <th onClick={() => handleSortMaster('solicitante')} className="py-2.5 px-3 border-r border-slate-200 min-w-[170px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Persona que monta la PA (en almacén) o que solicita la SC (en compras/servicios)">
-                        Solicitante {sortMasterBy === 'solicitante' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      <th onClick={() => handleSortMaster('solicitante')} className="py-2.5 px-3 border-r border-slate-200 min-w-[170px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Persona que solicita el requerimiento (en obra, departamento o detectado en motivo)">
+                        Solicitante (Quién Solicita) {sortMasterBy === 'solicitante' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
+                      <th onClick={() => handleSortMaster('creadaPor')} className="py-2.5 px-3 border-r border-slate-200 min-w-[170px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Usuario registrado en SIP que cargó o generó la Solicitud / Vale">
+                        Generado Por (SIP) {sortMasterBy === 'creadaPor' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th onClick={() => handleSortMaster('comprador')} className="py-2.5 px-3 border-r border-slate-200 min-w-[170px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Analista de Procura / Compras asignado a la Orden de Compra (OC)">
-                        Comprador {sortMasterBy === 'comprador' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                        Comprador (Procura) {sortMasterBy === 'comprador' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th onClick={() => handleSortMaster('proveedor')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Proveedor / Almacén {sortMasterBy === 'proveedor' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
@@ -5092,15 +5110,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       const projCliente = projInfo?.cliente || (projInfo?.tipoCosto === 'Externo' ? 'Cliente Externo' : 'TIMACA Interno');
                       const esExt = (projInfo?.tipoCosto || r.datos_tipo_costo || '').toUpperCase().includes('EXTERNO');
 
-                      let compLabel = r.comprador?.trim() || '';
-                      let isDirectoObra = false;
-                      let isStockAlmacen = false;
-
-                      if (r.tipo === 'Materiales Directos') {
-                        isStockAlmacen = true;
-                      } else if (!compLabel || (r.solicitante && compLabel.toUpperCase() === r.solicitante.toUpperCase())) {
-                        isDirectoObra = true;
-                      }
+                      const isStockAlmacen = r.tipo === 'Materiales Directos';
+                      const solicitanteDisplay = r.solicitante_real || r.solicitante || 'S/D';
+                      const generadorDisplay = r.creadaPor || r.solicitante || 'S/D';
+                      const compradorDisplay = (r.comprador || '').trim();
 
                       return (
                         <tr 
@@ -5260,17 +5273,27 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             </span>
                           </td>
 
-                          {/* 15. Solicitante */}
+                          {/* 15. Solicitante (Quién Solicita) */}
                           <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal">
                             <div className="flex flex-col">
-                              <span className="font-semibold text-slate-900">{r.solicitante || 'S/D'}</span>
+                              <span className="font-semibold text-slate-900">{solicitanteDisplay}</span>
                               <span className="text-[10px] text-slate-400 font-sans">
-                                {r.tipo === 'Materiales Directos' ? 'Montó PA (Almacén)' : 'Solicitante SC'}
+                                {r.solicitante_real ? 'Detectado en Motivo' : (r.tipo === 'Materiales Directos' ? 'Solicitante Vale' : 'Solicitante Requerimiento')}
                               </span>
                             </div>
                           </td>
 
-                          {/* 16. Comprador */}
+                          {/* 16. Generado Por (SIP) */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal bg-indigo-50/20">
+                            <div className="flex flex-col">
+                              <span className="font-semibold text-indigo-950">{generadorDisplay}</span>
+                              <span className="text-[10px] text-indigo-500 font-sans">
+                                {r.tipo === 'Materiales Directos' ? 'Montó PA (Almacén)' : 'Cargó SC en SIP'}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* 17. Comprador (Procura) */}
                           <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal">
                             <div className="flex flex-col">
                               {isStockAlmacen ? (
@@ -5278,19 +5301,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                   <span className="text-slate-600 font-medium">Stock Almacén</span>
                                   <span className="text-[9px] text-slate-400 italic">Despacho Directo (Sin OC)</span>
                                 </>
-                              ) : isDirectoObra ? (
+                              ) : compradorDisplay ? (
                                 <>
-                                  <span className="text-amber-800 font-semibold flex items-center gap-1">
-                                    Gestión Directa Obra
-                                  </span>
-                                  <span className="text-[9px] text-amber-600 font-medium">
-                                    Tramitado por Solicitante ({r.solicitante})
-                                  </span>
+                                  <span className="text-slate-900 font-semibold">{compradorDisplay}</span>
+                                  <span className="text-[9px] text-blue-600 font-medium">Analista de Procura</span>
                                 </>
                               ) : (
                                 <>
-                                  <span className="text-slate-900 font-semibold">{compLabel}</span>
-                                  <span className="text-[9px] text-blue-600 font-medium">Analista de Procura</span>
+                                  <span className="text-slate-400 italic">Sin Asignar</span>
+                                  <span className="text-[9px] text-slate-400">Procura / Compras</span>
                                 </>
                               )}
                             </div>
