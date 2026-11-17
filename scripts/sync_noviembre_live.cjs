@@ -251,13 +251,13 @@ async function runSyncNoviembre() {
   const rawSalidas = await salidasRes.json();
   console.log(`[SIP] Salidas obtenidas: ${rawSalidas.length}`);
 
-  // 2. Fetch Compras/Servicios Nov 1 to Today
-  console.log(`[SIP] Consultando Órdenes (01/11/2026 al ${hoyIso})...`);
-  const ordRes = await fetch(`http://sip.timaca.com/api/ordenes/renglones?desde=2026-11-01&hasta=${hoyIso}`, {
+  // 2. Fetch Solicitud-Compras Nov 1 to Today (Oficial SIP completo con Solicitante, Motivo y Cuenta Real)
+  console.log(`[SIP] Consultando Solicitud-Compras oficiales (01/11/2026 al ${hoyIso})...`);
+  const scRes = await fetch(`http://sip.timaca.com/api/solicitud-compras?desde=2026-11-01&hasta=${hoyIso}`, {
     headers: { 'Host': 'sip.timaca.com', 'Cookie': cookie }
   });
-  const rawCompras = await ordRes.json();
-  console.log(`[SIP] Órdenes obtenidas: ${rawCompras.length}`);
+  const rawSC = await scRes.json();
+  console.log(`[SIP] Solicitud-Compras obtenidas: ${rawSC.length}`);
 
   // 3. Load catalog
   const proyectosPath = path.join(__dirname, '../public/data/sip/proyectos.json');
@@ -358,54 +358,60 @@ async function runSyncNoviembre() {
     });
   }
 
-  // 5. Map Servicios from Compras
-  console.log('\nProcesando Órdenes y Servicios de Noviembre...');
+  // 5. Map Servicios from Solicitud-Compras oficiales (con cuenta real, solicitante real y motivo completo)
+  console.log('\nProcesando Órdenes y Servicios de Noviembre desde Solicitud-Compras...');
   const itemsServicios = [];
 
-  for (const r of rawCompras) {
+  for (const r of rawSC) {
     const desc = (r.descripcion || '').trim().toUpperCase();
-    const esServicio = desc.includes('SERVICIO') || 
+    const cat = (r.categoria || '').trim().toUpperCase();
+    const cod = (r.material || r.codigo || '').trim();
+    const esServicio = cat === 'SERVICIOS' || 
+      cod.startsWith('SE') ||
+      desc.includes('SERVICIO') || 
       desc.includes('ALQUILER') || 
       desc.includes('TRANSPORTE') || 
       desc.includes('FLETE') || 
       desc.includes('MANTENIMIENTO') || 
       desc.includes('REPARACION') || 
-      desc.includes('HONORARIOS') ||
-      (r.tipo || '').toUpperCase().includes('SERVICIO');
+      desc.includes('HONORARIOS');
 
-    if (!esServicio) continue;
+    if (!esServicio || !r.ordenCompra) continue;
 
     seqId++;
     const sc = (r.solicitud || r.SC || '').trim();
-    const oc = (r.numero || r.OC || '').trim();
-    const cod = (r.material || r.codigo || '').trim();
-    let ctaAux = (r.descripcionCuenta || r.cuenta || '').trim().toUpperCase();
-    ctaAux = resolverCuentaAuxiliar(ctaAux, r.motivo, r.descripcion, r.solicitante || r.comprador, cod);
+    const oc = (r.ordenCompra || r.numero || r.OC || '').trim();
+
+    // Cuenta Auxiliar oficial de SIP (priorizar r.cuenta exacta de SIP como EE-A-C-510, TTE-C-0678, etc.)
+    let ctaAux = (r.cuenta || '').trim().toUpperCase();
+    if (!ctaAux || !/^[A-Z]{2,4}-[A-Z0-9]+-[A-Z0-9]+/i.test(ctaAux)) {
+      ctaAux = resolverCuentaAuxiliar(ctaAux || r.descripcionCuenta, r.motivo, r.descripcion, r.creadaPor || r.solicitante || r.comprador, cod);
+    }
 
     const proj = projMap.get(ctaAux) || {
       nombre: (r.descripcionCuenta || ctaAux).trim(),
       tipoCosto: 'Externo'
     };
 
-    const cant = typeof r.cantidad === 'number' ? r.cantidad : parseFloat(r.cantidad || 0);
-    const totalUSD = typeof r.total === 'number' ? r.total : parseFloat(r.total || 0);
-    let precioUnitUSD = cant > 0 ? Math.round((totalUSD / cant) * 10000) / 10000 : (r.precio || 0);
+    const cant = typeof r.cantidadOC === 'number' ? r.cantidadOC : (typeof r.cantidad === 'number' ? r.cantidad : parseFloat(r.cantidad || 0));
+    const totalUSD = typeof r.totalDolar === 'number' ? r.totalDolar : parseFloat(r.totalDolar || r.total || 0);
+    let precioUnitUSD = typeof r.precioDolar === 'number' ? r.precioDolar : (cant > 0 ? Math.round((totalUSD / cant) * 10000) / 10000 : (r.precio || 0));
 
     itemsServicios.push({
       id: seqId,
       tipo: 'Servicios',
-      almacen: 'ALMSE',
-      fecha: parseDateToIso(r.fecha),
+      almacen: (r.almacen || 'ALMSE').trim(),
+      fecha: parseDateToIso(r.fechaOC || r.fechaSolicitud || r.fecha),
       numero: sc || oc,
       pedido: oc || sc,
       cuenta_aux: ctaAux,
-      ceco: '',
+      ceco: (r.ceco || '').trim(),
       codigo: cod,
       descripcion: (r.descripcion || '').trim(),
       cantidad: cant,
-      unidad: 'USE',
-      solicitante: getSolicitanteCompra(r),
-      proveedor: (r.nombreProveedor || r.proveedor || '').trim(),
+      unidad: (r.unidad || 'USE').trim(),
+      solicitante: (r.creadaPor || r.solicitante || 'S/D').trim(),
+      proveedor: (r.proveedor || r.nombreProveedor || '').trim(),
       motivo: (r.motivo || '').trim(),
       ajuste: '',
       categoria: 'SERVICIOS',
@@ -436,7 +442,6 @@ async function runSyncNoviembre() {
       nombre_mes: 'noviembre',
       sc: sc,
       oc: oc,
-      proveedor: (r.nombreProveedor || r.proveedor || '').trim(),
       comprador: (r.comprador || '').trim()
     });
   }
@@ -504,6 +509,14 @@ async function runSyncNoviembre() {
     opex_total: Math.round(opexTotal * 100) / 100,
     admon_total: Math.round(admonTotal * 100) / 100
   };
+
+  // Pre-ordenar siempre del más reciente al más antiguo
+  allNovItems.sort((a, b) => {
+    const ta = new Date(a.fecha).getTime() || 0;
+    const tb = new Date(b.fecha).getTime() || 0;
+    if (ta !== tb) return tb - ta;
+    return String(b.numero || '').localeCompare(String(a.numero || ''));
+  });
 
   const payload = {
     totales: totales,
