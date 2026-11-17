@@ -206,7 +206,16 @@ export default async function handler(req, res) {
         items = items.filter(r => (r.cuenta_aux || '').toUpperCase() === query.cta.toUpperCase());
       }
       if (query.tipo && query.tipo !== 'TODOS') {
-        items = items.filter(r => (r.tipo || '').toUpperCase() === query.tipo.toUpperCase());
+        if (query.tipo === 'SOLO_SIP') {
+          items = items.filter(r => {
+            const t = (r.tipo || '').toUpperCase();
+            return t === 'MATERIALES DIRECTOS' || t === 'SERVICIOS' || t === 'COMPRAS';
+          });
+        } else if (query.tipo === 'Mano de Obra Directa' || query.tipo === 'Mano de Obra') {
+          items = items.filter(r => (r.tipo || '').toUpperCase().includes('MANO DE OBRA'));
+        } else {
+          items = items.filter(r => (r.tipo || '').toUpperCase() === query.tipo.toUpperCase());
+        }
       }
       if (query.search) {
         const s = query.search.toLowerCase();
