@@ -719,7 +719,7 @@ export function determinarTipoGasto(cuenta?: string, tipoCostoExistente?: string
 
 // Caché en memoria para las sábanas SIP del Master Unificado (evita re-descargas y congelamientos)
 const masterStaticCache = new Map<string, any[]>();
-let isLanApiAvailable: boolean | null = null;
+let isLanApiAvailable: boolean | null = false;
 let cachedReclasificaciones: any[] | null = null;
 let reclasificacionesLoadingPromise: Promise<any[]> | null = null;
 
@@ -1344,7 +1344,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         if (data.top_cuentas) setTopCuentas(data.top_cuentas);
       } else {
         const isVerAjustesHistoricos = filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas';
-        let items: any[] = await loadStaticMasterItems(selectedMes, isVerAjustesHistoricos, true);
+        let items: any[] = await loadStaticMasterItems(selectedMes, isVerAjustesHistoricos, false);
 
           // Si estamos revisando Ajustes Históricos (2.553 registros de Enero a Julio), filtrar por mes si se seleccionó uno
           if (isVerAjustesHistoricos) {

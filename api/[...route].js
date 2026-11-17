@@ -205,6 +205,26 @@ export default async function handler(req, res) {
       if (query.cta && query.cta !== 'TODAS') {
         items = items.filter(r => (r.cuenta_aux || '').toUpperCase() === query.cta.toUpperCase());
       }
+      if (query.clasificacion && query.clasificacion !== 'TODAS') {
+        const targetClasif = query.clasificacion.toLowerCase();
+        items = items.filter(r => {
+          const tc = (r.datos_tipo_costo || '').toLowerCase();
+          if (targetClasif === 'externo') return tc.includes('externo');
+          if (targetClasif === 'interno') return tc.includes('interno') && !tc.includes('externo');
+          if (targetClasif.includes('opex') || targetClasif.includes('flota')) return tc.includes('opex') || tc.includes('flota');
+          return tc === targetClasif;
+        });
+      }
+      if (query.categoria && query.categoria !== 'TODAS') {
+        items = items.filter(r => (r.categoria || '').toUpperCase() === query.categoria.toUpperCase());
+      }
+      if (query.proyecto) {
+        const p = query.proyecto.toLowerCase();
+        items = items.filter(r => 
+          (r.cuenta_aux && r.cuenta_aux.toLowerCase().includes(p)) ||
+          (r.datos_descripcion && r.datos_descripcion.toLowerCase().includes(p))
+        );
+      }
       if (query.tipo && query.tipo !== 'TODOS') {
         if (query.tipo === 'SOLO_SIP') {
           items = items.filter(r => {
@@ -267,10 +287,39 @@ export default async function handler(req, res) {
 
       const start = (page - 1) * limit;
 
+      let mat_total = 0;
+      let serv_total = 0;
+      let mdo_total = 0;
+      let hm_total = 0;
+      let ext_total = 0;
+      let int_total = 0;
+      let opex_total = 0;
+
+      for (const r of items) {
+        const val = Number(r.total_usd) || 0;
+        const t = (r.tipo || '').toUpperCase();
+        if (t.includes('MATERIAL')) mat_total += val;
+        else if (t.includes('SERV') || t.includes('COMP')) serv_total += val;
+        else if (t.includes('MANO DE OBRA')) mdo_total += val;
+        else if (t.includes('HORA') || t.includes('MAQ')) hm_total += val;
+
+        const c = (r.datos_tipo_costo || '').toUpperCase();
+        if (c.includes('EXTERNO')) ext_total += val;
+        else if (c.includes('OPEX') || c.includes('FLOTA') || c.includes('INFRA')) opex_total += val;
+        else if (c.includes('INTERNO') || c.includes('ADMON') || c.includes('SOCIO')) int_total += val;
+      }
+
       return res.status(200).json({
         totales: {
           total_count: items.length,
           gran_total: items.reduce((sum, r) => sum + (Number(r.total_usd) || 0), 0),
+          mat_total,
+          serv_total,
+          mdo_total,
+          hm_total,
+          ext_total,
+          int_total,
+          opex_total,
         },
         page,
         limit,
