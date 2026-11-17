@@ -873,6 +873,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   // Data states
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
+
+  const proyectoMap = useMemo(() => {
+    const map = new Map<string, Proyecto>();
+    for (const p of proyectos) {
+      if (p.codigo) map.set(p.codigo.toUpperCase().trim(), p);
+    }
+    return map;
+  }, [proyectos]);
   const [consumos, setConsumos] = useState<Consumo[]>([]);
   const [compras, setCompras] = useState<Compra[]>([]);
   const [reclasificaciones, setReclasificaciones] = useState<any[]>([]);
@@ -2189,49 +2197,45 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         return;
       }
 
-      // Map to exact columns matching Daniela's official specification
+      // Mapeo limpio y útil para Auditoría y Gestión de Costos TIMACA
       const excelData = rows.map((r: MasterRow) => {
         const desfase = detectarDesfaseFechaMotivo(r);
+        const projInfo = proyectoMap.get((r.cuenta_aux || '').toUpperCase().trim());
+        let compradorExport = r.comprador || '';
+        if (r.tipo === 'Materiales Directos') {
+          compradorExport = 'Stock Almacén (Sin OC)';
+        } else if (!compradorExport || (r.solicitante && compradorExport.toUpperCase() === r.solicitante.toUpperCase())) {
+          compradorExport = `Gestión Directa Obra (${r.solicitante || 'Campo'})`;
+        }
+
         return {
-          'Tipo': r.tipo,
-          'Almacen': r.almacen,
           'Fecha': r.fecha,
-          'Numero': r.numero, // Despacho DP / Solicitud SC
-          'Pedido': r.pedido, // Pedido PA / Orden OC
-          'RC / Recepcion': r.recepcion || r.rc || (r.tipo === 'Servicios' || r.tipo === 'Compras' ? 'Sin RC (Pendiente)' : '-'),
+          'Tipo': r.tipo,
           'Cuenta-Aux': r.cuenta_aux,
-          'Ceco': r.ceco,
-          'Codigo': r.codigo,
+          'Proyecto / Obra': projInfo?.nombre || r.datos_descripcion || '',
+          'Cliente': projInfo?.cliente || (projInfo?.tipoCosto === 'Externo' ? 'Cliente Externo' : 'TIMACA'),
+          'Clasificacion': projInfo?.tipoCosto || r.datos_tipo_costo || 'Externo',
+          'Vale / Solicitud': r.numero, // Despacho DP / Solicitud SC
+          'Pedido / Orden': r.pedido,   // Pedido PA / Orden OC
+          'RC / Recepcion': r.recepcion || r.rc || (r.tipo === 'Servicios' || r.tipo === 'Compras' ? 'Sin RC (Pendiente)' : 'Conforme Almacén'),
+          'Codigo SIP': r.codigo,
           'Descripcion': r.descripcion,
           'Cantidad': r.cantidad,
           'Unidad': r.unidad,
-          'solicitante': r.solicitante,
-          'Comprador': r.comprador || (r.tipo === 'Materiales Directos' ? 'Stock Almacén' : ''),
-          'Proveedor': r.proveedor || '',
-          'motivo': r.motivo,
-          'Pendientes por Revisar / Corregir': desfase ? desfase.detalle : (r.esReclasificado ? `Corregido a ${r.nombre_mes || 'otro mes'}` : ''),
-          'Ajuste': r.ajuste,
-          'Categoria': r.categoria,
-          'Precio Final': r.precio_final,
+          'Precio Unitario USD': r.precio_final,
           'Total USD': r.total_usd,
-          'Precio$': r.precio_dolar || r.precio_final,
-        'Semana': r.semana,
-        'Fecha Hasta': r.fecha_hasta,
-        'Cargo': r.cargo,
-        'Supervisor': r.supervisor,
-        'Area / Ubicación': r.area_ubicacion,
-        'Tarifa': r.tarifa,
-        'Actividad': r.actividad,
-        'Linea de Produccion': r.linea_produccion,
-        'Datos.Descripción': r.datos_descripcion,
-        'Datos.Tipo Costo': r.datos_tipo_costo,
-        'Datos.Tipo de Equipo': r.datos_tipo_equipo,
-        'Datos.Codigo Sysman': r.datos_codigo_sysman,
-        'Datos.Zona': r.datos_zona,
-        'Año': r.ano,
-        'Nombre del mes': r.nombre_mes
-      };
-    });
+          'Solicitante': r.solicitante,
+          'Comprador': compradorExport,
+          'Proveedor / Almacen': r.proveedor || (r.tipo === 'Materiales Directos' ? `Almacén ${r.almacen || ''}` : ''),
+          'Motivo': r.motivo,
+          'Auditoria / Ajuste': desfase ? desfase.detalle : (r.esReclasificado ? `Corregido a ${r.nombre_mes || 'otro mes'}` : (r.ajuste || 'Normal')),
+          'Categoria': r.categoria,
+          'Ceco': r.ceco || '',
+          'Almacen': r.almacen || '',
+          'Mes': r.nombre_mes || '',
+          'Año': r.ano || 2026
+        };
+      });
 
       const ws = XLSX.utils.json_to_sheet(excelData);
       const wb = XLSX.utils.book_new();
@@ -5010,77 +5014,66 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 <table className="w-full text-left text-xs border-collapse font-sans whitespace-nowrap">
                   <thead className="sticky top-0 z-20 bg-slate-100 text-slate-700 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-200 shadow-2xs">
                     <tr>
-                      <th onClick={() => handleSortMaster('tipo')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none">
-                        Tipo {sortMasterBy === 'tipo' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
-                      </th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Almacén</th>
                       <th onClick={() => handleSortMaster('fecha')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Fecha {sortMasterBy === 'fecha' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
-                      <th onClick={() => handleSortMaster('numero')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Número de Despacho (DP) para consumos, o Solicitud de Compra (SC) para compras/servicios">
-                        Número {sortMasterBy === 'numero' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
-                      </th>
-                      <th onClick={() => handleSortMaster('pedido')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Número de Pedido de Almacén (PA) para consumos, u Orden de Compra (OC) para compras/servicios">
-                        Pedido {sortMasterBy === 'pedido' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
-                      </th>
-                      <th onClick={() => handleSortMaster('recepcion')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none text-center bg-blue-50/50 text-blue-900" title="Comprobante de Recepción de Almacén / Finiquito de Servicio (RC / REC)">
-                        RC / REC {sortMasterBy === 'recepcion' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      <th onClick={() => handleSortMaster('tipo')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none">
+                        Tipo {sortMasterBy === 'tipo' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th onClick={() => handleSortMaster('cuenta_aux')} className="py-2.5 px-3 border-r border-slate-200 bg-purple-50 text-purple-900 cursor-pointer hover:bg-purple-100 transition-colors select-none" title="Cuenta Auxiliar (Haz clic en cualquier celda para corregir e imputar directamente)">
                         Cuenta-Aux ✎ {sortMasterBy === 'cuenta_aux' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Ceco</th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[260px]">
+                        Proyecto / Obra
+                      </th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[170px]">
+                        Cliente / Clasificación
+                      </th>
+                      <th onClick={() => handleSortMaster('numero')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Número de Despacho (DP) para consumos, o Solicitud de Compra (SC) para compras/servicios">
+                        Vale / Solicitud {sortMasterBy === 'numero' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
+                      <th onClick={() => handleSortMaster('pedido')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Número de Pedido de Almacén (PA) para consumos, u Orden de Compra (OC) para compras/servicios">
+                        Pedido / Orden {sortMasterBy === 'pedido' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
+                      <th onClick={() => handleSortMaster('recepcion')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none text-center bg-blue-50/50 text-blue-900" title="Comprobante de Recepción de Almacén / Finiquito de Servicio (RC / REC)">
+                        RC / Recepción {sortMasterBy === 'recepcion' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
                       <th onClick={() => handleSortMaster('codigo')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none">
-                        Código {sortMasterBy === 'codigo' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                        Código SIP {sortMasterBy === 'codigo' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th onClick={() => handleSortMaster('descripcion')} className="py-2.5 px-3 border-r border-slate-200 min-w-[280px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
-                        Descripción {sortMasterBy === 'descripcion' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                        Descripción del Ítem {sortMasterBy === 'descripcion' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th onClick={() => handleSortMaster('cantidad')} className="py-2.5 px-3 border-r border-slate-200 text-right cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Cantidad {sortMasterBy === 'cantidad' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Unidad</th>
-                      <th onClick={() => handleSortMaster('solicitante')} className="py-2.5 px-3 border-r border-slate-200 min-w-[160px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Persona que monta la PA (en almacén) o que solicita la SC (en compras/servicios)">
-                        Solicitante {sortMasterBy === 'solicitante' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
-                      </th>
-                      <th onClick={() => handleSortMaster('comprador')} className="py-2.5 px-3 border-r border-slate-200 min-w-[160px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Analista de Procura / Compras asignado a la Orden de Compra (OC)">
-                        Comprador {sortMasterBy === 'comprador' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
-                      </th>
-                      <th onClick={() => handleSortMaster('proveedor')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
-                        Proveedor {sortMasterBy === 'proveedor' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
-                      </th>
-                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[280px] bg-amber-50/50 text-amber-950 font-bold">Motivo</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[260px] bg-indigo-50/80 text-indigo-950 font-bold text-center select-none" title="Columna de auditoría: identifica consumos o solicitudes donde la fecha del motivo no corresponde con la fecha del documento">
-                        Pendientes por Revisar / Corregir
-                      </th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Ajuste</th>
-                      <th onClick={() => handleSortMaster('categoria')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
-                        Categoría {sortMasterBy === 'categoria' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
-                      </th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 text-center">Unidad</th>
                       <th onClick={() => handleSortMaster('precio_final')} className="py-2.5 px-3 border-r border-slate-200 text-right cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Precio Unitario en USD ($)">
-                        Precio Final ($) {sortMasterBy === 'precio_final' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                        Precio Unit. ($) {sortMasterBy === 'precio_final' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th onClick={() => handleSortMaster('total_usd')} className="py-2.5 px-3 border-r border-slate-200 text-right font-bold text-slate-900 bg-slate-100 cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Total USD ($) {sortMasterBy === 'total_usd' ? (sortMasterOrder === 'desc' ? '▼ (Mayor a menor)' : '▲ (Menor a mayor)') : '↕'}
                       </th>
-                      <th onClick={() => handleSortMaster('precio_dolar')} className="py-2.5 px-3 border-r border-slate-200 text-right cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Precio Unitario en USD ($)">
-                        Precio$ ($) {sortMasterBy === 'precio_dolar' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      <th onClick={() => handleSortMaster('solicitante')} className="py-2.5 px-3 border-r border-slate-200 min-w-[170px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Persona que monta la PA (en almacén) o que solicita la SC (en compras/servicios)">
+                        Solicitante {sortMasterBy === 'solicitante' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
-                      <th className="py-2.5 px-3 border-r border-slate-200 text-center">Semana</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Fecha Hasta</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Cargo</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Supervisor</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Área / Ubicación</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200 text-right">Tarifa</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[150px]">Actividad</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Línea de Producción</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[280px]">Datos.Descripción</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Datos.Tipo Costo</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Datos.Tipo de Equipo</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Datos.Código Sysman</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200">Datos.Zona</th>
-                      <th className="py-2.5 px-3 border-r border-slate-200 text-center">Año</th>
-                      <th className="py-2.5 px-3 text-center">Nombre del Mes</th>
+                      <th onClick={() => handleSortMaster('comprador')} className="py-2.5 px-3 border-r border-slate-200 min-w-[170px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Analista de Procura / Compras asignado a la Orden de Compra (OC)">
+                        Comprador {sortMasterBy === 'comprador' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
+                      <th onClick={() => handleSortMaster('proveedor')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
+                        Proveedor / Almacén {sortMasterBy === 'proveedor' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[280px] bg-amber-50/50 text-amber-950 font-bold">
+                        Motivo / Justificación
+                      </th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 min-w-[260px] bg-indigo-50/80 text-indigo-950 font-bold text-center select-none" title="Auditoría: desfases de fecha, reclasificaciones o normalizaciones">
+                        Auditoría / Ajuste
+                      </th>
+                      <th onClick={() => handleSortMaster('categoria')} className="py-2.5 px-3 border-r border-slate-200 min-w-[160px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
+                        Categoría {sortMasterBy === 'categoria' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
+                      <th className="py-2.5 px-3 border-r border-slate-200 text-center">Ceco</th>
+                      <th className="py-2.5 px-3 text-center">Almacén</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
@@ -5090,6 +5083,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       const isAjusteMan = aVal.includes('MANUAL');
                       const isCorr = aVal.includes('CORREGIDO') || (r as any).esReclasificado;
                       const subtipoNorm = clasificarNormalizacion(r);
+                      const projInfo = proyectoMap.get((r.cuenta_aux || '').toUpperCase().trim());
+                      const projNombre = projInfo?.nombre || r.datos_descripcion || '-';
+                      const projCliente = projInfo?.cliente || (projInfo?.tipoCosto === 'Externo' ? 'Cliente Externo' : 'TIMACA Interno');
+                      const esExt = (projInfo?.tipoCosto || r.datos_tipo_costo || '').toUpperCase().includes('EXTERNO');
+
+                      let compLabel = r.comprador?.trim() || '';
+                      let isDirectoObra = false;
+                      let isStockAlmacen = false;
+
+                      if (r.tipo === 'Materiales Directos') {
+                        isStockAlmacen = true;
+                      } else if (!compLabel || (r.solicitante && compLabel.toUpperCase() === r.solicitante.toUpperCase())) {
+                        isDirectoObra = true;
+                      }
+
                       return (
                         <tr 
                           key={r.id || idx} 
@@ -5097,147 +5105,240 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             subtipoNorm === 'rezagada' 
                               ? 'bg-indigo-50/40 hover:bg-indigo-100/50' 
                               : isAjusteMan
-                              ? 'bg-rose-50/30 hover:bg-rose-100/40'
-                              : isAjusteNorm 
-                              ? 'bg-amber-50/40 hover:bg-amber-100/50' 
-                              : isCorr 
-                              ? 'bg-purple-50/30 hover:bg-purple-100/40' 
-                              : 'hover:bg-blue-50/40'
+                              ? 'bg-rose-50/30 hover:bg-rose-100/40' 
+                              : isCorr
+                              ? 'bg-emerald-50/30 hover:bg-emerald-100/40' 
+                              : isAjusteNorm
+                              ? 'bg-amber-50/30 hover:bg-amber-100/40' 
+                              : idx % 2 === 0 ? 'bg-white hover:bg-blue-50/30' : 'bg-slate-50/50 hover:bg-blue-50/30'
                           }`}
                         >
-                          <td className="py-2 px-3 border-r border-slate-100 font-sans text-slate-900 font-medium whitespace-nowrap">
-                            {r.tipo}
-                          </td>
-                          <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
-                            {r.almacen}
-                          </td>
-                          <td className="py-2 px-3 text-slate-700 font-mono border-r border-slate-100 whitespace-nowrap">
-                            {formatFechaDDMMAAAA(r.fecha)}
-                          </td>
-                          <td className="py-2 px-3 text-blue-600 font-bold border-r border-slate-100">
-                            <div className="flex items-center gap-1 flex-wrap">
-                              <span>{r.numero}</span>
-                              {(r as any).esTrasladado ? (
-                                <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-0.5" title={`Consumo rezagado transferido desde ${(r as any).mesOrigen || 'Septiembre'}`}>
-                                  📥 TRASLADADO DE {(r as any).mesOrigen?.toUpperCase() || 'SEPTIEMBRE'}
-                                </span>
-                              ) : subtipoNorm === 'rezagada' ? (
-                                <span className="px-1 py-0.2 rounded text-[9px] font-black bg-indigo-200 text-indigo-900 border border-indigo-300" title={`Consumo rezagado perteneciente a ${detectarMesRezagada(r) || 'mes anterior'}`}>
-                                  {detectarMesRezagada(r) ? `REZ. ${detectarMesRezagada(r)?.toUpperCase()}` : 'REZAGADA'}
-                                </span>
-                              ) : isAjusteMan ? (
-                                <span className="px-1 py-0.2 rounded text-[9px] font-black bg-rose-200 text-rose-900 border border-rose-300" title="Ajuste manual histórico">
-                                  MANUAL
-                                </span>
-                              ) : isAjusteNorm ? (
-                                <span className="px-1 py-0.2 rounded text-[9px] font-black bg-amber-200 text-amber-900 border border-amber-300" title="Ajuste Normalización de inventario">
-                                  NORM
-                                </span>
-                              ) : null}
+                          {/* 1. Fecha */}
+                          <td className="py-2 px-3 font-mono text-slate-700 border-r border-slate-100 whitespace-nowrap">
+                            <div className="flex flex-col">
+                              <span className="font-semibold text-slate-900">{formatFechaDDMMAAAA(r.fecha)}</span>
+                              <span className="text-[9px] text-slate-400 capitalize">{r.nombre_mes || ''}</span>
                             </div>
                           </td>
-                          <td className="py-2 px-3 text-slate-600 border-r border-slate-100">
-                            {r.pedido}
-                          </td>
-                          <td className="py-2 px-3 border-r border-slate-100 font-mono text-[11px] text-center">
-                            {r.recepcion || r.rc ? (
-                              <span className="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                                {r.recepcion || r.rc}
-                              </span>
-                            ) : r.tipo === 'Servicios' || r.tipo === 'Compras' ? (
-                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-amber-50 text-amber-800 border border-amber-300 font-bold" title="Servicio/Compra sin comprobante de recepción (finiquito pendiente en SIP)">
-                                Sin RC (Pendiente)
-                              </span>
-                            ) : (
-                              <span className="text-slate-400 font-mono">-</span>
-                            )}
-                          </td>
-                          <td className="py-2 px-3 border-r border-slate-100">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <button
-                                onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
-                                className={`group inline-flex items-center gap-1 px-2 py-0.5 rounded-md border transition-all font-mono font-bold text-xs cursor-pointer shadow-2xs ${
-                                  isCorr 
-                                    ? 'bg-purple-100 hover:bg-purple-200 border-purple-300 text-purple-900' 
-                                    : 'bg-purple-50 hover:bg-purple-100 border-purple-200 hover:border-purple-300 text-purple-800 hover:text-purple-900'
-                                }`}
-                                title="Clic para corregir / re-imputar esta cuenta auxiliar"
-                              >
-                                <span>{resolverCodigoCuentaAuxiliar(r.cuenta_aux, r.motivo, r.descripcion, r.solicitante) || 'S/A'}</span>
-                                <Edit3 className="w-3 h-3 text-purple-400 group-hover:text-purple-700 transition-colors" />
-                              </button>
-                              {isCorr && (
-                                <span 
-                                  className="px-1.5 py-0.5 rounded text-[10px] bg-purple-100 text-purple-900 font-bold border border-purple-300 flex items-center gap-0.5" 
-                                  title={`Reclasificado a ${r.nombre_mes || 'otro mes'}. Original: ${(r as any).cuenta_aux_original || (r as any).cuentaAuxiliarOriginal || 'SIP'}. Motivo: ${(r as any).infoReclasificacion?.motivo || (r as any).motivo || 'Corrección contable'}`}
-                                >
-                                  ✓ Corregido {(r as any).esTrasladado ? `(en ${r.nombre_mes?.toUpperCase()})` : (r.nombre_mes && r.nombre_mes.toLowerCase() !== 'septiembre' ? `→ ${r.nombre_mes.toUpperCase()}` : '')}
-                                </span>
+
+                          {/* 2. Tipo */}
+                          <td className="py-2 px-3 border-r border-slate-100 whitespace-nowrap">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${
+                              r.tipo === 'Materiales Directos'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : r.tipo === 'Servicios'
+                                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                : 'bg-amber-50 text-amber-700 border-amber-200'
+                            }`}>
+                              {r.tipo === 'Materiales Directos' ? (
+                                <><Boxes className="w-3 h-3 text-emerald-600" /> Material</>
+                              ) : r.tipo === 'Servicios' ? (
+                                <><Briefcase className="w-3 h-3 text-blue-600" /> Servicio</>
+                              ) : (
+                                r.tipo
                               )}
-                              <button
-                                onClick={() => {
-                                  const ctaCode = resolverCodigoCuentaAuxiliar(r.cuenta_aux, r.motivo, r.descripcion, r.solicitante);
-                                  setSelectedCta(ctaCode);
-                                  setInputProyecto(ctaCode);
-                                  setPageMaster(1);
-                                }}
-                                className="text-slate-400 hover:text-slate-700 p-0.5 rounded hover:bg-slate-100 transition-colors cursor-pointer"
-                                title="Filtrar tabla por esta cuenta"
-                              >
-                                <Filter className="w-3 h-3" />
-                              </button>
+                            </span>
+                          </td>
+
+                          {/* 3. Cuenta Auxiliar con edición rápida */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-mono font-bold text-slate-800 bg-purple-50/30 relative">
+                            <div className="flex items-center justify-between gap-1.5 group">
+                              <span className="text-purple-950 font-bold tracking-tight">
+                                {r.cuenta_aux || '-'}
+                              </span>
+                              <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                                {isCorr && (
+                                  <span className="inline-flex items-center px-1 rounded text-[9px] bg-emerald-600 text-white font-sans font-bold" title="Cuenta corregida y auditada">
+                                    ✓
+                                  </span>
+                                )}
+                                <button
+                                  onClick={() => handleOpenCtaDropdown(r.id, r.cuenta_aux)}
+                                  className="p-1 rounded hover:bg-purple-200 text-purple-700 transition-colors"
+                                  title="Cambiar e imputar cuenta auxiliar en caliente"
+                                >
+                                  <Edit3 className="w-3 h-3" />
+                                </button>
+                              </div>
                             </div>
-                          </td>
-                          <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
-                            {r.ceco}
-                          </td>
-                          <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
-                            {r.codigo}
-                          </td>
-                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[280px] whitespace-normal break-words leading-snug" title={r.descripcion}>
-                            {r.descripcion}
-                          </td>
-                          <td className="py-2 px-3 text-right text-slate-700 border-r border-slate-100">
-                            {formatNumber(r.cantidad)}
-                          </td>
-                          <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
-                            {r.unidad}
-                          </td>
-                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[160px] whitespace-normal break-words leading-snug" title={r.solicitante}>
-                            {r.solicitante ? (
-                              <div>
-                                <div className="font-semibold text-slate-900">{r.solicitante}</div>
-                                <div className="text-[10px] text-slate-500 font-sans">
-                                  {r.tipo === 'Materiales Directos' ? 'Montó PA (Almacén)' : 'Solicitante SC'}
+                            {/* Dropdown de cambio rápido de cuenta auxiliar */}
+                            {openCtaDropdownId === r.id && (
+                              <div className="absolute left-0 top-full z-50 mt-1 w-72 bg-white border border-purple-200 rounded-lg shadow-xl p-2 font-sans text-xs">
+                                <div className="text-[11px] font-bold text-purple-900 mb-1 flex items-center justify-between">
+                                  <span>Reclasificar Cuenta</span>
+                                  <button onClick={() => setOpenCtaDropdownId(null)} className="text-slate-400 hover:text-slate-600">✕</button>
+                                </div>
+                                <input
+                                  type="text"
+                                  placeholder="Buscar cuenta o proyecto..."
+                                  value={searchCtaDropdown}
+                                  onChange={(e) => setSearchCtaDropdown(e.target.value)}
+                                  className="w-full px-2 py-1 border border-slate-200 rounded text-xs mb-1.5 focus:outline-none focus:border-purple-500"
+                                  autoFocus
+                                />
+                                <div className="max-h-48 overflow-y-auto divide-y divide-slate-100">
+                                  {proyectos
+                                    .filter(p => !searchCtaDropdown || p.codigo.toLowerCase().includes(searchCtaDropdown.toLowerCase()) || p.nombre.toLowerCase().includes(searchCtaDropdown.toLowerCase()))
+                                    .slice(0, 15)
+                                    .map(p => (
+                                      <button
+                                        key={p.codigo}
+                                        onClick={() => handleQuickUpdateCuenta(r, p.codigo)}
+                                        className="w-full text-left py-1.5 px-2 hover:bg-purple-50 rounded flex flex-col transition-colors text-[11px]"
+                                      >
+                                        <span className="font-mono font-bold text-purple-700">{p.codigo}</span>
+                                        <span className="text-slate-600 truncate">{p.nombre}</span>
+                                      </button>
+                                    ))}
                                 </div>
                               </div>
-                            ) : (
-                              <span className="text-slate-400 italic font-mono">-</span>
                             )}
                           </td>
-                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[160px] whitespace-normal break-words leading-snug" title={(r as any).comprador}>
-                            {(r as any).comprador ? (
-                              <div>
-                                <div className="font-semibold text-blue-900">{(r as any).comprador}</div>
-                                <div className="text-[10px] text-blue-600 font-sans">Comprador OC</div>
-                              </div>
-                            ) : r.tipo === 'Materiales Directos' ? (
-                              <span className="text-[10px] text-slate-400 font-mono italic">Stock Almacén (Sin OC)</span>
+
+                          {/* 4. Proyecto / Obra */}
+                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[260px] whitespace-normal break-words leading-snug" title={projNombre}>
+                            <span className="font-medium text-slate-900">{projNombre}</span>
+                          </td>
+
+                          {/* 5. Cliente / Clasificación */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-bold text-slate-900 text-xs">{projCliente}</span>
+                              <span className={`inline-flex items-center gap-1 w-fit text-[9px] font-bold px-1.5 py-0.2 rounded border ${
+                                esExt
+                                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                  : 'bg-slate-100 text-slate-600 border-slate-200'
+                              }`}>
+                                {esExt ? 'Obra Externa (Cliente)' : (projInfo?.tipoCosto || 'Interno / OPEX')}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* 6. Vale / Solicitud */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-mono whitespace-nowrap">
+                            <span className={`font-bold ${r.tipo === 'Materiales Directos' ? 'text-emerald-700' : 'text-indigo-700'}`}>
+                              {r.numero || '-'}
+                            </span>
+                          </td>
+
+                          {/* 7. Pedido / Orden */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-mono whitespace-nowrap">
+                            <span className={`font-semibold ${r.tipo === 'Materiales Directos' ? 'text-purple-700' : 'text-blue-700'}`}>
+                              {r.pedido || '-'}
+                            </span>
+                          </td>
+
+                          {/* 8. RC / Recepción */}
+                          <td className="py-2 px-3 border-r border-slate-100 text-center whitespace-nowrap">
+                            {(() => {
+                              const rcVal = r.recepcion || r.rc;
+                              if (rcVal && rcVal !== '-') {
+                                return (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+                                    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> {rcVal}
+                                  </span>
+                                );
+                              }
+                              if (r.tipo === 'Materiales Directos') {
+                                return (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">
+                                    Conforme Almacén
+                                  </span>
+                                );
+                              }
+                              return (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300">
+                                  <Clock className="w-3 h-3 text-amber-600" /> Sin RC
+                                </span>
+                              );
+                            })()}
+                          </td>
+
+                          {/* 9. Código SIP */}
+                          <td className="py-2 px-3 font-mono text-slate-600 border-r border-slate-100 whitespace-nowrap">
+                            {r.codigo || '-'}
+                          </td>
+
+                          {/* 10. Descripción del Ítem */}
+                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[280px] whitespace-normal break-words leading-snug font-medium" title={r.descripcion}>
+                            {r.descripcion || '-'}
+                          </td>
+
+                          {/* 11. Cantidad */}
+                          <td className="py-2 px-3 text-right font-mono text-slate-800 border-r border-slate-100 font-semibold">
+                            {formatCantidad(r.cantidad)}
+                          </td>
+
+                          {/* 12. Unidad */}
+                          <td className="py-2 px-3 text-center border-r border-slate-100 whitespace-nowrap">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 font-mono font-semibold">
+                              {r.unidad || 'UND'}
+                            </span>
+                          </td>
+
+                          {/* 13. Precio Unitario ($) */}
+                          <td className="py-2 px-3 text-right text-slate-700 border-r border-slate-100 font-medium whitespace-nowrap">
+                            {formatUSD(r.precio_final)}
+                          </td>
+
+                          {/* 14. Total USD ($) */}
+                          <td className="py-2 px-3 text-right font-bold text-slate-900 bg-slate-50/60 border-r border-slate-100 whitespace-nowrap">
+                            <span className={r.total_usd > 0 ? 'text-emerald-700 font-bold' : 'text-slate-400'}>
+                              {formatUSD(r.total_usd)}
+                            </span>
+                          </td>
+
+                          {/* 15. Solicitante */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal">
+                            <div className="flex flex-col">
+                              <span className="font-semibold text-slate-900">{r.solicitante || 'S/D'}</span>
+                              <span className="text-[10px] text-slate-400 font-sans">
+                                {r.tipo === 'Materiales Directos' ? 'Montó PA (Almacén)' : 'Solicitante SC'}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* 16. Comprador */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal">
+                            <div className="flex flex-col">
+                              {isStockAlmacen ? (
+                                <>
+                                  <span className="text-slate-600 font-medium">Stock Almacén</span>
+                                  <span className="text-[9px] text-slate-400 italic">Despacho Directo (Sin OC)</span>
+                                </>
+                              ) : isDirectoObra ? (
+                                <>
+                                  <span className="text-amber-800 font-semibold flex items-center gap-1">
+                                    Gestión Directa Obra
+                                  </span>
+                                  <span className="text-[9px] text-amber-600 font-medium">
+                                    Tramitado por Solicitante ({r.solicitante})
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="text-slate-900 font-semibold">{compLabel}</span>
+                                  <span className="text-[9px] text-blue-600 font-medium">Analista de Procura</span>
+                                </>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* 17. Proveedor / Almacén */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[180px] whitespace-normal">
+                            {r.tipo === 'Materiales Directos' ? (
+                              <span className="text-slate-600 font-mono text-xs">Almacén: {r.almacen || 'ALMSE'}</span>
                             ) : (
-                              <span className="text-slate-400 italic font-mono">-</span>
+                              <span className="font-semibold text-slate-800 text-xs">{r.proveedor || 'Sin Proveedor'}</span>
                             )}
                           </td>
-                          <td className="py-2 px-3 text-slate-700 border-r border-slate-100 font-sans min-w-[180px] whitespace-normal break-words leading-snug" title={r.proveedor}>
-                            {r.proveedor ? (
-                              <span className="font-semibold text-slate-800">{r.proveedor}</span>
-                            ) : (
-                              <span className="text-slate-400 italic font-mono">-</span>
-                            )}
+
+                          {/* 18. Motivo / Justificación */}
+                          <td className="py-2 px-3 text-slate-700 border-r border-slate-100 font-sans min-w-[280px] whitespace-normal break-words leading-snug" title={r.motivo}>
+                            {r.motivo || '-'}
                           </td>
-                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans bg-amber-50/20 min-w-[280px] whitespace-normal break-words leading-snug" title={r.motivo}>
-                            {r.motivo || <span className="text-slate-400 italic font-mono">-</span>}
-                          </td>
-                          {/* COLUMNA: PENDIENTES POR REVISAR / CORREGIR */}
+
+                          {/* 19. Auditoría / Ajuste */}
                           <td className="py-2 px-3 border-r border-slate-100 min-w-[260px] whitespace-normal text-left">
                             {(() => {
                               const desfase = detectarDesfaseFechaMotivo(r);
@@ -5288,16 +5389,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                       <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                                       <span title={desfase?.detalle || `Motivo desfasado (${fechaTexto}) vs fecha doc (${formatFechaDDMMAAAA(r.fecha)})`}>
                                         Fecha en Motivo: <strong className="underline text-amber-900">{fechaTexto}</strong>
-                                        <span className="text-slate-500 font-normal ml-1">(Doc: {formatFechaDDMMAAAA(r.fecha)})</span>
                                       </span>
                                     </div>
-                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                    <div className="flex items-center gap-1 flex-wrap pt-0.5">
                                       <button
-                                        onClick={() => handleQuickCorregirRezagada(r, mesSug)}
-                                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition-colors cursor-pointer"
-                                        title={`Mover inmediatamente a ${mesSug} (1 clic)`}
+                                        onClick={() => handleAplicarCorreccionDesfase(r)}
+                                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition-colors cursor-pointer"
+                                        title={`Mover costo a ${mesSug} (1 clic)`}
                                       >
-                                        <CheckCircle2 className="w-2.5 h-2.5" /> Pasar a {mesSug}
+                                        <CheckCircle2 className="w-2.5 h-2.5" /> Mover a {mesSug}
                                       </button>
                                       <button
                                         onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
@@ -5307,7 +5407,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                         <Edit3 className="w-2.5 h-2.5" /> Editar
                                       </button>
                                       <button
-                                        onClick={() => handleDescartarRezagada(r)}
+                                        onClick={() => handleDescartarDesfase(r)}
                                         className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-semibold bg-white hover:bg-rose-50 text-rose-700 hover:text-rose-800 border border-rose-300 shadow-2xs transition-colors cursor-pointer"
                                         title={`Sacar de rezagadas: confirmar que pertenece a ${selectedMes} y no debe reclasificarse`}
                                       >
@@ -5318,11 +5418,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                 );
                               }
 
-                              return <span className="text-slate-400 text-[10px] italic">-</span>;
-                            })()}
-                          </td>
-                          <td className="py-2 px-3 border-r border-slate-100">
-                            {(() => {
                               if (subtipoNorm === 'rezagada') {
                                 const detected = detectarMesRezagada(r);
                                 return (
@@ -5356,6 +5451,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                   </div>
                                 );
                               }
+
                               if (isAjusteMan) {
                                 return (
                                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-900 border border-rose-300 shadow-2xs">
@@ -5387,68 +5483,24 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                               return <span className="text-slate-400 text-[10px]">{r.ajuste || '-'}</span>;
                             })()}
                           </td>
-                        <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[180px] text-slate-800 whitespace-normal">
-                          {r.categoria || '-'}
-                        </td>
-                        <td className="py-2 px-3 text-right text-slate-700 border-r border-slate-100 font-medium">
-                          {formatUSD(r.precio_final)}
-                        </td>
-                        <td className="py-2 px-3 text-right font-bold text-slate-900 bg-slate-50/60 border-r border-slate-100">
-                          <span className={r.total_usd > 0 ? 'text-emerald-600 font-bold' : 'text-slate-400'}>
-                            {formatUSD(r.total_usd)}
-                          </span>
-                        </td>
-                        <td className="py-2 px-3 text-right text-slate-700 border-r border-slate-100 font-medium">
-                          {formatUSD(r.precio_dolar || r.precio_final)}
-                        </td>
-                        <td className="py-2 px-3 text-center text-slate-500 border-r border-slate-100">
-                          {r.semana}
-                        </td>
-                        <td className="py-2 px-3 text-slate-500 font-mono border-r border-slate-100 whitespace-nowrap">
-                          {formatFechaDDMMAAAA(r.fecha_hasta)}
-                        </td>
-                        <td className="py-2 px-3 text-slate-600 border-r border-slate-100 font-sans">
-                          {r.cargo}
-                        </td>
-                        <td className="py-2 px-3 text-slate-600 border-r border-slate-100 font-sans">
-                          {r.supervisor}
-                        </td>
-                        <td className="py-2 px-3 text-slate-600 border-r border-slate-100 font-sans">
-                          {r.area_ubicacion}
-                        </td>
-                        <td className="py-2 px-3 text-right text-slate-600 border-r border-slate-100">
-                          {r.tarifa ? formatUSD(r.tarifa) : ''}
-                        </td>
-                        <td className="py-2 px-3 text-slate-600 border-r border-slate-100 font-sans min-w-[150px] whitespace-normal break-words leading-snug" title={r.actividad}>
-                          {r.actividad}
-                        </td>
-                        <td className="py-2 px-3 text-slate-600 border-r border-slate-100 font-sans">
-                          {r.linea_produccion}
-                        </td>
-                        <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[280px] whitespace-normal break-words leading-snug" title={r.datos_descripcion}>
-                          {r.datos_descripcion}
-                        </td>
-                        <td className="py-2 px-3 text-slate-600 border-r border-slate-100 font-sans">
-                          {r.datos_tipo_costo}
-                        </td>
-                        <td className="py-2 px-3 text-slate-600 border-r border-slate-100 font-sans">
-                          {r.datos_tipo_equipo}
-                        </td>
-                        <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
-                          {r.datos_codigo_sysman}
-                        </td>
-                        <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
-                          {r.datos_zona}
-                        </td>
-                        <td className="py-2 px-3 text-center text-slate-700 border-r border-slate-100">
-                          {r.ano}
-                        </td>
-                        <td className="py-2 px-3 text-center text-blue-600 font-semibold capitalize">
-                          {r.nombre_mes}
-                        </td>
-                      </tr>
-                    );
-                  })}
+
+                          {/* 20. Categoría */}
+                          <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[160px] text-slate-700 whitespace-normal">
+                            {r.categoria || '-'}
+                          </td>
+
+                          {/* 21. Ceco */}
+                          <td className="py-2 px-3 text-center font-mono text-slate-500 border-r border-slate-100">
+                            {r.ceco || '-'}
+                          </td>
+
+                          {/* 22. Almacén */}
+                          <td className="py-2 px-3 text-center font-mono text-slate-600">
+                            {r.almacen || '-'}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
