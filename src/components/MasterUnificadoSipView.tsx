@@ -5141,7 +5141,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           </td>
 
                           {/* 3. Cuenta Auxiliar con edición rápida */}
-                          <td className="py-2 px-3 border-r border-slate-100 font-mono font-bold text-slate-800 bg-purple-50/30 relative">
+                          <td className="py-2 px-3 border-r border-slate-100 font-mono font-bold text-slate-800 bg-purple-50/30">
                             <div className="flex items-center justify-between gap-1.5 group">
                               <span className="text-purple-950 font-bold tracking-tight">
                                 {r.cuenta_aux || '-'}
@@ -5153,46 +5153,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                   </span>
                                 )}
                                 <button
-                                  onClick={() => handleOpenCtaDropdown(r.id, r.cuenta_aux)}
-                                  className="p-1 rounded hover:bg-purple-200 text-purple-700 transition-colors"
-                                  title="Cambiar e imputar cuenta auxiliar en caliente"
+                                  onClick={() => handleOpenCorreccionFromItem(r, 'unificada')}
+                                  className="p-1 rounded hover:bg-purple-200 text-purple-700 transition-colors cursor-pointer"
+                                  title="Reclasificar o imputar cuenta auxiliar"
                                 >
                                   <Edit3 className="w-3 h-3" />
                                 </button>
                               </div>
                             </div>
-                            {/* Dropdown de cambio rápido de cuenta auxiliar */}
-                            {openCtaDropdownId === r.id && (
-                              <div className="absolute left-0 top-full z-50 mt-1 w-72 bg-white border border-purple-200 rounded-lg shadow-xl p-2 font-sans text-xs">
-                                <div className="text-[11px] font-bold text-purple-900 mb-1 flex items-center justify-between">
-                                  <span>Reclasificar Cuenta</span>
-                                  <button onClick={() => setOpenCtaDropdownId(null)} className="text-slate-400 hover:text-slate-600">✕</button>
-                                </div>
-                                <input
-                                  type="text"
-                                  placeholder="Buscar cuenta o proyecto..."
-                                  value={searchCtaDropdown}
-                                  onChange={(e) => setSearchCtaDropdown(e.target.value)}
-                                  className="w-full px-2 py-1 border border-slate-200 rounded text-xs mb-1.5 focus:outline-none focus:border-purple-500"
-                                  autoFocus
-                                />
-                                <div className="max-h-48 overflow-y-auto divide-y divide-slate-100">
-                                  {proyectos
-                                    .filter(p => !searchCtaDropdown || p.codigo.toLowerCase().includes(searchCtaDropdown.toLowerCase()) || p.nombre.toLowerCase().includes(searchCtaDropdown.toLowerCase()))
-                                    .slice(0, 15)
-                                    .map(p => (
-                                      <button
-                                        key={p.codigo}
-                                        onClick={() => handleQuickUpdateCuenta(r, p.codigo)}
-                                        className="w-full text-left py-1.5 px-2 hover:bg-purple-50 rounded flex flex-col transition-colors text-[11px]"
-                                      >
-                                        <span className="font-mono font-bold text-purple-700">{p.codigo}</span>
-                                        <span className="text-slate-600 truncate">{p.nombre}</span>
-                                      </button>
-                                    ))}
-                                </div>
-                              </div>
-                            )}
                           </td>
 
                           {/* 4. Proyecto / Obra */}
