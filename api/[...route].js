@@ -219,6 +219,43 @@ export default async function handler(req, res) {
 
       const page = parseInt(query.page || '1', 10);
       const limit = parseInt(query.limit || '100', 10);
+
+      // Ordenamiento oficial (por defecto: fecha más reciente primero)
+      const sortBy = query.sort_by || 'fecha';
+      const order = query.order || 'desc';
+
+      items.sort((a, b) => {
+        if (sortBy === 'fecha') {
+          const parseT = (val) => {
+            if (!val) return 0;
+            const str = String(val).trim();
+            if (/^\d{4}-\d{2}-\d{2}/.test(str)) return new Date(str).getTime() || 0;
+            if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+              const [d, m, y] = str.split('/');
+              return new Date(`${y}-${m}-${d}`).getTime() || 0;
+            }
+            return new Date(str).getTime() || 0;
+          };
+          const ta = parseT(a.fecha);
+          const tb = parseT(b.fecha);
+          if (ta !== tb) return order === 'asc' ? ta - tb : tb - ta;
+          const na = String(a.numero || '');
+          const nb = String(b.numero || '');
+          return order === 'asc' ? na.localeCompare(nb) : nb.localeCompare(na);
+        }
+        if (sortBy === 'total_usd' || sortBy === 'cantidad' || sortBy === 'precio_final' || sortBy === 'precio_dolar') {
+          const na = Number(a[sortBy]) || 0;
+          const nb = Number(b[sortBy]) || 0;
+          if (na !== nb) return order === 'asc' ? na - nb : nb - na;
+          return 0;
+        }
+        let va = String(a[sortBy] || '').toLowerCase();
+        let vb = String(b[sortBy] || '').toLowerCase();
+        if (va < vb) return order === 'asc' ? -1 : 1;
+        if (va > vb) return order === 'asc' ? 1 : -1;
+        return 0;
+      });
+
       const start = (page - 1) * limit;
 
       return res.status(200).json({
