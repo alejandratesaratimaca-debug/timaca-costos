@@ -2234,6 +2234,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'Pedido / Orden': r.pedido,   // Pedido PA / Orden OC
           'RC / Recepcion': r.recepcion || r.rc || (r.tipo === 'Servicios' || r.tipo === 'Compras' ? 'Sin RC (Pendiente)' : 'Conforme Almacén'),
           'Codigo SIP': r.codigo,
+          'Descripcion del Item (SIP)': r.descripcion,
           'Motivo / Justificacion': r.motivo,
           'Cantidad': r.cantidad,
           'Unidad': r.unidad,
@@ -2243,7 +2244,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'Generado Por (SIP)': r.creadaPor || r.solicitante || '',
           'Comprador (Procura)': compradorExport,
           'Proveedor / Almacen': r.proveedor || (r.tipo === 'Materiales Directos' ? `Almacén ${r.almacen || ''}` : ''),
-          'Descripcion del Item (SIP)': r.descripcion,
           'Auditoria / Ajuste': desfase ? desfase.detalle : (r.esReclasificado ? `Corregido a ${r.nombre_mes || 'otro mes'}` : (r.ajuste || 'Normal')),
           'Categoria': r.categoria,
           'Ceco': r.ceco || '',
@@ -5060,6 +5060,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       <th onClick={() => handleSortMaster('codigo')} className="py-2.5 px-3 border-r border-slate-200 cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Código SIP {sortMasterBy === 'codigo' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
+                      <th onClick={() => handleSortMaster('descripcion')} className="py-2.5 px-3 border-r border-slate-200 min-w-[260px] bg-slate-100 font-bold cursor-pointer hover:bg-slate-200 transition-colors select-none">
+                        Descripción del Ítem (Catálogo SIP) {sortMasterBy === 'descripcion' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
                       <th onClick={() => handleSortMaster('motivo')} className="py-2.5 px-3 border-r border-slate-200 min-w-[280px] bg-amber-50/50 text-amber-950 font-bold cursor-pointer hover:bg-amber-100 transition-colors select-none">
                         Motivo / Justificación {sortMasterBy === 'motivo' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
@@ -5084,9 +5087,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       </th>
                       <th onClick={() => handleSortMaster('proveedor')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Proveedor / Almacén {sortMasterBy === 'proveedor' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
-                      </th>
-                      <th onClick={() => handleSortMaster('descripcion')} className="py-2.5 px-3 border-r border-slate-200 min-w-[260px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
-                        Descripción del Ítem (Catálogo SIP) {sortMasterBy === 'descripcion' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th className="py-2.5 px-3 border-r border-slate-200 min-w-[260px] bg-indigo-50/80 text-indigo-950 font-bold text-center select-none" title="Auditoría: desfases de fecha, reclasificaciones o normalizaciones">
                         Auditoría / Ajuste
@@ -5244,7 +5244,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             {r.codigo || '-'}
                           </td>
 
-                          {/* 10. Motivo / Justificación (Intercambiado por petición) */}
+                          {/* 10. Descripción del Ítem (Catálogo SIP) */}
+                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[260px] whitespace-normal break-words leading-snug font-medium" title={r.descripcion}>
+                            {r.descripcion || '-'}
+                          </td>
+
+                          {/* 11. Motivo / Justificación */}
                           <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[280px] whitespace-normal break-words leading-snug font-medium bg-amber-50/20" title={r.motivo}>
                             {r.motivo || <span className="text-slate-400 italic font-mono">-</span>}
                           </td>
@@ -5315,7 +5320,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             </div>
                           </td>
 
-                          {/* 17. Proveedor / Almacén */}
+                          {/* 19. Proveedor / Almacén */}
                           <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[180px] whitespace-normal">
                             {r.tipo === 'Materiales Directos' ? (
                               <span className="text-slate-600 font-mono text-xs">Almacén: {r.almacen || 'ALMSE'}</span>
@@ -5324,12 +5329,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             )}
                           </td>
 
-                          {/* 18. Descripción del Ítem (Catálogo SIP) */}
-                          <td className="py-2 px-3 text-slate-700 border-r border-slate-100 font-sans min-w-[260px] whitespace-normal break-words leading-snug" title={r.descripcion}>
-                            {r.descripcion || '-'}
-                          </td>
-
-                          {/* 19. Auditoría / Ajuste */}
+                          {/* 20. Auditoría / Ajuste */}
                           <td className="py-2 px-3 border-r border-slate-100 min-w-[260px] whitespace-normal text-left">
                             {(() => {
                               const desfase = detectarDesfaseFechaMotivo(r);

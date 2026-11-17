@@ -11065,5 +11065,12 @@
     "tipoCosto": "Mantto Flota (OPEX)",
     "cliente": "EQUIPO MOVIL",
     "ceco": ""
+  },
+  {
+    "codigo": "TTE-C-0721",
+    "nombre": "Boca Grande II - Transporte Fluvial y Mantenimiento Cinta Inner (VISCO ORINOCO)",
+    "tipoCosto": "Externo",
+    "cliente": "VISCO ORINOCO C.A",
+    "ceco": ""
   }
 ]
