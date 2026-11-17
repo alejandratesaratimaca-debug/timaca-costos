@@ -137,6 +137,7 @@ interface MasterRow {
   cantidad: number;
   unidad: string;
   solicitante: string;
+  comprador?: string;
   motivo: string;
   ajuste: string;
   categoria: string;
@@ -2205,6 +2206,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'Cantidad': r.cantidad,
           'Unidad': r.unidad,
           'solicitante': r.solicitante,
+          'Comprador': r.comprador || (r.tipo === 'Materiales Directos' ? 'Stock Almacén' : ''),
           'Proveedor': r.proveedor || '',
           'motivo': r.motivo,
           'Pendientes por Revisar / Corregir': desfase ? desfase.detalle : (r.esReclasificado ? `Corregido a ${r.nombre_mes || 'otro mes'}` : ''),
@@ -5038,8 +5040,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         Cantidad {sortMasterBy === 'cantidad' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th className="py-2.5 px-3 border-r border-slate-200">Unidad</th>
-                      <th onClick={() => handleSortMaster('solicitante')} className="py-2.5 px-3 border-r border-slate-200 min-w-[150px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
+                      <th onClick={() => handleSortMaster('solicitante')} className="py-2.5 px-3 border-r border-slate-200 min-w-[160px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Persona que monta la PA (en almacén) o que solicita la SC (en compras/servicios)">
                         Solicitante {sortMasterBy === 'solicitante' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
+                      </th>
+                      <th onClick={() => handleSortMaster('comprador')} className="py-2.5 px-3 border-r border-slate-200 min-w-[160px] cursor-pointer hover:bg-slate-200 transition-colors select-none" title="Analista de Procura / Compras asignado a la Orden de Compra (OC)">
+                        Comprador {sortMasterBy === 'comprador' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
                       </th>
                       <th onClick={() => handleSortMaster('proveedor')} className="py-2.5 px-3 border-r border-slate-200 min-w-[180px] cursor-pointer hover:bg-slate-200 transition-colors select-none">
                         Proveedor {sortMasterBy === 'proveedor' && (sortMasterOrder === 'desc' ? '↓' : '↑')}
@@ -5198,8 +5203,29 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           <td className="py-2 px-3 text-slate-500 border-r border-slate-100">
                             {r.unidad}
                           </td>
-                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[150px] whitespace-normal break-words leading-snug" title={r.solicitante}>
-                            {r.solicitante || <span className="text-slate-400 italic font-mono">-</span>}
+                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[160px] whitespace-normal break-words leading-snug" title={r.solicitante}>
+                            {r.solicitante ? (
+                              <div>
+                                <div className="font-semibold text-slate-900">{r.solicitante}</div>
+                                <div className="text-[10px] text-slate-500 font-sans">
+                                  {r.tipo === 'Materiales Directos' ? 'Montó PA (Almacén)' : 'Solicitante SC'}
+                                </div>
+                              </div>
+                            ) : (
+                              <span className="text-slate-400 italic font-mono">-</span>
+                            )}
+                          </td>
+                          <td className="py-2 px-3 text-slate-800 border-r border-slate-100 font-sans min-w-[160px] whitespace-normal break-words leading-snug" title={(r as any).comprador}>
+                            {(r as any).comprador ? (
+                              <div>
+                                <div className="font-semibold text-blue-900">{(r as any).comprador}</div>
+                                <div className="text-[10px] text-blue-600 font-sans">Comprador OC</div>
+                              </div>
+                            ) : r.tipo === 'Materiales Directos' ? (
+                              <span className="text-[10px] text-slate-400 font-mono italic">Stock Almacén (Sin OC)</span>
+                            ) : (
+                              <span className="text-slate-400 italic font-mono">-</span>
+                            )}
                           </td>
                           <td className="py-2 px-3 text-slate-700 border-r border-slate-100 font-sans min-w-[180px] whitespace-normal break-words leading-snug" title={r.proveedor}>
                             {r.proveedor ? (
