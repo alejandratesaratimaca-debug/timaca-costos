@@ -194,6 +194,107 @@ const MESES_LIST = [
 
 export type SubtipoNormalizacion = 'rezagada' | 'vieja_historica';
 
+export const COMPRADORES_PROCURA_SET = new Set([
+  'KEYSERLING GÓMEZ',
+  'KEYSERLING GOMEZ',
+  'HERNANDO LOPEZ',
+  'HERNANDO LÓPEZ',
+  'JORDI MEJIAS',
+  'JORDI MEJÍAS',
+  'RODOLFO PEREDA',
+  'ALBERT GONZALEZ',
+  'ALBERT GONZÁLEZ',
+  'CARLOS PEREZ',
+  'CARLOS PÉREZ',
+  'MARJORIET LOZADA',
+  'MARIO LOZADA',
+  'RAFAEL MENDEZ',
+  'RAFAEL MÉNDEZ',
+  'LEYTON RODRIGO',
+  'JENNYFER CASANOVA',
+  'ANDRES PORRAS',
+  'ANDRÉS PORRAS',
+  'YOLIMAR CARVAJAL',
+  'FERMIN AMAYA',
+  'YESSI SUAREZ',
+  'YESSI SUÁREZ',
+  'ADMINISTRACION',
+  'PROCESO ANULADO',
+  'PROCESO EN STANDBY'
+]);
+
+export function getClasificacionPersonal(r: MasterRow) {
+  // 1. Solicitante Real: SOLO si aparece en motivo o retiró en almacén; NUNCA un comprador de procura
+  let solicitanteNombre: string | null = null;
+  let solicitanteTag: string | null = null;
+
+  const solRealRaw = (r.solicitante_real || '').trim();
+  const solRealClean = solRealRaw.toUpperCase();
+  if (solRealClean && !COMPRADORES_PROCURA_SET.has(solRealClean)) {
+    solicitanteNombre = solRealRaw;
+    solicitanteTag = 'Detectado en Motivo';
+  } else if (r.motivo) {
+    const m = r.motivo.match(/(?:SOLICITA(?:NTE|DO\s+POR)?|SOLICITA)\s*[:\-]\s*([A-ZÁÉÍÓÚÑa-záéíóúñ\s\.]+)/i);
+    if (m) {
+      let extracted = m[1].split('–')[0].split('-')[0].split(',')[0].split('(')[0].trim();
+      extracted = extracted.replace(/^(?:ING\.?|SR\.?|SRA\.?)\s+/i, '').trim();
+      const extractedClean = extracted.toUpperCase();
+      if (extracted.length >= 3 && !COMPRADORES_PROCURA_SET.has(extractedClean)) {
+        solicitanteNombre = extracted;
+        solicitanteTag = 'Detectado en Motivo';
+      }
+    }
+  }
+
+  // Si no se encontró en motivo, solo para vales de almacén físicos usar quien retiró en almacén si no es comprador
+  if (!solicitanteNombre && r.tipo === 'Materiales Directos') {
+    const rawSol = (r.solicitante || '').trim();
+    const rawClean = rawSol.toUpperCase();
+    if (rawClean && rawClean !== 'S/D' && !COMPRADORES_PROCURA_SET.has(rawClean)) {
+      solicitanteNombre = rawSol;
+      solicitanteTag = 'Retiró en Almacén';
+    }
+  }
+
+  // 2. Generado Por (SIP)
+  let generadorNombre = (r.creadaPor || (r.tipo === 'Materiales Directos' ? r.solicitante : '') || '').trim();
+  let generadorTag = 'Usuario SIP';
+  const genClean = generadorNombre.toUpperCase();
+  if (genClean.includes('ASTRID SILVA') || genClean.includes('MANUEL CHAVEZ') || genClean.includes('HERNAN GARCIA')) {
+    generadorTag = 'Planificación Operaciones';
+  } else if (genClean.includes('LEGLANIS BRITO') || genClean.includes('JESSICA NAVARRO') || genClean.includes('JOSE AMUNDARAIN')) {
+    generadorTag = 'Gestión de Almacén';
+  } else if (genClean.includes('WUILLIANS') || genClean.includes('GUZMAN')) {
+    generadorTag = 'Ingeniería / Mantto';
+  } else if (COMPRADORES_PROCURA_SET.has(genClean)) {
+    generadorTag = 'Analista de Procura';
+  } else if (r.tipo === 'Materiales Directos') {
+    generadorTag = 'Despachador Almacén';
+  }
+
+  // 3. Comprador (Procura)
+  let compradorNombre = (r.comprador || '').trim();
+  let compradorTag = 'Analista de Procura';
+  const isStock = r.tipo === 'Materiales Directos';
+  if (isStock) {
+    compradorNombre = 'Stock Almacén';
+    compradorTag = 'Despacho Directo (Sin OC)';
+  } else if (!compradorNombre) {
+    compradorNombre = 'Sin Asignar';
+    compradorTag = 'Procura / Compras';
+  }
+
+  return {
+    solicitanteNombre,
+    solicitanteTag,
+    generadorNombre: generadorNombre || '-',
+    generadorTag,
+    compradorNombre,
+    compradorTag,
+    isStock
+  };
+}
+
 export const formatFechaDDMMAAAA = (fechaStr?: string | null): string => {
   if (!fechaStr) return '-';
   const clean = String(fechaStr).trim();
@@ -2216,12 +2317,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       const excelData = rows.map((r: MasterRow) => {
         const desfase = detectarDesfaseFechaMotivo(r);
         const projInfo = proyectoMap.get((r.cuenta_aux || '').toUpperCase().trim());
-        let compradorExport = (r.comprador || '').trim();
-        if (r.tipo === 'Materiales Directos') {
-          compradorExport = 'Stock Almacén (Despacho Directo)';
-        } else if (!compradorExport) {
-          compradorExport = 'Sin Asignar en Procura';
-        }
+        const clasif = getClasificacionPersonal(r);
 
         return {
           'Fecha': r.fecha,
@@ -2240,9 +2336,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'Unidad': r.unidad,
           'Precio Unitario USD': r.precio_final,
           'Total USD': r.total_usd,
-          'Solicitante (Quién Solicita)': r.solicitante_real || r.solicitante || '',
-          'Generado Por (SIP)': r.creadaPor || r.solicitante || '',
-          'Comprador (Procura)': compradorExport,
+          'Solicitante (Quién Solicita)': clasif.solicitanteNombre || '',
+          'Generado Por (SIP)': clasif.generadorNombre !== '-' ? clasif.generadorNombre : '',
+          'Comprador (Procura)': clasif.isStock ? 'Stock Almacén (Despacho Directo)' : clasif.compradorNombre,
           'Proveedor / Almacen': r.proveedor || (r.tipo === 'Materiales Directos' ? `Almacén ${r.almacen || ''}` : ''),
           'Auditoria / Ajuste': desfase ? desfase.detalle : (r.esReclasificado ? `Corregido a ${r.nombre_mes || 'otro mes'}` : (r.ajuste || 'Normal')),
           'Categoria': r.categoria,
@@ -5111,9 +5207,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       const esExt = (projInfo?.tipoCosto || r.datos_tipo_costo || '').toUpperCase().includes('EXTERNO');
 
                       const isStockAlmacen = r.tipo === 'Materiales Directos';
-                      const solicitanteDisplay = r.solicitante_real || r.solicitante || 'S/D';
-                      const generadorDisplay = r.creadaPor || r.solicitante || 'S/D';
-                      const compradorDisplay = (r.comprador || '').trim();
+                      const clasif = getClasificacionPersonal(r);
 
                       return (
                         <tr 
@@ -5278,45 +5372,37 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             </span>
                           </td>
 
-                          {/* 15. Solicitante (Quién Solicita) */}
+                          {/* 16. Solicitante (Quién Solicita) */}
                           <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal">
-                            <div className="flex flex-col">
-                              <span className="font-semibold text-slate-900">{solicitanteDisplay}</span>
-                              <span className="text-[10px] text-slate-400 font-sans">
-                                {r.solicitante_real ? 'Detectado en Motivo' : (r.tipo === 'Materiales Directos' ? 'Solicitante Vale' : 'Solicitante Requerimiento')}
-                              </span>
-                            </div>
+                            {clasif.solicitanteNombre ? (
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-slate-900">{clasif.solicitanteNombre}</span>
+                                <span className="text-[10px] text-emerald-600 font-sans font-medium">
+                                  {clasif.solicitanteTag}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-slate-300 font-mono text-center block">-</span>
+                            )}
                           </td>
 
-                          {/* 16. Generado Por (SIP) */}
+                          {/* 17. Generado Por (SIP) */}
                           <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal bg-indigo-50/20">
                             <div className="flex flex-col">
-                              <span className="font-semibold text-indigo-950">{generadorDisplay}</span>
+                              <span className="font-semibold text-indigo-950">{clasif.generadorNombre}</span>
                               <span className="text-[10px] text-indigo-500 font-sans">
-                                {r.tipo === 'Materiales Directos' ? 'Montó PA (Almacén)' : 'Cargó SC en SIP'}
+                                {clasif.generadorTag}
                               </span>
                             </div>
                           </td>
 
-                          {/* 17. Comprador (Procura) */}
+                          {/* 18. Comprador (Procura) */}
                           <td className="py-2 px-3 border-r border-slate-100 font-sans min-w-[170px] whitespace-normal">
                             <div className="flex flex-col">
-                              {isStockAlmacen ? (
-                                <>
-                                  <span className="text-slate-600 font-medium">Stock Almacén</span>
-                                  <span className="text-[9px] text-slate-400 italic">Despacho Directo (Sin OC)</span>
-                                </>
-                              ) : compradorDisplay ? (
-                                <>
-                                  <span className="text-slate-900 font-semibold">{compradorDisplay}</span>
-                                  <span className="text-[9px] text-blue-600 font-medium">Analista de Procura</span>
-                                </>
-                              ) : (
-                                <>
-                                  <span className="text-slate-400 italic">Sin Asignar</span>
-                                  <span className="text-[9px] text-slate-400">Procura / Compras</span>
-                                </>
-                              )}
+                              <span className={`font-semibold ${clasif.isStock ? 'text-slate-600 font-medium' : 'text-slate-900'}`}>{clasif.compradorNombre}</span>
+                              <span className={`text-[9px] ${clasif.isStock ? 'text-slate-400 italic' : 'text-blue-600 font-medium'}`}>
+                                {clasif.compradorTag}
+                              </span>
                             </div>
                           </td>
 
