@@ -10221,9 +10221,10 @@ async function sincronizarConNube(forzar = false) {
   actualizarIndicadorCloud('sincronizando');
 
   try {
-    const { data, error } = await supabaseClient
+    // CONSULTA LIGERA (SOLO METADATOS ~50 BYTES, EVITA DESCARGAS INNECESARIAS DE 4.3 MB)
+    const { data: meta, error } = await supabaseClient
       .from('herramientas_vales')
-      .select('fecha, lineas, observaciones')
+      .select('fecha, observaciones')
       .eq('numero', SYNC_DOC_ID)
       .maybeSingle();
 
@@ -10234,30 +10235,24 @@ async function sincronizarConNube(forzar = false) {
       return;
     }
 
-    const cloudData = data && data.lineas && typeof data.lineas === 'object' ? data.lineas : null;
-    const cloudFecha = data && data.fecha ? new Date(data.fecha).getTime() : 0;
+    const cloudFecha = meta && meta.fecha ? new Date(meta.fecha).getTime() : 0;
     const localFecha = DB && DB._actualizadoEn ? new Date(DB._actualizadoEn).getTime() : 0;
 
-    // 1. REGLA SUPREMA: Si la nube tiene el reinicio oficial a cero y el equipo local no lo tiene aplicado,
-    // se descarta la memoria local vieja (65 ítems) y se adopta el cero limpio de la nube.
-    if (cloudData && cloudData._reinicioId === REINICIO_ID && DB._reinicioId !== REINICIO_ID) {
-      console.log('🔄 Aplicando reinicio oficial a cero desde Supabase...');
-      descargarDeNube(cloudData);
-    }
-    // 2. Si la nube tiene cambios o datos, fusionar inteligentemente sin descartar cambios locales
-    else if (cloudData && (cloudFecha > localFecha || forzar)) {
-      descargarDeNube(cloudData);
-    }
-    // 3. Si este equipo tiene cambios locales nuevos (localFecha más reciente o forzado):
-    else if (forzar || (localFecha > cloudFecha)) {
-      await subirANube();
-    }
-    // 4. Si el equipo local está recién abierto o sin fecha:
-    else if (cloudData && (!localFecha || localFecha === 0)) {
-      descargarDeNube(cloudData);
-    }
-    // 5. Si no hay nada en la nube pero el local ya está en el REINICIO_ID:
-    else if (DB && DB._reinicioId === REINICIO_ID && !cloudData) {
+    // Solo descargamos el paquete completo de datos SI la nube tiene una versión más nueva que local
+    const requiereDescarga = forzar || (cloudFecha > localFecha) || (!localFecha || localFecha === 0);
+
+    if (requiereDescarga && meta) {
+      console.log('☁️ Descargando actualización oficial desde la nube...');
+      const { data: fullData, error: errFull } = await supabaseClient
+        .from('herramientas_vales')
+        .select('lineas')
+        .eq('numero', SYNC_DOC_ID)
+        .maybeSingle();
+
+      if (!errFull && fullData && fullData.lineas && typeof fullData.lineas === 'object') {
+        descargarDeNube(fullData.lineas);
+      }
+    } else if (localFecha > cloudFecha) {
       await subirANube();
     }
 
@@ -10273,16 +10268,28 @@ async function sincronizarConNube(forzar = false) {
 async function subirANube() {
   if (!supabaseClient || !DB) return;
   try {
-    // ESCUDO DE DATOS BIDIRECCIONAL: Antes de subir, fusionar con cualquier cambio reciente en la nube
-    const { data: checkData } = await supabaseClient
+    // ESCUDO LIGERO: Comprobar fecha remota antes de subir (consulta ligera ~50 bytes)
+    const { data: checkMeta } = await supabaseClient
       .from('herramientas_vales')
-      .select('lineas')
+      .select('fecha')
       .eq('numero', SYNC_DOC_ID)
       .maybeSingle();
 
-    if (checkData && checkData.lineas) {
-      DB = fusionarBasesDeDatos(checkData.lineas, DB);
-      guardarLocalSolo();
+    const remoteFecha = checkMeta && checkMeta.fecha ? new Date(checkMeta.fecha).getTime() : 0;
+    const localFecha = DB && DB._actualizadoEn ? new Date(DB._actualizadoEn).getTime() : 0;
+
+    // Solo si otra persona subió cambios más recientes mientras editábamos, descargamos y fusionamos
+    if (remoteFecha > localFecha) {
+      const { data: checkData } = await supabaseClient
+        .from('herramientas_vales')
+        .select('lineas')
+        .eq('numero', SYNC_DOC_ID)
+        .maybeSingle();
+
+      if (checkData && checkData.lineas) {
+        DB = fusionarBasesDeDatos(checkData.lineas, DB);
+        guardarLocalSolo();
+      }
     }
 
     DB._actualizadoEn = new Date().toISOString();
@@ -10400,21 +10407,17 @@ function activarRealtimeSupabase() {
     console.warn('Realtime subscription error:', e);
   }
 
-  // Sondeo de respaldo cada 15 segundos para asegurar que todos los equipos vean los cambios
+  // Sondeo de respaldo pasivo cada 2 minutos (solo consulta fecha, 50 bytes)
   setInterval(() => {
     if (!cloudSyncEnProgreso) sincronizarConNube();
-  }, 15000);
+  }, 120000);
 
-  // AUTO-GUARDADO ACTIVO CADA MINUTO (60 SEGUNDOS) - CERO PÉRDIDA DE DATOS
+  // AUTO-GUARDADO LOCAL CADA MINUTO (60 SEGUNDOS) - CERO CONSUMO DE RED
   setInterval(async () => {
     try {
       if (typeof guardarBorradorEntrada === 'function') guardarBorradorEntrada();
       if (typeof guardarBorradorFormulario === 'function') guardarBorradorFormulario();
       if (typeof guardarLocalSolo === 'function') guardarLocalSolo();
-      if (supabaseClient && !cloudSyncEnProgreso) {
-        console.log('⏰ [AUTO-GUARDADO 1 MIN] Sincronizando y fusionando con la nube...');
-        await sincronizarConNube(false);
-      }
     } catch (eAuto) {
       console.warn('Advertencia en autoguardado minuto a minuto:', eAuto);
     }
