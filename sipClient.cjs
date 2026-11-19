@@ -169,7 +169,13 @@ async function getCompras(inicio = '01/10/2026', hasta = '31/10/2026') {
   const rawData = await request(`/api/ordenes/renglones?desde=${desde}&hasta=${al}`);
   if (!Array.isArray(rawData)) return [];
 
-  return rawData.map(r => ({
+  // Filtrar estrictamente órdenes anuladas o rechazadas para evitar duplicaciones o costos ficticios
+  const validData = rawData.filter(r => {
+    const s = (r.siglas || r.estatus || '').toUpperCase();
+    return s !== 'ANULADO' && s !== 'RECHAZADA';
+  });
+
+  return validData.map(r => ({
     SC: r.solicitud || r.SC || '',
     solicitud: r.solicitud || r.SC || '',
     OC: r.numero || r.OC || '',
