@@ -116,8 +116,8 @@ fs.writeFileSync('public/200.html', finalHtml, 'utf8');
 console.log('✅ Updated all public HTML files with corrected reconciliation order!');
 
 // NOW RECONCILE AND UPDATE SUPABASE
-const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
+const SUPABASE_URL = 'https://apwohxxbenrizyuibmst.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_rYUYypBWwijf6TI_bkjf6g_xAbfvx_k';
 
 function fetchSupabase() {
   const url = `${SUPABASE_URL}/rest/v1/herramientas_vales?numero=eq.TIMACA_TRAZABILIDAD_V1_SYNC&select=*`;

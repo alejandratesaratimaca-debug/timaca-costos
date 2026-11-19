@@ -2,8 +2,8 @@ const fs = require('fs');
 const https = require('https');
 const vm = require('vm');
 
-const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
+const SUPABASE_URL = 'https://apwohxxbenrizyuibmst.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_rYUYypBWwijf6TI_bkjf6g_xAbfvx_k';
 
 // 1. UPDATE CLIENT FILES
 let html = fs.readFileSync('public/trazabilidad.html', 'utf8').replace(/\r\n/g, '\n');

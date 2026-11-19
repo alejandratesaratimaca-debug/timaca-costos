@@ -1,8 +1,8 @@
 import { PLANES_CONTROL_INICIALES, MATRIZ_IPER_INICIAL } from '../src/data/realSeguridadData.ts';
 import { TRABAJADORES_CURSOS_TIMACA } from '../src/data/realCertificadosData.ts';
 
-const SUPABASE_URL = 'https://whbicbjvasvjufgjexxa.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_IVbzFr2TLWjMHKLogd4qzw_WU2ZwbNv';
+const SUPABASE_URL = 'https://apwohxxbenrizyuibmst.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_rYUYypBWwijf6TI_bkjf6g_xAbfvx_k';
 
 const headers = {
   'apikey': SUPABASE_KEY,
