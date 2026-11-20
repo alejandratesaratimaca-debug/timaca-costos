@@ -1179,8 +1179,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [filterTipoMatriz, setFilterTipoMatriz] = useState<'TODOS' | 'EXTERNOS' | 'INTERNOS'>('TODOS');
 
   // Módulo de Correcciones States
+  const [subVistaCorrecciones, setSubVistaCorrecciones] = useState<'pendientes' | 'historial'>('pendientes');
+  const [mesCorrecciones, setMesCorrecciones] = useState<string>('noviembre');
+  const [pageCandidateMovimientos, setPageCandidateMovimientos] = useState(1);
   const [searchMovimiento, setSearchMovimiento] = useState('');
-  const [filtroEstadoCorreccion, setFiltroEstadoCorreccion] = useState<'todos' | 'pendientes' | 'corregidos' | 'consumos' | 'compras'>('todos');
+  const [filtroEstadoCorreccion, setFiltroEstadoCorreccion] = useState<'todos' | 'pendientes' | 'corregidos' | 'consumos' | 'compras'>('pendientes');
   const [selectedMovimiento, setSelectedMovimiento] = useState<{
     id: string;
     tipo: 'consumo' | 'compra';
@@ -2582,34 +2585,146 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     }
   };
 
-  // Buscador de Movimientos para el Módulo de Correcciones (Consulta directa a toda la base de datos sin límite de 50)
+  // Carga y Buscador de Movimientos para la Bandeja del Módulo de Correcciones
   useEffect(() => {
-    const q = searchMovimiento.trim();
-    if (q.length < 2) {
-      setCandidateMovimientos([]);
-      return;
-    }
+    let isCancelled = false;
+    const q = searchMovimiento.trim().toLowerCase();
 
-    const timer = setTimeout(async () => {
+    const loadMovimientos = async () => {
       setIsSearchingMovimientos(true);
       try {
-        const res = await fetch('/api/correcciones/buscar?q=' + encodeURIComponent(q) + '&estado=' + filtroEstadoCorreccion + '&_t=' + Date.now(), {
-          cache: 'no-store',
-          headers: ANTI_CACHE_HEADERS
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setCandidateMovimientos(data);
+        const mesKey = mesCorrecciones || 'noviembre';
+        let rawItems: any[] = [];
+        try {
+          rawItems = await loadStaticMasterItems(mesKey, false);
+        } catch (e) {
+          console.warn('Error cargando ítems master para correcciones:', e);
         }
-      } catch (e) {
-        console.error('Error buscando movimientos:', e);
-      } finally {
-        setIsSearchingMovimientos(false);
-      }
-    }, 150);
 
-    return () => clearTimeout(timer);
-  }, [searchMovimiento, filtroEstadoCorreccion]);
+        // Si se busca un término específico y hay pocos resultados en el mes activo, incluir también octubre
+        if (q.length >= 2 && rawItems.length < 50 && mesKey !== 'todos') {
+          try {
+            const octItems = await loadStaticMasterItems('octubre', false);
+            rawItems = [...rawItems, ...octItems];
+          } catch {}
+        }
+
+        if (isCancelled) return;
+
+        // Construir conjunto de documentos/IDs ya reclasificados
+        const setDocsReclasificados = new Set<string>();
+        if (Array.isArray(reclasificaciones)) {
+          for (const r of reclasificaciones) {
+            if (r.documento) setDocsReclasificados.add(String(r.documento).trim().toUpperCase());
+            if (r.recordId) setDocsReclasificados.add(String(r.recordId).trim().toUpperCase());
+            if (r.numero) setDocsReclasificados.add(String(r.numero).trim().toUpperCase());
+            if (r.sc) setDocsReclasificados.add(String(r.sc).trim().toUpperCase());
+            if (r.oc) setDocsReclasificados.add(String(r.oc).trim().toUpperCase());
+          }
+        }
+        try {
+          const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
+          if (localStr) {
+            const localList = JSON.parse(localStr);
+            for (const r of localList) {
+              if (r.documento) setDocsReclasificados.add(String(r.documento).trim().toUpperCase());
+              if (r.recordId) setDocsReclasificados.add(String(r.recordId).trim().toUpperCase());
+            }
+          }
+        } catch {}
+
+        // Mapear cada ítem al formato esperado por la interfaz de correcciones
+        const enriched = rawItems.map((item: any) => {
+          const docNum = String(item.numero || item.ordenCompra || item.dp || item.sc || '').trim().toUpperCase();
+          const docId = String(item.id != null ? item.id : '');
+          const isReclass = !!(
+            item.esReclasificado || 
+            (item.ajuste || '').toUpperCase().includes('CORREGIDO') ||
+            (docNum && setDocsReclasificados.has(docNum)) ||
+            (docId && setDocsReclasificados.has(docId))
+          );
+
+          const isCompraOrServ = item.tipo?.toLowerCase().includes('compra') || 
+                                 item.tipo?.toLowerCase().includes('servicio') || 
+                                 item.categoria?.toLowerCase().includes('servicio') ||
+                                 item.categoria?.toLowerCase().includes('compra');
+
+          return {
+            id: String(item.id != null ? item.id : `${docNum}-${item.codigo || ''}`),
+            recordId: item.id != null ? item.id : undefined,
+            source: isCompraOrServ ? 'compras' : 'consumos',
+            tipo: isCompraOrServ ? 'compra' : 'consumo',
+            fecha: item.fecha || '',
+            numero: item.numero || item.ordenCompra || item.dp || item.sc || '',
+            pedido: item.pedido || item.pa || item.oc || '',
+            dp: item.dp || (!isCompraOrServ ? item.numero : ''),
+            pa: item.pa || (!isCompraOrServ ? item.pedido : ''),
+            sc: item.sc || (isCompraOrServ ? item.numero : ''),
+            oc: item.oc || (isCompraOrServ ? item.pedido : ''),
+            codigo: item.codigo || '',
+            descripcion: item.descripcion || '',
+            categoria: item.categoria || (isCompraOrServ ? 'Servicios' : 'Materiales Directos'),
+            cantidad: item.cantidad != null ? item.cantidad : 1,
+            unidad: item.unidad || 'UND',
+            costoUnitario: item.precio_final || item.costoUnitario || item.precio_dolar || (item.cantidad ? (item.total_usd || item.totalUSD || 0) / item.cantidad : 0),
+            totalUSD: item.total_usd != null ? Number(item.total_usd) : (item.totalUSD != null ? Number(item.totalUSD) : 0),
+            cuentaAuxiliar: item.cuenta_aux || item.cuentaAuxiliar || '',
+            cuentaAuxiliarOriginal: item.cuenta_aux_original || item.cuentaAuxiliarOriginal || item.cuenta_aux || item.cuentaAuxiliar || '',
+            esReclasificado: isReclass,
+            infoReclasificacion: item.infoReclasificacion,
+            solicitante: item.solicitante || item.solicitanteOComprador || 'S/D',
+            solicitanteOComprador: item.solicitante || item.solicitanteOComprador || 'S/D',
+            motivo: item.motivo || '',
+            datos_descripcion: item.datos_descripcion || ''
+          };
+        });
+
+        // Filtrar según filtroEstadoCorreccion
+        let filtered = enriched.filter((m: any) => {
+          if (filtroEstadoCorreccion === 'pendientes') return !m.esReclasificado;
+          if (filtroEstadoCorreccion === 'corregidos') return m.esReclasificado;
+          if (filtroEstadoCorreccion === 'consumos') return m.tipo === 'consumo';
+          if (filtroEstadoCorreccion === 'compras') return m.tipo === 'compra';
+          return true; // 'todos'
+        });
+
+        // Filtrar por término de búsqueda si existe
+        if (q.length >= 2) {
+          filtered = filtered.filter((m: any) => {
+            const matchDoc = (m.numero || '').toLowerCase().includes(q) || (m.dp || '').toLowerCase().includes(q) || (m.sc || '').toLowerCase().includes(q);
+            const matchPed = (m.pedido || '').toLowerCase().includes(q) || (m.pa || '').toLowerCase().includes(q) || (m.oc || '').toLowerCase().includes(q);
+            const matchCod = (m.codigo || '').toLowerCase().includes(q);
+            const matchDesc = (m.descripcion || '').toLowerCase().includes(q);
+            const matchCta = (m.cuentaAuxiliar || '').toLowerCase().includes(q) || (m.cuentaAuxiliarOriginal || '').toLowerCase().includes(q);
+            const matchSol = (m.solicitante || '').toLowerCase().includes(q);
+            const matchMot = (m.motivo || '').toLowerCase().includes(q);
+            return matchDoc || matchPed || matchCod || matchDesc || matchCta || matchSol || matchMot;
+          });
+        }
+
+        // Ordenar por fecha descendente
+        filtered.sort((a: any, b: any) => (b.fecha || '').localeCompare(a.fecha || ''));
+
+        if (!isCancelled) {
+          setCandidateMovimientos(filtered);
+          setPageCandidateMovimientos(1);
+        }
+      } catch (err) {
+        console.error('Error cargando movimientos de correcciones:', err);
+      } finally {
+        if (!isCancelled) {
+          setIsSearchingMovimientos(false);
+        }
+      }
+    };
+
+    const timer = setTimeout(loadMovimientos, q.length >= 2 ? 150 : 0);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timer);
+    };
+  }, [searchMovimiento, filtroEstadoCorreccion, mesCorrecciones, reclasificaciones]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -6388,7 +6503,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         {/* TAB 4: MÓDULO DE CORRECCIONES CONTABLES (SUSTITUTO OFICIAL DE CORRECCIONES.XLSX) */}
         {activeTab === 'correcciones' && (
           <div className="space-y-6 animate-fadeIn">
-            {/* Header Card */}
+            {/* Header Card con Segmented Control de Sub-Vistas */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -6396,13 +6511,48 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   Módulo de Correcciones Contables
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  Módulo centralizado de auditoría y correcciones contables. Integra las <strong>456 correcciones históricas</strong> (<code className="text-slate-700 font-mono font-semibold">Correcciones.xlsx</code>) más las <strong>3.668 valorizaciones y ajustes detectados directamente en el sistema SIP</strong> por Alejandra Tesara.
+                  Módulo centralizado de auditoría y correcciones contables. Audita movimientos de SIP pendientes o consulta el historial auditado.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200 text-purple-800 text-xs font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-purple-600" />
-                <span>{(reclasificaciones.length || status?.totalReclasificaciones || 4138).toLocaleString()} correcciones activas</span>
+              {/* Sub-Tabs Switcher */}
+              <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  onClick={() => {
+                    setSubVistaCorrecciones('pendientes');
+                    setFiltroEstadoCorreccion('pendientes');
+                  }}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                    subVistaCorrecciones === 'pendientes'
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`}
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>📥 Bandeja SIP (Pendientes)</span>
+                  <span className={`px-2 py-0.2 rounded-full text-[10px] font-bold ${
+                    subVistaCorrecciones === 'pendientes' ? 'bg-amber-800 text-amber-100' : 'bg-amber-100 text-amber-900'
+                  }`}>
+                    {candidateMovimientos.filter(m => !m.esReclasificado).length.toLocaleString()}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setSubVistaCorrecciones('historial')}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                    subVistaCorrecciones === 'historial'
+                      ? 'bg-purple-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`}
+                >
+                  <Database className="w-3.5 h-3.5" />
+                  <span>📋 Historial Aplicadas</span>
+                  <span className={`px-2 py-0.2 rounded-full text-[10px] font-bold ${
+                    subVistaCorrecciones === 'historial' ? 'bg-purple-800 text-purple-100' : 'bg-purple-100 text-purple-900'
+                  }`}>
+                    {(reclasificaciones.length || status?.totalReclasificaciones || 5713).toLocaleString()}
+                  </span>
+                </button>
               </div>
             </div>
 
@@ -6430,8 +6580,69 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               </div>
             )}
 
-            {/* SECCIÓN 1: BUSCADOR DEL MOVIMIENTO A CORREGIR */}
-            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
+            {/* SUB-VISTA 1: BANDEJA DE PENDIENTES & AUDITORÍA SIP */}
+            {subVistaCorrecciones === 'pendientes' && (
+              <>
+                {/* 4 Tarjetas de Métricas & Selector de Mes */}
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Mes en Auditoría</span>
+                      <select
+                        value={mesCorrecciones}
+                        onChange={(e) => setMesCorrecciones(e.target.value)}
+                        className="font-bold text-xs text-slate-800 bg-transparent border-0 p-0 focus:outline-none cursor-pointer mt-0.5"
+                      >
+                        <option value="noviembre">🟢 Noviembre 2026 (En vivo)</option>
+                        <option value="octubre">Octubre 2026</option>
+                        <option value="septiembre">Septiembre 2026</option>
+                        <option value="todos">Todos los Meses</option>
+                      </select>
+                    </div>
+                    <div className="p-2 bg-blue-50 text-blue-700 rounded-lg">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Movimientos</span>
+                      <span className="text-lg font-black text-slate-900 font-mono mt-0.5 block">
+                        {candidateMovimientos.length.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="p-2 bg-slate-100 text-slate-700 rounded-lg">
+                      <Boxes className="w-4 h-4" />
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">Pendientes por Corregir</span>
+                      <span className="text-lg font-black text-amber-950 font-mono mt-0.5 block">
+                        {candidateMovimientos.filter(m => !m.esReclasificado).length.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="p-2 bg-amber-100 text-amber-800 rounded-lg">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                  </div>
+
+                  <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Ya Corregidos</span>
+                      <span className="text-lg font-black text-emerald-950 font-mono mt-0.5 block">
+                        {candidateMovimientos.filter(m => m.esReclasificado).length.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="p-2 bg-emerald-100 text-emerald-800 rounded-lg">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* SECCIÓN 1: BUSCADOR DEL MOVIMIENTO A CORREGIR */}
+                <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
@@ -6522,8 +6733,16 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                   {/* Resultados candidatos */}
                   {candidateMovimientos.length > 0 ? (
-                    <div className="border border-slate-200 rounded-xl overflow-hidden max-h-80 overflow-y-auto divide-y divide-slate-100 bg-white shadow-2xs">
-                      {candidateMovimientos.map((m) => (
+                    <div className="space-y-3">
+                      <div className="text-[11px] text-slate-500 flex items-center justify-between px-1">
+                        <span>
+                          Mostrando <strong>{((pageCandidateMovimientos - 1) * 50) + 1}</strong> a <strong>{Math.min(pageCandidateMovimientos * 50, candidateMovimientos.length)}</strong> de <strong>{candidateMovimientos.length.toLocaleString()}</strong> movimientos ({filtroEstadoCorreccion === 'pendientes' ? 'pendientes de corrección' : filtroEstadoCorreccion}).
+                        </span>
+                        <span className="text-[10px] text-slate-400">Ordenados por fecha más reciente</span>
+                      </div>
+
+                      <div className="border border-slate-200 rounded-xl overflow-hidden max-h-[520px] overflow-y-auto divide-y divide-slate-100 bg-white shadow-2xs">
+                        {candidateMovimientos.slice((pageCandidateMovimientos - 1) * 50, pageCandidateMovimientos * 50).map((m) => (
                         <div
                           key={m.id}
                           onClick={() => handleSelectMovimiento(m)}
@@ -6646,19 +6865,45 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           </div>
                         </div>
                       ))}
+                      </div>
+
+                      {/* Paginación de Candidatos */}
+                      {candidateMovimientos.length > 50 && (
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-2 text-xs">
+                          <span className="text-slate-600">
+                            Página {pageCandidateMovimientos} de {Math.ceil(candidateMovimientos.length / 50)} ({candidateMovimientos.length.toLocaleString()} movimientos totales)
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => setPageCandidateMovimientos(p => Math.max(1, p - 1))}
+                              disabled={pageCandidateMovimientos <= 1}
+                              className="px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-30 cursor-pointer text-xs"
+                            >
+                              Anterior
+                            </button>
+                            <span className="px-2 font-mono font-semibold text-slate-700">
+                              {pageCandidateMovimientos} / {Math.ceil(candidateMovimientos.length / 50)}
+                            </span>
+                            <button
+                              onClick={() => setPageCandidateMovimientos(p => Math.min(Math.ceil(candidateMovimientos.length / 50), p + 1))}
+                              disabled={pageCandidateMovimientos >= Math.ceil(candidateMovimientos.length / 50)}
+                              className="px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-30 cursor-pointer text-xs"
+                            >
+                              Siguiente
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ) : isSearchingMovimientos ? (
-                    <div className="p-5 text-center text-blue-600 text-xs bg-blue-50/50 rounded-xl border border-blue-200 flex items-center justify-center gap-2">
+                    <div className="p-6 text-center text-blue-600 text-xs bg-blue-50/50 rounded-xl border border-blue-200 flex items-center justify-center gap-2">
                       <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
-                      <span>Buscando en toda la base de datos de SIP...</span>
-                    </div>
-                  ) : searchMovimiento.trim().length >= 2 ? (
-                    <div className="p-4 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                      No se encontraron consumos ni compras que coincidan con "{searchMovimiento}".
+                      <span>Cargando movimientos de SIP para {mesCorrecciones.toUpperCase()}...</span>
                     </div>
                   ) : (
-                    <div className="p-4 text-center text-slate-400 text-xs bg-slate-50/50 rounded-xl border border-slate-100">
-                      Escribe el número de Despacho (DP), Pedido (PA), Solicitud (SC), Orden (OC), Descripción o Motivo para encontrar el movimiento.
+                    <div className="p-6 text-center text-slate-500 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200 space-y-1">
+                      <div className="font-bold text-slate-700">No se encontraron movimientos con los filtros seleccionados</div>
+                      <p className="text-slate-400 text-[11px]">Prueba seleccionando otro mes o cambiando los filtros a "Todos".</p>
                     </div>
                   )}
                 </div>
@@ -6925,9 +7170,12 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 </div>
               </div>
             )}
+              </>
+            )}
 
-            {/* SECCIÓN 3: HISTORIAL DE CORRECCIONES REGISTRADAS */}
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs space-y-0">
+            {/* SUB-VISTA 2: HISTORIAL DE CORRECCIONES REGISTRADAS */}
+            {subVistaCorrecciones === 'historial' && (
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs space-y-0">
               <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -7147,8 +7395,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 </>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      )}
 
         {/* TAB 5: GESTIÓN Y CARGA DE INSUMOS AL CIERRE (MDO, HM & INDIRECTOS) */}
         {activeTab === 'cargas' && (

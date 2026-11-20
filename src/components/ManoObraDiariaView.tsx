@@ -41,8 +41,8 @@ const DATOS_CONCILIACION_2026 = [
   { mesNum: 6, mesNombre: 'Junio', diasCal: 30, personas: 346, semRRHH: 202303.19, devengoReal: 213881.36, dif: 11578.17, pellas: 115901.14, bg: 38118.90, briquetas: 24200.50, pmh: 35660.82, varios: 0.0, dinamicaOperativa: 'Mes de menor devengo del año', nota: 'Semana 26 dividida entre Junio (6 días) y Julio (1 día)' },
   { mesNum: 7, mesNombre: 'Julio', diasCal: 31, personas: 385, semRRHH: 267473.88, devengoReal: 237850.61, dif: -29623.27, pellas: 140764.76, bg: 45290.30, briquetas: 22850.00, pmh: 28945.55, varios: 0.0, dinamicaOperativa: 'Reactivación de frentes en Boca Grande y Pellas', nota: 'Corte operativo tenía 5 semanas (35 días) vs 31 días reales' },
   { mesNum: 8, mesNombre: 'Agosto', diasCal: 31, personas: 398, semRRHH: 223130.13, devengoReal: 246110.70, dif: 22980.57, pellas: 147941.02, bg: 37940.20, briquetas: 26410.10, pmh: 33819.38, varios: 0.0, dinamicaOperativa: 'Base auditada oficial de RRHH (4 Master Unificado)', nota: 'Cierre completo de 31 días con guardias de fin de mes' },
-  { mesNum: 9, mesNombre: 'Septiembre', diasCal: 30, personas: 394, semRRHH: 196665.65, devengoReal: 212832.38, dif: 16166.73, pellas: 137877.61, bg: 28551.40, briquetas: 23400.00, pmh: 23003.37, varios: 0.0, dinamicaOperativa: 'Cierre oficial auditado de nómina (Semanas 35 a 39)', nota: 'Semana 35 sumó 2 días (01 y 02 Sep) al devengo mensual (+16K)' },
-  { mesNum: 10, mesNombre: 'Octubre', diasCal: 31, personas: 402, semRRHH: 257750.82, devengoReal: 257750.82, dif: 0.0, pellas: 131190.16, bg: 13685.00, briquetas: 32215.00, pmh: 80660.66, varios: 0.0, dinamicaOperativa: 'Libros oficiales Semanas 39 al 43 (Pellas, Boca Grande II, Briquetas y PMH)', nota: '1.721 registros con 69.635 Horas Hombre auditadas de nómina' }
+  { mesNum: 9, mesNombre: 'Septiembre', diasCal: 30, personas: 394, semRRHH: 217004.59, devengoReal: 212832.38, dif: -4172.21, pellas: 137877.61, bg: 28551.40, briquetas: 27395.00, pmh: 38297.31, varios: 0.0, dinamicaOperativa: 'Cierre oficial auditado de nómina (Semanas 35 a 39)', nota: 'Semana 35 sumó 2 días al devengo mensual e integró Sem 39' },
+  { mesNum: 10, mesNombre: 'Octubre', diasCal: 31, personas: 402, semRRHH: 237411.88, devengoReal: 262848.86, dif: 25436.98, pellas: 131190.16, bg: 13685.00, briquetas: 27170.00, pmh: 65366.72, varios: 0.0, dinamicaOperativa: '4 semanas cerradas de Octubre (Sem 40 a 43 = 28 días) + 3 días devengados de fin de mes', nota: 'Semanas 40 a 43 ($237.4K). Los 3 días restantes devengan +$25.4K para 31 días exactos.' }
 ];
 
 export const CUENTAS_OFICIALES_PMH = [
@@ -89,13 +89,15 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
 
   // Filter states
   const [selectedMes, setSelectedMes] = useState<number>(10); // 10 = Octubre 2026, 0 = todos
-  const [selectedProyecto, setSelectedProyecto] = useState<string>('todos'); // 'todos' | 'pellas' | 'bg' | 'briquetas' | 'pmh'
+  const [selectedProyecto, setSelectedProyecto] = useState<string>('todos'); // 'todos' | 'TTE-C-XXXX' | 'varios'
   const [selectedSemana, setSelectedSemana] = useState<number>(0); // 0 = all
   const [selectedFecha, setSelectedFecha] = useState<string>('todas');
   const [selectedCuenta, setSelectedCuenta] = useState<string>('todas');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [showTodasCuentasPmh, setShowTodasCuentasPmh] = useState(false);
+
+  const isPmhContext = selectedProyecto === 'pmh' || selectedProyecto === 'TTE-C-0671' || selectedProyecto === 'TTE-C-0656';
 
   // Filtered records according to Mode, Month, Project, Week, etc.
   const registrosFiltrados = useMemo(() => {
@@ -106,12 +108,22 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
       // Proyecto filter
       let matchProj = true;
       if (selectedProyecto !== 'todos') {
-        const pLow = (r.proyectoCorto + ' ' + r.sourceFile + ' ' + r.cuentaAuxiliar).toLowerCase();
-        if (selectedProyecto === 'pellas') matchProj = pLow.includes('pella') || pLow.includes('0706') || pLow.includes('0676');
-        else if (selectedProyecto === 'bg') matchProj = pLow.includes('bg') || pLow.includes('boca grande') || pLow.includes('0680') || pLow.includes('0663');
-        else if (selectedProyecto === 'briquetas') matchProj = pLow.includes('briqueta') || pLow.includes('0668') || pLow.includes('0670') || pLow.includes('0694');
-        else if (selectedProyecto === 'pmh') matchProj = pLow.includes('pmh') || Array.from(PMH_CODIGOS_SET).some(c => pLow.includes(c));
-        else if (selectedProyecto === 'varios') matchProj = pLow.includes('proyecto') || pLow.includes('refractario');
+        if (selectedProyecto.startsWith('TTE-C-')) {
+          matchProj = r.cuentaAuxiliar === selectedProyecto;
+        } else if (selectedProyecto === 'pellas-l1') {
+          matchProj = r.cuentaAuxiliar === 'TTE-C-0706';
+        } else if (selectedProyecto === 'pellas-l2') {
+          matchProj = r.cuentaAuxiliar === 'TTE-C-0676';
+        } else if (selectedProyecto === 'bg') {
+          matchProj = r.cuentaAuxiliar === 'TTE-C-0680' || r.cuentaAuxiliar === 'TTE-C-0663';
+        } else if (selectedProyecto === 'briquetas') {
+          matchProj = r.cuentaAuxiliar === 'TTE-C-0668' || r.cuentaAuxiliar === 'TTE-C-0670' || r.cuentaAuxiliar === 'TTE-C-0694';
+        } else if (selectedProyecto === 'pmh') {
+          matchProj = r.cuentaAuxiliar === 'TTE-C-0671' || r.cuentaAuxiliar === 'TTE-C-0656' || Array.from(PMH_CODIGOS_SET).some(c => (r.cuentaAuxiliar || '').includes(c));
+        } else if (selectedProyecto === 'varios') {
+          const ctasPrincipales = ['TTE-C-0706', 'TTE-C-0676', 'TTE-C-0671', 'TTE-C-0656', 'TTE-C-0668', 'TTE-C-0670', 'TTE-C-0680', 'TTE-C-0640'];
+          matchProj = !ctasPrincipales.includes(r.cuentaAuxiliar);
+        }
       }
 
       // Semana filter
@@ -138,11 +150,18 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
   // Summary Metrics based on Active Mode
   const totalMonto = useMemo(() => {
     // If in devengo mode and looking at all records for a month, reflect the true 30/31 day accrued total
-    if (vistaModo === 'devengo' && selectedSemana === 0 && selectedFecha === 'todas' && selectedCuenta === 'todas' && selectedProyecto === 'todos' && !searchTerm) {
-      if (selectedMes > 0 && selectedMes <= 10) {
-        return DATOS_CONCILIACION_2026[selectedMes - 1].devengoReal;
-      } else if (selectedMes === 0) {
-        return DATOS_CONCILIACION_2026.reduce((acc, d) => acc + d.devengoReal, 0);
+    if (vistaModo === 'devengo' && selectedSemana === 0 && selectedFecha === 'todas' && !searchTerm) {
+      if (selectedCuenta === 'todas' && selectedProyecto === 'todos') {
+        if (selectedMes > 0 && selectedMes <= 10) {
+          return DATOS_CONCILIACION_2026[selectedMes - 1].devengoReal;
+        } else if (selectedMes === 0) {
+          return DATOS_CONCILIACION_2026.reduce((acc, d) => acc + d.devengoReal, 0);
+        }
+      }
+      // If a specific project or account is selected in October, prorate by month days (31) / paid days (28)
+      if (selectedMes === 10) {
+        const rawSum = registrosFiltrados.reduce((sum, r) => sum + r.totalPagarUsd, 0);
+        return rawSum * (31 / 28);
       }
     }
     // Otherwise sum from filtered individual records

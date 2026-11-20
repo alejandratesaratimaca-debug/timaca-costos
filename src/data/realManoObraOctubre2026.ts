@@ -12,7 +12,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-1",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9865683",
@@ -32,7 +32,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-2",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-26662373",
@@ -52,7 +52,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-3",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15137190",
@@ -72,7 +72,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-4",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18513419",
@@ -92,7 +92,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-5",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13121593",
@@ -112,7 +112,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-6",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-8453096",
@@ -132,7 +132,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-7",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10386344",
@@ -152,7 +152,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-8",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-14837489",
@@ -172,7 +172,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-9",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-11513303",
@@ -192,7 +192,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-10",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-26863748",
@@ -212,7 +212,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-11",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12653249",
@@ -232,7 +232,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-12",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-8526909",
@@ -252,7 +252,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-13",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-27656218",
@@ -272,7 +272,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-14",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12644567",
@@ -292,7 +292,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-15",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-23500329",
@@ -312,7 +312,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-16",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-14118031",
@@ -332,7 +332,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-17",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17998936",
@@ -352,7 +352,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-18",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18338480",
@@ -372,7 +372,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-19",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-30530350",
@@ -392,7 +392,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-20",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16844741",
@@ -412,7 +412,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-21",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9866851",
@@ -432,7 +432,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-22",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17210078",
@@ -452,7 +452,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-23",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-20074659",
@@ -472,7 +472,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-24",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16392305",
@@ -492,7 +492,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-25",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-19330349",
@@ -512,7 +512,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-26",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-25745837",
@@ -532,7 +532,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-27",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16629113",
@@ -552,7 +552,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-28",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17749744",
@@ -572,7 +572,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-29",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10553231",
@@ -592,7 +592,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-30",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13294916",
@@ -612,7 +612,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-31",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9947254",
@@ -632,7 +632,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-32",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15034311",
@@ -652,7 +652,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-33",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-14603861",
@@ -672,7 +672,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-34",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15033822",
@@ -692,7 +692,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-35",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12643050",
@@ -712,7 +712,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-36",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-25933007",
@@ -732,7 +732,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-37",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-27955607",
@@ -752,7 +752,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-38",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-24036284",
@@ -772,7 +772,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-39",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-8528573",
@@ -792,7 +792,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-40",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13730008",
@@ -812,7 +812,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-41",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13091671",
@@ -832,7 +832,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-42",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12126168",
@@ -852,7 +852,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-43",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9865915",
@@ -872,7 +872,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-44",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-14440851",
@@ -892,7 +892,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-45",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-11780329",
@@ -912,7 +912,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-46",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18337641",
@@ -932,7 +932,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-47",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18076428",
@@ -952,7 +952,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-48",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-26500623",
@@ -972,7 +972,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-49",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10394373",
@@ -992,7 +992,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-50",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13729463",
@@ -1012,7 +1012,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-51",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13981941",
@@ -1032,7 +1032,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-52",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9858148",
@@ -1052,7 +1052,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-53",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15903045",
@@ -1072,7 +1072,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-54",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-11515567",
@@ -1092,7 +1092,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-55",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-14836486",
@@ -1112,7 +1112,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-56",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18665343",
@@ -1132,7 +1132,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-57",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15877622",
@@ -1152,7 +1152,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-58",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-23500632",
@@ -1172,7 +1172,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-59",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-25694411",
@@ -1192,7 +1192,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-60",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17430089",
@@ -1212,7 +1212,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-61",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15543166",
@@ -1232,7 +1232,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-62",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15276586",
@@ -1252,7 +1252,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-63",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-28671472",
@@ -1272,7 +1272,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-64",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-25034610",
@@ -1292,7 +1292,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-65",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9276495",
@@ -1312,7 +1312,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-66",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-19159025",
@@ -1332,7 +1332,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-67",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-32277038",
@@ -1352,7 +1352,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-68",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-22592597",
@@ -1372,7 +1372,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-69",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15543980",
@@ -1392,7 +1392,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-70",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-30109886",
@@ -1412,7 +1412,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-71",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-19079068",
@@ -1432,7 +1432,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-72",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-8961984",
@@ -1452,7 +1452,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-73",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-5900019",
@@ -1472,7 +1472,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-74",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-21498474",
@@ -1492,7 +1492,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-75",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16630729",
@@ -1512,7 +1512,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-76",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16395491",
@@ -1532,7 +1532,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-77",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10926787",
@@ -1552,7 +1552,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-78",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15089973",
@@ -1572,7 +1572,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-79",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-22590556",
@@ -1592,7 +1592,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-80",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-20223871",
@@ -1612,7 +1612,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-81",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-20300910",
@@ -1632,7 +1632,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-82",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9934464",
@@ -1652,7 +1652,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-83",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9866125",
@@ -1672,7 +1672,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-84",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17999512",
@@ -1692,7 +1692,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-85",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16700941",
@@ -1712,7 +1712,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-86",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18521823",
@@ -1732,7 +1732,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-87",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15909635",
@@ -1752,7 +1752,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-88",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-30040405",
@@ -1772,7 +1772,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-89",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17069516",
@@ -1792,7 +1792,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-90",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10927508",
@@ -1812,7 +1812,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-91",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17041900",
@@ -1832,7 +1832,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-92",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18077138",
@@ -1852,7 +1852,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-93",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16162624",
@@ -1872,7 +1872,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-94",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12559537",
@@ -1892,7 +1892,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-95",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18339596",
@@ -1912,7 +1912,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-96",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10839123",
@@ -1932,7 +1932,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-97",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10976986",
@@ -1952,7 +1952,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-98",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13452179",
@@ -1972,7 +1972,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-99",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-31292403",
@@ -1992,7 +1992,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-100",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-21387650",
@@ -2012,7 +2012,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-101",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12131342",
@@ -2032,7 +2032,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-102",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-24039894",
@@ -2052,7 +2052,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-103",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9653358",
@@ -2072,7 +2072,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-104",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-14986276",
@@ -2092,7 +2092,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-105",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-27602091",
@@ -2112,7 +2112,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-106",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12596475",
@@ -2132,7 +2132,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-107",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17339973",
@@ -2152,7 +2152,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-108",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-26500922",
@@ -2172,7 +2172,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-109",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-20702582",
@@ -2192,7 +2192,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-110",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-8450000",
@@ -2212,7 +2212,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-111",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15907538",
@@ -2232,7 +2232,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-112",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13122868",
@@ -2252,7 +2252,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-PMH-113",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-19124949",
@@ -11712,7 +11712,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-1",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16613379",
@@ -11732,7 +11732,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-2",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15543419",
@@ -11752,7 +11752,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-3",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12130569",
@@ -11772,7 +11772,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-4",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10388813",
@@ -11792,7 +11792,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-5",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-7574022",
@@ -11812,7 +11812,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-6",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-16630224",
@@ -11832,7 +11832,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-7",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-19420869",
@@ -11852,7 +11852,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-8",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-11995350",
@@ -11872,7 +11872,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-9",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-28701377",
@@ -11892,7 +11892,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-10",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-22822430",
@@ -11912,7 +11912,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-11",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-11511485",
@@ -11932,7 +11932,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-12",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-17883400",
@@ -11952,7 +11952,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-13",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-20137110",
@@ -11972,7 +11972,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-14",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10928510",
@@ -11992,7 +11992,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-15",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-31963279",
@@ -12012,7 +12012,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-16",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-14222754",
@@ -12032,7 +12032,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-17",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15520707",
@@ -12052,7 +12052,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-18",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15371830",
@@ -12072,7 +12072,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-19",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13595556",
@@ -12092,7 +12092,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-20",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10393510",
@@ -12112,7 +12112,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-21",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13838464",
@@ -12132,7 +12132,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-22",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9948186",
@@ -12152,7 +12152,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-23",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-25512439",
@@ -12172,7 +12172,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-24",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18900561",
@@ -12192,7 +12192,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-25",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-18246637",
@@ -12212,7 +12212,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-26",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-27955371",
@@ -12232,7 +12232,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-27",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-11096346",
@@ -12252,7 +12252,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-28",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13092736",
@@ -12272,7 +12272,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-29",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15034515",
@@ -12292,7 +12292,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-30",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15717765",
@@ -12312,7 +12312,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-31",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-12128683",
@@ -12332,7 +12332,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-32",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-14837352",
@@ -12352,7 +12352,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-33",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-9951102",
@@ -12372,7 +12372,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-34",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-10928737",
@@ -12392,7 +12392,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-35",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-13836921",
@@ -12412,7 +12412,7 @@ export const REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026: RegistroManoObraDiaria[] =
   {
     "id": "MDO-OCT-BRIQ-36",
     "fecha": "2026-09-24",
-    "mes": 10,
+    "mes": 9,
     "diaSemana": "Jueves",
     "semana": 39,
     "cedula": "V-15354486",

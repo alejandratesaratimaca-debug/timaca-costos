@@ -4,7 +4,8 @@ import { REGISTROS_REALES_MANO_OBRA_SEPTIEMBRE_2026 } from './realManoObraSeptie
 import { REGISTROS_REALES_MANO_OBRA_OCTUBRE_2026 } from './realManoObraOctubre2026';
 
 export const CUENTAS_CORTAS_MAP: Record<string, string> = {
-  'TTE-C-0706': 'Línea 1 Pellas',
+  'TTE-C-0706': 'Planta de Pellas Línea 1',
+  'TTE-C-0676': 'Planta de Pellas Línea 2',
   'TTE-C-0671': '2da Línea PMH',
   'TTE-C-0668': 'Briquetas Fase 2',
   'TTE-C-0656': 'Bandas Transp. PMH',
