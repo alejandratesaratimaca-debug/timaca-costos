@@ -386,12 +386,6 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
       'Cargo / Especialidad': r.cargo,
       'Cuenta Auxiliar': r.cuentaAuxiliar,
       'Proyecto': r.proyectoCorto,
-      'Horas Normales': r.horasNormales,
-      'Horas Extras': r.horasExtras,
-      'Total Horas': r.totalHoras,
-      'Tarifa USD/Hora': r.tarifaHoraUsd,
-      'Monto Normal (USD)': r.montoNormalUsd,
-      'Monto Extra (USD)': r.montoExtraUsd,
       'Total a Pagar (USD)': r.totalPagarUsd,
       'Modalidad Cálculo': vistaModo === 'devengo' ? 'Devengo Mensual Real (30/31 días)' : 'Corte Semanal RRHH',
       'Archivo Nómina RRHH': r.sourceFile
@@ -545,8 +539,9 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
         </div>
       </div>
 
-      {/* KPI Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      {/* KPI Summary Cards (Sin horas hasta que RRHH ajuste formato) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Card 1: Total Desembolso */}
         <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
@@ -590,34 +585,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
           </span>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
-          <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
-            Total Horas Trabajadas
-          </span>
-          <span className="text-2xl font-black font-mono tabular-nums text-neutral-900 block mt-1">
-            {Math.round(totalHoras).toLocaleString('de-DE')} hrs
-          </span>
-          <span className="text-[11px] text-neutral-500 mt-1 block">
-            {selectedMes === 10
-              ? '58.464 horas auditadas en 4 semanas (Sem 40 a 43)'
-              : 'Horas ordinarias + extras'}
-          </span>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
-          <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
-            Horas Extras Auditadas
-          </span>
-          <span className="text-2xl font-black font-mono tabular-nums text-amber-600 block mt-1">
-            {Math.round(totalHorasExtras).toLocaleString('de-DE')} hrs
-          </span>
-          <span className="text-[11px] text-neutral-500 mt-1 block">
-            {selectedMes === 10
-              ? '1.530 horas extras con recargo legal'
-              : 'Remuneradas con recargo legal'}
-          </span>
-        </div>
-
+        {/* Card 2: Personal en Cuadrillas */}
         <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
           <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
             Personal en Cuadrillas
@@ -632,10 +600,26 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
           </span>
         </div>
 
+        {/* Card 3: Paquete Semanal Promedio */}
+        <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
+          <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
+            Paquete Semanal Promedio
+          </span>
+          <span className="text-2xl font-black font-mono tabular-nums text-emerald-700 block mt-1">
+            ${registrosFiltrados.length > 0 ? Math.round(registrosFiltrados.reduce((s, r) => s + r.totalPagarUsd, 0) / registrosFiltrados.length) : 0} USD
+          </span>
+          <span className="text-[11px] text-neutral-500 mt-1 block">
+            {selectedMes === 10
+              ? 'Por trabajador / semana pactada'
+              : 'Promedio desembolsado por asignación'}
+          </span>
+        </div>
+
+        {/* Card 4: Cuentas con Desembolso */}
         <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
-              Cuentas con Pago
+              Cuentas con Desembolso
             </span>
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800">
               {cuentasConPago.length} Activas
@@ -928,7 +912,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                       {c.nombre}
                     </div>
                     <div className="flex items-center justify-between text-[10px] text-neutral-500 mt-1">
-                      <span>{Math.round(c.horasTotales).toLocaleString('de-DE')} hrs</span>
+                      <span>{c.registrosCount} pagos</span>
                       <strong className="font-mono text-emerald-700">
                         ${Math.round(c.montoTotal).toLocaleString('de-DE')} USD
                       </strong>
@@ -993,10 +977,6 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                     <th className="py-2.5 px-3 min-w-[180px]">Trabajador</th>
                     <th className="py-2.5 px-3 min-w-[180px]">Cargo / Especialidad</th>
                     <th className="py-2.5 px-3 min-w-[160px]">Cuenta Auxiliar (Proyecto)</th>
-                    <th className="py-2.5 px-3 text-center">Horas Norm.</th>
-                    <th className="py-2.5 px-3 text-center">Horas Ext.</th>
-                    <th className="py-2.5 px-3 text-center bg-[#081c33]">Total Horas</th>
-                    <th className="py-2.5 px-3 text-right">Tarifa $/hr</th>
                     <th className="py-2.5 px-3 text-right bg-[#081c33]">
                       {vistaModo === 'devengo' ? 'Devengado ($)' : 'Total a Pagar ($)'}
                     </th>
@@ -1030,24 +1010,6 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                         <span className="text-[10px] text-neutral-500 font-semibold">{r.proyectoCorto}</span>
                       </td>
 
-                      <td className="py-2 px-3 text-center font-mono tabular-nums text-neutral-700 whitespace-nowrap">
-                        {Math.round(r.horasNormales)} h
-                      </td>
-
-                      <td className="py-2 px-3 text-center font-mono tabular-nums font-semibold whitespace-nowrap">
-                        <span className={r.horasExtras > 0 ? 'text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded' : 'text-neutral-400'}>
-                          {r.horasExtras > 0 ? `+${Math.round(r.horasExtras)} h` : '-'}
-                        </span>
-                      </td>
-
-                      <td className="py-2 px-3 text-center font-mono tabular-nums font-bold text-neutral-900 bg-neutral-50/60 whitespace-nowrap">
-                        {Math.round(r.totalHoras)} h
-                      </td>
-
-                      <td className="py-2 px-3 text-right font-mono tabular-nums text-neutral-600 whitespace-nowrap">
-                        ${formatUnitPriceRaw(r.tarifaHoraUsd)}
-                      </td>
-
                       <td className="py-2 px-3 text-right font-mono tabular-nums font-bold text-neutral-900 bg-emerald-50/30 whitespace-nowrap">
                         ${Math.round(r.totalPagarUsd).toLocaleString('de-DE')}
                       </td>
@@ -1060,19 +1022,9 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 </tbody>
                 <tfoot className="sticky bottom-0 z-10 bg-neutral-100 font-black border-t-2 border-neutral-300 text-neutral-900 text-xs">
                   <tr>
-                    <td colSpan={5} className="py-2.5 px-3 uppercase tracking-wider whitespace-nowrap">
-                      TOTAL CONSOLIDADO ({registrosFiltrados.length} REGISTROS):
+                    <td colSpan={5} className="py-2.5 px-3 uppercase tracking-wider whitespace-nowrap font-black">
+                      TOTAL CONSOLIDADO ({registrosFiltrados.length} ASIGNACIONES):
                     </td>
-                    <td className="py-2.5 px-3 text-center font-mono whitespace-nowrap">
-                      {Math.round(registrosFiltrados.reduce((s, r) => s + r.horasNormales, 0)).toLocaleString('de-DE')} h
-                    </td>
-                    <td className="py-2.5 px-3 text-center font-mono text-amber-700 whitespace-nowrap">
-                      +{Math.round(totalHorasExtras).toLocaleString('de-DE')} h
-                    </td>
-                    <td className="py-2.5 px-3 text-center font-mono text-sm bg-neutral-200 whitespace-nowrap font-black">
-                      {Math.round(totalHoras).toLocaleString('de-DE')} h
-                    </td>
-                    <td></td>
                     <td className="py-2.5 px-3 text-right font-mono text-sm text-emerald-800 bg-emerald-100/60 whitespace-nowrap min-w-[140px] font-black">
                       ${Math.round(totalMonto).toLocaleString('de-DE')} USD
                     </td>
