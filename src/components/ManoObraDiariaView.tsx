@@ -550,12 +550,20 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
         <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
-              {vistaModo === 'devengo' ? 'Total Devengado (30/31 Días)' : 'Total a Pagar (Corte Semanal)'}
+              {vistaModo === 'devengo' 
+                ? 'Total Devengado (30/31 Días)' 
+                : vistaModo === 'semanal' 
+                ? 'Total a Pagar (Corte Semanal)' 
+                : 'Total Nómina (Corte RRHH)'}
             </span>
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-              vistaModo === 'devengo' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'
+              vistaModo === 'devengo' 
+                ? 'bg-emerald-100 text-emerald-800' 
+                : vistaModo === 'semanal' 
+                ? 'bg-blue-100 text-blue-800' 
+                : 'bg-purple-100 text-purple-800'
             }`}>
-              {vistaModo === 'devengo' ? 'Devengo Real' : 'Nómina Pagada'}
+              {vistaModo === 'devengo' ? 'Devengo Real' : vistaModo === 'semanal' ? 'Nómina Pagada' : 'Comparativa'}
             </span>
           </div>
           <span className="text-2xl font-black font-mono tabular-nums text-neutral-900 block mt-1">
@@ -563,17 +571,21 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
             {selectedMes === 10
-              ? '5 semanas de Octubre ($257.751 USD: Sem 39 a 43 en PMH, Briquetas, Pellas y Boca Grande II - 69.635 HH)'
+              ? (vistaModo === 'devengo'
+                  ? '31 días exactos de Octubre ($262.849 USD: 28 días Sem 40-43 + 3 días devengados de fin de mes)'
+                  : vistaModo === 'semanal'
+                  ? '4 semanas de pago en Octubre ($237.412 USD: Sem 40 a 43 en cuadrillas activas)'
+                  : 'Conciliación Octubre: $237.412 USD pagados (28 días) vs $262.849 USD devengados (31 días)')
               : selectedMes === 9
               ? (vistaModo === 'devengo' 
                   ? '30 días exactos de Septiembre ($212.832 USD: incluye 2 días de Sem 35)' 
-                  : '4 semanas de Septiembre ($196.665 USD: Sem 36 a 39)')
+                  : '5 semanas de Septiembre ($217.005 USD: Sem 35 a 39)')
               : selectedMes === 8
               ? (vistaModo === 'devengo' 
                   ? '31 días exactos de Agosto ($246.111 USD: asigna 5 días de Sem 35)' 
                   : 'Semanas 31 a 34 ($223.130 USD)')
               : selectedMes === 0 
-                ? 'Total acumulado 2026 ($2.282.821 USD)' 
+                ? 'Total acumulado 2026 ($2.436.696 USD en nómina)' 
                 : `Mes ${selectedMes} • ${registrosFiltrados.length} registros`}
           </span>
         </div>
@@ -586,7 +598,9 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
             {Math.round(totalHoras).toLocaleString('de-DE')} hrs
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
-            Horas ordinarias + extras
+            {selectedMes === 10
+              ? '58.464 horas auditadas en 4 semanas (Sem 40 a 43)'
+              : 'Horas ordinarias + extras'}
           </span>
         </div>
 
@@ -598,7 +612,9 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
             {Math.round(totalHorasExtras).toLocaleString('de-DE')} hrs
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
-            Remuneradas con recargo legal
+            {selectedMes === 10
+              ? '1.530 horas extras con recargo legal'
+              : 'Remuneradas con recargo legal'}
           </span>
         </div>
 
@@ -610,7 +626,9 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
             {trabajadoresUnicos} Trabajadores
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
-            En los proyectos con nómina
+            {selectedMes === 10
+              ? '402 trabajadores en cuadrillas (399 cédulas únicas)'
+              : 'En los proyectos con nómina'}
           </span>
         </div>
 
@@ -627,10 +645,10 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
             {cuentasConPago.length} Cuentas
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
-            {selectedProyecto === 'pmh'
+            {isPmhContext
               ? '2 cuentas en nómina (de 16 registradas en PMH)'
               : selectedMes === 10
-              ? '6 cuentas activas (PMH, Pellas, Briq, BG II)'
+              ? '6 cuentas activas (Pellas L1, PMH 2da Línea, Briq, BG II, Refractario, PMH Bandas)'
               : 'Cuentas auxiliares con nómina activa'}
           </span>
         </div>
@@ -784,11 +802,15 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500"
               >
                 <option value="todos">Todos los Proyectos</option>
-                <option value="pellas">1. Pellas (Línea 1 y 2)</option>
-                <option value="bg">2. Boca Grande (BG II)</option>
-                <option value="briquetas">3. Briquetas (Fase 2)</option>
-                <option value="pmh">4. PMH (Bandas y Tolvas)</option>
-                <option value="varios">5. Proyectos Varios</option>
+                <option value="TTE-C-0706">TTE-C-0706 · Planta de Pellas (Línea 1)</option>
+                <option value="TTE-C-0676">TTE-C-0676 · Planta de Pellas (Línea 2)</option>
+                <option value="TTE-C-0671">TTE-C-0671 · Segunda Línea PMH</option>
+                <option value="TTE-C-0656">TTE-C-0656 · Bandas Transportadoras PMH</option>
+                <option value="TTE-C-0668">TTE-C-0668 · Planta de Briquetas (Fase 2)</option>
+                <option value="TTE-C-0670">TTE-C-0670 · Mtto. Refractario Briqueteras</option>
+                <option value="TTE-C-0680">TTE-C-0680 · Boca Grande II (BG II)</option>
+                <option value="TTE-C-0640">TTE-C-0640 · Parrilla Móvil Pellas</option>
+                <option value="varios">Proyectos Varios / Otros</option>
               </select>
             </div>
 
@@ -804,8 +826,8 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 }}
                 className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500"
               >
-                <option value={10}>Octubre 2026 (Auditoría RRHH - Semanas 39-43: PMH, Briquetas, Pellas y Boca Grande II)</option>
-                <option value={9}>Septiembre 2026 (Auditoría Detallada - Semanas 35-39)</option>
+                <option value={10}>Octubre 2026</option>
+                <option value={9}>Septiembre 2026</option>
                 <option value={8}>Agosto 2026</option>
                 <option value={7}>Julio 2026</option>
                 <option value={6}>Junio 2026</option>
@@ -814,7 +836,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 <option value={3}>Marzo 2026</option>
                 <option value={2}>Febrero 2026</option>
                 <option value={1}>Enero 2026</option>
-                <option value={0}>Todos los Meses (Ene - Oct 2026)</option>
+                <option value={0}>Todos los Meses</option>
               </select>
             </div>
 
@@ -829,11 +851,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 }}
                 className="text-xs font-bold text-neutral-900 bg-neutral-50 border border-neutral-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500"
               >
-                <option value={0}>
-                  {semanasDisponibles.length > 0 
-                    ? `Todas las Semanas (${semanasDisponibles[0]} a ${semanasDisponibles[semanasDisponibles.length - 1]})`
-                    : 'Todas las Semanas'}
-                </option>
+                <option value={0}>Todas las Semanas</option>
                 {semanasDisponibles.map(sem => (
                   <option key={sem} value={sem}>{`Semana ${sem}`}</option>
                 ))}
@@ -866,7 +884,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                {selectedProyecto === 'pmh' && (
+                {isPmhContext && (
                   <button
                     onClick={() => setShowTodasCuentasPmh(!showTodasCuentasPmh)}
                     className="text-[11px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
@@ -921,7 +939,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
             </div>
 
             {/* Banner Expandible con las 16 Cuentas Oficiales de PMH */}
-            {selectedProyecto === 'pmh' && showTodasCuentasPmh && (
+            {isPmhContext && showTodasCuentasPmh && (
               <div className="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-slate-800">
