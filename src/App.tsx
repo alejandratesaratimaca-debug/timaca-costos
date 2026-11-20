@@ -160,7 +160,12 @@ function AppContent() {
 
   // Separador de Suite Macro (Costos, Herramientas, Dotación, SIP PMH, Seguridad)
   const [moduloActivo, setModuloActivoState] = useState<SuiteModulo>(() => {
-    return (localStorage.getItem(MODULO_STORAGE_KEY) as SuiteModulo) || 'costos';
+    const saved = localStorage.getItem(MODULO_STORAGE_KEY) as SuiteModulo;
+    if (saved === 'rrhh') {
+      localStorage.setItem(MODULO_STORAGE_KEY, 'costos');
+      return 'costos';
+    }
+    return saved || 'costos';
   });
 
   const handleCambiarModulo = (nuevoModulo: SuiteModulo) => {

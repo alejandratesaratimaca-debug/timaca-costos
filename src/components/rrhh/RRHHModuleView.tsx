@@ -551,7 +551,7 @@ export const RRHHModuleView: React.FC<RRHHModuleViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {MOCK_UNIDADES_ORGANIGRAMA.map(u => (
+            {MOCK_UNIDADES_ORGANIGRAMA.filter(u => u.id !== 'u-rrhh').map(u => (
               <div
                 key={u.id}
                 className="p-4 rounded-xl border border-slate-200 hover:border-blue-400 bg-slate-50/50 hover:bg-white transition-all shadow-2xs space-y-3"

@@ -159,52 +159,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-4 scrollbar-thin scrollbar-thumb-slate-700">
           
           {/* ========================================================================= */}
-          {/* 1. EL PRIMERO: RECURSOS HUMANOS (RRHH) - TALENTO TIMACA                    */}
+          {/* 1. DEPARTAMENTO DE COSTOS (TODAS LAS VISTAS ABIERTAS Y VISIBLES)           */}
           {/* ========================================================================= */}
-          <div className="space-y-1">
-            {!isCollapsed && (
-              <div className="px-2 py-1 text-[11px] font-mono font-bold tracking-wider text-sky-300 uppercase flex items-center justify-between">
-                <span>1. Gestión de Personal</span>
-                <span className="text-[10px] bg-blue-900/60 text-blue-200 px-1.5 py-0.2 rounded border border-blue-700/60">Prioritario</span>
-              </div>
-            )}
-
-            <button
-              onClick={() => handleSelectModulo('rrhh')}
-              className={`w-full flex items-center p-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                moduloActivo === 'rrhh'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 ring-2 ring-blue-300'
-                  : 'bg-slate-800/60 text-slate-200 hover:text-white hover:bg-slate-700/70 border border-slate-700/50'
-              }`}
-              title="Recursos Humanos · Talento TIMACA: Expedientes, Contratos, Asistencia, Cuadrillas y Selección"
-            >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <span className={`font-mono text-xs font-black px-2 py-1 rounded shrink-0 self-center ${
-                  moduloActivo === 'rrhh' ? 'bg-blue-900 text-white ring-1 ring-white/30' : 'bg-blue-950 text-blue-300 border border-blue-700/50'
-                }`}>
-                  RRHH
-                </span>
-                {!isCollapsed && (
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-black text-sm text-white leading-tight flex items-center gap-1.5">
-                      Recursos Humanos
-                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    </span>
-                    <span className={`text-[11px] mt-0.5 ${
-                      moduloActivo === 'rrhh' ? 'text-blue-100 font-medium' : 'text-slate-400'
-                    }`}>
-                      Expedientes, Personal & Asistencia
-                    </span>
-                  </div>
-                )}
-              </div>
-            </button>
-          </div>
-
-          {/* ========================================================================= */}
-          {/* 2. DEPARTAMENTO DE COSTOS (TODAS LAS VISTAS ABIERTAS Y VISIBLES)           */}
-          {/* ========================================================================= */}
-          <div className="space-y-2 pt-1 border-t border-slate-700/60">
+          <div className="space-y-2">
             {!isCollapsed ? (
               <button
                 type="button"
@@ -218,7 +175,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               >
                 <div className="flex items-center gap-1.5">
                   <Building2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>2. Depto. de Costos</span>
+                  <span>1. Depto. de Costos</span>
                   <ChevronDown className={`w-3.5 h-3.5 text-amber-400 transition-transform duration-200 ${costosExpanded ? 'rotate-180' : ''}`} />
                 </div>
                 <span className="text-[10px] bg-amber-950/60 text-amber-300 px-1.5 py-0.5 rounded border border-amber-700/60">$13.8M</span>
@@ -424,12 +381,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
           {/* ========================================================================= */}
-          {/* 3. RESTO DE MÓDULOS OPERATIVOS (TOTALMENTE VISIBLES)                       */}
+          {/* 2. MÓDULOS OPERATIVOS (TOTALMENTE VISIBLES)                                */}
           {/* ========================================================================= */}
           <div className="space-y-1 pt-1 border-t border-slate-700/60">
             {!isCollapsed && (
               <div className="px-2 py-1 text-[11px] font-mono font-bold tracking-wider text-slate-300 uppercase">
-                3. Otros Módulos Operativos
+                2. Módulos Operativos
               </div>
             )}
 

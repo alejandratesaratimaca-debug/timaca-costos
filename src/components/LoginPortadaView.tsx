@@ -101,20 +101,6 @@ const DEPARTAMENTOS_SIGMA: DepartamentoConfig[] = [
     btnGrad: 'from-cyan-700 to-cyan-600 hover:from-cyan-800 hover:to-cyan-700'
   },
   {
-    id: 'rrhh',
-    nombre: 'Recursos Humanos (RRHH)',
-    modulo: 'rrhh',
-    entorno: 'externos',
-    badge: 'Talento TIMACA',
-    descripcion: 'Expedientes del personal, control de cuadrillas, asistencia y nómina semanal de MOD.',
-    icono: Users,
-    colorBg: 'bg-indigo-900/30',
-    colorBorder: 'border-indigo-500/50',
-    colorText: 'text-indigo-300',
-    colorIcon: 'text-indigo-400',
-    btnGrad: 'from-indigo-700 to-indigo-600 hover:from-indigo-800 hover:to-indigo-700'
-  },
-  {
     id: 'seguridad',
     nombre: 'Seguridad Laboral (HSE)',
     modulo: 'seguridad',
