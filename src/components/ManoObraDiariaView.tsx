@@ -42,7 +42,7 @@ const DATOS_CONCILIACION_2026 = [
   { mesNum: 7, mesNombre: 'Julio', diasCal: 31, personas: 385, semRRHH: 267473.88, devengoReal: 237850.61, dif: -29623.27, pellas: 140764.76, bg: 45290.30, briquetas: 22850.00, pmh: 28945.55, varios: 0.0, dinamicaOperativa: 'Reactivación de frentes en Boca Grande y Pellas', nota: 'Corte operativo tenía 5 semanas (35 días) vs 31 días reales' },
   { mesNum: 8, mesNombre: 'Agosto', diasCal: 31, personas: 398, semRRHH: 223130.13, devengoReal: 246110.70, dif: 22980.57, pellas: 147941.02, bg: 37940.20, briquetas: 26410.10, pmh: 33819.38, varios: 0.0, dinamicaOperativa: 'Base auditada oficial de RRHH (4 Master Unificado)', nota: 'Cierre completo de 31 días con guardias de fin de mes' },
   { mesNum: 9, mesNombre: 'Septiembre', diasCal: 30, personas: 394, semRRHH: 217004.59, devengoReal: 212832.38, dif: -4172.21, pellas: 137877.61, bg: 28551.40, briquetas: 27395.00, pmh: 38297.31, varios: 0.0, dinamicaOperativa: 'Cierre oficial auditado de nómina (Semanas 35 a 39)', nota: 'Semana 35 sumó 2 días al devengo mensual e integró Sem 39' },
-  { mesNum: 10, mesNombre: 'Octubre', diasCal: 31, personas: 402, semRRHH: 237411.88, devengoReal: 262848.86, dif: 25436.98, pellas: 131190.16, bg: 13685.00, briquetas: 27170.00, pmh: 65366.72, varios: 0.0, dinamicaOperativa: '4 semanas cerradas de Octubre (Sem 40 a 43 = 28 días) + 3 días devengados de fin de mes', nota: 'Semanas 40 a 43 ($237.4K). Los 3 días restantes devengan +$25.4K para 31 días exactos.' }
+  { mesNum: 10, mesNombre: 'Octubre', diasCal: 31, personas: 399, semRRHH: 237411.88, devengoReal: 262848.86, dif: 25436.98, pellas: 131190.16, bg: 13685.00, briquetas: 27170.00, pmh: 65366.72, varios: 0.0, dinamicaOperativa: '4 semanas cerradas de Octubre (Sem 40 a 43 = 28 días) + 3 días devengados de fin de mes', nota: 'Semanas 40 a 43 ($237.4K). Los 3 días restantes devengan +$25.4K para 31 días exactos.' }
 ];
 
 export const CUENTAS_OFICIALES_PMH = [
@@ -177,7 +177,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
   }, [registrosFiltrados]);
 
   const trabajadoresUnicos = useMemo(() => {
-    return new Set(registrosFiltrados.map(r => r.trabajador.trim().toUpperCase())).size;
+    return new Set(registrosFiltrados.map(r => (r.cedula || r.trabajador).trim().toUpperCase())).size;
   }, [registrosFiltrados]);
 
   // Resumen de Cuentas Auxiliares con Pago en los registros actuales
@@ -222,7 +222,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
     for (let m = 1; m <= 10; m++) {
       const mesRecords = allRegistros.filter(r => r.mes === m);
       if (mesRecords.length > 0) {
-        const count = new Set(mesRecords.map(r => r.trabajador.trim().toUpperCase())).size;
+        const count = new Set(mesRecords.map(r => (r.cedula || r.trabajador).trim().toUpperCase())).size;
         map.set(m, count);
       } else {
         map.set(m, DATOS_CONCILIACION_2026[m - 1]?.personas || 0);
@@ -232,7 +232,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
   }, [allRegistros]);
 
   const trabajadoresUnicosTotal = useMemo(() => {
-    return new Set(allRegistros.map(r => r.trabajador.trim().toUpperCase())).size;
+    return new Set(allRegistros.map(r => (r.cedula || r.trabajador).trim().toUpperCase())).size;
   }, [allRegistros]);
 
   // Available weeks based on selected month
@@ -627,7 +627,7 @@ export const ManoObraDiariaView: React.FC<ManoObraDiariaViewProps> = ({ onVolver
           </span>
           <span className="text-[11px] text-neutral-500 mt-1 block">
             {selectedMes === 10
-              ? '402 trabajadores en cuadrillas (399 cédulas únicas)'
+              ? '399 personas únicas auditadas por cédula'
               : 'En los proyectos con nómina'}
           </span>
         </div>
