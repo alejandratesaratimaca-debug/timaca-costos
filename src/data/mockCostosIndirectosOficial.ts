@@ -47,6 +47,6 @@ export const TOTALES_COSTOS_INDIRECTOS_OFICIAL = {
   jul: 203412,
   ago: 208767,
   sep: 341375,
-  oct: 314914,
-  total: 2215372
+  oct: 313192,
+  total: 2213650
 };
