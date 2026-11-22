@@ -55,7 +55,7 @@ export const SERVICIOS_PELLAS_1_EXACTO: FilaDesgloseMensual[] = [
   { concepto: 'Servicio mantenimiento de extintor', abr: 0, may: 0, jun: 0, jul: 0, ago: 448, sep: 0, total: 448 },
   { concepto: 'Servicio traslado de personal', abr: 0, may: 36340, jun: 34720, jul: 39995, ago: 44270, sep: 45878, total: 201203 },
   { concepto: 'Servicios de importacion', abr: 0, may: 0, jun: 0, jul: 0, ago: 439, sep: 0, total: 439 },
-  { concepto: 'Vigilancia externa', abr: 0, may: 0, jun: 0, jul: 10582, ago: 10582, sep: 13182, total: 34346 },
+  { concepto: 'Vigilancia externa', abr: 0, may: 0, jun: 0, jul: 10582, ago: 10582, sep: 13182, oct: 13673, total: 48019 },
   { concepto: 'Otros mantenimientos menores', abr: 0, may: 0, jun: 0, jul: 0, ago: 0, sep: 10, total: 10 }
 ];
 
