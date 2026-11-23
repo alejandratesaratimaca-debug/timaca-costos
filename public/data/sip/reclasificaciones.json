@@ -9676,5 +9676,30 @@
     "fecha": "2026-11-23",
     "usuario": "Auditoría SIGMA (Alejandra T)",
     "origen": "Ajuste de Valorización Contractual (30%)"
+  },
+  {
+    "recordId": "AUDIT-SEP-AGO-0706-BAÑOS-5781",
+    "tipoItem": "servicio",
+    "documento": "OC21946",
+    "solicitud": "SC25134",
+    "codigo": "SE0870",
+    "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS (12 BAÑOS PORTATILES)",
+    "cantidad": 12,
+    "totalUSD": 4200.0,
+    "totalAnteriorUSD": 4200.0,
+    "ajusteUSD": 0.0,
+    "fechaMovimiento": "15/09/2026",
+    "cuentaAnterior": "TTE-C-0706",
+    "proyectoAnterior": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+    "nuevaCuenta": "TTE-C-0706",
+    "nuevoProyecto": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+    "mesAnterior": "septiembre",
+    "nuevoMes": "agosto",
+    "solicitante": "ASTRID SILVA",
+    "proveedor": "ASOCIACION COOPERATIVA SERVICIOS RT GUAYANA 2009. R.L.",
+    "motivo": "Reasignación contable de Septiembre a Agosto (Opción 2): La orden OC21946 cubre el ciclo devengado del 09/08/2026 al 08/09/2026 pero fue recepcionada por Almacén tardíamente el 15/09/2026 (SE5426), acumulando erróneamente dos órdenes de $4,200 en septiembre. Se traslada a Agosto para reflejar los 12 baños ($4,200 USD) en cada mes calendario de servicio.",
+    "fecha": "2026-11-23",
+    "usuario": "Auditoría SIGMA (Alejandra T)",
+    "origen": "Reasignación de Período Devengado (Opción 2)"
   }
 ]

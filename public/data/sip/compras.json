@@ -4483,7 +4483,7 @@
       "ordenCompra": "OC21946",
       "fechaSolicitud": "2026-09-15",
       "fechaOC": "2026-09-15",
-      "nombre_mes": "septiembre",
+      "nombre_mes": "agosto",
       "codigo": "SE0870",
       "descripcion": "ALQUILER DE MAQUINARIA Y EQUIPOS",
       "motivo": "SERVICIO DE ALQUILER DE 12 BAÑOS PORTATILES POR UN MES FECHA DE INCIO 09/07/2026 - 1PLANTA DE PELLAS",
@@ -4499,7 +4499,7 @@
       "precioUnitario": 0,
       "totalUSD": 4200,
       "tipo": "Servicios",
-      "esReclasificado": false
+      "esReclasificado": true
     },
     {
       "id": 5780,
