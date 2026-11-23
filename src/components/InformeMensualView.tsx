@@ -1698,18 +1698,18 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Horas-Hombre Devengadas</span>
                         <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
-                          {selectedMesNum === 10 ? '69.635 HH' : selectedMesNum === 8 ? '78.072 HH' : '55.277 HH'}
+                          {selectedMesNum === 10 ? 'En Revisión' : selectedMesNum === 8 ? '78.072 HH' : '55.277 HH'}
                         </span>
                         <span className="text-[11px] text-blue-700 font-semibold block mt-0.5">
-                          {selectedMesNum === 10 ? 'Promedio 13.927 HH/semana' : selectedMesNum === 8 ? 'Promedio 15.614 HH/semana' : 'Promedio 13.819 HH/semana'}
+                          {selectedMesNum === 10 ? 'Sujeto a conciliación RRHH' : selectedMesNum === 8 ? 'Promedio 15.614 HH/semana' : 'Promedio 13.819 HH/semana'}
                         </span>
                       </div>
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Tarifa Promedio Efectiva</span>
                         <span className="text-2xl font-black font-mono text-slate-900 block mt-1">
-                          {selectedMesNum === 10 ? '$3,70 USD/HH' : '$3,56 USD/HH'}
+                          {selectedMesNum === 10 ? 'En Revisión' : '$3,56 USD/HH'}
                         </span>
-                        <span className="text-[11px] text-slate-500 font-semibold block mt-0.5">Costo integral de mano de obra</span>
+                        <span className="text-[11px] text-slate-500 font-semibold block mt-0.5">{selectedMesNum === 10 ? 'Sujeto a sumatoria final HH' : 'Costo integral de mano de obra'}</span>
                       </div>
                       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Proyectos con Cuadrilla</span>
@@ -1739,7 +1739,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         {selectedMesNum === 10 ? (
                           <div className="text-xs text-slate-700 space-y-2.5 leading-relaxed">
                             <p>
-                              <strong className="text-[#002060]">Ciclo Operativo de Nómina Directa (Octubre):</strong> Incorpora los partes devengados de <strong>Semanas 39 a 43</strong> en los 7 frentes activos (<em>Pellas Línea 1</em>, <em>2da Línea PMH</em>, <em>Fase 2 Briquetas</em>, <em>Mantenimiento BG II</em>, <em>Mantenimiento Briqueteras</em>, <em>Caldera Briquetas</em> y <em>Bandas PMH</em>), totalizando <strong>$257.750 USD</strong> y <strong>69.635 HH</strong>.
+                              <strong className="text-[#002060]">Ciclo Operativo de Nómina Directa (Octubre):</strong> Incorpora los partes devengados de <strong>Semanas 39 a 43</strong> en los 7 frentes activos (<em>Pellas Línea 1</em>, <em>2da Línea PMH</em>, <em>Fase 2 Briquetas</em>, <em>Mantenimiento BG II</em>, <em>Mantenimiento Briqueteras</em>, <em>Caldera Briquetas</em> y <em>Bandas PMH</em>), totalizando <strong>$257.750 USD</strong> (horas en proceso de regularización con RRHH).
                             </p>
                             <div className="bg-white p-3 rounded-xl border border-blue-100 space-y-1 font-mono text-[11px]">
                               <span className="font-bold text-[#002060] block font-sans text-xs mb-1">Cortes Semanales Procesados (RRHH):</span>
@@ -1749,7 +1749,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <div className="flex justify-between"><span>Semana 42 (Corte 17/10):</span><strong className="text-slate-900">$57.798 USD (15.119 HH)</strong></div>
                               <div className="flex justify-between"><span>Semana 43 (Corte 24/10):</span><strong className="text-slate-900">$59.228 USD (15.910 HH)</strong></div>
                               <div className="border-t border-slate-200 pt-1 mt-1 flex justify-between font-bold text-[#002060]">
-                                <span>Total Devengado Octubre:</span><span>$257.750 USD (69.635 HH)</span>
+                                <span>Total Devengado Octubre:</span><span>$257.750 USD (Horas en revisión)</span>
                               </div>
                             </div>
 
@@ -1823,7 +1823,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             Desglose de Nómina por Proyecto ({selectedMesNum === 10 ? 'Octubre 2026' : selectedMesNum === 8 ? 'Agosto 2026' : '10 Frentes Activos Sep'})
                           </span>
                           <span className="text-[11px] font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                            {selectedMesNum === 10 ? '64.585 Horas Totales' : selectedMesNum === 8 ? '78.072 Horas Totales' : '55.277 Horas Totales'}
+                            {selectedMesNum === 10 ? 'Horas en revisión RRHH' : selectedMesNum === 8 ? '78.072 Horas Totales' : '55.277 Horas Totales'}
                           </span>
                         </div>
                         <div className="overflow-x-auto max-h-[360px] overflow-y-auto">
@@ -1857,7 +1857,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                   <td className={`py-2 px-3 text-right font-mono font-bold ${p.retraso ? 'text-amber-700' : 'text-slate-900'}`}>
                                     ${p.monto.toLocaleString('de-DE')}
                                   </td>
-                                  <td className="py-2 px-3 text-right font-mono text-slate-600">{p.hh.toLocaleString('de-DE')}</td>
+                                  <td className="py-2 px-3 text-right font-mono text-slate-600">{selectedMesNum === 10 ? '-' : p.hh.toLocaleString('de-DE')}</td>
                                   <td className={`py-2 px-3 text-right font-mono font-bold ${p.retraso ? 'text-amber-700' : 'text-blue-700'}`}>
                                     {p.pct}%
                                   </td>
@@ -1871,7 +1871,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                   {selectedMesNum === 10 ? '$235.066 USD' : selectedMesNum === 8 ? '$277.936 USD' : '$196.665 USD'}
                                 </td>
                                 <td className="py-2.5 px-3 text-right font-mono">
-                                  {selectedMesNum === 10 ? '64.585 HH' : selectedMesNum === 8 ? '78.072 HH' : '55.277 HH'}
+                                  {selectedMesNum === 10 ? '-' : selectedMesNum === 8 ? '78.072 HH' : '55.277 HH'}
                                 </td>
                                 <td className="py-2.5 px-3 text-right font-mono">100,0%</td>
                               </tr>
@@ -4291,7 +4291,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Mano de Obra Directa (MOD) Consolidada:</strong> $257.750 USD devengados con 399 trabajadores activos y 69.635 HH en 7 frentes de obra e integración regularizada de nómina en Boca Grande II ($13,7K).</>
+                              ? <><strong>Mano de Obra Directa (MOD) Consolidada:</strong> $257.750 USD devengados con 399 trabajadores activos en 7 frentes de obra (horas en revisión con RRHH) e integración regularizada de nómina en Boca Grande II ($13,7K).</>
                               : <><strong>Segunda Línea PMH en expansión (+47%):</strong> Cierre en $291.949 USD (vs $198.053 USD en agosto), consolidándose como el segundo frente de mayor inversión de TIMACA (17,8% del mes).</>}
                             </span>
                           </li>
