@@ -3800,7 +3800,7 @@
       "motivo": "ALQUILER DE 15 BAÑOS PORTATILES CORRESPONDIENTE AL PERIODO DEL 09/10/2026 AL 09/11/2026 PARA EL PROYECTO PELLAS 1",
       "categoria": "SERVICIOS",
       "cantidadSolicitada": 15,
-      "cantidadOC": 15,
+      "cantidadOC": 12,
       "cantidadRecepcionada": 15,
       "unidad": "USE",
       "cuentaAuxiliar": "TTE-C-0706",
@@ -3808,9 +3808,9 @@
       "comprador": "HERNAN GARCIA",
       "solicitante": "ALBERT GONZALEZ",
       "precioUnitario": 350,
-      "totalUSD": 5250,
+      "totalUSD": 4200.0,
       "tipo": "Servicios",
-      "esReclasificado": false
+      "esReclasificado": true
     },
     {
       "id": 335088,
@@ -8652,7 +8652,7 @@
       "motivo": "ALQUILER DE 4 BAÑOS PORTATILES CORRESPONDIENTE AL PERIODO DEL 09/10/2026 AL 09/11/2026 PARA EL PROYECTO SEGUNDA LINEA PMH",
       "categoria": "SERVICIOS",
       "cantidadSolicitada": 4,
-      "cantidadOC": 4,
+      "cantidadOC": 7,
       "cantidadRecepcionada": 4,
       "unidad": "USE",
       "cuentaAuxiliar": "TTE-C-0671",
@@ -8660,9 +8660,9 @@
       "comprador": "HERNAN GARCIA",
       "solicitante": "ALBERT GONZALEZ",
       "precioUnitario": 350,
-      "totalUSD": 1400,
+      "totalUSD": 2450.0,
       "tipo": "Servicios",
-      "esReclasificado": false
+      "esReclasificado": true
     },
     {
       "id": 101229,
