@@ -332,12 +332,12 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
         );
       } else if (selectedMesNum === 10) {
         setNotasGestion(
-          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $2.063.059,00 USD (+20,8% vs septiembre $1.707.278 USD), acumulando un total anual consolidado de $14.793.659,00 USD en los 10 meses de 2026.\n\n` +
-          `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $1.219.527 USD (59,1% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($686.040 USD), Henan Front ($40.000 USD), cuadrillas en campo ($131.190 USD), provisión de horas máquina ($58.500 USD) y prorrateo CIF ($160.285 USD).\n\n` +
+          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.587.796,00 USD (+20,8% vs septiembre $1.707.278 USD), acumulando un total anual consolidado de $14.793.659,00 USD en los 10 meses de 2026.\n\n` +
+          `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $738.919 USD (46,5% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($205.974 USD (30% Hito 0)), Henan Front ($40.000 USD), cuadrillas en campo ($131.190 USD), provisión de horas máquina ($58.500 USD) y prorrateo CIF ($160.285 USD).\n\n` +
           `Le siguen Segunda Línea PMH (TTE-C-0671) con $434.469 USD (21,1%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $106.812 USD (5,2%), Fase 2 Planta de Briquetas (TTE-C-0668) con $89.847 USD (4,4%) y Boca Grande II (TTE-C-0680) con $36.177 USD (1,8%).\n\n` +
-          `Por categorías operativas consolidadas: Servicios Directos totalizó $956.835 USD (46,4%), Materiales Directos alcanzó $475.060 USD (23,0%), Costos Indirectos de Fabricación (CIF) $314.914 USD (15,3%), Mano de Obra Directa (MOD) $257.750 USD (12,5%) y Horas Máquina (provisión operativa) $58.500 USD (2,8%).\n\n` +
+          `Por categorías operativas consolidadas: Servicios Directos totalizó $481.572 USD (30,3%), Materiales Directos alcanzó $475.060 USD (23,0%), Costos Indirectos de Fabricación (CIF) $314.914 USD (15,3%), Mano de Obra Directa (MOD) $257.750 USD (12,5%) y Horas Máquina (provisión operativa) $58.500 USD (2,8%).\n\n` +
           `NOTAS DE AUDITORÍA Y CONTROL DE GESTIÓN:\n` +
-          `• 100% Proyectos Externos: Se excluyeron rubros no atribuibles a frentes de clientes (flota interna y soporte central corporativo), garantizando conciliación al centavo en las 18 cuentas auxiliares TTE-C ($2.063.059 USD).\n` +
+          `• 100% Proyectos Externos: Se excluyeron rubros no atribuibles a frentes de clientes (flota interna y soporte central corporativo), garantizando conciliación al centavo en las 18 cuentas auxiliares TTE-C ($1.587.796 USD).\n` +
           `• Mano de Obra Consolidada: Se incorporó la totalidad de frentes incluyendo la nómina regularizada de Boca Grande II ($13.685 USD devengados en 3.946 Horas Hombre), alcanzando 399 trabajadores auditados en 7 frentes de obra.\n` +
           `• Horas Máquina: Se aplicó provisión técnica de $58.500 USD (+9,6% vs septiembre) en 16 equipos de Pellas Línea 1 sujeta a conciliación final de horómetros.`
         );
@@ -758,7 +758,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-orange-50/70 border border-orange-200 space-y-1">
                         <strong className="text-orange-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                          Servicios Especializados ({selectedMesNum === 10 ? '$956.835 USD · 46,4%' : '$2.904.145 USD · 23,8%'})
+                          Servicios Especializados ({selectedMesNum === 10 ? '$481.572 USD · 30,3%' : '$2.904.145 USD · 23,8%'})
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
@@ -769,7 +769,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1">
                         <strong className="text-emerald-950 block font-bold flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($2.063.059 USD · 100%)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
+                          {selectedMesNum === 10 ? 'Total Proyectos Externos ($1.587.796 USD · 100%)' : 'Mano de Obra Directa ($2.242.917 USD · 18,4%)'}
                         </strong>
                         <p className="text-[11px] text-slate-600 leading-relaxed">
                           {selectedMesNum === 10
@@ -940,7 +940,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                       ) : selectedMesNum === 9 ? (
                         <>Cierre Consolidado Oficial (<strong className="text-emerald-700">+34,7%</strong>): El gasto del mes se situó en <strong className="text-[#0b2545]">$1,61M USD ($1.613.225 USD)</strong>, acumulando <strong className="text-blue-900">$12.052.176 USD</strong> en el ejercicio 2026 con aceleración en Línea 1 Pellas ($668K), 2da Línea PMH ($292K) y DRAVO ($199K).</>
                       ) : selectedMesNum === 10 ? (
-                        <>Cierre Auditado Proyectos Externos: Gasto mensual de <strong className="text-[#0b2545]">$2,06M USD ($2.063.059 USD)</strong>, acumulando <strong className="text-blue-900">$14.793.659 USD</strong> en el ejercicio 2026 con fuerte tracción en Línea 1 Pellas ($1.219.527 USD · 59,1%), 2da Línea PMH ($434.469 USD · 21,1%) y DRAVO ($106.812 USD · 5,2%).</>
+                        <>Cierre Auditado Proyectos Externos: Gasto mensual de <strong className="text-[#0b2545]">$1,59M USD ($1.587.796 USD)</strong>, acumulando <strong className="text-blue-900">$14.793.659 USD</strong> en el ejercicio 2026 con fuerte tracción en Línea 1 Pellas ($738.919 USD · 59,1%), 2da Línea PMH ($434.469 USD · 21,1%) y DRAVO ($106.812 USD · 5,2%).</>
                       ) : selectedMesNum > 1 ? (
                         <>Ejecución mensual de <strong className="text-[#0b2545]">{formatCurrency(activeMonth?.totalMonto || 0)}</strong> ({variacionTotalMes >= 0 ? `+${variacionTotalMes}%` : `${variacionTotalMes}%`} respecto a {mesAnterior?.mesLabel?.split(' ')[0]}) con {cuentasAuxiliaresMes.length} cuentas activas.</>
                       ) : (
@@ -1642,7 +1642,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               'Costos indirectos y soporte corporativo de operaciones ($393.375 USD), integrando Nómina TIMACA ($125K), Talleres ($122K), Sindicato ($59K) y Combustible ($50K).'
                             ) : selectedMesNum === 10 ? (
                               idx === 0 ? 'Despachos de procura SIP ($475.060 USD · 23,0%) concentrados en aceros, tolvas y calderería en Pellas Línea 1, Segunda Línea PMH y Rueda DRAVO.' :
-                              idx === 1 ? 'Servicios especializados ($956.835 USD · 46,4%) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).' :
+                              idx === 1 ? 'Servicios especializados ($481.572 USD · 30,3%) liderados por contratos de ingeniería, instrumentación y control en Pellas con Yokogawa ($686K) y Henan Front ($40K).' :
                               idx === 2 ? 'Mano de obra directa auditada ($257.750 USD · 12,5%) con 399 trabajadores auditados en 7 frentes e integración de cuadrilla en Boca Grande II ($13,7K).' :
                               idx === 3 ? 'Provisión técnica de Horas Máquina ($58.500 USD · 2,8%) para 16 equipos de Pellas Línea 1 (820,5 H/M) sujeta a conciliación de horómetros.' :
                               'Costos indirectos y soporte corporativo de operaciones ($314.914 USD · 15,3%), distribuidos en los 7 frentes con nómina según horas hombre devengadas.'
@@ -2068,7 +2068,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                         </strong>
                         <p className="text-[11px] leading-relaxed text-slate-700">
                           {selectedMesNum === 10 ? (
-                            'Alcanza su récord histórico con $1.219.527 USD en el mes (59,1% del total) y un acumulado de $3.603.481 USD (12,1% sobre contrato marco de $29,72M USD), manteniendo 207 trabajadores promedio en campo (pico de 254 transportados).'
+                            'Alcanza su récord histórico con $738.919 USD en el mes (46,5% del total) y un acumulado de $3.122.873 USD (12,1% sobre contrato marco de $29,72M USD), manteniendo 207 trabajadores promedio en campo (pico de 254 transportados).'
                           ) : selectedMesNum === 9 ? (
                             'Continúa como el contrato de mayor envergadura con $668.340 USD en el mes (40,8%) y un acumulado de $2.388.978 USD (8,0% sobre el contrato total de $29,72M USD).'
                           ) : (
@@ -2639,8 +2639,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 7 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$404.984</td>
                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 8 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$596.358</td>
                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 9 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$668.340</td>
-                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 10 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$1.219.527</td>
-                                <td className="py-2 px-3 text-right font-black text-blue-900 bg-blue-50/50">$3.603.481</td>
+                                 <td className={`py-2 px-2 text-right ${selectedMesNum === 10 ? 'font-bold text-amber-700 bg-amber-50/40' : 'text-slate-800'}`}>$738.919</td>
+                                <td className="py-2 px-3 text-right font-black text-blue-900 bg-blue-50/50">$3.122.873</td>
                               </tr>
                               <tr className="hover:bg-slate-50/60 bg-slate-50/20 text-slate-600">
                                 <td className="py-2 px-2.5 font-sans font-medium text-slate-700 flex items-center gap-1.5">
@@ -2969,8 +2969,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <td className="py-2.5 px-2 text-right">$404.984</td>
                               <td className="py-2.5 px-2 text-right">$596.358</td>
                               <td className="py-2.5 px-2 text-right">$668.340</td>
-                              <td className={`py-2.5 px-2 text-right text-xs ${selectedMesNum === 10 ? 'text-amber-800 bg-amber-100/70 font-black' : 'text-slate-900'}`}>$1.219.527</td>
-                              <td className="py-2.5 px-3 text-right text-blue-950 bg-blue-100 text-xs">$3.603.481</td>
+                              <td className={`py-2.5 px-2 text-right text-xs ${selectedMesNum === 10 ? 'text-amber-800 bg-amber-100/70 font-black' : 'text-slate-900'}`}>$738.919</td>
+                              <td className="py-2.5 px-3 text-right text-blue-950 bg-blue-100 text-xs">$3.122.873</td>
                               <td className="py-2.5 px-2 text-right">100,0%</td>
                             </tr>
 
@@ -2989,8 +2989,8 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               <td className="py-2 px-2 text-right">$1.124.280</td>
                               <td className="py-2 px-2 text-right">$1.720.638</td>
                               <td className="py-2 px-2 text-right">$2.388.978</td>
-                              <td className={`py-2 px-2 text-right ${selectedMesNum === 10 ? 'text-amber-800 bg-amber-50/50 font-black' : 'text-slate-800'}`}>$3.603.481</td>
-                              <td className="py-2 px-3 text-right text-blue-900 bg-blue-50/50">$3.603.481</td>
+                              <td className={`py-2 px-2 text-right ${selectedMesNum === 10 ? 'text-amber-800 bg-amber-50/50 font-black' : 'text-slate-800'}`}>$3.122.873</td>
+                              <td className="py-2 px-3 text-right text-blue-900 bg-blue-50/50">$3.122.873</td>
                               <td className="py-2 px-2 text-right text-emerald-700">12,1%</td>
                             </tr>
 
@@ -4248,14 +4248,14 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <li className="flex items-start gap-2">
                             <span className="text-emerald-600 font-bold">✔</span>
                             <span>{selectedMesNum === 10 
-                              ? <><strong>Materiales y Servicios Purificados al 100%:</strong> Base de datos de $1.431.895 USD en compras directas SIP ($475.060 USD en materiales y $956.835 USD en servicios) en proyectos externos auditada sin ceros, sin registros a destiempo y con imputación contable al centavo.</>
+                              ? <><strong>Materiales y Servicios Purificados al 100%:</strong> Base de datos de $1.431.895 USD en compras directas SIP ($475.060 USD en materiales y $481.572 USD en servicios) en proyectos externos auditada sin ceros, sin registros a destiempo y con imputación contable al centavo.</>
                               : <><strong>Mano de Obra Directa al día:</strong> $196.665 USD devengados en 10 proyectos externos sin pasivos atrasados ni contingencias, liderada por Pellas Línea 1 ($133.185 USD · 60,2%) y Bandas PMH ($28.142 USD · 12,7%).</>}
                             </span>
                           </li>
                           <li className="flex items-start gap-2">
                             <span className="text-emerald-600 font-bold">✔</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Proyecto Pellas Línea 1 superó los $3,60M USD:</strong> Acumulado consolidado de $3.603.481 USD (12,1% sobre contrato marco de $29.720.235 USD), con una ejecución mensual de $1.219.527 USD (59,1% de TIMACA).</>
+                              ? <><strong>Proyecto Pellas Línea 1 superó los $3,60M USD:</strong> Acumulado consolidado de $3.122.873 USD (12,1% sobre contrato marco de $29.720.235 USD), con una ejecución mensual de $738.919 USD (59,1% de TIMACA).</>
                               : <><strong>Proyecto Pellas Línea 1 con avance sostenido:</strong> Acumulado consolidado de $2.388.978 USD (8,0% sobre contrato marco de $29.720.000 USD), con 254 trabajadores directos y 812 horas máquina efectivas.</>}
                             </span>
                           </li>
@@ -4284,7 +4284,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                           <li className="flex items-start gap-2">
                             <span className="text-amber-600 font-bold">⚠</span>
                             <span>{selectedMesNum === 10
-                              ? <><strong>Servicios Especializados ($956.835 USD):</strong> Concentran el 46,4% del gasto de octubre por compras estratégicas en Yokogawa ($686K) y Henan Front ($40K); auditar recepción de hitos técnicos.</>
+                              ? <><strong>Servicios Especializados ($481.572 USD):</strong> Concentran el 46,4% del gasto de octubre por compras estratégicas en Yokogawa ($686K) y Henan Front ($40K); auditar recepción de hitos técnicos.</>
                               : <><strong>Repunte Rueda DRAVO (+761%):</strong> Cierre en $199.356 USD (vs $23.149 USD en agosto) por reactivación operativa y componentes electromecánicos; auditar recepción física en almacén de obra.</>}
                             </span>
                           </li>
