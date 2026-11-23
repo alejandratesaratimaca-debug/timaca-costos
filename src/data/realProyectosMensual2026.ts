@@ -734,8 +734,8 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       305561.05,
       404214.8,
       404983.93,
-      600558.2,
-      659116.15,
+      596358.2,
+      663316.15,
       1218650.13
     ],
     "byCategoriaMes": [
@@ -790,14 +790,14 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       },
       {
         "Materiales Directos": 71708.92,
-        "Servicios": 67306.4,
+        "Servicios": 63106.4,
         "Mano de Obra Directa": 167192.66,
         "Horas Maquina": 89789.22,
         "Costos Indirectos": 204561
       },
       {
         "Materiales Directos": 173833.42,
-        "Servicios": 64855.86,
+        "Servicios": 69055.86,
         "Mano de Obra Directa": 128161,
         "Horas Maquina": 55577.78,
         "Costos Indirectos": 236688.09
