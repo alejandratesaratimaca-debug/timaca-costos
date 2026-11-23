@@ -1,7 +1,7 @@
 {
   "totalMateriales": 616518.1,
-  "totalServicios": 1126645.61,
-  "granTotal": 1991186.92,
+  "totalServicios": 646037.61,
+  "granTotal": 1510578.92,
   "totalItems": 10053,
   "almacenes": [
     "ALMCE",
@@ -371805,16 +371805,16 @@
   ],
   "totales": {
     "total_count": 10053,
-    "gran_total": 1991186.92,
+    "gran_total": 1510578.92,
     "mat_total": 616518.1,
-    "serv_total": 1126645.61,
-    "mdo_total": 0,
+    "serv_total": 646037.61,
+    "mdo_total": 248023.21,
     "hm_total": 0,
     "ind_total": 0,
-    "ext_total": 1677668.29,
-    "int_total": 28071.29,
-    "opex_total": 92375.34,
-    "admon_total": 193072
+    "ext_total": 1194827.03,
+    "int_total": 28553.87,
+    "opex_total": 5487.23,
+    "admon_total": 204178.14
   },
   "top_cuentas": [
     {
