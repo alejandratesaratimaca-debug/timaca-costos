@@ -429,7 +429,7 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     redComplejoPMH: redComplejo,
     dictamenTecnico: selectedMesNum === 10 ? {
       punto1Titulo: 'Inversión Integral Segunda Línea (TTE-C-0671):',
-      punto1Texto: '$448.866 USD en el mes (26,8% corporativo), compuesta por $273.807 USD de compras y servicios directos SIP en campo (incluyendo vaciados de concreto Cuyuní $10,4K y baños RT Guayana $4,5K), $79.030 USD de MOD (horas en revisión RRHH) y $96.029 USD de CIF.',
+      punto1Texto: '$448.866 USD en el mes (26,8% corporativo), compuesta por $273.807 USD de compras y servicios directos SIP en campo (incluyendo vaciados de concreto Cuyuní $10,4K y baños RT Guayana $4,5K), $79.030 USD de MOD (128 trabajadores) y $96.029 USD de CIF.',
       punto2Titulo: 'Red Portuaria Complejo PMH:',
       punto2Texto: 'Los 4 frentes portuarios totalizan $507.514 USD en ejecución integral (30,3% corporativo) y $326.480 USD en compras y servicios directos en campo, blindando el embarque de mineral.'
     } : selectedMesNum === 8 ? {

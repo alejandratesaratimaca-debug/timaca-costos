@@ -445,13 +445,13 @@ export const TOTALES_NOMINA_SEMANAL_OCTUBRE = {
 };
 
 export const DESGLOSE_NOMINA_OCTUBRE_PROYECTOS = [
-  { cta: 'TTE-C-0706', proyecto: 'Recuperación Línea 1 Planta de Pellas (VISCO)', monto: 131190, hh: 34888, pct: 50.90, retraso: false },
-  { cta: 'TTE-C-0671', proyecto: 'Segunda Línea PMH (Incremento Capacidad)', monto: 79030, hh: 22648, pct: 30.66, retraso: false },
-  { cta: 'TTE-C-0668', proyecto: 'Fase 2 Planta de Briquetas (FMO / VISCO)', monto: 23925, hh: 5427, pct: 9.28, retraso: false },
-  { cta: 'TTE-C-0680', proyecto: 'Mantenimiento Buque Boca Grande II', monto: 13685, hh: 3946, pct: 5.31, retraso: false },
-  { cta: 'TTE-C-0670', proyecto: 'Mantenimiento Máquinas Briqueteras', monto: 5100, hh: 1360, pct: 1.98, retraso: false },
-  { cta: 'TTE-C-0694', proyecto: 'Suministro e Instalación Caldera Briquetas', monto: 3190, hh: 725, pct: 1.24, retraso: false },
-  { cta: 'TTE-C-0656', proyecto: 'Rehabilitación de Bandas PMH (Torre #3)', monto: 1630, hh: 641, pct: 0.63, retraso: false }
+  { cta: 'TTE-C-0706', proyecto: 'Recuperación Línea 1 Planta de Pellas (VISCO)', monto: 131190, hh: 34888, trabajadores: 207, pct: 50.90, retraso: false },
+  { cta: 'TTE-C-0671', proyecto: 'Segunda Línea PMH (Incremento Capacidad)', monto: 79030, hh: 22648, trabajadores: 128, pct: 30.66, retraso: false },
+  { cta: 'TTE-C-0668', proyecto: 'Fase 2 Planta de Briquetas (FMO / VISCO)', monto: 23925, hh: 5427, trabajadores: 23, pct: 9.28, retraso: false },
+  { cta: 'TTE-C-0680', proyecto: 'Mantenimiento Buque Boca Grande II', monto: 13685, hh: 3946, trabajadores: 23, pct: 5.31, retraso: false },
+  { cta: 'TTE-C-0670', proyecto: 'Mantenimiento Máquinas Briqueteras', monto: 5100, hh: 1360, trabajadores: 7, pct: 1.98, retraso: false },
+  { cta: 'TTE-C-0694', proyecto: 'Suministro e Instalación Caldera Briquetas', monto: 3190, hh: 725, trabajadores: 8, pct: 1.24, retraso: false },
+  { cta: 'TTE-C-0656', proyecto: 'Rehabilitación de Bandas PMH (Torre #3)', monto: 1630, hh: 641, trabajadores: 3, pct: 0.63, retraso: false }
 ];
 
 export const DESGLOSE_NOMINA_AGOSTO_PROYECTOS = OFICIAL_MOD_CUENTAS_AGOSTO_2026.map(p => ({
