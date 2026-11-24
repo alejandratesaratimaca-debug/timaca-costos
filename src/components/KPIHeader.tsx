@@ -35,6 +35,8 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
     resumenMeses,
     selectedMes,
     selectedSemana,
+    topProyectoData,
+    reclasificacionesCount,
   } = useCostos();
 
   const [showQuickMonthlyModal, setShowQuickMonthlyModal] = useState(false);
@@ -43,36 +45,7 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
   const displayMonto = isFiltered ? totalMontoFiltrado : totalMontoGlobal;
   const displaySalidas = isFiltered ? totalSalidasFiltrado : totalSalidasGlobal;
 
-  // Proyecto Dominante: Enfoque estricto en Cuentas Auxiliares de Proyectos de Clientes (TTE-C)
-  const topProyectoData = useMemo(() => {
-    const proyectosList = Object.values(MATRIZ_REAL_PROYECTOS_MENSUAL_2026);
-    if (selectedMes !== 'all') {
-      const mesIdx = parseInt(selectedMes, 10) - 1;
-      if (mesIdx >= 0 && mesIdx < 10) {
-        const sorted = [...proyectosList].sort((a, b) => (b.meses[mesIdx] || 0) - (a.meses[mesIdx] || 0));
-        const top = sorted[0];
-        const mesTotal = TOTALES_MESES_PPT[mesIdx]?.total || displayMonto;
-        const monto = top ? (top.meses[mesIdx] || 0) : 1219526.45;
-        return {
-          codigo: top?.cuentaAuxiliar || 'TTE-C-0706',
-          nombre: top?.descripcion || 'Recuperación de Línea 1 de Planta de Pellas',
-          monto,
-          porcentaje: mesTotal > 0 ? Math.round((monto / mesTotal) * 1000) / 10 : 59.1
-        };
-      }
-    }
-    // Consolidado Anual 2026 (TTE-C-0706: $3.618.605 / 24.5%)
-    const sorted = [...proyectosList].sort((a, b) => b.totalAnual - a.totalAnual);
-    const top = sorted[0];
-    const topMontoAnual = top?.totalAnual || 3618605.21;
-    return {
-      codigo: top?.cuentaAuxiliar || 'TTE-C-0706',
-      nombre: top?.descripcion || 'Recuperación de Línea 1 de Planta de Pellas',
-      monto: topMontoAnual,
-      porcentaje: displayMonto > 0 ? Math.round((topMontoAnual / displayMonto) * 1000) / 10 : 24.5
-    };
-  }, [selectedMes, displayMonto]);
-
+  // Proyecto Dominante: Enfoque reactivo conectado al CostosContext (incluye todas las reclasificaciones auditadas)
   const topCCRaw = topProyectoData.codigo;
   const topCCMonto = topProyectoData.monto;
   const topCCPct = topProyectoData.porcentaje;
@@ -223,11 +196,19 @@ export const KPIHeader: React.FC<KPIHeaderProps> = ({ onOpenProyectosMatriz }) =
 
           <div className="hidden md:flex items-center gap-2 pl-2 text-slate-400 text-xs">
             <span>•</span>
-            <span>Corte Ene-Oct: <strong className="text-white font-mono">$3.618.605 USD</strong> (24.5%)</span>
+            <span>Corte Ene-Oct: <strong className="text-white font-mono">{safeFormatUSD(topProyectoData.monto, false)}</strong> ({topProyectoData.porcentaje}%)</span>
             <span>•</span>
-            <span>Octubre: <strong className="text-emerald-400 font-mono">$1.219.526 USD</strong> (59.1%)</span>
+            <span>Octubre: <strong className="text-emerald-400 font-mono">{safeFormatUSD(topProyectoData.montoOctubre, false)}</strong> ({topProyectoData.pctOctubre}%)</span>
             <span>•</span>
-            <span>Global TIMACA: <strong className="text-slate-200 font-mono">{safeFormatUSD(ultimoMes?.totalMonto || 2063059, false)}</strong></span>
+            <span>Global TIMACA: <strong className="text-slate-200 font-mono">{safeFormatUSD(ultimoMes?.totalMonto || displayMonto, false)}</strong></span>
+            {reclasificacionesCount > 0 && (
+              <>
+                <span>•</span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-700/50 px-2 py-0.5 rounded-full">
+                  <Sparkles className="w-3 h-3 text-emerald-400" /> {reclasificacionesCount} correcciones activas
+                </span>
+              </>
+            )}
           </div>
         </div>
 

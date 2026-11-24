@@ -43,6 +43,7 @@ import {
 } from 'lucide-react';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 import { safeNumber, safeFormatUSD, safeFormatQuantity, safePercent } from '../utils/numericHelpers';
+import { invalidateSipCache } from '../services/sipDataService';
 
 const BandejaAlertasSipView = lazy(() => import('./BandejaAlertasSipView').then(m => ({ default: m.BandejaAlertasSipView })));
 
@@ -2968,7 +2969,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       filtered.push(newEntry);
       if (typeof window !== 'undefined') {
         localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
+        window.dispatchEvent(new CustomEvent('timaca:correccion-aplicada', { detail: newEntry }));
       }
+      invalidateSipCache();
+      clearMasterStaticCache();
 
       // 1. ACTUALIZACIÓN REACTIVA INSTANTÁNEA (OPTIMISTIC UI):
       // No hay que suplicarle al sistema: la fila se reclasifica en memoria en 0ms,
@@ -3103,7 +3107,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       filtered.push(newEntry);
       if (typeof window !== 'undefined') {
         localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
+        window.dispatchEvent(new CustomEvent('timaca:correccion-aplicada', { detail: newEntry }));
       }
+      invalidateSipCache();
+      clearMasterStaticCache();
 
       // Actualización reactiva instantánea en memoria (Optimistic UI)
       setCandidateMovimientos((prev: any[]) => prev.map((m: any) => {
@@ -3254,7 +3261,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('timaca_correcciones_locales', JSON.stringify(localList));
+        window.dispatchEvent(new CustomEvent('timaca:correccion-aplicada', { detail: { count: addedCount } }));
       }
+      invalidateSipCache();
+      clearMasterStaticCache();
 
       // Actualización reactiva instantánea en memoria (Optimistic UI)
       const updatedKeys = new Set(itemsToProcess.map((it: any) => String(it.id != null ? it.id : (it.numero || it.dp || ''))));
@@ -3298,6 +3308,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           `${x.documento}-${x.codigo}` !== String(recordId)
         );
         localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('timaca:correccion-aplicada', { detail: { recordId, action: 'revert' } }));
+        }
+        invalidateSipCache();
+        clearMasterStaticCache();
       }
     } catch (e) {}
 
@@ -3331,7 +3346,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     try {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('timaca_correcciones_locales');
+        window.dispatchEvent(new CustomEvent('timaca:correccion-aplicada', { detail: { action: 'clear' } }));
       }
+      invalidateSipCache();
+      clearMasterStaticCache();
       updatePendingLocalCount();
       setGlobalToast({
         type: 'success',

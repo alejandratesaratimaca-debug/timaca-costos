@@ -14,6 +14,15 @@ import { parseFechaToDetails } from '../utils/dateHelpers';
 import { isNormalizacion } from '../utils/normalizacionFilter';
 import { safeNumber } from '../utils/numericHelpers';
 
+export interface TopProyectoData {
+  codigo: string;
+  nombre: string;
+  monto: number;
+  porcentaje: number;
+  montoOctubre: number;
+  pctOctubre: number;
+}
+
 interface CostosContextType {
   salidas: SalidaCosto[];
   filteredSalidas: SalidaCosto[];
@@ -22,6 +31,9 @@ interface CostosContextType {
   resumenCategorias: CategoriaResumen[];
   resumenCentrosCosto: CentroCostoResumen[];
   resumenProyectos: ProyectoResumen[];
+  topProyectoData: TopProyectoData;
+  reclasificacionesCount: number;
+  refreshReclasificaciones: () => void;
   
   // Totales
   totalMontoGlobal: number;
@@ -184,6 +196,66 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setFechaInicio('');
     setFechaFin('');
   };
+
+  // Reclasificaciones reactivas en tiempo real
+  const [reclasificaciones, setReclasificaciones] = useState<any[]>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const local = localStorage.getItem('timaca_correcciones_locales');
+        return local ? JSON.parse(local) : [];
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  });
+
+  const loadReclasificaciones = async () => {
+    try {
+      const localStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
+      const localList: any[] = localStr ? JSON.parse(localStr) : [];
+      
+      let serverList: any[] = [];
+      try {
+        const res = await fetch(`/data/sip/reclasificaciones.json?_t=${Date.now()}`, {
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          serverList = await res.json();
+        }
+      } catch (e) {}
+
+      // Combinar lista local y de servidor
+      const map = new Map<string, any>();
+      (Array.isArray(serverList) ? serverList : []).forEach(item => {
+        const key = item.recordId || `${item.documento}-${item.codigo}`;
+        if (key) map.set(key, item);
+      });
+      (Array.isArray(localList) ? localList : []).forEach(item => {
+        const key = item.recordId || `${item.documento}-${item.codigo}`;
+        if (key) map.set(key, item);
+      });
+
+      setReclasificaciones(Array.from(map.values()));
+    } catch (e) {
+      console.error('Error cargando reclasificaciones en CostosContext:', e);
+    }
+  };
+
+  useEffect(() => {
+    loadReclasificaciones();
+
+    const handleCorreccionEvent = () => {
+      loadReclasificaciones();
+    };
+
+    window.addEventListener('timaca:correccion-aplicada', handleCorreccionEvent);
+    window.addEventListener('storage', handleCorreccionEvent);
+    return () => {
+      window.removeEventListener('timaca:correccion-aplicada', handleCorreccionEvent);
+      window.removeEventListener('storage', handleCorreccionEvent);
+    };
+  }, []);
 
   // Carga reactiva de la base de datos SIP Unificada de Daniela
   useEffect(() => {
@@ -366,10 +438,150 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     fechaFin
   ]);
 
-  // Totales Globales Oficiales 2026 (Consolidado Oficial Auditado: $13.476.398,64 USD)
+  // Agrupación Mes a Mes Oficial 2026 (Enero a Octubre) recalculada DINÁMICAMENTE con Reclasificaciones en Tiempo Real
+  const resumenMeses = useMemo<ResumenMensual[]>(() => {
+    const mesesSalidasCount = [10365, 7819, 9036, 8143, 7479, 7253, 8702, 10617, 13308, 7016];
+    const semanasPorMes = [4, 4, 5, 4, 5, 4, 5, 4, 5, 4];
+    const MES_NAMES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre'];
+
+    // Salidas reales cargadas de agosto, septiembre y octubre
+    const agostoSalidasFiltradas = salidas.filter(s => s.mes === 8 && !isNormalizacion(s));
+    const agostoSalidasCount = agostoSalidasFiltradas.length > 0 ? agostoSalidasFiltradas.length : 10617;
+
+    const sepSalidasFiltradas = salidas.filter(s => s.mes === 9 && !isNormalizacion(s));
+    const sepSalidasCount = sepSalidasFiltradas.length > 0 ? sepSalidasFiltradas.length : 13308;
+
+    const octSalidasFiltradas = salidas.filter(s => s.mes === 10 && !isNormalizacion(s));
+    const octSalidasCount = octSalidasFiltradas.length > 0 ? octSalidasFiltradas.length : 7016;
+
+    // Calcular deltas mensuales y por proyecto a partir de reclasificaciones (auditadas en caliente)
+    const deltaMesTotal = new Array(10).fill(0);
+    const deltaMesCat = Array.from({ length: 10 }, () => ({
+      'Materiales Directos': 0,
+      'Servicios': 0,
+      'Mano de Obra Directa': 0,
+      'Horas Maquina': 0,
+      'Costos Indirectos': 0
+    }));
+    const deltaProyectoMes: Record<string, number[]> = {};
+
+    reclasificaciones.forEach(r => {
+      const monto = Number(r.totalUSD || r.costoTotal || (r.cantidad && r.costoUnitario ? r.cantidad * r.costoUnitario : 0)) || 0;
+      if (!monto) return;
+
+      const mesDestStr = (r.nuevoMes || '').toLowerCase().trim();
+      const mesDestIdx = MES_NAMES.indexOf(mesDestStr);
+      const mesOrigStr = (r.mesOrigen || '').toLowerCase().trim();
+      const mesOrigIdx = mesOrigStr ? MES_NAMES.indexOf(mesOrigStr) : -1;
+
+      const ctaNueva = (r.nuevaCuenta || '').trim().toUpperCase();
+      const ctaAnt = (r.cuentaAnterior || '').trim().toUpperCase();
+      const tipoCat = (r.tipoItem || r.tipo || r.categoria || '').toLowerCase().includes('serv') ? 'Servicios' : 'Materiales Directos';
+
+      // Si fue traslado de rezagada entre meses distintos
+      if (mesOrigIdx >= 0 && mesOrigIdx < 10 && mesDestIdx >= 0 && mesDestIdx < 10 && mesOrigIdx !== mesDestIdx) {
+        deltaMesTotal[mesOrigIdx] -= monto;
+        deltaMesTotal[mesDestIdx] += monto;
+        (deltaMesCat[mesOrigIdx] as any)[tipoCat] -= monto;
+        (deltaMesCat[mesDestIdx] as any)[tipoCat] += monto;
+      }
+
+      // Reclasificación de proyecto
+      const activeMesIdx = (mesDestIdx >= 0 && mesDestIdx < 10) ? mesDestIdx : 9; // Octubre por defecto
+      if (ctaNueva) {
+        if (!deltaProyectoMes[ctaNueva]) deltaProyectoMes[ctaNueva] = new Array(10).fill(0);
+        deltaProyectoMes[ctaNueva][activeMesIdx] += monto;
+      }
+      if (ctaAnt && ctaAnt !== ctaNueva) {
+        if (!deltaProyectoMes[ctaAnt]) deltaProyectoMes[ctaAnt] = new Array(10).fill(0);
+        deltaProyectoMes[ctaAnt][activeMesIdx] -= monto;
+      }
+    });
+
+    const lista = TOTALES_MESES_PPT.map((ppt, idx) => {
+      const mesNum = ppt.mesNum;
+      const isAgosto = mesNum === 8;
+      const isSeptiembre = mesNum === 9;
+      const isOctubre = mesNum === 10;
+      const totalMonto = Math.round((ppt.total + deltaMesTotal[idx]) * 100) / 100;
+      const totalSalidas = isAgosto ? agostoSalidasCount : isSeptiembre ? sepSalidasCount : isOctubre ? octSalidasCount : (mesesSalidasCount[idx] || 0);
+      const numSemanas = semanasPorMes[idx] || 4;
+      const promedioSemanal = Math.round((totalMonto / numSemanas) * 100) / 100;
+
+      // Desglose oficial de las 5 categorías ajustadas
+      const porCategoria: Record<string, number> = {
+        'Materiales Directos': Math.round(((TABLA_PPT_DISTRIBUCION_2026[0]?.meses[idx] || 0) + deltaMesCat[idx]['Materiales Directos']) * 100) / 100,
+        'Servicios': Math.round(((TABLA_PPT_DISTRIBUCION_2026[1]?.meses[idx] || 0) + deltaMesCat[idx]['Servicios']) * 100) / 100,
+        'Mano de Obra Directa': TABLA_PPT_DISTRIBUCION_2026[2]?.meses[idx] || 0,
+        'Horas Maquina': TABLA_PPT_DISTRIBUCION_2026[3]?.meses[idx] || 0,
+        'Costos Indirectos': TABLA_PPT_DISTRIBUCION_2026[4]?.meses[idx] || 0,
+      };
+
+      const porCentroCosto: Record<string, number> = {};
+      const porProyecto: Record<string, number> = {};
+      Object.entries(MATRIZ_REAL_PROYECTOS_MENSUAL_2026).forEach(([cod, pData]) => {
+        const deltaP = deltaProyectoMes[cod]?.[idx] || 0;
+        let val = Math.round(((pData.meses[idx] || 0) + deltaP) * 100) / 100;
+        if (idx === 8 && (pData.meses[idx] || 0) === 0) {
+          const prySalidas = sepSalidasFiltradas.filter(s => s.cuentaAuxiliarCodigo === cod);
+          val = Math.round((prySalidas.reduce((sum, s) => sum + s.montoTotal, 0) + deltaP) * 100) / 100;
+        }
+        if (idx === 9 && (pData.meses[idx] || 0) === 0) {
+          const prySalidas = octSalidasFiltradas.filter(s => s.cuentaAuxiliarCodigo === cod);
+          val = Math.round((prySalidas.reduce((sum, s) => sum + s.montoTotal, 0) + deltaP) * 100) / 100;
+        }
+        const short = CUENTAS_CORTAS_MAP[cod] || pData.descripcion;
+        const compositeKey = `${cod} · ${short}`;
+        porCentroCosto[cod] = val;
+        porCentroCosto[compositeKey] = val;
+        porCentroCosto[pData.descripcion] = val;
+        porProyecto[cod] = val;
+        porProyecto[compositeKey] = val;
+        porProyecto[pData.descripcion] = val;
+      });
+
+      // Agregar proyectos reclasificados nuevos
+      Object.keys(deltaProyectoMes).forEach(cod => {
+        if (!MATRIZ_REAL_PROYECTOS_MENSUAL_2026[cod] && !porProyecto[cod]) {
+          const val = Math.round((deltaProyectoMes[cod]?.[idx] || 0) * 100) / 100;
+          const short = CUENTAS_CORTAS_MAP[cod] || cod;
+          const compositeKey = `${cod} · ${short}`;
+          porCentroCosto[cod] = val;
+          porCentroCosto[compositeKey] = val;
+          porProyecto[cod] = val;
+          porProyecto[compositeKey] = val;
+        }
+      });
+
+      return {
+        mes: mesNum,
+        mesLabel: ppt.mesNombre,
+        ano: 2026,
+        totalMonto,
+        totalSalidas,
+        porCategoria,
+        porCentroCosto,
+        porProyecto,
+        promedioSemanal,
+      };
+    });
+
+    return lista.map((item, idx) => {
+      if (idx === 0) return { ...item, porcentajeVariacion: 0 };
+      const prev = lista[idx - 1];
+      const diff = item.totalMonto - prev.totalMonto;
+      const pct = prev.totalMonto > 0 ? (diff / prev.totalMonto) * 100 : 0;
+      return {
+        ...item,
+        porcentajeVariacion: Math.round(pct * 10) / 10,
+      };
+    });
+  }, [salidas, reclasificaciones]);
+
+  // Totales Globales Oficiales 2026 calculados dinámicamente
   const totalMontoGlobal = useMemo(() => {
-    return Math.round(TOTALES_MESES_PPT.reduce((acc, curr) => acc + curr.total, 0) * 100) / 100;
-  }, []);
+    return Math.round(resumenMeses.reduce((acc, curr) => acc + curr.totalMonto, 0) * 100) / 100;
+  }, [resumenMeses]);
 
   const totalSalidasGlobal = useMemo(() => {
     return 87721; // 87.721 despachos y compras en la base oficial SIP de 2026
@@ -382,12 +594,12 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (selectedMes !== 'all' && !searchTerm && !selectedProyecto && !selectedCuentaAuxiliar && !selectedCentroCosto && !selectedCategoria) {
       const mNum = Number(selectedMes) || (selectedMes.toLowerCase().includes('agosto') ? 8 : selectedMes.toLowerCase().includes('octubre') ? 10 : 9);
       const mIdx = mNum - 1;
-      if (mIdx >= 0 && mIdx < TOTALES_MESES_PPT.length) {
-        return TOTALES_MESES_PPT[mIdx].total;
+      if (mIdx >= 0 && mIdx < resumenMeses.length) {
+        return resumenMeses[mIdx].totalMonto;
       }
     }
     return Math.round(filteredSalidas.filter(s => !isNormalizacion(s)).reduce((acc, curr) => acc + (curr.montoTotal || 0), 0) * 100) / 100;
-  }, [filteredSalidas, totalMontoGlobal, selectedMes, selectedSemana, searchTerm, selectedProyecto, selectedCuentaAuxiliar, selectedCentroCosto, selectedCategoria]);
+  }, [filteredSalidas, totalMontoGlobal, selectedMes, selectedSemana, searchTerm, selectedProyecto, selectedCuentaAuxiliar, selectedCentroCosto, selectedCategoria, resumenMeses]);
 
   const totalSalidasFiltrado = useMemo(() => {
     if (selectedMes === 'all' && selectedSemana === 'all' && !searchTerm && !selectedProyecto && !selectedCuentaAuxiliar && !selectedCentroCosto && !selectedCategoria) {
@@ -395,6 +607,67 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
     return filteredSalidas.filter(s => !isNormalizacion(s)).length;
   }, [filteredSalidas, totalSalidasGlobal, selectedMes, selectedSemana, searchTerm, selectedProyecto, selectedCuentaAuxiliar, selectedCentroCosto, selectedCategoria]);
+
+  // Proyecto Dominante Calculado Reactivamente en Tiempo Real
+  const topProyectoData = useMemo<TopProyectoData>(() => {
+    const projsMap = new Map<string, { codigo: string; nombre: string; meses: number[]; totalAnual: number }>();
+
+    // Cargar con base oficial
+    Object.entries(MATRIZ_REAL_PROYECTOS_MENSUAL_2026).forEach(([cod, pData]) => {
+      projsMap.set(cod, {
+        codigo: cod,
+        nombre: pData.descripcion,
+        meses: [...pData.meses],
+        totalAnual: pData.totalAnual
+      });
+    });
+
+    // Inyectar valores reales recalculados en resumenMeses
+    resumenMeses.forEach((m, mIdx) => {
+      if (m.porProyecto) {
+        Object.entries(m.porProyecto).forEach(([k, val]) => {
+          if (k.startsWith('TTE-C-') && !k.includes('·')) {
+            if (!projsMap.has(k)) {
+              projsMap.set(k, {
+                codigo: k,
+                nombre: CUENTAS_CORTAS_MAP[k] || k,
+                meses: new Array(10).fill(0),
+                totalAnual: 0
+              });
+            }
+            const p = projsMap.get(k)!;
+            p.meses[mIdx] = val;
+          }
+        });
+      }
+    });
+
+    projsMap.forEach(p => {
+      p.totalAnual = p.meses.reduce((sum, v) => sum + (v || 0), 0);
+    });
+
+    const projsList = Array.from(projsMap.values()).sort((a, b) => b.totalAnual - a.totalAnual);
+    const top = projsList[0] || {
+      codigo: 'TTE-C-0706',
+      nombre: 'Recuperación de Línea 1 de Planta de Pellas',
+      meses: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1219526.45],
+      totalAnual: 3618605.21
+    };
+
+    const mes10Total = resumenMeses[9]?.totalMonto || 1673807;
+    const montoOctubre = top.meses[9] || 0;
+    const pctOctubre = mes10Total > 0 ? Math.round((montoOctubre / mes10Total) * 1000) / 10 : 59.1;
+    const porcentajeGlobal = totalMontoGlobal > 0 ? Math.round((top.totalAnual / totalMontoGlobal) * 1000) / 10 : 24.5;
+
+    return {
+      codigo: top.codigo,
+      nombre: CUENTAS_CORTAS_MAP[top.codigo] || top.nombre,
+      monto: Math.round(top.totalAnual * 100) / 100,
+      porcentaje: porcentajeGlobal,
+      montoOctubre: Math.round(montoOctubre * 100) / 100,
+      pctOctubre
+    };
+  }, [resumenMeses, totalMontoGlobal]);
 
   // Agrupación de Proyectos y Cuentas Auxiliares
   const resumenProyectos = useMemo<ProyectoResumen[]>(() => {
@@ -543,86 +816,6 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
   }, [salidas]);
 
-  // Agrupación Mes a Mes Oficial 2026 (Enero a Octubre - Base Oficial SIP TIMACA)
-  const resumenMeses = useMemo<ResumenMensual[]>(() => {
-    const mesesSalidasCount = [10365, 7819, 9036, 8143, 7479, 7253, 8702, 10617, 13308, 7016];
-    const semanasPorMes = [4, 4, 5, 4, 5, 4, 5, 4, 5, 4];
-
-    // Salidas reales cargadas de agosto, septiembre y octubre
-    const agostoSalidasFiltradas = salidas.filter(s => s.mes === 8 && !isNormalizacion(s));
-    const agostoSalidasCount = agostoSalidasFiltradas.length > 0 ? agostoSalidasFiltradas.length : 10617;
-
-    const sepSalidasFiltradas = salidas.filter(s => s.mes === 9 && !isNormalizacion(s));
-    const sepSalidasCount = sepSalidasFiltradas.length > 0 ? sepSalidasFiltradas.length : 13308;
-
-    const octSalidasFiltradas = salidas.filter(s => s.mes === 10 && !isNormalizacion(s));
-    const octSalidasCount = octSalidasFiltradas.length > 0 ? octSalidasFiltradas.length : 7016;
-
-    const lista = TOTALES_MESES_PPT.map((ppt, idx) => {
-      const mesNum = ppt.mesNum;
-      const isAgosto = mesNum === 8;
-      const isSeptiembre = mesNum === 9;
-      const isOctubre = mesNum === 10;
-      const totalMonto = ppt.total; // Consolidado oficial SIP
-      const totalSalidas = isAgosto ? agostoSalidasCount : isSeptiembre ? sepSalidasCount : isOctubre ? octSalidasCount : (mesesSalidasCount[idx] || 0);
-      const numSemanas = semanasPorMes[idx] || 4;
-      const promedioSemanal = Math.round((totalMonto / numSemanas) * 100) / 100;
-
-      // Desglose oficial de las 5 categorías
-      const porCategoria: Record<string, number> = {
-        'Materiales Directos': TABLA_PPT_DISTRIBUCION_2026[0]?.meses[idx] || 0,
-        'Servicios': TABLA_PPT_DISTRIBUCION_2026[1]?.meses[idx] || 0,
-        'Mano de Obra Directa': TABLA_PPT_DISTRIBUCION_2026[2]?.meses[idx] || 0,
-        'Horas Maquina': TABLA_PPT_DISTRIBUCION_2026[3]?.meses[idx] || 0,
-        'Costos Indirectos': TABLA_PPT_DISTRIBUCION_2026[4]?.meses[idx] || 0,
-      };
-
-      const porCentroCosto: Record<string, number> = {};
-      const porProyecto: Record<string, number> = {};
-      Object.entries(MATRIZ_REAL_PROYECTOS_MENSUAL_2026).forEach(([cod, pData]) => {
-        let val = Math.round((pData.meses[idx] || 0) * 100) / 100;
-        if (idx === 8 && val === 0) {
-          const prySalidas = sepSalidasFiltradas.filter(s => s.cuentaAuxiliarCodigo === cod);
-          val = Math.round(prySalidas.reduce((sum, s) => sum + s.montoTotal, 0) * 100) / 100;
-        }
-        if (idx === 9 && val === 0) {
-          const prySalidas = octSalidasFiltradas.filter(s => s.cuentaAuxiliarCodigo === cod);
-          val = Math.round(prySalidas.reduce((sum, s) => sum + s.montoTotal, 0) * 100) / 100;
-        }
-        const short = CUENTAS_CORTAS_MAP[cod] || pData.descripcion;
-        const compositeKey = `${cod} · ${short}`;
-        porCentroCosto[cod] = val;
-        porCentroCosto[compositeKey] = val;
-        porCentroCosto[pData.descripcion] = val;
-        porProyecto[cod] = val;
-        porProyecto[compositeKey] = val;
-        porProyecto[pData.descripcion] = val;
-      });
-
-      return {
-        mes: mesNum,
-        mesLabel: ppt.mesNombre,
-        ano: 2026,
-        totalMonto,
-        totalSalidas,
-        porCategoria,
-        porCentroCosto,
-        porProyecto,
-        promedioSemanal,
-      };
-    });
-
-    return lista.map((item, idx) => {
-      if (idx === 0) return { ...item, porcentajeVariacion: 0 };
-      const prev = lista[idx - 1];
-      const diff = item.totalMonto - prev.totalMonto;
-      const pct = prev.totalMonto > 0 ? (diff / prev.totalMonto) * 100 : 0;
-      return {
-        ...item,
-        porcentajeVariacion: Math.round(pct * 10) / 10,
-      };
-    });
-  }, [salidas]);
 
   // Resumen por Categoría
   const resumenCategorias = useMemo(() => {
@@ -796,6 +989,9 @@ export const CostosProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         resumenCategorias,
         resumenCentrosCosto,
         resumenProyectos,
+        topProyectoData,
+        reclasificacionesCount: reclasificaciones.length,
+        refreshReclasificaciones: loadReclasificaciones,
         totalMontoGlobal,
         totalSalidasGlobal,
         totalMontoFiltrado,

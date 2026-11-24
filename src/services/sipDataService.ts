@@ -327,6 +327,51 @@ export async function fetchSipMesItems(mesNum: number, forceRefresh = false): Pr
     items = [...hist, ...m8, ...m9, ...m10, ...m11];
   }
 
+  // Superponer en caliente las correcciones y reclasificaciones locales de sesión
+  try {
+    const rawLocal = typeof window !== 'undefined' ? localStorage.getItem('timaca_correcciones_locales') : null;
+    if (rawLocal) {
+      const localCorrecciones: any[] = JSON.parse(rawLocal);
+      if (localCorrecciones && localCorrecciones.length > 0) {
+        const corrMap = new Map<string, any>();
+        localCorrecciones.forEach(c => {
+          const doc = String(c.documento || '').trim().toUpperCase();
+          const cod = String(c.codigo || '').trim().toUpperCase();
+          const rid = c.recordId != null ? String(c.recordId).trim() : null;
+          if (rid && !rid.startsWith('HIST-SERV--')) {
+            corrMap.set(rid, c);
+            corrMap.set(rid.toUpperCase(), c);
+          }
+          if (doc && cod) corrMap.set(`${doc}-${cod}`, c);
+          if (doc) corrMap.set(doc, c);
+        });
+
+        items = items.map(it => {
+          const rid = it.id != null ? String(it.id).trim() : null;
+          const doc = String(it.numero || (it as any).dp || (it as any).sc || '').trim().toUpperCase();
+          const cod = String(it.codigo || '').trim().toUpperCase();
+          const c = (rid && corrMap.get(rid)) || 
+                    (rid && corrMap.get(rid.toUpperCase())) || 
+                    (doc && cod && corrMap.get(`${doc}-${cod}`)) || 
+                    (doc && corrMap.get(doc));
+          if (c) {
+            return {
+              ...it,
+              cuenta_aux: c.nuevaCuenta || it.cuenta_aux,
+              datos_descripcion: c.nuevoProyecto || it.datos_descripcion,
+              nombre_mes: c.nuevoMes ? c.nuevoMes.toLowerCase() : it.nombre_mes,
+              esReclasificado: true,
+              ajuste: 'CORREGIDO'
+            };
+          }
+          return it;
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('Error overlaying local corrections in fetchSipMesItems', err);
+  }
+
   memoryCache.mesesItems.set(cacheKey, items);
   return items;
 }

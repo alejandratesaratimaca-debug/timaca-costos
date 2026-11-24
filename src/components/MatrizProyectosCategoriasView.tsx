@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { GraficaMensualEvolucion } from './GraficaMensualEvolucion';
-import { getSipPeriodoData } from '../services/sipDataService';
+import { getSipPeriodoData, invalidateSipCache } from '../services/sipDataService';
 
 interface MatrizProyectosCategoriasViewProps {
   onVolver: () => void;
@@ -60,12 +60,30 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
   const [sipDataPorPeriodo, setSipDataPorPeriodo] = useState<Record<string, FilaProyectoCategoriasPPT[]>>({});
   const [isLoadingSipMatriz, setIsLoadingSipMatriz] = useState(false);
 
+  // Escuchar eventos en vivo de correcciones aplicadas o cambios de almacenamiento para actualizar la matriz al instante
+  useEffect(() => {
+    const handleCorreccion = () => {
+      invalidateSipCache();
+      setSipDataPorPeriodo({});
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('timaca:correccion-aplicada', handleCorreccion);
+      window.addEventListener('storage', handleCorreccion);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('timaca:correccion-aplicada', handleCorreccion);
+        window.removeEventListener('storage', handleCorreccion);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
     if (periodo === 'octubre') {
       if (sipDataPorPeriodo['octubre']) return;
       setIsLoadingSipMatriz(true);
-      getSipPeriodoData(10).then(data => {
+      getSipPeriodoData(10, true).then(data => {
         if (!isMounted) return;
         const mapped: FilaProyectoCategoriasPPT[] = data.cuentas.map((c, idx) => ({
           ranking: idx + 1,
@@ -86,7 +104,7 @@ export const MatrizProyectosCategoriasView: React.FC<MatrizProyectosCategoriasVi
     } else if (periodo === 'sip_anual') {
       if (sipDataPorPeriodo['sip_anual']) return;
       setIsLoadingSipMatriz(true);
-      getSipPeriodoData(0).then(data => {
+      getSipPeriodoData(0, true).then(data => {
         if (!isMounted) return;
         const mapped: FilaProyectoCategoriasPPT[] = data.cuentas.map((c, idx) => ({
           ranking: idx + 1,

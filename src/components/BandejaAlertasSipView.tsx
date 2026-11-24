@@ -20,6 +20,7 @@ import {
 import { ALERTAS_MONTHLY_KPIS, ALERTAS_SIP_RECORDS, AlertaItem } from '../data/alertasSipData';
 import { ALERTAS_MATERIALES_CONSOLIDADOS, MaterialConsolidadoItem } from '../data/alertasMaterialesData';
 import * as XLSX from 'xlsx';
+import { invalidateSipCache } from '../services/sipDataService';
 
 const STORAGE_KEY_MATERIALES = 'TIMACA_ALERTAS_DECISIONES_MATERIALES';
 const STORAGE_KEY_RECORDS = 'TIMACA_ALERTAS_DECISIONES_RECORDS';
@@ -360,6 +361,10 @@ export const BandejaAlertasSipView: React.FC = () => {
         usuario: 'atesara'
       });
       localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('timaca:correccion-aplicada', { detail: { source: 'bandeja_alertas_single' } }));
+      }
+      invalidateSipCache();
     } catch (e) {
       console.warn('Error saving material decision', e);
     }
@@ -495,6 +500,10 @@ export const BandejaAlertasSipView: React.FC = () => {
           }
         }
         localStorage.setItem('timaca_correcciones_locales', JSON.stringify(filtered));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('timaca:correccion-aplicada', { detail: { source: 'bandeja_alertas_masivo' } }));
+        }
+        invalidateSipCache();
       } catch (e) {
         console.warn('Error guardando en localStorage', e);
       }
