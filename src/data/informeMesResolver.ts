@@ -298,14 +298,14 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   // -------------------------------------------------------------
   // 2. LÁMINA 5: PROYECTO PELLAS LÍNEA 1 (TTE-C-0706)
   // -------------------------------------------------------------
-  const pellasHist = [1837, 1416, 684, 5583, 305561, 404215, 404984, 596358, 668340, 1219527];
-  const pellasMontoMes = selectedMesNum === 10 ? 1219527 : (pellasHist[mIdx] || 668340);
+  const pellasHist = [1837, 1416, 684, 5583, 305561, 404215, 404984, 596358, 659116, 745723];
+  const pellasMontoMes = selectedMesNum === 10 ? 745723 : (pellasHist[mIdx] || 668340);
   const pellasMontoPrev = prevIdx !== null ? (pellasHist[prevIdx] || 0) : pellasMontoMes;
   const pellasDelta = pellasMontoMes - pellasMontoPrev;
   const pellasVarPct = prevIdx !== null && pellasMontoPrev > 0
     ? Math.round((pellasDelta / pellasMontoPrev) * 1000) / 10
     : 0;
-  const pellasAcumulado = selectedMesNum === 10 ? 3603481 : pellasHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
+  const pellasAcumulado = selectedMesNum === 10 ? 3129677 : pellasHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
 
   // Determinar si el mes actual es el pico histórico
   const maxPellasVal = Math.max(...pellasHist.slice(0, selectedMesNum));
@@ -324,12 +324,12 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     delta: pellasDelta,
     varPctText: pellasVarPct > 0 ? `+${pellasVarPct}%` : `${pellasVarPct}%`,
     isPos: pellasVarPct >= 0,
-    porcentajeMes: selectedMesNum === 10 ? 59.1 : Math.round((pellasMontoMes / (totalMonto || 1)) * 1000) / 10,
+    porcentajeMes: selectedMesNum === 10 ? 46.7 : Math.round((pellasMontoMes / (totalMonto || 1)) * 1000) / 10,
     acumulado2026: pellasAcumulado,
-    pctContrato: selectedMesNum === 10 ? 12.1 : Math.round((pellasAcumulado / 29720000) * 1000) / 10,
-    saldoPorEjecutar: selectedMesNum === 10 ? 26116754 : (29720000 - pellasAcumulado),
+    pctContrato: selectedMesNum === 10 ? 10.5 : Math.round((pellasAcumulado / 29720000) * 1000) / 10,
+    saldoPorEjecutar: selectedMesNum === 10 ? 26590558 : (29720000 - pellasAcumulado),
     fuerzaLaboral: selectedMesNum >= 9 ? 254 : 238,
-    cifAbsorbido: selectedMesNum === 10 ? 160285 : Math.round(acumulado2026 * 0.244 * 0.602),
+    cifAbsorbido: selectedMesNum === 10 ? 159409 : Math.round(acumulado2026 * 0.244 * 0.602),
     curvaMeses: curvaPellas,
     isPicoHistorico,
     picoTexto: isPicoHistorico 
@@ -345,7 +345,7 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
         ? 'Salto en Procura de Septiembre' 
         : 'Consolidación de Montaje de Virolas',
       card2Desc: selectedMesNum === 10
-        ? 'Servicios especializados alcanzaron $778.363 USD impulsados por contratos de ingeniería, control y automatización con Yokogawa ($686K) y Henan Front ($40K).'
+        ? 'Servicios especializados alcanzaron $307.015 USD impulsados por automatización con Yokogawa ($205.974 USD (30% Hito 0)), fundición, transporte y baños en campo RT Guayana ($7.680 USD).'
         : selectedMesNum === 9
         ? 'Los Materiales Directos alcanzaron su pico de $173.833 USD en septiembre (+142% vs los $71.709 USD de agosto) para calderería y refractarios en campo.'
         : 'Montaje de virolas en horno rotatorio e izajes mayores con 238 obreros técnicos activos en frentes de planta.',
@@ -357,17 +357,17 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   // -------------------------------------------------------------
   // 3. LÁMINA 7: FRENTE PMH · SEGUNDA LÍNEA (TTE-C-0671)
   // -------------------------------------------------------------
-  const pmhHist = [139, 1764, 80488, 17083, 21884, 418654, 113294, 197962, 291949, 434469];
-  const pmhMontoMes = selectedMesNum === 10 ? 434469 : (pmhHist[mIdx] || 258882);
+  const pmhHist = [139, 1764, 80488, 17083, 21884, 418654, 113294, 197962, 291949, 438421];
+  const pmhMontoMes = selectedMesNum === 10 ? 438421 : (pmhHist[mIdx] || 258882);
   const pmhMontoPrev = prevIdx !== null ? (pmhHist[prevIdx] || 0) : pmhMontoMes;
   const pmhDelta = pmhMontoMes - pmhMontoPrev;
   const pmhVarPct = prevIdx !== null && pmhMontoPrev > 0
     ? Math.round((pmhDelta / pmhMontoPrev) * 1000) / 10
     : 0;
-  const pmhAcumulado = selectedMesNum === 10 ? 1593173 : pmhHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
+  const pmhAcumulado = selectedMesNum === 10 ? 1597125 : pmhHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
 
   const redComplejoPMHOctubre = [
-    { frente: 'Segunda Línea PMH (Incremento Capacidad)', cta: 'TTE-C-0671', montoMes: 434469, acumulado2026: 1593173 },
+    { frente: 'Segunda Línea PMH (Incremento Capacidad)', cta: 'TTE-C-0671', montoMes: 438421, acumulado2026: 1597125 },
     { frente: 'Rehabilitación Bandas Torre #3 a JD-8012', cta: 'TTE-C-0656', montoMes: 3671, acumulado2026: 1215000 },
     { frente: 'Proyecto Pila HA y HB (Suministro Apilador)', cta: 'TTE-C-0678', montoMes: 28443, acumulado2026: 349100 },
     { frente: 'Interconexión Tolva Multipropósito PMH', cta: 'TTE-C-0655', montoMes: 24132, acumulado2026: 319800 }
@@ -554,7 +554,7 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     : ['abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre'];
 
   const servicios: ServiciosModel = {
-    totalMes: selectedMesNum === 10 ? 778363 : selectedMesNum === 9 ? 69056 : 63106,
+    totalMes: selectedMesNum === 10 ? 307015 : selectedMesNum === 9 ? 69056 : 63106,
     subtitulo: selectedMesNum === 10
       ? 'Desglose oficial de servicios ($778.363 USD) con Yokogawa ($686K), Henan Front ($40K), traslados y custodia · Octubre 2026'
       : selectedMesNum === 9

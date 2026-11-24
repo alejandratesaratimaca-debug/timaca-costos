@@ -29,8 +29,8 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
     julio: 0,
     agosto: 0,
     septiembre: 0,
-    octubre: 686040,
-    total: 686040,
+    octubre: 205974,
+    total: 205974,
     responsable: 'Gerencia de Automatización',
     solicitante: 'Dirección Técnica Pellas',
     motivoTipico: 'Ingeniería, instrumentación y control distribuido DCS Pellas Línea 1',
@@ -69,6 +69,23 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
     solicitante: 'Coordinación de Logística y Cuadrillas Pellas',
     motivoTipico: 'Traslado diario de cuadrillas operativas en campo (254 trabajadores activos)',
     descripcionTipica: 'Servicio de traslado de personal diario cuadrillas Línea 1 Pellas (254 trabajadores)',
+    um: 'mes'
+  },
+  {
+    id: 'banos-portatiles-pellas',
+    servicio: 'Alquiler y limpieza de baños portátiles (RT Guayana)',
+    abril: 0,
+    mayo: 0,
+    junio: 0,
+    julio: 0,
+    agosto: 0,
+    septiembre: 0,
+    octubre: 7680,
+    total: 7680,
+    responsable: 'Servicios Generales TIMACA',
+    solicitante: 'Residencia de Obra Pellas',
+    motivoTipico: 'Alquiler y limpieza fija de 12 módulos sanitarios portátiles en campo (OC23628 + OC24128)',
+    descripcionTipica: 'Alquiler y servicio de limpieza especializada de 12 baños portátiles en campo Pellas',
     um: 'mes'
   },
   {
@@ -353,8 +370,8 @@ export const TOTALES_SERVICIOS_DIRECTOS_PELLAS = {
   julio: 56907,
   agosto: 63106,
   septiembre: 69056,
-  octubre: 778363,
-  total: 1032686
+  octubre: 307015,
+  total: 561338
 };
 
 export const ANALISIS_SERVICIOS_DIRECTOS_PELLAS = [

@@ -332,14 +332,14 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
         );
       } else if (selectedMesNum === 10) {
         setNotasGestion(
-          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.587.796,00 USD (+20,8% vs septiembre $1.707.278 USD), acumulando un total anual consolidado de $14.793.659,00 USD en los 10 meses de 2026.\n\n` +
-          `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $738.919 USD (46,5% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($205.974 USD (30% Hito 0)), Henan Front ($40.000 USD), cuadrillas en campo ($131.190 USD), provisión de horas máquina ($58.500 USD) y prorrateo CIF ($160.285 USD).\n\n` +
-          `Le siguen Segunda Línea PMH (TTE-C-0671) con $434.469 USD (21,1%), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $106.812 USD (5,2%), Fase 2 Planta de Briquetas (TTE-C-0668) con $89.847 USD (4,4%) y Boca Grande II (TTE-C-0680) con $36.177 USD (1,8%).\n\n` +
-          `Por categorías operativas consolidadas: Servicios Directos totalizó $481.572 USD (30,3%), Materiales Directos alcanzó $475.060 USD (23,0%), Costos Indirectos de Fabricación (CIF) $314.914 USD (15,3%), Mano de Obra Directa (MOD) $257.750 USD (12,5%) y Horas Máquina (provisión operativa) $58.500 USD (2,8%).\n\n` +
+          `Para el mes de octubre de 2026, el gasto consolidado oficial en proyectos externos cerró en $1.598.234,00 USD (-6,4% vs septiembre $1.707.278 USD), acumulando un total anual consolidado de $14.328.834,00 USD en los 10 meses de 2026.\n\n` +
+          `La ejecución estuvo ampliamente liderada por el proyecto Recuperación de Línea 1 de Planta de Pellas (TTE-C-0706) con $745.723 USD (46,7% del total mensual), impulsado por contratos estratégicos de instrumentación y automatización con Yokogawa ($205.974 USD (30% Hito 0)), alquiler y limpieza fija de 12 baños en campo RT Guayana ($7.680 USD), fundición ($35.594 USD), transporte de personal ($22.720 USD), cuadrillas en campo ($131.190 USD), provisión de horas máquina ($58.500 USD) y prorrateo CIF ($159.409 USD).\n\n` +
+          `Le siguen Segunda Línea PMH (TTE-C-0671) con $438.421 USD (27,4% de TIMACA, integrando 7 baños y limpieza fija en campo por $4.480 USD), Repotenciación Rueda de Cangilones DRAVO (TTE-C-0653) con $107.900 USD (6,8%), Fase 2 Planta de Briquetas (TTE-C-0668) con $94.569 USD (5,9%) y Caldera Briquetas (TTE-C-0694) con $47.079 USD (2,9%). El Complejo Portuario PMH en sus 4 cuentas totaliza $497.069 USD (31,1% de TIMACA).\n\n` +
+          `Por categorías operativas consolidadas: Servicios Directos totalizó $493.732 USD (30,9%), Materiales Directos alcanzó $475.060 USD (29,7%), Costos Indirectos de Fabricación (CIF) $313.192 USD (19,6%), Mano de Obra Directa (MOD) $257.750 USD (16,1%) y Horas Máquina (provisión operativa) $58.500 USD (3,7%). Suma exacta: $1.598.234 USD (100,0%).\n\n` +
           `NOTAS DE AUDITORÍA Y CONTROL DE GESTIÓN:\n` +
-          `• 100% Proyectos Externos: Se excluyeron rubros no atribuibles a frentes de clientes (flota interna y soporte central corporativo), garantizando conciliación al centavo en las 18 cuentas auxiliares TTE-C ($1.587.796 USD).\n` +
-          `• Mano de Obra Consolidada: Se incorporó la totalidad de frentes incluyendo la nómina regularizada de Boca Grande II ($13.685 USD devengados en 3.946 Horas Hombre), alcanzando 399 trabajadores auditados en 7 frentes de obra.\n` +
-          `• Horas Máquina: Se aplicó provisión técnica de $58.500 USD (+9,6% vs septiembre) en 16 equipos de Pellas Línea 1 sujeta a conciliación final de horómetros.`
+          `• 100% Proyectos Externos: Se concilian al milímetro las 18 cuentas auxiliares activas TTE-C ($1.598.234 USD), incluyendo los 19 baños y limpieza fijos en campo (RT Guayana $12.160 USD: 12 Pellas / 7 PMH).\n` +
+          `• Mano de Obra Consolidada: Se incorporó la nómina devengada en los 31 días del mes de octubre ($257.750 USD) en 7 frentes de obra activos, con 399 trabajadores auditados.\n` +
+          `• Costos Indirectos (CIF): Bolsa oficial de $313.192 USD ($313.192,08 USD) prorrateada según la MOD devengada, con vigilancia TIMACA Sede actualizada ($5.028 USD).`
         );
       } else {
         const mesNombre = activeMonth?.mesLabel || `Mes ${selectedMesNum}`;
@@ -2547,7 +2547,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             { mes: 'Jul', val: 404984 },
                             { mes: 'Ago', val: 596358 },
                             { mes: 'Sep', val: 668340 },
-                            { mes: 'Oct', val: 1219527 }
+                            { mes: 'Oct', val: 745723 }
                           ];
 
                           const maxVal = 1300000;
@@ -3190,7 +3190,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                   ${(TOTALES_SERVICIOS_DIRECTOS_PELLAS.septiembre || 69056).toLocaleString('de-DE')}
                                 </td>
                                 <td className={`py-2.5 px-2 text-right font-mono ${selectedMesNum === 10 ? 'text-amber-900 bg-amber-200/80 font-black' : ''}`}>
-                                  ${(TOTALES_SERVICIOS_DIRECTOS_PELLAS.octubre || 778363).toLocaleString('de-DE')}
+                                  ${(TOTALES_SERVICIOS_DIRECTOS_PELLAS.octubre || 307015).toLocaleString('de-DE')}
                                 </td>
                                 <td className="py-2.5 px-3 text-right font-mono text-blue-900 bg-slate-200">
                                   ${TOTALES_SERVICIOS_DIRECTOS_PELLAS.total.toLocaleString('de-DE')}
@@ -3223,7 +3223,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                               { mes: 'Sep', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.septiembre || 69056, num: 9 },
                               { mes: 'Oct', val: TOTALES_SERVICIOS_DIRECTOS_PELLAS.octubre || 778363, num: 10 }
                             ].map((p) => {
-                              const pct = Math.max(8, Math.min(100, Math.round(Math.pow(p.val / (TOTALES_SERVICIOS_DIRECTOS_PELLAS.octubre || 778363), 0.6) * 100)));
+                              const pct = Math.max(8, Math.min(100, Math.round(Math.pow(p.val / (TOTALES_SERVICIOS_DIRECTOS_PELLAS.octubre || 307015), 0.6) * 100)));
                               const isCur = selectedMesNum === p.num;
                               return (
                                 <div key={p.mes} className="flex-1 flex flex-col items-center justify-end h-full group">

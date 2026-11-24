@@ -1664,7 +1664,7 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
       { mes: 'Jul', val: 404984, desc: 'Calderería y tolvas' },
       { mes: 'Ago', val: 596358, desc: 'Rampa de montaje mecánico' },
       { mes: 'Sep', val: 663316, desc: 'Mayor avance operativo previo' },
-      { mes: 'Oct', val: 1219527, desc: 'Nuevo pico histórico: instrumentación DCS, cuadrilla y montaje' }
+      { mes: 'Oct', val: 745723, desc: 'Nuevo pico histórico: instrumentación DCS (30%), baños y cuadrilla' }
     ];
 
     let pRun = 0;
@@ -2146,10 +2146,13 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     ];
 
     const servDetail = isOct ? [
-      { name: 'Yokogawa América do Sul', spec: 'Automatización y Sistemas DCS', monto: 686040, pct: '88,1%' },
-      { name: 'Henan Front', spec: 'Asistencia Técnica Calcinación', monto: 40000, pct: '5,1%' },
-      { name: 'Logística de Cuadrillas', spec: 'Traslado Terrestre 254 trab.', monto: 38600, pct: '5,0%' },
-      { name: 'Vigilancia Patrimonial', spec: 'Custodia 24/7 Frentes de Obra', monto: 13723, pct: '1,8%' }
+      { name: 'Yokogawa Colombia S.A.S', spec: 'Automatización DCS (30% Hito 0)', monto: 205974, pct: '67,1%' },
+      { name: 'Rafael Méndez (Fundición)', spec: 'Piezas Refractarias Hornos', monto: 35594, pct: '11,6%' },
+      { name: 'A.T.I. TRANSVEN (Logística)', spec: 'Movilización Cuadrillas Campo', monto: 22720, pct: '7,4%' },
+      { name: 'Fletes y Agenciamiento Aduanal', spec: 'Fletes Internacionales y Trámites', monto: 28847, pct: '9,4%' },
+      { name: 'RT Guayana (12 Baños en Campo)', spec: 'Alquiler y Limpieza Módulos', monto: 7680, pct: '2,5%' },
+      { name: 'MAMUSA (Taller Mecanizado)', spec: 'Fabricación y Reparación Hidroneumática', monto: 4900, pct: '1,6%' },
+      { name: 'Cristalería y Soporte Menor', spec: 'Cristalería Cabinas y Refrigerios', monto: 1300, pct: '0,4%' }
     ] : [
       { name: 'Traslado de Personal', spec: 'Transporte Cuadrillas 254 trab.', monto: 45878, pct: '66,4%' },
       { name: 'Vigilancia Patrimonial', spec: 'Custodia 24/7 Áreas de Obra', monto: 13182, pct: '19,1%' },
