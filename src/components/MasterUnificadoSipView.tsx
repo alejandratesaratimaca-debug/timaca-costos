@@ -1184,6 +1184,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [pageCandidateMovimientos, setPageCandidateMovimientos] = useState(1);
   const [searchMovimiento, setSearchMovimiento] = useState('');
   const [filtroEstadoCorreccion, setFiltroEstadoCorreccion] = useState<'todos' | 'pendientes' | 'corregidos' | 'consumos' | 'compras'>('pendientes');
+  const [filtroTipoProyectoCorreccion, setFiltroTipoProyectoCorreccion] = useState<'todos' | 'externos' | 'internos' | 'opex_otros'>('todos');
+  const [correccionesTipoCounts, setCorreccionesTipoCounts] = useState<{ todos: number; externos: number; internos: number; opex_otros: number }>({
+    todos: 0,
+    externos: 0,
+    internos: 0,
+    opex_otros: 0
+  });
   const [selectedMovimiento, setSelectedMovimiento] = useState<{
     id: string;
     tipo: 'consumo' | 'compra';
@@ -1268,7 +1275,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   // States for Historial de Correcciones (auditoría de las 447 correcciones)
   const [searchHistorialCorrecciones, setSearchHistorialCorrecciones] = useState('');
-  const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'mis_recientes' | 'historicas' | 'recientes' | 'consumos' | 'compras' | 'rezagadas' | 'valorizaciones_pellas' | 'pellas_todas'>('todos');
+  const [filtroTipoHistorial, setFiltroTipoHistorial] = useState<'todos' | 'mis_recientes' | 'historicas' | 'recientes' | 'consumos' | 'compras' | 'rezagadas' | 'valorizaciones_pellas' | 'pellas_todas' | 'externos' | 'internos'>('todos');
   const [pageReclasificaciones, setPageReclasificaciones] = useState(1);
 
   // States for Cargas de Insumos al Cierre (MDO, HM & Costos Indirectos)
@@ -2675,7 +2682,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             solicitante: item.solicitante || item.solicitanteOComprador || 'S/D',
             solicitanteOComprador: item.solicitante || item.solicitanteOComprador || 'S/D',
             motivo: item.motivo || '',
-            datos_descripcion: item.datos_descripcion || ''
+            datos_descripcion: item.datos_descripcion || '',
+            datos_tipo_costo: item.datos_tipo_costo || '',
+            tipoCosto: (item.datos_tipo_costo || determinarTipoGasto(item.cuenta_aux || item.cuentaAuxiliar, item.datos_tipo_costo) || 'Externo')
           };
         });
 
@@ -2702,6 +2711,37 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           });
         }
 
+        // Helpers para clasificar proyecto externo vs interno
+        const esMovExterno = (m: any) => {
+          const tc = String(m.tipoCosto || m.datos_tipo_costo || '').toUpperCase();
+          const cta = String(m.cuentaAuxiliar || m.cuentaAuxiliarOriginal || '').toUpperCase();
+          return tc.includes('EXTERNO') || cta.startsWith('TTE') || cta.startsWith('TSE') || cta.startsWith('STE') || cta.startsWith('ESE') || cta.startsWith('ETE') || cta.includes('PELLAS') || cta.includes('PMH') || cta.includes('BRIQUETAS') || cta.includes('VISCO') || cta.includes('IMPSA') || cta.includes('BOCA GRANDE');
+        };
+
+        const esMovInterno = (m: any) => {
+          const tc = String(m.tipoCosto || m.datos_tipo_costo || '').toUpperCase();
+          const cta = String(m.cuentaAuxiliar || m.cuentaAuxiliarOriginal || '').toUpperCase();
+          return tc.includes('INTERNO') || cta.startsWith('TTI') || cta.startsWith('TSI') || cta.startsWith('STI') || cta.startsWith('ESI') || cta.includes('CAPEX');
+        };
+
+        // Calcular contadores por tipo de proyecto sobre el estado y búsqueda actual
+        const counts = {
+          todos: filtered.length,
+          externos: filtered.filter(esMovExterno).length,
+          internos: filtered.filter(esMovInterno).length,
+          opex_otros: filtered.filter(m => !esMovExterno(m) && !esMovInterno(m)).length
+        };
+        setCorreccionesTipoCounts(counts);
+
+        // Filtrar según filtroTipoProyectoCorreccion (Proyectos Externos vs Internos)
+        if (filtroTipoProyectoCorreccion === 'externos') {
+          filtered = filtered.filter(esMovExterno);
+        } else if (filtroTipoProyectoCorreccion === 'internos') {
+          filtered = filtered.filter(esMovInterno);
+        } else if (filtroTipoProyectoCorreccion === 'opex_otros') {
+          filtered = filtered.filter(m => !esMovExterno(m) && !esMovInterno(m));
+        }
+
         // Ordenar por fecha descendente
         filtered.sort((a: any, b: any) => (b.fecha || '').localeCompare(a.fecha || ''));
 
@@ -2724,7 +2764,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [searchMovimiento, filtroEstadoCorreccion, mesCorrecciones, reclasificaciones]);
+  }, [searchMovimiento, filtroEstadoCorreccion, filtroTipoProyectoCorreccion, mesCorrecciones, reclasificaciones]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -3338,6 +3378,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     let consumos = 0;
     let compras = 0;
     let directasSip = 0;
+    let externos = 0;
+    let internos = 0;
 
     for (const x of reclasificaciones) {
       const isAtesara = x.esLocal || String(x.usuario || '').includes('atesara');
@@ -3350,6 +3392,13 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         directasSip++;
         if (!isPellasTotalRecord(x)) recientes++;
       }
+
+      const cta = String(x.nuevaCuenta || x.cuentaAnterior || '').toUpperCase();
+      const proj = String(x.nuevoProyecto || x.proyectoAnterior || '').toUpperCase();
+      const isExt = cta.startsWith('TTE') || cta.startsWith('TSE') || cta.startsWith('STE') || cta.startsWith('ESE') || cta.startsWith('ETE') || proj.includes('PELLAS') || proj.includes('PMH') || proj.includes('BRIQUETAS') || proj.includes('VISCO') || proj.includes('IMPSA') || proj.includes('BOCA GRANDE');
+      const isInt = cta.startsWith('TTI') || cta.startsWith('TSI') || cta.startsWith('STI') || cta.startsWith('ESI') || proj.includes('INTERNO') || proj.includes('CAPEX');
+      if (isExt) externos++;
+      if (isInt) internos++;
 
       if (isPellas1Record(x)) pellas1++;
       if (isPellasTotalRecord(x)) pellasTotal++;
@@ -3368,7 +3417,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       historicas,
       consumos,
       compras,
-      directasSip
+      directasSip,
+      externos,
+      internos
     };
   }, [reclasificaciones]);
 
@@ -3377,6 +3428,16 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       // 1. Filtro por origen
       if (filtroTipoHistorial === 'mis_recientes') {
         if (!r.esLocal && !String(r.usuario || '').includes('atesara')) return false;
+      } else if (filtroTipoHistorial === 'externos') {
+        const cta = String(r.nuevaCuenta || r.cuentaAnterior || '').toUpperCase();
+        const proj = String(r.nuevoProyecto || r.proyectoAnterior || '').toUpperCase();
+        const isExt = cta.startsWith('TTE') || cta.startsWith('TSE') || cta.startsWith('STE') || cta.startsWith('ESE') || cta.startsWith('ETE') || proj.includes('PELLAS') || proj.includes('PMH') || proj.includes('BRIQUETAS') || proj.includes('VISCO') || proj.includes('IMPSA') || proj.includes('BOCA GRANDE');
+        if (!isExt) return false;
+      } else if (filtroTipoHistorial === 'internos') {
+        const cta = String(r.nuevaCuenta || r.cuentaAnterior || '').toUpperCase();
+        const proj = String(r.nuevoProyecto || r.proyectoAnterior || '').toUpperCase();
+        const isInt = cta.startsWith('TTI') || cta.startsWith('TSI') || cta.startsWith('STI') || cta.startsWith('ESI') || proj.includes('INTERNO') || proj.includes('CAPEX');
+        if (!isInt) return false;
       } else if (filtroTipoHistorial === 'valorizaciones_pellas') {
         if (!isPellas1Record(r)) return false;
       } else if (filtroTipoHistorial === 'pellas_todas') {
@@ -6670,7 +6731,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mr-1">Ver:</span>
                     <button
                       onClick={() => setFiltroEstadoCorreccion('todos')}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         filtroEstadoCorreccion === 'todos'
                           ? 'bg-purple-600 text-white shadow-xs'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -6680,7 +6741,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </button>
                     <button
                       onClick={() => setFiltroEstadoCorreccion('pendientes')}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                         filtroEstadoCorreccion === 'pendientes'
                           ? 'bg-amber-600 text-white shadow-xs'
                           : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
@@ -6690,7 +6751,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </button>
                     <button
                       onClick={() => setFiltroEstadoCorreccion('corregidos')}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                         filtroEstadoCorreccion === 'corregidos'
                           ? 'bg-emerald-600 text-white shadow-xs'
                           : 'bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100'
@@ -6700,7 +6761,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </button>
                     <button
                       onClick={() => setFiltroEstadoCorreccion('consumos')}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         filtroEstadoCorreccion === 'consumos'
                           ? 'bg-blue-600 text-white shadow-xs'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -6710,13 +6771,91 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </button>
                     <button
                       onClick={() => setFiltroEstadoCorreccion('compras')}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         filtroEstadoCorreccion === 'compras'
                           ? 'bg-indigo-600 text-white shadow-xs'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >
                       Solo Servicios / Compras (SC / OC)
+                    </button>
+                  </div>
+
+                  {/* NUEVO FILTRO: Alcance de Proyectos (Externos vs Internos - Para Daniela Riveros) */}
+                  <div className="flex flex-wrap items-center gap-2 p-2 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 border border-blue-200/80 rounded-xl shadow-2xs">
+                    <div className="flex items-center gap-1.5 mr-1 text-[11px] font-black text-blue-950 uppercase tracking-wider">
+                      <Briefcase className="w-3.5 h-3.5 text-blue-700 shrink-0" />
+                      <span>Alcance:</span>
+                    </div>
+
+                    <button
+                      onClick={() => setFiltroTipoProyectoCorreccion('todos')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        filtroTipoProyectoCorreccion === 'todos'
+                          ? 'bg-[#002060] text-white shadow-xs'
+                          : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+                      }`}
+                      title="Ver todos los movimientos sin importar el tipo de proyecto"
+                    >
+                      <span>🌐 Todos los Proyectos</span>
+                      <span className={`px-2 py-0.2 rounded-full text-[10px] font-black ${
+                        filtroTipoProyectoCorreccion === 'todos' ? 'bg-blue-900 text-blue-100' : 'bg-slate-100 text-slate-700'
+                      }`}>
+                        {correccionesTipoCounts.todos.toLocaleString()}
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => setFiltroTipoProyectoCorreccion('externos')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        filtroTipoProyectoCorreccion === 'externos'
+                          ? 'bg-blue-700 text-white shadow-xs ring-2 ring-blue-400/50'
+                          : 'bg-white text-blue-900 border border-blue-300 hover:bg-blue-50'
+                      }`}
+                      title="Filtrar únicamente Proyectos Externos (TTE-C-, contratos con clientes VISCO, Pellas, PMH, Briquetas, Boca Grande, IMPSA)"
+                    >
+                      <Building2 className="w-3.5 h-3.5 text-blue-300 shrink-0" />
+                      <span>🏢 Proyectos Externos (Clientes)</span>
+                      <span className={`px-2 py-0.2 rounded-full text-[10px] font-black ${
+                        filtroTipoProyectoCorreccion === 'externos' ? 'bg-blue-950 text-blue-100' : 'bg-blue-100 text-blue-900'
+                      }`}>
+                        {correccionesTipoCounts.externos.toLocaleString()}
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => setFiltroTipoProyectoCorreccion('internos')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        filtroTipoProyectoCorreccion === 'internos'
+                          ? 'bg-amber-600 text-white shadow-xs ring-2 ring-amber-400/50'
+                          : 'bg-white text-amber-900 border border-amber-300 hover:bg-amber-50'
+                      }`}
+                      title="Filtrar únicamente Proyectos Internos (TTI-, inversiones de capital y obras propias TIMACA)"
+                    >
+                      <HardHat className="w-3.5 h-3.5 text-amber-200 shrink-0" />
+                      <span>🏭 Proyectos Internos (Obra Propia)</span>
+                      <span className={`px-2 py-0.2 rounded-full text-[10px] font-black ${
+                        filtroTipoProyectoCorreccion === 'internos' ? 'bg-amber-800 text-amber-100' : 'bg-amber-100 text-amber-900'
+                      }`}>
+                        {correccionesTipoCounts.internos.toLocaleString()}
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => setFiltroTipoProyectoCorreccion('opex_otros')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        filtroTipoProyectoCorreccion === 'opex_otros'
+                          ? 'bg-slate-700 text-white shadow-xs ring-2 ring-slate-400/50'
+                          : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-100'
+                      }`}
+                      title="Filtrar gastos operativos de Mantenimiento de Flota, Infraestructura de Planta, Talleres y Administración"
+                    >
+                      <span>🔧 OPEX / Flota / Admin</span>
+                      <span className={`px-2 py-0.2 rounded-full text-[10px] font-black ${
+                        filtroTipoProyectoCorreccion === 'opex_otros' ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-700'
+                      }`}>
+                        {correccionesTipoCounts.opex_otros.toLocaleString()}
+                      </span>
                     </button>
                   </div>
 
@@ -6736,7 +6875,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     <div className="space-y-3">
                       <div className="text-[11px] text-slate-500 flex items-center justify-between px-1">
                         <span>
-                          Mostrando <strong>{((pageCandidateMovimientos - 1) * 50) + 1}</strong> a <strong>{Math.min(pageCandidateMovimientos * 50, candidateMovimientos.length)}</strong> de <strong>{candidateMovimientos.length.toLocaleString()}</strong> movimientos ({filtroEstadoCorreccion === 'pendientes' ? 'pendientes de corrección' : filtroEstadoCorreccion}).
+                          Mostrando <strong>{((pageCandidateMovimientos - 1) * 50) + 1}</strong> a <strong>{Math.min(pageCandidateMovimientos * 50, candidateMovimientos.length)}</strong> de <strong>{candidateMovimientos.length.toLocaleString()}</strong> movimientos ({filtroEstadoCorreccion === 'pendientes' ? 'pendientes de corrección' : filtroEstadoCorreccion} · {filtroTipoProyectoCorreccion === 'externos' ? 'Proyectos Externos' : filtroTipoProyectoCorreccion === 'internos' ? 'Proyectos Internos' : filtroTipoProyectoCorreccion === 'opex_otros' ? 'OPEX/Flota/Otros' : 'Todos los Proyectos'}).
                         </span>
                         <span className="text-[10px] text-slate-400">Ordenados por fecha más reciente</span>
                       </div>
@@ -6760,6 +6899,27 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                               }`}>
                                 {m.tipo === 'consumo' ? 'Consumo de Almacén' : 'Compra / Servicio'}
                               </span>
+
+                              {/* Badge de Alcance de Proyecto */}
+                              {m.tipoCosto === 'Externo' || (m.cuentaAuxiliar || '').startsWith('TTE') ? (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black bg-blue-100 text-blue-900 border border-blue-300 flex items-center gap-1 shadow-2xs">
+                                  <Building2 className="w-3 h-3 text-blue-700" />
+                                  <span>Proy. Externo</span>
+                                </span>
+                              ) : m.tipoCosto === 'Interno' || (m.cuentaAuxiliar || '').startsWith('TTI') ? (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1 shadow-2xs">
+                                  <HardHat className="w-3 h-3 text-amber-700" />
+                                  <span>Proy. Interno</span>
+                                </span>
+                              ) : m.tipoCosto === 'Socio' || (m.cuentaAuxiliar || '').startsWith('TT-S') ? (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-100 text-purple-900 border border-purple-300 flex items-center gap-1 shadow-2xs">
+                                  👥 Socio
+                                </span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300 flex items-center gap-1">
+                                  🔧 {m.tipoCosto || 'OPEX / Operativo'}
+                                </span>
+                              )}
 
                               {m.esReclasificado ? (
                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 shadow-2xs">
@@ -6834,9 +6994,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                   )}
                                 </div>
                               ) : (
-                                <div className="flex items-center gap-1.5">
+                                <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="text-slate-500 font-medium">Cuenta actual SIP:</span>
                                   <span className="font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">{m.cuentaAuxiliar}</span>
+                                  {m.datos_descripcion && (
+                                    <span className="text-slate-600 font-medium text-[11px] truncate max-w-[340px]" title={m.datos_descripcion}>
+                                      · {m.datos_descripcion}
+                                    </span>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -7221,6 +7386,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   >
                     <option value="mis_recientes">⭐ Mis Correcciones Recientes ({reclasificacionesStats.misRecientes})</option>
                     <option value="todos">Todos los Orígenes ({reclasificacionesStats.total.toLocaleString()})</option>
+                    <option value="externos">🏢 Proyectos Externos (TTE / Clientes) ({reclasificacionesStats.externos.toLocaleString()})</option>
+                    <option value="internos">🏭 Proyectos Internos (TTI / Obra Propia) ({reclasificacionesStats.internos.toLocaleString()})</option>
                     <option value="recientes">⚡ Recientes Sistema ({reclasificacionesStats.recientes.toLocaleString()})</option>
                     <option value="rezagadas">📅 Rezagadas Asignadas ({reclasificacionesStats.rezagadas.toLocaleString()})</option>
                     <option value="valorizaciones_pellas">🏭 Valorizaciones Pellas 1 (Línea 1 · TTE-C-0706) ({reclasificacionesStats.pellas1.toLocaleString()})</option>
