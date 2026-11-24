@@ -736,7 +736,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       404983.93,
       600558.2,
       659116.15,
-      745723.00
+      792850.00
     ],
     "byCategoriaMes": [
       {
@@ -804,13 +804,13 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       },
       {
         "Materiales Directos": 89609.00,
-        "Servicios": 307015.00,
+        "Servicios": 354142.00,
         "Mano de Obra Directa": 131190.00,
         "Horas Maquina": 58500.00,
         "Costos Indirectos": 159409.00
       }
     ],
-    "totalAnual": 3129677.27
+    "totalAnual": 3176804.27
   },
   "TTE-C-0671": {
     "cuentaAuxiliar": "TTE-C-0671",
@@ -825,7 +825,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       113294.28,
       197962.39,
       307435.5,
-      438421.00
+      448866.00
     ],
     "byCategoriaMes": [
       {
@@ -893,13 +893,13 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       },
       {
         "Materiales Directos": 178851.00,
-        "Servicios": 84511.00,
+        "Servicios": 94956.00,
         "Mano de Obra Directa": 79030.00,
         "Horas Maquina": 0,
         "Costos Indirectos": 96029.00
       }
     ],
-    "totalAnual": 1597124.57
+    "totalAnual": 1607569.57
   },
   "TTE-C-0682": {
     "cuentaAuxiliar": "TTE-C-0682",
@@ -1003,7 +1003,7 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       51103.85,
       54364.83,
       36453.12,
-      36085.97
+      54085.97
     ],
     "byCategoriaMes": [
       {
@@ -1071,13 +1071,13 @@ export const MATRIZ_REAL_PROYECTOS_MENSUAL_2026: Record<string, ProyectoEvolutiv
       },
       {
         "Materiales Directos": 5772.32,
-        "Servicios": 0,
+        "Servicios": 18000,
         "Mano de Obra Directa": 13685,
         "Horas Maquina": 0,
         "Costos Indirectos": 16628.65
       }
     ],
-    "totalAnual": 504356.75
+    "totalAnual": 522356.75
   },
   "TTE-C-0674": {
     "cuentaAuxiliar": "TTE-C-0674",

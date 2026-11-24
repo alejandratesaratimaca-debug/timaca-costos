@@ -21,6 +21,40 @@ export interface SubcategoriaServicioPellas {
 
 export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas[] = [
   {
+    id: 'mantenimiento-gruas-pellas',
+    servicio: 'Mantenimiento y overhaul de grúas pesadas',
+    abril: 0,
+    mayo: 0,
+    junio: 0,
+    julio: 0,
+    agosto: 0,
+    septiembre: 0,
+    octubre: 25627,
+    total: 25627,
+    responsable: 'Mantenimiento de Equipos TIMACA',
+    solicitante: 'Operaciones y Montaje Pellas',
+    motivoTipico: 'Overhaul mayor, cambio de sellos hidráulicos de boom y bombas en grúas telescópicas (Agro Industrial F&H y Proveind)',
+    descripcionTipica: 'Mantenimiento mayor especializado y kits de sellos para grúas telescópicas de izaje en Pellas',
+    um: 'servicio'
+  },
+  {
+    id: 'montaje-dc-subestacion',
+    servicio: 'Montaje cargadores DC y tableros subestación',
+    abril: 0,
+    mayo: 0,
+    junio: 0,
+    julio: 0,
+    agosto: 0,
+    septiembre: 0,
+    octubre: 21500,
+    total: 21500,
+    responsable: 'Gerencia de Electricidad e Instrumentación',
+    solicitante: 'Ingeniería de Subestación Pellas',
+    motivoTipico: 'Suministro e instalación de cargador de baterías y panel de distribución DC en subestación (Data Power Dear)',
+    descripcionTipica: 'Instalación y conexionado de sistema de fuerza ininterrumpida DC en subestación Pellas',
+    um: 'servicio'
+  },
+  {
     id: 'yokogawa-dcs',
     servicio: 'Yokogawa América do Sul (Sistemas DCS)',
     abril: 0,
@@ -370,8 +404,8 @@ export const TOTALES_SERVICIOS_DIRECTOS_PELLAS = {
   julio: 56907,
   agosto: 63106,
   septiembre: 69056,
-  octubre: 307015,
-  total: 561338
+  octubre: 354142,
+  total: 608465
 };
 
 export const ANALISIS_SERVICIOS_DIRECTOS_PELLAS = [

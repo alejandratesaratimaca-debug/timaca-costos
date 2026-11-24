@@ -208,13 +208,12 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
       {
         cta: 'TTE-C-0706',
         name: 'Línea 1 Pellas',
-        montoMes: 1219527,
+        montoMes: 792850,
         montoPrev: 668340,
-        delta: 551.2,
-        pct: '+82,5%',
+        delta: 124.5,
+        pct: '+18,6%',
         isPos: true,
-        why: 'Contratos mayores de instrumentación con Yokogawa ($686K), asistencia Henan Front ($40K), cuadrillas y CIF'
-      },
+        why: 'Instrumentación Yokogawa (30% Hito 0 $206K), overhaul grúas ($25,6K), montaje DC ($21,5K), baños en campo ($7,7K) y cuadrillas ($131K)' },
       {
         cta: 'TTE-C-0693',
         name: 'Parada Planta Briquetas',
@@ -238,23 +237,21 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
       {
         cta: 'TTE-C-0671',
         name: 'Segunda Línea PMH',
-        montoMes: 434469,
+        montoMes: 448866,
         montoPrev: 291949,
-        delta: 142.5,
-        pct: '+48,8%',
+        delta: 156.9,
+        pct: '+53,7%',
         isPos: true,
-        why: 'Despachos de aceros, neopreno ($72K), cuadrilla en campo ($79K) y absorción CIF ($97K)'
-      },
+        why: 'Despachos de aceros, neopreno ($72K), concretos Cuyuní ($10,4K), baños RT Guayana ($4,5K), nómina ($79K) y CIF ($96K)' },
       {
         cta: 'TTE-C-0680',
         name: 'Boca Grande II',
-        montoMes: 36177,
+        montoMes: 54086,
         montoPrev: 36453,
-        delta: -0.3,
-        pct: '-0,8%',
-        isPos: false,
-        why: 'Mantenimiento del buque e integración regularizada de nómina de cuadrilla ($13,7K)'
-      },
+        delta: 17.6,
+        pct: '+48,4%',
+        isPos: true,
+        why: 'Mantenimiento del buque, chalanas y rotación marítima Lacourt ($15,5K), balanceo dinámico Eminca ($2,5K) y cuadrilla ($13,7K)' },
       {
         cta: 'TTE-C-0653',
         name: 'Repotenciación DRAVO',
@@ -278,19 +275,19 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     ];
   } else if (selectedMesNum === 8) {
     variaciones = [
-      { cta: 'TTE-C-0671', name: 'Segunda Línea PMH', montoMes: 197962, montoPrev: 113294, delta: 84.7, pct: '+74,7%', isPos: true, why: 'Despacho masivo de aceros para pórticos y tolvas' },
+      { cta: 'TTE-C-0671', name: 'Segunda Línea PMH', montoMes: 448866, montoPrev: 291949, delta: 156.9, pct: '+53,7%', isPos: true, why: 'Despachos de aceros, neopreno ($72K), concretos Cuyuní ($10,4K), baños RT Guayana ($4,5K), nómina ($79K) y CIF ($96K)' },
       { cta: 'TTE-C-0656', name: 'Rehabilitación Bandas PMH', montoMes: 109279, montoPrev: 71182, delta: 38.1, pct: '+53,5%', isPos: true, why: 'Reactivación Torre #3 y cinta transportadora JD-8012' },
       { cta: 'TTE-C-0653', name: 'Repotenciación DRAVO', montoMes: 23166, montoPrev: 27036, delta: -3.9, pct: '-14,3%', isPos: false, why: 'Ajuste de suministros menores previo a fase intensiva' },
-      { cta: 'TTE-C-0706', name: 'Línea 1 Pellas', montoMes: 596358, montoPrev: 404984, delta: 191.4, pct: '+47,3%', isPos: true, why: 'Consolidación de montaje de virolas en horno rotatorio' },
+      { cta: 'TTE-C-0706', name: 'Línea 1 Pellas', montoMes: 792850, montoPrev: 668340, delta: 124.5, pct: '+18,6%', isPos: true, why: 'Instrumentación Yokogawa (30% Hito 0 $206K), overhaul grúas ($25,6K), montaje DC ($21,5K), baños en campo ($7,7K) y cuadrillas ($131K)' },
       { cta: 'TTE-C-0694', name: 'Caldera Briquetas', montoMes: 12150, montoPrev: 103150, delta: -91.0, pct: '-88,2%', isPos: false, why: 'Fase final de remates, pruebas y calibración' }
     ];
   } else {
     // Septiembre (o default)
     variaciones = [
       { cta: 'TTE-C-0653', name: 'Repotenciación DRAVO', montoMes: 199356, montoPrev: 23166, delta: 176.2, pct: '+760,6%', isPos: true, why: 'Inyección en cables de potencia, tableros y tolvas ($199K)' },
-      { cta: 'TTE-C-0671', name: 'Segunda Línea PMH', montoMes: 291949, montoPrev: 197962, delta: 94.0, pct: '+47,5%', isPos: true, why: 'Despacho masivo de aceros para pórticos y tolvas ($292K)' },
+      { cta: 'TTE-C-0671', name: 'Segunda Línea PMH', montoMes: 448866, montoPrev: 291949, delta: 156.9, pct: '+53,7%', isPos: true, why: 'Despachos de aceros, neopreno ($72K), concretos Cuyuní ($10,4K), baños RT Guayana ($4,5K), nómina ($79K) y CIF ($96K)' },
       { cta: 'TTE-C-0668', name: 'Briquetas Fase 2', montoMes: 173502, montoPrev: 88918, delta: 84.6, pct: '+95,1%', isPos: true, why: 'Reactivación de tuberías y válvulas de alta presión ($174K)' },
-      { cta: 'TTE-C-0706', name: 'Línea 1 Pellas', montoMes: 668340, montoPrev: 596358, delta: 72.0, pct: '+12,1%', isPos: true, why: 'Pico operacional del año con montaje electromecánico ($668K)' },
+      { cta: 'TTE-C-0706', name: 'Línea 1 Pellas', montoMes: 792850, montoPrev: 668340, delta: 124.5, pct: '+18,6%', isPos: true, why: 'Instrumentación Yokogawa (30% Hito 0 $206K), overhaul grúas ($25,6K), montaje DC ($21,5K), baños en campo ($7,7K) y cuadrillas ($131K)' },
       { cta: 'TTE-C-0656', name: 'Rehabilitación Bandas PMH', montoMes: 92620, montoPrev: 109279, delta: -16.7, pct: '-15,2%', isPos: false, why: 'Finalización de empalmes vulcanizados en correas ($93K)' }
     ];
   }
@@ -298,14 +295,14 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   // -------------------------------------------------------------
   // 2. LÁMINA 5: PROYECTO PELLAS LÍNEA 1 (TTE-C-0706)
   // -------------------------------------------------------------
-  const pellasHist = [1837, 1416, 684, 5583, 305561, 404215, 404984, 596358, 659116, 745723];
-  const pellasMontoMes = selectedMesNum === 10 ? 745723 : (pellasHist[mIdx] || 668340);
+  const pellasHist = [1837, 1416, 684, 5583, 305561, 404215, 404984, 596358, 659116, 792850];
+  const pellasMontoMes = selectedMesNum === 10 ? 792850 : (pellasHist[mIdx] || 668340);
   const pellasMontoPrev = prevIdx !== null ? (pellasHist[prevIdx] || 0) : pellasMontoMes;
   const pellasDelta = pellasMontoMes - pellasMontoPrev;
   const pellasVarPct = prevIdx !== null && pellasMontoPrev > 0
     ? Math.round((pellasDelta / pellasMontoPrev) * 1000) / 10
     : 0;
-  const pellasAcumulado = selectedMesNum === 10 ? 3129677 : pellasHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
+  const pellasAcumulado = selectedMesNum === 10 ? 3176804 : pellasHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
 
   // Determinar si el mes actual es el pico histórico
   const maxPellasVal = Math.max(...pellasHist.slice(0, selectedMesNum));
@@ -324,10 +321,10 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     delta: pellasDelta,
     varPctText: pellasVarPct > 0 ? `+${pellasVarPct}%` : `${pellasVarPct}%`,
     isPos: pellasVarPct >= 0,
-    porcentajeMes: selectedMesNum === 10 ? 46.7 : Math.round((pellasMontoMes / (totalMonto || 1)) * 1000) / 10,
+    porcentajeMes: selectedMesNum === 10 ? 47.4 : Math.round((pellasMontoMes / (totalMonto || 1)) * 1000) / 10,
     acumulado2026: pellasAcumulado,
-    pctContrato: selectedMesNum === 10 ? 10.5 : Math.round((pellasAcumulado / 29720000) * 1000) / 10,
-    saldoPorEjecutar: selectedMesNum === 10 ? 26590558 : (29720000 - pellasAcumulado),
+    pctContrato: selectedMesNum === 10 ? 10.7 : Math.round((pellasAcumulado / 29720000) * 1000) / 10,
+    saldoPorEjecutar: selectedMesNum === 10 ? 26543196 : (29720000 - pellasAcumulado),
     fuerzaLaboral: selectedMesNum >= 9 ? 254 : 238,
     cifAbsorbido: selectedMesNum === 10 ? 159409 : Math.round(acumulado2026 * 0.244 * 0.602),
     curvaMeses: curvaPellas,
@@ -345,7 +342,7 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
         ? 'Salto en Procura de Septiembre' 
         : 'Consolidación de Montaje de Virolas',
       card2Desc: selectedMesNum === 10
-        ? 'Servicios especializados alcanzaron $307.015 USD impulsados por automatización con Yokogawa ($205.974 USD (30% Hito 0)), fundición, transporte y baños en campo RT Guayana ($7.680 USD).'
+        ? 'Servicios especializados alcanzaron $354.142 USD impulsados por automatización con Yokogawa ($205.974 USD (30% Hito 0)), mantenimiento de grúas ($25.627 USD), montaje cargadores DC ($21.500 USD), fletes, transporte y baños en campo RT Guayana ($7.680 USD).'
         : selectedMesNum === 9
         ? 'Los Materiales Directos alcanzaron su pico de $173.833 USD en septiembre (+142% vs los $71.709 USD de agosto) para calderería y refractarios en campo.'
         : 'Montaje de virolas en horno rotatorio e izajes mayores con 238 obreros técnicos activos en frentes de planta.',
@@ -357,18 +354,18 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   // -------------------------------------------------------------
   // 3. LÁMINA 7: FRENTE PMH · SEGUNDA LÍNEA (TTE-C-0671)
   // -------------------------------------------------------------
-  const pmhHist = [139, 1764, 80488, 17083, 21884, 418654, 113294, 197962, 291949, 438421];
-  const pmhMontoMes = selectedMesNum === 10 ? 438421 : (pmhHist[mIdx] || 258882);
+  const pmhHist = [139, 1764, 80488, 17083, 21884, 418654, 113294, 197962, 291949, 448866];
+  const pmhMontoMes = selectedMesNum === 10 ? 448866 : (pmhHist[mIdx] || 258882);
   const pmhMontoPrev = prevIdx !== null ? (pmhHist[prevIdx] || 0) : pmhMontoMes;
   const pmhDelta = pmhMontoMes - pmhMontoPrev;
   const pmhVarPct = prevIdx !== null && pmhMontoPrev > 0
     ? Math.round((pmhDelta / pmhMontoPrev) * 1000) / 10
     : 0;
-  const pmhAcumulado = selectedMesNum === 10 ? 1597125 : pmhHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
+  const pmhAcumulado = selectedMesNum === 10 ? 1607570 : pmhHist.slice(0, selectedMesNum).reduce((s, v) => s + v, 0);
 
   const redComplejoPMHOctubre = [
-    { frente: 'Segunda Línea PMH (Incremento Capacidad)', cta: 'TTE-C-0671', montoMes: 438421, acumulado2026: 1597125 },
-    { frente: 'Rehabilitación Bandas Torre #3 a JD-8012', cta: 'TTE-C-0656', montoMes: 3671, acumulado2026: 1215000 },
+    { frente: 'Segunda Línea PMH (Incremento Capacidad)', cta: 'TTE-C-0671', montoMes: 448866, acumulado2026: 1607570 },
+    { frente: 'Rehabilitación Bandas Torre #3 a JD-8012', cta: 'TTE-C-0656', montoMes: 6073, acumulado2026: 1217402 },
     { frente: 'Proyecto Pila HA y HB (Suministro Apilador)', cta: 'TTE-C-0678', montoMes: 28443, acumulado2026: 349100 },
     { frente: 'Interconexión Tolva Multipropósito PMH', cta: 'TTE-C-0655', montoMes: 24132, acumulado2026: 319800 }
   ];
@@ -388,7 +385,7 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
   ];
 
   const redComplejo = selectedMesNum === 10 ? redComplejoPMHOctubre : selectedMesNum === 8 ? redComplejoPMHAgosto : redComplejoPMHSeptiembre;
-  const totalComplejoPMHMonto = selectedMesNum === 10 ? 490715 : redComplejo.reduce((acc, r) => acc + r.montoMes, 0);
+  const totalComplejoPMHMonto = selectedMesNum === 10 ? 507514 : redComplejo.reduce((acc, r) => acc + r.montoMes, 0);
   const totalAcumuladoComplejoMonto = redComplejo.reduce((acc, r) => acc + r.acumulado2026, 0);
 
   const pmh: PmhModel = {
@@ -402,9 +399,9 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     materialesPct: selectedMesNum === 10 ? 69.1 : selectedMesNum === 9 ? 85.5 : 71.8,
     totalComplejoPMH: totalComplejoPMHMonto,
     totalAcumuladoComplejo: totalAcumuladoComplejoMonto,
-    pctComplejoEnTimaca: selectedMesNum === 10 ? 23.8 : Math.round((totalComplejoPMHMonto / (totalMonto || 1)) * 1000) / 10,
+    pctComplejoEnTimaca: selectedMesNum === 10 ? 30.3 : Math.round((totalComplejoPMHMonto / (totalMonto || 1)) * 1000) / 10,
     subtitulo: selectedMesNum === 10
-      ? 'Inversión integral de $434.469 USD en Octubre ($258.882 USD compras directas SIP) · Fases avanzadas de calderería, pórticos y tolvas'
+      ? 'Inversión integral de $448.866 USD en Octubre ($273.807 USD compras y servicios directos en campo) · Fases avanzadas de calderería, pórticos y tolvas'
       : selectedMesNum === 9
       ? 'Inversión acelerada de $291.949 USD en Septiembre (+47,5% vs Agosto) · Apoyos de elastómero de neopreno, concreto y canalización'
       : 'Inversión de $197.962 USD en Agosto (+74,7% vs Julio) · Aceros para pórticos y rehabilitación de tolva',
@@ -432,9 +429,9 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     redComplejoPMH: redComplejo,
     dictamenTecnico: selectedMesNum === 10 ? {
       punto1Titulo: 'Inversión Integral Segunda Línea (TTE-C-0671):',
-      punto1Texto: '$434.469 USD en el mes (21,1% corporativo), compuesta por $258.882 USD de compras directas SIP, $79.030 USD de MOD (22.648 HH) y $96.557 USD de CIF.',
+      punto1Texto: '$448.866 USD en el mes (26,8% corporativo), compuesta por $273.807 USD de compras y servicios directos SIP en campo (incluyendo vaciados de concreto Cuyuní $10,4K y baños RT Guayana $4,5K), $79.030 USD de MOD (horas en revisión RRHH) y $96.029 USD de CIF.',
       punto2Titulo: 'Red Portuaria Complejo PMH:',
-      punto2Texto: 'Los 4 frentes portuarios totalizan $490.715 USD en ejecución integral (23,8% corporativo) y $311.505 USD en compras directas, blindando el embarque de mineral.'
+      punto2Texto: 'Los 4 frentes portuarios totalizan $507.514 USD en ejecución integral (30,3% corporativo) y $326.480 USD en compras y servicios directos en campo, blindando el embarque de mineral.'
     } : selectedMesNum === 8 ? {
       punto1Titulo: 'Fase de Suministros Mayores y Aceros:',
       punto1Texto: 'La Segunda Línea PMH repunta a $197.962 USD (+74,7% vs julio $113.294 USD) gracias al suministro de aceros estructurales ASTM A36 y perfiles pesados para zapatas y pedestales.',
@@ -554,17 +551,17 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     : ['abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre'];
 
   const servicios: ServiciosModel = {
-    totalMes: selectedMesNum === 10 ? 307015 : selectedMesNum === 9 ? 69056 : 63106,
+    totalMes: selectedMesNum === 10 ? 354142 : selectedMesNum === 9 ? 69056 : 63106,
     subtitulo: selectedMesNum === 10
-      ? 'Desglose oficial de servicios ($778.363 USD) con Yokogawa ($686K), Henan Front ($40K), traslados y custodia · Octubre 2026'
+      ? 'Desglose oficial de servicios auditados ($354.142 USD · 49 registros SIP): Yokogawa 30% Hito 0 ($206K), mantenimiento de grúas ($25,6K), montaje DC ($21,5K) y baños · Octubre 2026'
       : selectedMesNum === 9
       ? 'Desglose oficial de servicios ($69.056 USD) y horas máquina ($55.578 USD) · Septiembre 2026'
       : 'Desglose oficial de servicios ($63.106 USD) y horas máquina ($89.789 USD) · Agosto 2026',
     columnasMeses: columnasServicios,
     principalesImpulsores: selectedMesNum === 10 ? [
-      { titulo: 'Yokogawa América do Sul ($686.040 USD)', descripcion: 'Contrato estratégico de ingeniería, instrumentación y automatización de la Planta de Pellas Línea 1.' },
-      { titulo: 'Henan Front ($40.000 USD)', descripcion: 'Servicios de asistencia técnica internacional especializada para sistemas mecánicos de calcinación.' },
-      { titulo: 'Logística de Cuadrillas ($38.600 USD)', descripcion: 'Traslado diario ininterrumpido de las cuadrillas de obra activa en campo (254 trabajadores).' }
+      { titulo: 'Yokogawa Colombia S.A.S ($205.974 USD)', descripcion: 'Imputación del 30% Hito 0 en contrato de ingeniería e instrumentación DCS de Pellas Línea 1.' },
+      { titulo: 'Mantenimiento Grúas y Equipos ($25.627 USD)', descripcion: 'Overhaul mayor y reparación hidráulica de bombas y cilindros en grúas telescópicas (Agro Industrial F&H y Proveind).' },
+      { titulo: 'Montaje Eléctrico DC Subestación ($21.500 USD)', descripcion: 'Suministro e instalación de cargador de baterías y panel DC en subestación (Data Power Dear).' }
     ] : [
       { titulo: 'Traslado de Personal ($45.878 USD)', descripcion: 'Representa el 68,0% del gasto total de servicios. Garantiza el despliegue diario de 254 trabajadores.' },
       { titulo: 'Vigilancia Patrimonial ($13.182 USD)', descripcion: 'Resguardo integral 24/7 de campamentos, talleres y frentes de montaje en planta.' },

@@ -136,10 +136,10 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Servicios Directos',
-    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 493732.00],
-    total2026: 4093834.39,
-    variacion: '+76,0%',
-    variacionNum: 76.0,
+    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 569304.00],
+    total2026: 4169406.39,
+    variacion: '+102,9%',
+    variacionNum: 102.9,
     esPositiva: true
   },
   {
