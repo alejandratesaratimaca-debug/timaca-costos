@@ -1183,7 +1183,27 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   const [mesCorrecciones, setMesCorrecciones] = useState<string>('noviembre');
   const [pageCandidateMovimientos, setPageCandidateMovimientos] = useState(1);
   const [searchMovimiento, setSearchMovimiento] = useState('');
-  const [filtroEstadoCorreccion, setFiltroEstadoCorreccion] = useState<'todos' | 'pendientes' | 'corregidos' | 'consumos' | 'compras'>('pendientes');
+  const [filtroEstadoCorreccion, setFiltroEstadoCorreccion] = useState<'todos' | 'pendientes' | 'conformes' | 'corregidos' | 'consumos' | 'compras'>('pendientes');
+  const [filtroSospechosos, setFiltroSospechosos] = useState<boolean>(false);
+  const [imputacionesConformes, setImputacionesConformes] = useState<string[]>(() => {
+    try {
+      const s = typeof window !== 'undefined' ? localStorage.getItem('timaca_imputaciones_conformes') : null;
+      return s ? JSON.parse(s) : [];
+    } catch { return []; }
+  });
+  const [correccionesEstadoCounts, setCorreccionesEstadoCounts] = useState<{
+    todos: number;
+    pendientes: number;
+    conformes: number;
+    corregidos: number;
+    sospechosos: number;
+  }>({
+    todos: 0,
+    pendientes: 0,
+    conformes: 0,
+    corregidos: 0,
+    sospechosos: 0
+  });
   const [filtroTipoProyectoCorreccion, setFiltroTipoProyectoCorreccion] = useState<'todos' | 'externos' | 'internos' | 'opex_otros'>('todos');
   const [correccionesTipoCounts, setCorreccionesTipoCounts] = useState<{ todos: number; externos: number; internos: number; opex_otros: number }>({
     todos: 0,
@@ -2640,6 +2660,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           }
         } catch {}
 
+        // Construir conjunto de documentos/IDs conformes (aprobados sin cambio)
+        const setDocsConformes = new Set<string>();
+        for (const c of imputacionesConformes) {
+          if (c) setDocsConformes.add(String(c).trim().toUpperCase());
+        }
+        try {
+          const localConfStr = typeof window !== 'undefined' ? localStorage.getItem('timaca_imputaciones_conformes') : null;
+          if (localConfStr) {
+            const list = JSON.parse(localConfStr);
+            for (const c of list) {
+              if (c) setDocsConformes.add(String(c).trim().toUpperCase());
+            }
+          }
+        } catch {}
+
         // Mapear cada ítem al formato esperado por la interfaz de correcciones
         const enriched = rawItems.map((item: any) => {
           const docNum = String(item.numero || item.ordenCompra || item.dp || item.sc || '').trim().toUpperCase();
@@ -2650,6 +2685,22 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             (docNum && setDocsReclasificados.has(docNum)) ||
             (docId && setDocsReclasificados.has(docId))
           );
+
+          const isConf = !!(
+            (docNum && setDocsConformes.has(docNum)) ||
+            (docId && setDocsConformes.has(docId)) ||
+            (item.id != null && setDocsConformes.has(String(item.id)))
+          );
+
+          const ctaAux = item.cuenta_aux || item.cuentaAuxiliar || '';
+          const motUpper = String(item.motivo || '').toUpperCase();
+          const ctaUpper = String(ctaAux).toUpperCase().trim();
+          
+          // Detección de sospecha contable (cuentas genéricas, sin asignar, o notas de rezagadas)
+          const esCtaGen = !ctaUpper || ['SIN-ASIGNAR', 'OPERACIONES', 'ADMINISTRATIVO', 'ADMINISTRACION', 'RECURSOS HUMANOS', 'RRHH', 'GENERAL', 'TIMACA', 'FABRICACION', 'FABRICACIÓN'].includes(ctaUpper) || ctaUpper.startsWith('TT-A-C-') || ctaUpper.startsWith('EE-A-C-');
+          const tieneNotaRezagada = !!(detectarDesfaseFechaMotivo(item)?.tieneDesfase || (detectarMesRezagada(item) && detectarMesRezagada(item)?.toLowerCase() !== (item.nombre_mes || 'noviembre').toLowerCase()));
+          const mencionaObraTTE = motUpper.includes('PELLAS') || motUpper.includes('PMH') || motUpper.includes('BRIQUETAS') || motUpper.includes('VISCO') || motUpper.includes('1LPP') || motUpper.includes('TTE-C-');
+          const isSusp = esCtaGen || tieneNotaRezagada || (mencionaObraTTE && !ctaUpper.startsWith('TTE'));
 
           const isCompraOrServ = item.tipo?.toLowerCase().includes('compra') || 
                                  item.tipo?.toLowerCase().includes('servicio') || 
@@ -2678,6 +2729,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             cuentaAuxiliar: item.cuenta_aux || item.cuentaAuxiliar || '',
             cuentaAuxiliarOriginal: item.cuenta_aux_original || item.cuentaAuxiliarOriginal || item.cuenta_aux || item.cuentaAuxiliar || '',
             esReclasificado: isReclass,
+            esConforme: isConf,
+            esSospechoso: isSusp,
             infoReclasificacion: item.infoReclasificacion,
             solicitante: item.solicitante || item.solicitanteOComprador || 'S/D',
             solicitanteOComprador: item.solicitante || item.solicitanteOComprador || 'S/D',
@@ -2688,14 +2741,30 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           };
         });
 
+        // Contadores globales de estados de auditoría sobre el mes actual
+        const stCounts = {
+          todos: enriched.length,
+          pendientes: enriched.filter((m: any) => !m.esReclasificado && !m.esConforme).length,
+          conformes: enriched.filter((m: any) => m.esConforme).length,
+          corregidos: enriched.filter((m: any) => m.esReclasificado).length,
+          sospechosos: enriched.filter((m: any) => !m.esReclasificado && !m.esConforme && m.esSospechoso).length
+        };
+        setCorreccionesEstadoCounts(stCounts);
+
         // Filtrar según filtroEstadoCorreccion
         let filtered = enriched.filter((m: any) => {
-          if (filtroEstadoCorreccion === 'pendientes') return !m.esReclasificado;
+          if (filtroEstadoCorreccion === 'pendientes') return !m.esReclasificado && !m.esConforme;
+          if (filtroEstadoCorreccion === 'conformes') return m.esConforme;
           if (filtroEstadoCorreccion === 'corregidos') return m.esReclasificado;
           if (filtroEstadoCorreccion === 'consumos') return m.tipo === 'consumo';
           if (filtroEstadoCorreccion === 'compras') return m.tipo === 'compra';
           return true; // 'todos'
         });
+
+        // Filtrar por interruptor de Solo Sospechosos / Con Alerta si está activo
+        if (filtroSospechosos) {
+          filtered = filtered.filter((m: any) => m.esSospechoso);
+        }
 
         // Filtrar por término de búsqueda si existe
         if (q.length >= 2) {
@@ -2764,7 +2833,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       isCancelled = true;
       clearTimeout(timer);
     };
-  }, [searchMovimiento, filtroEstadoCorreccion, filtroTipoProyectoCorreccion, mesCorrecciones, reclasificaciones]);
+  }, [searchMovimiento, filtroEstadoCorreccion, filtroTipoProyectoCorreccion, filtroSospechosos, mesCorrecciones, reclasificaciones, imputacionesConformes]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -2860,6 +2929,48 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         : (detectedMes ? `Consumo rezagado asignado a ${detectedMes}` : `Reclasificación a cuenta ${targetCuenta}`)
     );
     setCorreccionMessage(null);
+  };
+
+  const handleMarcarConforme = (m: any) => {
+    if (!m) return;
+    const docKey = String(m.id != null ? m.id : (m.dp || m.sc || m.numero || m.codigo));
+    const toAdd = [docKey, String(m.numero || ''), String(m.dp || ''), String(m.sc || '')].filter(Boolean);
+    const updated = Array.from(new Set([...imputacionesConformes, ...toAdd]));
+    setImputacionesConformes(updated);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('timaca_imputaciones_conformes', JSON.stringify(updated));
+      }
+    } catch {}
+
+    if (selectedMovimiento && (selectedMovimiento.id === m.id || selectedMovimiento.numero === m.numero)) {
+      setSelectedMovimiento(null);
+    }
+
+    setGlobalToast({
+      type: 'success',
+      message: `✓ Movimiento [${m.numero || m.dp || m.codigo}] confirmado como CONFORME en SIP. Retirado de pendientes.`
+    });
+    setTimeout(() => setGlobalToast(null), 4000);
+  };
+
+  const handleDesmarcarConforme = (m: any) => {
+    if (!m) return;
+    const docKey = String(m.id != null ? m.id : (m.dp || m.sc || m.numero || m.codigo));
+    const toRemove = new Set([docKey, String(m.numero || ''), String(m.dp || ''), String(m.sc || '')].filter(Boolean));
+    const updated = imputacionesConformes.filter(x => !toRemove.has(x));
+    setImputacionesConformes(updated);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('timaca_imputaciones_conformes', JSON.stringify(updated));
+      }
+    } catch {}
+
+    setGlobalToast({
+      type: 'info',
+      message: `Movimiento [${m.numero || m.dp || m.codigo}] devuelto a la lista de pendientes.`
+    });
+    setTimeout(() => setGlobalToast(null), 3000);
   };
 
   const handleAplicarCorreccion = async () => {
@@ -6644,8 +6755,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             {/* SUB-VISTA 1: BANDEJA DE PENDIENTES & AUDITORÍA SIP */}
             {subVistaCorrecciones === 'pendientes' && (
               <>
-                {/* 4 Tarjetas de Métricas & Selector de Mes */}
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                {/* 5 Tarjetas de Métricas & Selector de Mes */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                   <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Mes en Auditoría</span>
@@ -6669,7 +6780,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     <div>
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total Movimientos</span>
                       <span className="text-lg font-black text-slate-900 font-mono mt-0.5 block">
-                        {candidateMovimientos.length.toLocaleString()}
+                        {correccionesEstadoCounts.todos.toLocaleString()}
                       </span>
                     </div>
                     <div className="p-2 bg-slate-100 text-slate-700 rounded-lg">
@@ -6679,9 +6790,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                   <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">Pendientes por Corregir</span>
+                      <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">Pendientes de Revisar</span>
                       <span className="text-lg font-black text-amber-950 font-mono mt-0.5 block">
-                        {candidateMovimientos.filter(m => !m.esReclasificado).length.toLocaleString()}
+                        {correccionesEstadoCounts.pendientes.toLocaleString()}
                       </span>
                     </div>
                     <div className="p-2 bg-amber-100 text-amber-800 rounded-lg">
@@ -6689,11 +6800,23 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </div>
                   </div>
 
+                  <div className="bg-teal-50/70 border border-teal-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-teal-800 uppercase tracking-wider block">Conformes en SIP</span>
+                      <span className="text-lg font-black text-teal-950 font-mono mt-0.5 block">
+                        {correccionesEstadoCounts.conformes.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="p-2 bg-teal-100 text-teal-800 rounded-lg">
+                      <Check className="w-4 h-4" />
+                    </div>
+                  </div>
+
                   <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Ya Corregidos</span>
+                      <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Ya Reclasificados</span>
                       <span className="text-lg font-black text-emerald-950 font-mono mt-0.5 block">
-                        {candidateMovimientos.filter(m => m.esReclasificado).length.toLocaleString()}
+                        {correccionesEstadoCounts.corregidos.toLocaleString()}
                       </span>
                     </div>
                     <div className="p-2 bg-emerald-100 text-emerald-800 rounded-lg">
@@ -6737,7 +6860,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >
-                      Todos
+                      Todos ({correccionesEstadoCounts.todos.toLocaleString()})
                     </button>
                     <button
                       onClick={() => setFiltroEstadoCorreccion('pendientes')}
@@ -6747,7 +6870,18 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           : 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
                       }`}
                     >
-                      <span>⏳ Solo Pendientes (Sin corregir)</span>
+                      <span>⏳ Solo Pendientes ({correccionesEstadoCounts.pendientes.toLocaleString()})</span>
+                    </button>
+                    <button
+                      onClick={() => setFiltroEstadoCorreccion('conformes')}
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                        filtroEstadoCorreccion === 'conformes'
+                          ? 'bg-teal-600 text-white shadow-xs'
+                          : 'bg-teal-50 text-teal-900 border border-teal-200 hover:bg-teal-100'
+                      }`}
+                      title="Ver movimientos aprobados y confirmados como correctos en SIP"
+                    >
+                      <span>✓ Conformes en SIP ({correccionesEstadoCounts.conformes.toLocaleString()})</span>
                     </button>
                     <button
                       onClick={() => setFiltroEstadoCorreccion('corregidos')}
@@ -6757,7 +6891,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           : 'bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100'
                       }`}
                     >
-                      <span>✓ Solo Ya Corregidos ({reclasificaciones.length})</span>
+                      <span>✓ Ya Reclasificados ({correccionesEstadoCounts.corregidos.toLocaleString()})</span>
                     </button>
                     <button
                       onClick={() => setFiltroEstadoCorreccion('consumos')}
@@ -6857,6 +6991,25 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         {correccionesTipoCounts.opex_otros.toLocaleString()}
                       </span>
                     </button>
+
+                    {/* INTERRUPTOR INTELIGENTE: SOLO SOSPECHOSOS / CON ALERTA */}
+                    <button
+                      onClick={() => setFiltroSospechosos(prev => !prev)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer sm:ml-auto ${
+                        filtroSospechosos
+                          ? 'bg-rose-600 text-white shadow-xs ring-2 ring-rose-400/50'
+                          : 'bg-white text-rose-900 border border-rose-300 hover:bg-rose-50'
+                      }`}
+                      title="Filtrar únicamente movimientos con sospecha de error contable: cuentas genéricas (OPERACIONES, ADMINISTRATIVO, RECURSOS HUMANOS, SIN-ASIGNAR) o posibles rezagadas"
+                    >
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                      <span>⚠️ Solo Sospechosos</span>
+                      <span className={`px-2 py-0.2 rounded-full text-[10px] font-black ${
+                        filtroSospechosos ? 'bg-rose-950 text-rose-100' : 'bg-rose-100 text-rose-900'
+                      }`}>
+                        {correccionesEstadoCounts.sospechosos.toLocaleString()}
+                      </span>
+                    </button>
                   </div>
 
                   <div className="relative">
@@ -6888,6 +7041,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           className={`p-3.5 transition-colors cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs ${
                             m.esReclasificado 
                               ? 'bg-emerald-50/30 hover:bg-emerald-50/70 border-l-4 border-l-emerald-500' 
+                              : m.esConforme
+                              ? 'bg-teal-50/30 hover:bg-teal-50/70 border-l-4 border-l-teal-500'
                               : 'hover:bg-blue-50/60 border-l-4 border-l-slate-200'
                           }`}
                         >
@@ -6923,11 +7078,24 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                               {m.esReclasificado ? (
                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 shadow-2xs">
-                                  ✓ YA CORREGIDO
+                                  ✓ YA RECLASIFICADO
+                                </span>
+                              ) : m.esConforme ? (
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-800 border border-teal-300 flex items-center gap-1 shadow-2xs">
+                                  <Check className="w-3 h-3 text-teal-700" />
+                                  ✓ CONFORME EN SIP
                                 </span>
                               ) : (
                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1 shadow-2xs">
                                   ⏳ PENDIENTE
+                                </span>
+                              )}
+
+                              {/* Badge de Alerta si es sospechoso */}
+                              {m.esSospechoso && !m.esReclasificado && !m.esConforme && (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300 flex items-center gap-1 shadow-2xs" title="Cuenta genérica, sin asignar o posible desfase de mes">
+                                  <AlertTriangle className="w-3 h-3 text-rose-600" />
+                                  <span>⚠️ Revisar</span>
                                 </span>
                               )}
 
@@ -7007,26 +7175,56 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 self-end md:self-center shrink-0">
-                            <div className="text-right">
+                          <div className="flex items-center gap-2.5 self-end md:self-center shrink-0">
+                            <div className="text-right mr-1">
                               <div className="font-mono font-black text-sm text-slate-900">
                                 {formatUSD(m.totalUSD)}
                               </div>
                               <div className="text-[10px] text-slate-400">Total USD</div>
                             </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSelectMovimiento(m);
-                              }}
-                              className={`px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all shadow-xs flex items-center gap-1 cursor-pointer ${
-                                m.esReclasificado 
-                                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
-                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-                              }`}
-                            >
-                              {m.esReclasificado ? '✓ Modificar' : 'Corregir'}
-                            </button>
+
+                            {m.esConforme ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDesmarcarConforme(m);
+                                }}
+                                className="px-3 py-1.5 rounded-lg font-bold text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all flex items-center gap-1 cursor-pointer"
+                                title="Regresar este movimiento a la lista de pendientes"
+                              >
+                                <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                                <span>↩ Reabrir</span>
+                              </button>
+                            ) : (
+                              <div className="flex items-center gap-1.5">
+                                {!m.esReclasificado && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMarcarConforme(m);
+                                    }}
+                                    className="px-3 py-1.5 rounded-lg font-bold text-xs bg-teal-50 hover:bg-teal-600 hover:text-white text-teal-800 border border-teal-300 transition-all flex items-center gap-1 cursor-pointer shadow-2xs group"
+                                    title="Imputación Conforme: Aprobar que este gasto está bien imputado en SIP y sacarlo de la lista de corrección"
+                                  >
+                                    <Check className="w-3.5 h-3.5 text-teal-600 group-hover:text-white" />
+                                    <span>✓ Conforme (Sacar)</span>
+                                  </button>
+                                )}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSelectMovimiento(m);
+                                  }}
+                                  className={`px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all shadow-xs flex items-center gap-1 cursor-pointer ${
+                                    m.esReclasificado 
+                                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
+                                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                  }`}
+                                >
+                                  {m.esReclasificado ? '✓ Modificar' : 'Corregir'}
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -7314,21 +7512,47 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       </div>
 
                       {/* Botones de acción */}
-                      <div className="pt-2 flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setSelectedMovimiento(null)}
-                          className="px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          onClick={handleAplicarCorreccion}
-                          disabled={isSavingCorreccion || !correccionNuevaCuenta.trim()}
-                          className="flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 disabled:opacity-50 transition-all cursor-pointer"
-                        >
-                          <Check className="w-4 h-4" />
-                          {isSavingCorreccion ? 'Aplicando e Imputando...' : 'Aplicar Corrección e Imputar'}
-                        </button>
+                      <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-emerald-100">
+                        {/* Botón para Sacar de Corrección / Marcar Conforme */}
+                        <div>
+                          {selectedMovimiento?.esConforme ? (
+                            <button
+                              type="button"
+                              onClick={() => handleDesmarcarConforme(selectedMovimiento)}
+                              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all cursor-pointer"
+                            >
+                              <RotateCcw className="w-4 h-4 text-slate-500" />
+                              <span>↩ Reabrir para Corrección</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleMarcarConforme(selectedMovimiento)}
+                              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white shadow-xs transition-all cursor-pointer"
+                              title="Confirmar que la imputación actual del SIP es correcta y retirarlo de la bandeja de corrección"
+                            >
+                              <CheckCircle2 className="w-4 h-4 text-teal-200" />
+                              <span>✓ Imputación Conforme (Sacar de Corrección)</span>
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2 ml-auto">
+                          <button
+                            onClick={() => setSelectedMovimiento(null)}
+                            className="px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            onClick={handleAplicarCorreccion}
+                            disabled={isSavingCorreccion || !correccionNuevaCuenta.trim()}
+                            className="flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 disabled:opacity-50 transition-all cursor-pointer"
+                          >
+                            <Check className="w-4 h-4" />
+                            {isSavingCorreccion ? 'Aplicando e Imputando...' : 'Aplicar Corrección e Imputar'}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
