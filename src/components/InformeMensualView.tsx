@@ -229,10 +229,13 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
       ? Math.round((totalEjecutadoConPresupuesto / totalPresupuestoConsolidado) * 1000) / 10 
       : 0;
 
+    const totalAcumulado = items.reduce((sum, item) => sum + item.acumuladoAnual, 0);
+
     return {
       items,
       totalPresupuestoConsolidado,
       totalEjecutadoConPresupuesto,
+      totalAcumulado,
       pctUsoGlobal
     };
   }, [cuentasAuxiliaresMes]);
@@ -2108,6 +2111,7 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             <th className="py-2 px-3 min-w-[280px]">Proyecto</th>
                             <th className="py-2 px-3 text-right min-w-[105px]">Monto {activeMonth?.mesLabel?.split(' ')[0]} (USD)</th>
                             <th className="py-2 px-3 text-right w-16">% Mes</th>
+                            <th className="py-2 px-3 text-right min-w-[115px]">Acumulado 2026 (USD)</th>
                             <th className="py-2 px-3 text-right min-w-[120px]">Presupuesto (USD)</th>
                             <th className="py-2 px-3 text-center min-w-[115px]">% Uso Presup.</th>
                           </tr>
@@ -2129,6 +2133,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                                 </td>
                                 <td className="py-1.5 px-3 text-right font-mono text-slate-500 font-semibold text-[11px]">
                                   {c.porcentaje}%
+                                </td>
+                                <td className="py-1.5 px-3 text-right font-mono tabular-nums font-bold text-[#002060]">
+                                  ${c.acumuladoAnual.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
                                 </td>
                                 <td className="py-1.5 px-3 text-right font-mono tabular-nums text-slate-700">
                                   {m.tienePresupuesto ? (
@@ -2182,6 +2189,9 @@ export const InformeMensualView: React.FC<InformeMensualViewProps> = ({ onVolver
                             </td>
                             <td className="py-2 px-3 text-right font-mono text-xs text-white">
                               100%
+                            </td>
+                            <td className="py-2 px-3 text-right font-mono tabular-nums text-xs text-amber-300">
+                              ${cuentasPresupuestoMetrics.totalAcumulado.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
                             </td>
                             <td className="py-2 px-3 text-right font-mono tabular-nums text-xs text-amber-300">
                               ${cuentasPresupuestoMetrics.totalPresupuestoConsolidado.toLocaleString('de-DE', { maximumFractionDigits: 0 })}
