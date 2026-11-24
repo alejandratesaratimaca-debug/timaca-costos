@@ -2146,15 +2146,15 @@ export async function exportInformeToPPTX(params: ExportPPTXParams) {
     ];
 
     const servDetail = isOct ? [
-      { name: 'Yokogawa Colombia S.A.S', spec: 'Automatización DCS (30% Hito 0)', monto: 205974, pct: '58,2%' },
-      { name: 'Rafael Méndez (Fundición)', spec: 'Piezas Refractarias Hornos', monto: 35594, pct: '10,0%' },
-      { name: 'Mantenimiento Grúas y Equipos', spec: 'Overhaul y Sellos Hidráulicos (Agro / Proveind)', monto: 25627, pct: '7,2%' },
-      { name: 'Montaje DC y Subestación', spec: 'Cargador Baterías y Panel DC (Data Power)', monto: 21500, pct: '6,1%' },
-      { name: 'A.T.I. TRANSVEN (Logística)', spec: 'Movilización Cuadrillas Campo', monto: 22720, pct: '6,4%' },
-      { name: 'Fletes y Agenciamiento Aduanal', spec: 'Fletes Internacionales y Trámites', monto: 28847, pct: '8,1%' },
-      { name: 'RT Guayana (12 Baños en Campo)', spec: 'Alquiler y Limpieza Módulos', monto: 7680, pct: '2,2%' },
-      { name: 'MAMUSA (Taller Mecanizado)', spec: 'Fabricación y Reparación Hidroneumática', monto: 4900, pct: '1,4%' },
-      { name: 'Cristalería y Soporte Menor', spec: 'Cristalería Cabinas y Refrigerios', monto: 1300, pct: '0,4%' }
+      { name: 'Yokogawa Colombia S.A.S', spec: 'Automatización DCS (30% Hito 0)', monto: 205974, pct: '54,9%' },
+      { name: 'A.T.I. TRANSVEN (Logística - 2 cortes)', spec: 'Movilización Cuadrillas Campo (2 Quincenas)', monto: 43470, pct: '11,6%' },
+      { name: 'Rafael Méndez (Fundición)', spec: 'Piezas Refractarias Hornos', monto: 35594, pct: '9,5%' },
+      { name: 'Fletes y Agenciamiento Aduanal', spec: 'Fletes Internacionales y Trámites', monto: 28847, pct: '7,7%' },
+      { name: 'Mantenimiento Grúas y Equipos', spec: 'Overhaul y Sellos Hidráulicos (Agro / Proveind)', monto: 25627, pct: '6,8%' },
+      { name: 'Montaje DC y Subestación', spec: 'Cargador Baterías y Panel DC (Data Power)', monto: 21500, pct: '5,7%' },
+      { name: 'RT Guayana (12 Baños en Campo)', spec: 'Alquiler y Limpieza Módulos', monto: 7680, pct: '2,0%' },
+      { name: 'MAMUSA (Taller Mecanizado)', spec: 'Fabricación y Reparación Hidroneumática', monto: 4900, pct: '1,3%' },
+      { name: 'Cristalería y Soporte Menor', spec: 'Cristalería Cabinas y Refrigerios', monto: 1300, pct: '0,3%' }
     ] : [
       { name: 'Traslado de Personal', spec: 'Transporte Cuadrillas 254 trab.', monto: 45878, pct: '66,4%' },
       { name: 'Vigilancia Patrimonial', spec: 'Custodia 24/7 Áreas de Obra', monto: 13182, pct: '19,1%' },

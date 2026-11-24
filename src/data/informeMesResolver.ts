@@ -342,7 +342,7 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
         ? 'Salto en Procura de Septiembre' 
         : 'Consolidación de Montaje de Virolas',
       card2Desc: selectedMesNum === 10
-        ? 'Servicios especializados alcanzaron $354.142 USD impulsados por automatización con Yokogawa ($205.974 USD (30% Hito 0)), mantenimiento de grúas ($25.627 USD), montaje cargadores DC ($21.500 USD), fletes, transporte y baños en campo RT Guayana ($7.680 USD).'
+        ? 'Servicios especializados alcanzaron $374.892 USD impulsados por automatización con Yokogawa ($205.974 USD (30% Hito 0)), transporte de personal ($43.470 USD en 2 cortes quincenales), mantenimiento de grúas ($25.627 USD), montaje cargadores DC ($21.500 USD), fletes y baños en campo RT Guayana ($7.680 USD).'
         : selectedMesNum === 9
         ? 'Los Materiales Directos alcanzaron su pico de $173.833 USD en septiembre (+142% vs los $71.709 USD de agosto) para calderería y refractarios en campo.'
         : 'Montaje de virolas en horno rotatorio e izajes mayores con 238 obreros técnicos activos en frentes de planta.',
@@ -551,15 +551,16 @@ export function resolveInformeMesData(selectedMesNum: number): InformeMesResolve
     : ['abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre'];
 
   const servicios: ServiciosModel = {
-    totalMes: selectedMesNum === 10 ? 354142 : selectedMesNum === 9 ? 69056 : 63106,
+    totalMes: selectedMesNum === 10 ? 374892 : selectedMesNum === 9 ? 69056 : 63106,
     subtitulo: selectedMesNum === 10
-      ? 'Desglose oficial de servicios auditados ($354.142 USD · 49 registros SIP): Yokogawa 30% Hito 0 ($206K), mantenimiento de grúas ($25,6K), montaje DC ($21,5K) y baños · Octubre 2026'
+      ? 'Desglose oficial de servicios auditados ($374.892 USD · 50 registros SIP): Yokogawa 30% Hito 0 ($206K), transporte 2 cortes ($43,5K), mantenimiento de grúas ($25,6K), montaje DC ($21,5K) y baños · Octubre 2026'
       : selectedMesNum === 9
       ? 'Desglose oficial de servicios ($69.056 USD) y horas máquina ($55.578 USD) · Septiembre 2026'
       : 'Desglose oficial de servicios ($63.106 USD) y horas máquina ($89.789 USD) · Agosto 2026',
     columnasMeses: columnasServicios,
     principalesImpulsores: selectedMesNum === 10 ? [
       { titulo: 'Yokogawa Colombia S.A.S ($205.974 USD)', descripcion: 'Imputación del 30% Hito 0 en contrato de ingeniería e instrumentación DCS de Pellas Línea 1.' },
+      { titulo: 'A.T.I. TRANSVEN - Transporte de Personal ($43.470 USD)', descripcion: 'Movilización diaria de cuadrillas con 2 cortes quincenales completos (OC23602 $22.720 + OC24541 $20.750).' },
       { titulo: 'Mantenimiento Grúas y Equipos ($25.627 USD)', descripcion: 'Overhaul mayor y reparación hidráulica de bombas y cilindros en grúas telescópicas (Agro Industrial F&H y Proveind).' },
       { titulo: 'Montaje Eléctrico DC Subestación ($21.500 USD)', descripcion: 'Suministro e instalación de cargador de baterías y panel DC en subestación (Data Power Dear).' }
     ] : [

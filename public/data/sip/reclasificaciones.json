@@ -9701,5 +9701,29 @@
     "fecha": "2026-11-23",
     "usuario": "Auditoría SIGMA (Alejandra T)",
     "origen": "Reasignación de Período Devengado (Opción 2)"
+  },
+  {
+    "recordId": "443773",
+    "tipoItem": "Servicios",
+    "documento": "SC27713",
+    "pedido": "OC24541",
+    "sc": "SC27713",
+    "oc": "OC24541",
+    "codigo": "SE1244",
+    "descripcion": "SERVICIO TRASLADO DE PERSONAL",
+    "cantidad": 1,
+    "unidad": "USE",
+    "costoUnitario": 20750,
+    "totalUSD": 20750,
+    "fechaMovimiento": "2026-10-16",
+    "cuentaAnterior": "TTE-C-0706",
+    "proyectoAnterior": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+    "nuevaCuenta": "TTE-C-0706",
+    "nuevoProyecto": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
+    "nuevoMes": "octubre",
+    "mesOrigen": "noviembre",
+    "motivo": "Reclasificación a Octubre (2do corte quincenal de transporte Pellas según fecha de servicio 16/10/2026)",
+    "fecha": "2026-11-24T11:40:00.000Z",
+    "usuario": "atesara"
   }
 ]

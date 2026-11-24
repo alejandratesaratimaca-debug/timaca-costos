@@ -97,12 +97,12 @@ export const TABLA_SERVICIOS_DIRECTOS_PELLAS_OFICIAL: SubcategoriaServicioPellas
     julio: 39995,
     agosto: 44270,
     septiembre: 45878,
-    octubre: 38600,
-    total: 239803,
+    octubre: 43470,
+    total: 244673,
     responsable: 'Logística & Transporte TIMACA',
     solicitante: 'Coordinación de Logística y Cuadrillas Pellas',
-    motivoTipico: 'Traslado diario de cuadrillas operativas en campo (254 trabajadores activos)',
-    descripcionTipica: 'Servicio de traslado de personal diario cuadrillas Línea 1 Pellas (254 trabajadores)',
+    motivoTipico: 'Traslado diario de cuadrillas operativas en campo (254 trabajadores activos en 2 cortes quincenales)',
+    descripcionTipica: 'Servicio de traslado de personal diario cuadrillas Línea 1 Pellas (2 cortes quincenales completos)',
     um: 'mes'
   },
   {
@@ -404,8 +404,8 @@ export const TOTALES_SERVICIOS_DIRECTOS_PELLAS = {
   julio: 56907,
   agosto: 63106,
   septiembre: 69056,
-  octubre: 354142,
-  total: 608465
+  octubre: 374892,
+  total: 629215
 };
 
 export const ANALISIS_SERVICIOS_DIRECTOS_PELLAS = [
