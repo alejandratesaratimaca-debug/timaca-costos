@@ -762,56 +762,15 @@ function AppContent() {
               <ManoObraDiariaView onVolver={() => setActiveTab('dashboard')} />
             )}
 
-            {/* 4. MÓDULO PRESENTACIÓN & PRECIOS (PPT, Catálogo de Precios SIP) */}
+            {/* 4. MÓDULO PRESENTACIÓN EJECUTIVA */}
             {activeTab === 'informe' && (
-              <div className="space-y-4">
-                <div className="bg-white border border-slate-200/90 rounded-2xl p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-1.5 overflow-x-auto">
-                    <button
-                      onClick={() => setInformeSubTab('ppt')}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        informeSubTab === 'ppt'
-                          ? 'bg-blue-600 text-white shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                      }`}
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>Presentación Ejecutiva PPT</span>
-                    </button>
-                    <button
-                      onClick={() => setInformeSubTab('catalogo')}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                        informeSubTab === 'catalogo'
-                          ? 'bg-blue-600 text-white shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                      }`}
-                    >
-                      <DollarSign className="w-3.5 h-3.5" />
-                      <span>Catálogo de Precios SIP</span>
-                    </button>
-                  </div>
-                  <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 font-mono pr-2">
-                    <span>Auditoría & Conciliación</span>
-                  </div>
-                </div>
-
-                {informeSubTab === 'ppt' && (
-                  <InformeMensualView 
-                    onVolver={() => setActiveTab('dashboard')} 
-                    onSwitchToInternos={() => {
-                      handleCambiarEntorno('internos');
-                      setActiveTab('internos-ppt');
-                    }}
-                  />
-                )}
-
-                {informeSubTab === 'catalogo' && (
-                  <CatalogoPreciosView 
-                    currentUser={currentUser} 
-                    onVolver={() => setInformeSubTab('ppt')} 
-                  />
-                )}
-              </div>
+              <InformeMensualView 
+                onVolver={() => setActiveTab('dashboard')} 
+                onSwitchToInternos={() => {
+                  handleCambiarEntorno('internos');
+                  setActiveTab('internos-ppt');
+                }}
+              />
             )}
 
             {/* Fallbacks para compatibilidad con rutas o llamadas heredadas */}

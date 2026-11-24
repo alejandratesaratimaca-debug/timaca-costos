@@ -289,10 +289,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         ? 'bg-blue-600 text-white font-bold shadow-xs'
                         : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                     }`}
-                    title="Presentación Ejecutiva PPT y Catálogo de Precios SIP"
+                    title="Presentación Ejecutiva PPT"
                   >
                     <FileText className="w-3.5 h-3.5 shrink-0 text-amber-300" />
-                    {!isCollapsed && <span>Presentación & Precios</span>}
+                    {!isCollapsed && <span>Presentación</span>}
                   </button>
                 </div>
               )}

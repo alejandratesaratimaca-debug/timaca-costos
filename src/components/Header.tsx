@@ -53,7 +53,7 @@ const TITULOS_VISTAS: Record<string, string> = {
   'mano-obra': 'Mano de Obra Directa (MOD)',
   'categorias': 'Categorías de Gasto',
   'hoja-motivos': 'Hoja de Motivos & Solicitantes',
-  'informe': 'Presentación & Precios',
+  'informe': 'Presentación Ejecutiva',
   'semanas': 'Control Semanal',
   'meses': 'Evolución Mensual',
   'usuarios': 'Usuarios & Permisos',
@@ -69,7 +69,7 @@ const MENU_EXTERNOS = [
   { id: 'unificada-sip', label: 'Master Unificado SIP', icon: Database, title: 'Consolidado Maestro 35 Columnas & SIP en Vivo', badge: 'SIP 2026' },
   { id: 'proyectos', label: 'Proyectos & Categorías', icon: Briefcase, title: 'Cuentas Auxiliares, Matriz de Proyectos y Auditoría por Categoría' },
   { id: 'mano-obra', label: 'Mano de Obra (MOD)', icon: Clock, title: 'Mano de Obra Directa, Devengo 30/31 Días y Carga RRHH' },
-  { id: 'informe', label: 'Presentación & Precios', icon: FileText, title: 'Presentación Ejecutiva PPT y Catálogo de Precios SIP' }
+  { id: 'informe', label: 'Presentación', icon: FileText, title: 'Presentación Ejecutiva PPT' }
 ];
 
 const MENU_INTERNOS = [

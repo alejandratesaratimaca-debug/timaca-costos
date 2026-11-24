@@ -1374,8 +1374,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   // Fetch tab-specific data
   useEffect(() => {
     if (activeTab === 'unificada') fetchMasterData();
-    if (activeTab === 'consumos') fetchConsumos();
-    if (activeTab === 'compras') fetchCompras();
     if (activeTab === 'correcciones') fetchReclasificaciones();
     if (activeTab === 'matriz') fetchMatriz();
     if (activeTab === 'cargas') fetchArchivosCargas();
@@ -4127,29 +4125,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           Matriz de Costos por Proyecto
         </button>
 
-        <button
-          onClick={() => setActiveTab('consumos')}
-          className={`flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 transition-all ${
-            activeTab === 'consumos'
-              ? 'border-blue-600 text-blue-600 bg-blue-50/60 font-bold'
-              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-          }`}
-        >
-          <Boxes className="w-4 h-4" />
-          Monitor SIP: Consumos ({status?.totalConsumos || 3976})
-        </button>
-
-        <button
-          onClick={() => setActiveTab('compras')}
-          className={`flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 transition-all ${
-            activeTab === 'compras'
-              ? 'border-blue-600 text-blue-600 bg-blue-50/60 font-bold'
-              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-          }`}
-        >
-          <ShoppingBag className="w-4 h-4" />
-          Monitor SIP: Compras & Servicios ({status?.totalCompras || 1605})
-        </button>
 
         <button
           onClick={() => setActiveTab('correcciones')}
@@ -4832,31 +4807,65 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   </div>
                 </div>
 
-                {/* Materiales Directos */}
-                <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px]">
+                {/* Materiales Directos (Filtro Rápido 1 Clic) */}
+                <div 
+                  onClick={() => {
+                    setSelectedTipo(prev => prev === 'Materiales Directos' ? 'SOLO_SIP' : 'Materiales Directos');
+                    setPageMaster(1);
+                  }}
+                  className={`bg-white border rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px] cursor-pointer transition-all hover:scale-[1.02] ${
+                    selectedTipo === 'Materiales Directos'
+                      ? 'border-blue-600 ring-2 ring-blue-500/30 bg-blue-50/30 shadow-sm'
+                      : 'border-slate-200 hover:border-blue-300'
+                  }`}
+                  title={selectedTipo === 'Materiales Directos' ? 'Filtro activo. Clic para mostrar ambos (Materiales + Servicios)' : 'Clic para filtrar solo Materiales Directos'}
+                >
                   <div className="text-[10px] font-semibold text-blue-600 uppercase tracking-wider flex items-center justify-between">
-                    <span>Materiales Dir.</span>
+                    <span className="flex items-center gap-1">
+                      Materiales Dir.
+                      {selectedTipo === 'Materiales Directos' && (
+                        <span className="text-[8px] bg-blue-600 text-white px-1 py-0.2 rounded font-bold">FILTRADO</span>
+                      )}
+                    </span>
                     <Boxes className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                   </div>
                   <div className="text-sm font-bold text-slate-900 font-mono mt-1">
                     {formatUSD(masterTotales.mat_total)}
                   </div>
-                  <div className="text-[10px] text-slate-500">
-                    {safePercent(masterTotales.mat_total, masterTotales.gran_total)} del total
+                  <div className="text-[10px] text-slate-500 flex items-center justify-between">
+                    <span>{safePercent(masterTotales.mat_total, masterTotales.gran_total)} del total</span>
+                    <span className="text-[9px] text-blue-500 hover:underline">1-clic ⚡</span>
                   </div>
                 </div>
 
-                {/* Servicios */}
-                <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px]">
+                {/* Servicios (Filtro Rápido 1 Clic) */}
+                <div 
+                  onClick={() => {
+                    setSelectedTipo(prev => prev === 'Servicios' ? 'SOLO_SIP' : 'Servicios');
+                    setPageMaster(1);
+                  }}
+                  className={`bg-white border rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px] cursor-pointer transition-all hover:scale-[1.02] ${
+                    selectedTipo === 'Servicios'
+                      ? 'border-emerald-600 ring-2 ring-emerald-500/30 bg-emerald-50/30 shadow-sm'
+                      : 'border-slate-200 hover:border-emerald-300'
+                  }`}
+                  title={selectedTipo === 'Servicios' ? 'Filtro activo. Clic para mostrar ambos (Materiales + Servicios)' : 'Clic para filtrar solo Servicios'}
+                >
                   <div className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider flex items-center justify-between">
-                    <span>Servicios</span>
+                    <span className="flex items-center gap-1">
+                      Servicios
+                      {selectedTipo === 'Servicios' && (
+                        <span className="text-[8px] bg-emerald-600 text-white px-1 py-0.2 rounded font-bold">FILTRADO</span>
+                      )}
+                    </span>
                     <ShoppingBag className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   </div>
                   <div className="text-sm font-bold text-slate-900 font-mono mt-1">
                     {formatUSD(masterTotales.serv_total)}
                   </div>
-                  <div className="text-[10px] text-slate-500">
-                    {safePercent(masterTotales.serv_total, masterTotales.gran_total)} del total
+                  <div className="text-[10px] text-slate-500 flex items-center justify-between">
+                    <span>{safePercent(masterTotales.serv_total, masterTotales.gran_total)} del total</span>
+                    <span className="text-[9px] text-emerald-500 hover:underline">1-clic ⚡</span>
                   </div>
                 </div>
 
