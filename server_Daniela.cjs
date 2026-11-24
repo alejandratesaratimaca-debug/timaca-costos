@@ -464,18 +464,29 @@ app.post('/api/reclasificar', async (req, res) => {
       console.warn('[Sync to SQLite unificadaService Warning]:', e.message);
     }
 
-    // Sync October to SQLite if in October
+    // Persistir directamente en reclasificaciones.json y unificadas en disco
     try {
-      const { execSync } = require('child_process');
-      const pyScript = path.join(__dirname, 'syncOctubreToMaster.py');
-      execSync(`python "${pyScript}"`);
+      const { syncCorreccionesBatch } = require('./sync_correcciones_lote.cjs');
+      syncCorreccionesBatch([req.body]);
     } catch (e) {
-      // Ignorar warning
+      console.warn('[SyncCorreccionesBatch single notice]:', e.message);
     }
 
     res.json({ success: true, reclasificacion: rec });
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+});
+
+// 6a. Sincronización por Lote de Correcciones
+app.post('/api/reclasificaciones/sync-batch', (req, res) => {
+  try {
+    const { syncCorreccionesBatch } = require('./sync_correcciones_lote.cjs');
+    const items = Array.isArray(req.body) ? req.body : (req.body.correcciones || [req.body]);
+    const result = syncCorreccionesBatch(items);
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
   }
 });
 
