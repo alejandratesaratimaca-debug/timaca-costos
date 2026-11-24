@@ -1834,15 +1834,29 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             }
           }
 
-          // 2. Filtro de Cuenta / Proyecto
+          // 2. Filtro de Cuenta / Proyecto (tolerante a espacios alrededor de guiones como 'TTE - C - 0649')
           if (selectedCta && selectedCta !== 'TODAS') {
-            items = items.filter((r: any) => r.cuenta_aux === selectedCta);
+            const selNorm = selectedCta.toLowerCase().replace(/\s*-\s*/g, '-');
+            const selCompact = selectedCta.toLowerCase().replace(/[\s\-_]/g, '');
+            items = items.filter((r: any) => {
+              const cta = (r.cuenta_aux || '').toLowerCase();
+              return r.cuenta_aux === selectedCta || cta === selNorm || cta.replace(/[\s\-_]/g, '') === selCompact;
+            });
           } else if (inputProyecto.trim()) {
-            const qP = inputProyecto.trim().toLowerCase();
-            items = items.filter((r: any) => 
-              (r.cuenta_aux && r.cuenta_aux.toLowerCase().includes(qP)) ||
-              (r.datos_descripcion && r.datos_descripcion.toLowerCase().includes(qP))
-            );
+            const rawQ = inputProyecto.trim().toLowerCase();
+            const normQ = rawQ.replace(/\s*-\s*/g, '-');
+            const compactQ = rawQ.replace(/[\s\-_]/g, '');
+            items = items.filter((r: any) => {
+              const cta = (r.cuenta_aux || '').toLowerCase();
+              const ctaCompact = cta.replace(/[\s\-_]/g, '');
+              const desc = (r.datos_descripcion || '').toLowerCase();
+              return cta.includes(rawQ) || cta.includes(normQ) || ctaCompact.includes(compactQ) || desc.includes(rawQ);
+            });
+          }
+
+          // 2.5 Filtro de Año Contable
+          if (selectedAno && selectedAno !== 'todos') {
+            items = items.filter((r: any) => String(r.ano) === selectedAno || (r.fecha && r.fecha.startsWith(selectedAno)));
           }
 
           // 3. Filtro de Tipo de Insumo
@@ -2255,15 +2269,29 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         }
       }
 
-      // 2. Filtro de Cuenta / Proyecto
+      // 2. Filtro de Cuenta / Proyecto (tolerante a espacios alrededor de guiones como 'TTE - C - 0649')
       if (selectedCta && selectedCta !== 'TODAS') {
-        rows = rows.filter((r: any) => r.cuenta_aux === selectedCta);
+        const selNorm = selectedCta.toLowerCase().replace(/\s*-\s*/g, '-');
+        const selCompact = selectedCta.toLowerCase().replace(/[\s\-_]/g, '');
+        rows = rows.filter((r: any) => {
+          const cta = (r.cuenta_aux || '').toLowerCase();
+          return r.cuenta_aux === selectedCta || cta === selNorm || cta.replace(/[\s\-_]/g, '') === selCompact;
+        });
       } else if (inputProyecto.trim()) {
-        const qP = inputProyecto.trim().toLowerCase();
-        rows = rows.filter((r: any) => 
-          (r.cuenta_aux && r.cuenta_aux.toLowerCase().includes(qP)) ||
-          (r.datos_descripcion && r.datos_descripcion.toLowerCase().includes(qP))
-        );
+        const rawQ = inputProyecto.trim().toLowerCase();
+        const normQ = rawQ.replace(/\s*-\s*/g, '-');
+        const compactQ = rawQ.replace(/[\s\-_]/g, '');
+        rows = rows.filter((r: any) => {
+          const cta = (r.cuenta_aux || '').toLowerCase();
+          const ctaCompact = cta.replace(/[\s\-_]/g, '');
+          const desc = (r.datos_descripcion || '').toLowerCase();
+          return cta.includes(rawQ) || cta.includes(normQ) || ctaCompact.includes(compactQ) || desc.includes(rawQ);
+        });
+      }
+
+      // 2.5 Filtro de Año Contable
+      if (selectedAno && selectedAno !== 'todos') {
+        rows = rows.filter((r: any) => String(r.ano) === selectedAno || (r.fecha && r.fecha.startsWith(selectedAno)));
       }
 
       // 3. Filtro de Tipo de Insumo
@@ -3681,17 +3709,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     }
   };
 
-  // Live matching projects when typing in the project search box
+  // Live matching projects when typing in the project search box (tolerante a espacios alrededor de guiones como 'TTE - C - 0649')
   const matchingProyectos = useMemo(() => {
     if (!inputProyecto.trim()) return [];
-    const q = inputProyecto.toLowerCase().trim();
-    return catalogFiltros.cuentas
-      .filter(c => 
-        (c.cuenta_aux && c.cuenta_aux.toLowerCase().includes(q)) || 
-        (c.datos_descripcion && c.datos_descripcion.toLowerCase().includes(q))
-      )
-      .slice(0, 10);
-  }, [catalogFiltros.cuentas, inputProyecto]);
+    const rawQ = inputProyecto.toLowerCase().trim();
+    const normQ = rawQ.replace(/\s*-\s*/g, '-');
+    const compactQ = rawQ.replace(/[\s\-_]/g, '');
+    return (catalogFiltros?.cuentas || [])
+      .filter(c => {
+        const cta = (c.cuenta_aux || '').toLowerCase();
+        const ctaCompact = cta.replace(/[\s\-_]/g, '');
+        const desc = (c.datos_descripcion || '').toLowerCase();
+        return cta.includes(rawQ) || cta.includes(normQ) || ctaCompact.includes(compactQ) || desc.includes(rawQ);
+      })
+      .slice(0, 15);
+  }, [catalogFiltros?.cuentas, inputProyecto]);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900 font-sans relative">
@@ -5865,6 +5897,43 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         </tr>
                       );
                     })}
+                    {masterRows.length === 0 && (
+                      <tr>
+                        <td colSpan={23} className="py-12 px-4 text-center bg-white">
+                          <div className="flex flex-col items-center justify-center max-w-lg mx-auto space-y-3">
+                            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                              <Filter className="w-6 h-6 text-slate-400" />
+                            </div>
+                            <div className="text-sm font-bold text-slate-800">
+                              No se encontraron movimientos con los filtros aplicados
+                            </div>
+                            {selectedMes !== 'todos' && (inputProyecto || selectedCta !== 'TODAS') && (
+                              <div className="text-xs text-amber-800 bg-amber-50 border border-amber-300 rounded-xl p-3 text-center shadow-xs w-full">
+                                <p className="font-bold mb-1 flex items-center justify-center gap-1.5 text-amber-900">
+                                  <AlertCircle className="w-4 h-4 text-amber-600" />
+                                  Corte activo: {MESES_LIST.find(x => x.key === selectedMes)?.nombre || selectedMes} {selectedAno !== 'todos' ? selectedAno : '2026'}
+                                </p>
+                                <p className="text-[11px] text-amber-700 mb-2.5">
+                                  El proyecto <strong className="font-mono">{inputProyecto || selectedCta}</strong> no tiene movimientos imputados en este mes en específico, pero tiene registros en otros meses del año.
+                                </p>
+                                <button
+                                  onClick={() => {
+                                    setSelectedMes('todos');
+                                    setPageMaster(1);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
+                                >
+                                  <Calendar className="w-3.5 h-3.5" /> Ver en Todos los Meses (Acumulado 2026)
+                                </button>
+                              </div>
+                            )}
+                            <p className="text-[11px] text-slate-400">
+                              Prueba seleccionando "Todos" en el mes de corte o limpiando los filtros para ver el historial completo.
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
