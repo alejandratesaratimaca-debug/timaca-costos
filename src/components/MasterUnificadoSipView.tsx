@@ -583,6 +583,14 @@ export function detectarDesfaseFechaMotivo(r: any): DesfaseFechaInfo | null {
   return null;
 }
 
+export function isDespachoOrConsumo(m: any): boolean {
+  if (!m) return false;
+  const num = String(m.numero || m.dp || '').toUpperCase();
+  const ped = String(m.pedido || m.pa || '').toUpperCase();
+  const t = String(m.tipo || '').toUpperCase();
+  return t === 'CONSUMO' || t.includes('MATERIAL') || num.startsWith('DP') || ped.startsWith('PA');
+}
+
 export function detectarMesRezagada(r: any): string | null {
   if (!r) return null;
   if (r.infoReclasificacion?.nuevoMes) {
@@ -1634,9 +1642,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         const data = await res.json();
         let sItems = data.items || [];
         const isCandidateRC = (r: any) => {
-          const t = String(r.tipo || '').toUpperCase();
           const p = String(r.pedido || '').toUpperCase();
           const num = String(r.numero || '').toUpperCase();
+          if (p.startsWith('PA') || num.startsWith('DP')) return false;
+          const t = String(r.tipo || '').toUpperCase();
           const alm = String(r.almacen || '').toUpperCase();
           return t.includes('SERV') || t.includes('COMP') || p.startsWith('OC') || num.startsWith('SC') || alm === 'ALMSE';
         };
@@ -2095,9 +2104,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           let con_rc_total = 0;
 
           const isCandidateRC = (r: any) => {
-            const t = String(r.tipo || '').toUpperCase();
             const p = String(r.pedido || '').toUpperCase();
             const num = String(r.numero || '').toUpperCase();
+            if (p.startsWith('PA') || num.startsWith('DP')) return false;
+            const t = String(r.tipo || '').toUpperCase();
             const alm = String(r.almacen || '').toUpperCase();
             return t.includes('SERV') || t.includes('COMP') || p.startsWith('OC') || num.startsWith('SC') || alm === 'ALMSE';
           };
@@ -2507,9 +2517,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       }
 
       const isCandidateRC = (r: any) => {
-        const t = String(r.tipo || '').toUpperCase();
         const p = String(r.pedido || '').toUpperCase();
         const num = String(r.numero || '').toUpperCase();
+        if (p.startsWith('PA') || num.startsWith('DP')) return false;
+        const t = String(r.tipo || '').toUpperCase();
         const alm = String(r.almacen || '').toUpperCase();
         return t.includes('SERV') || t.includes('COMP') || p.startsWith('OC') || num.startsWith('SC') || alm === 'ALMSE';
       };
@@ -2985,18 +2996,24 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   const handleOpenCorreccionFromItem = (item: any, source: 'unificada' | 'consumos' | 'compras') => {
     const rawId = item.id != null ? item.id : `${source}-${item.numero || ''}-${item.codigo || ''}`;
+    const num = String(item.numero || item.dp || '').toUpperCase();
+    const ped = String(item.pedido || item.pa || '').toUpperCase();
+    const isDespacho = source === 'consumos' || item.tipo === 'Materiales Directos' || num.startsWith('DP') || ped.startsWith('PA');
     const mov = {
       id: rawId,
       recordId: item.id != null ? item.id : undefined,
       source,
-      tipo: item.tipo || (source === 'consumos' ? 'consumo' : source === 'compras' ? 'compra' : (item.tipo || 'consumo')),
+      tipo: isDespacho ? 'consumo' : (item.tipo || (source === 'compras' ? 'compra' : 'consumo')),
       fecha: item.fecha || '',
       numero: item.numero || item.ordenCompra || item.dp || item.sc || '',
       pedido: item.pedido || item.pa || '',
-      dp: item.numero || item.dp || '',
-      pa: item.pedido || item.pa || '',
-      sc: item.sc || (item.tipo === 'servicio' ? item.numero : '') || '',
-      oc: item.oc || item.ordenCompra || '',
+      dp: item.dp || (isDespacho ? (item.numero || item.dp || '') : ''),
+      pa: item.pa || (isDespacho ? (item.pedido || item.pa || '') : ''),
+      sc: item.sc || (!isDespacho ? (item.numero || item.sc || '') : ''),
+      oc: item.oc || (!isDespacho ? (item.ordenCompra || item.oc || item.pedido || '') : ''),
+      almacen: item.almacen || '',
+      recepcion: item.recepcion || item.rc || '',
+      rc: item.rc || item.recepcion || '',
       cuentaAuxiliar: resolverCodigoCuentaAuxiliar(item.cuenta_aux || item.cuentaAuxiliar || '', item.motivo, item.descripcion, item.solicitante),
       cuentaAuxiliarOriginal: item.cuenta_aux_original || item.cuentaAuxiliarOriginal || item.cuenta_aux || item.cuentaAuxiliar || '',
       codigo: item.codigo || '',
@@ -3980,9 +3997,24 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                     {/* 3. Documento Oficial SIP */}
                     <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                      <span className="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">Documento Oficial SIP:</span>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-[10px] uppercase font-bold text-slate-500">Documento Oficial SIP:</span>
+                        {isDespachoOrConsumo(selectedMovimiento) ? (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300">
+                            📦 Despacho de Stock (Almacén)
+                          </span>
+                        ) : selectedMovimiento.recepcion || (selectedMovimiento as any).rc ? (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+                            ✓ Recepción: {selectedMovimiento.recepcion || (selectedMovimiento as any).rc}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300">
+                            ⏳ Compra Procura (Pendiente RC)
+                          </span>
+                        )}
+                      </div>
                       <div className="font-mono text-xs font-semibold text-slate-800">
-                        {selectedMovimiento.tipo === 'consumo' 
+                        {isDespachoOrConsumo(selectedMovimiento)
                           ? `Despacho (DP): ${selectedMovimiento.dp || selectedMovimiento.numero || '-'}  •  Pedido (PA): ${selectedMovimiento.pa || selectedMovimiento.pedido || '-'}`
                           : `Solicitud / Orden: ${selectedMovimiento.sc || selectedMovimiento.numero || '-'}  •  OC: ${selectedMovimiento.oc || '-'}`}
                         <span className="text-slate-400 font-normal ml-2">({formatFechaDDMMAAAA(selectedMovimiento.fecha)})</span>
@@ -4600,9 +4632,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       }}
                       className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-semibold focus:bg-white focus:outline-none focus:border-blue-600 shadow-2xs"
                     >
-                      <option value="SOLO_SIP">✨ SOLO DATOS SIP (Materiales + Servicios)</option>
+                      <option value="SOLO_SIP">✨ SOLO DATOS SIP (Materiales + Servicios + Compras)</option>
                       <option value="TODOS">TODOS LOS INSUMOS (Incluye Cargas Manuales)</option>
                       <option value="Materiales Directos">Solo Materiales Directos (Almacén SIP)</option>
+                      <option value="Compras">Solo Compras de Materiales (Procura)</option>
                       <option value="Servicios">Solo Servicios (Compras SIP)</option>
                       <option value="Mano de Obra Directa ECO">Solo Horas ECO (Taller)</option>
                       <option value="Mano de Obra Directa">Solo Mano de Obra (Nómina)</option>
@@ -7322,7 +7355,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         ¿Dónde estaba imputada anteriormente? (SIP)
                       </span>
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-rose-100 text-rose-800">
-                        {selectedMovimiento.tipo === 'consumo' ? 'Consumo de Almacén' : 'Compra / Servicio'}
+                        {isDespachoOrConsumo(selectedMovimiento) ? 'Consumo de Almacén (Stock)' : 'Compra / Servicio'}
                       </span>
                     </div>
 
@@ -7367,9 +7400,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
                         <span className="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">Documento Oficial SIP:</span>
                         <div className="font-mono text-xs font-semibold text-slate-800">
-                          {selectedMovimiento.tipo === 'consumo' 
-                            ? `Despacho (DP): ${selectedMovimiento.dp || '-'}  •  Pedido (PA): ${selectedMovimiento.pa || '-'}`
-                            : `Solicitud (SC): ${selectedMovimiento.sc || '-'}  •  Orden (OC): ${selectedMovimiento.oc || '-'}`}
+                          {isDespachoOrConsumo(selectedMovimiento) 
+                            ? `Despacho (DP): ${selectedMovimiento.dp || selectedMovimiento.numero || '-'}  •  Pedido (PA): ${selectedMovimiento.pa || selectedMovimiento.pedido || '-'}`
+                            : `Solicitud (SC): ${selectedMovimiento.sc || selectedMovimiento.numero || '-'}  •  Orden (OC): ${selectedMovimiento.oc || selectedMovimiento.pedido || '-'}`}
                           <span className="text-slate-400 font-normal ml-2">(Fecha: {formatFechaDDMMAAAA(selectedMovimiento.fecha)})</span>
                         </div>
                       </div>
