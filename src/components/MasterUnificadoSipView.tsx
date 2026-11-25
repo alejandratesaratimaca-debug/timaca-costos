@@ -2412,7 +2412,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'RC / Recepcion': (() => {
             const rcVal = r.recepcion || r.rc;
             if (rcVal && rcVal !== '-') return rcVal;
-            if (r.tipo === 'Materiales Directos') return 'Conforme Almacén';
+            if (r.tipo === 'Materiales Directos') return 'Stock';
             const t = String(r.tipo || '').toUpperCase();
             if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) return '-';
             if (isCandidateRC(r)) return 'Sin RC (Pendiente)';
@@ -5656,8 +5656,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                               }
                               if (r.tipo === 'Materiales Directos') {
                                 return (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600" title="Despacho conforme de inventario interno de almacén">
-                                    Conforme Almacén
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 font-semibold" title="Despacho directo de inventario / stock de almacén">
+                                    Stock
                                   </span>
                                 );
                               }
