@@ -225,8 +225,89 @@ export const COMPRADORES_PROCURA_SET = new Set([
   'PROCESO EN STANDBY'
 ]);
 
+const PLANIFICADORES_SET = new Set([
+  'JESUS VALDEZ',
+  'JESUS DANIEL VALDEZ',
+  'VALDEZ BELLO JESUS DANIEL',
+  'JESUS DANIEL VALDEZ BELLO',
+  'ASTRID SILVA',
+  'ASTRID THEYSABETH SILVA LANZ',
+  'SILVA LANZ ASTRID THEYSABETH',
+  'MANUEL CHAVEZ',
+  'HERNAN GARCIA',
+  'WALDO PUGA',
+  'JOSE RODRIGUEZ',
+  'JOSE MANUEL VIDES'
+]);
+
+const ALMACEN_STAFF_SET = new Set([
+  'LEGLANIS BRITO',
+  'JESSICA NAVARRO',
+  'JOSE AMUNDARAIN',
+  'ALBERTO VIDAL',
+  'JOSE MIGUEL VARGAS',
+  'JESUS ZURITA',
+  'JESUS MANUEL ZURITA'
+]);
+
+const INGENIERIA_SET = new Set([
+  'WUILLIANS GUZMAN',
+  'JOSE PALMA',
+  'ALEJANDRO RODRIGUEZ',
+  'EDUARDO SALAZAR',
+  'ANTONIETA PEREIRA'
+]);
+
 export function getClasificacionPersonal(r: MasterRow) {
-  // 1. Solicitante Real: SOLO si aparece en motivo o retiró en almacén; NUNCA un comprador de procura
+  const cod = String(r.codigo || '').toUpperCase();
+  const desc = String(r.descripcion || '').toUpperCase();
+  const alm = String(r.almacen || '').toUpperCase();
+  const cat = String(r.categoria || '').toUpperCase();
+  const ped = String(r.pedido || '').toUpperCase();
+  const num = String(r.numero || '').toUpperCase();
+  const isPA = ped.startsWith('PA') || num.startsWith('DP');
+  const esServicio = cod.startsWith('SE') || (r.tipo || '').toUpperCase().includes('SERV') || cat.includes('SERV') || alm === 'ALMSE' || desc.includes('FLETE') || desc.includes('TRANSPORTE') || desc.includes('ALQUILER');
+  const isStock = r.tipo === 'Materiales Directos' && !esServicio;
+
+  // 1. Quién Generó el Documento en SIP (Creador de la PA o Solicitud)
+  let generadorNombre = (r.creadaPor || (isStock ? r.solicitante : '') || '').trim();
+  let generadorTag = 'Usuario SIP';
+  const genClean = generadorNombre.toUpperCase();
+
+  const isGenPlanif = PLANIFICADORES_SET.has(genClean) || 
+                      genClean.includes('JESUS VALDEZ') || 
+                      genClean.includes('ASTRID SILVA') || 
+                      genClean.includes('MANUEL CHAVEZ') || 
+                      genClean.includes('HERNAN GARCIA') || 
+                      genClean.includes('WALDO PUGA');
+
+  const isGenAlmacen = ALMACEN_STAFF_SET.has(genClean) || 
+                       genClean.includes('LEGLANIS BRITO') || 
+                       genClean.includes('JESSICA NAVARRO') || 
+                       genClean.includes('JOSE AMUNDARAIN') || 
+                       genClean.includes('ALBERTO VIDAL') || 
+                       genClean.includes('ZURITA');
+
+  const isGenIng = INGENIERIA_SET.has(genClean) || 
+                   genClean.includes('WUILLIANS') || 
+                   genClean.includes('GUZMAN') || 
+                   genClean.includes('PALMA');
+
+  if (isGenPlanif) {
+    generadorTag = isPA ? 'Planificador (Hizo la PA)' : 'Planificación Operaciones';
+  } else if (isGenAlmacen) {
+    generadorTag = isPA ? 'Gestión de Almacén (PA)' : 'Gestión Almacén';
+  } else if (isGenIng) {
+    generadorTag = 'Ingeniería / Proyectos';
+  } else if (COMPRADORES_PROCURA_SET.has(genClean)) {
+    generadorTag = 'Analista de Procura';
+  } else if (isPA) {
+    generadorTag = 'Elaboró la PA (SIP)';
+  } else if (isStock) {
+    generadorTag = 'Personal de Planta';
+  }
+
+  // 2. Solicitante Real (Quién Requiere el Insumo)
   let solicitanteNombre: string | null = null;
   let solicitanteTag: string | null = null;
 
@@ -236,7 +317,7 @@ export function getClasificacionPersonal(r: MasterRow) {
     solicitanteNombre = solRealRaw;
     solicitanteTag = 'Detectado en Motivo';
   } else if (r.motivo) {
-    const m = r.motivo.match(/(?:SOLICITA(?:NTE|DO\s+POR)?|SOLICITA)\s*[:\-]\s*([A-ZÁÉÍÓÚÑa-záéíóúñ\s\.]+)/i);
+    const m = r.motivo.match(/(?:SOLICITA(?:NTE|DO\s+POR)?|SOLICITA|ING\.?|SR\.?|PARA)\s*[:\-]\s*([A-ZÁÉÍÓÚÑa-záéíóúñ\s\.]+)/i);
     if (m) {
       let extracted = m[1].split('–')[0].split('-')[0].split(',')[0].split('(')[0].trim();
       extracted = extracted.replace(/^(?:ING\.?|SR\.?|SRA\.?)\s+/i, '').trim();
@@ -248,37 +329,34 @@ export function getClasificacionPersonal(r: MasterRow) {
     }
   }
 
-  // Si no se encontró en motivo, solo para vales de almacén físicos usar quien retiró en almacén si no es comprador
-  if (!solicitanteNombre && r.tipo === 'Materiales Directos') {
+  // Si no se detectó una persona específica en el motivo:
+  if (!solicitanteNombre) {
     const rawSol = (r.solicitante || '').trim();
     const rawClean = rawSol.toUpperCase();
     if (rawClean && rawClean !== 'S/D' && !COMPRADORES_PROCURA_SET.has(rawClean)) {
       solicitanteNombre = rawSol;
-      solicitanteTag = 'Retiró en Almacén';
+      const isSolPlanif = PLANIFICADORES_SET.has(rawClean) || 
+                          rawClean.includes('JESUS VALDEZ') || 
+                          rawClean.includes('ASTRID SILVA') || 
+                          rawClean.includes('MANUEL CHAVEZ') || 
+                          rawClean.includes('HERNAN GARCIA');
+      if (isSolPlanif) {
+        solicitanteTag = isPA ? 'Planificador de Proyecto' : 'Planificación Operaciones';
+      } else if (isPA) {
+        solicitanteTag = 'Solicitante de Obra';
+      } else {
+        solicitanteTag = 'Solicitante';
+      }
+    } else if (isStock && r.motivo) {
+      const motUpper = r.motivo.toUpperCase();
+      if (motUpper.includes('FABRICACION') || motUpper.includes('FABRICACIÓN')) {
+        solicitanteNombre = 'Taller Fabricación';
+        solicitanteTag = 'Área Operativa';
+      } else if (motUpper.includes('MONTAJE')) {
+        solicitanteNombre = 'Equipo Montaje';
+        solicitanteTag = 'Área Operativa';
+      }
     }
-  }
-
-  // 2. Generado Por (SIP)
-  let generadorNombre = (r.creadaPor || (r.tipo === 'Materiales Directos' ? r.solicitante : '') || '').trim();
-  let generadorTag = 'Usuario SIP';
-  const genClean = generadorNombre.toUpperCase();
-  const cod = String(r.codigo || '').toUpperCase();
-  const desc = String(r.descripcion || '').toUpperCase();
-  const alm = String(r.almacen || '').toUpperCase();
-  const cat = String(r.categoria || '').toUpperCase();
-  const esServicio = cod.startsWith('SE') || (r.tipo || '').toUpperCase().includes('SERV') || cat.includes('SERV') || alm === 'ALMSE' || desc.includes('FLETE') || desc.includes('TRANSPORTE') || desc.includes('ALQUILER');
-  const isStock = r.tipo === 'Materiales Directos' && !esServicio;
-
-  if (genClean.includes('ASTRID SILVA') || genClean.includes('MANUEL CHAVEZ') || genClean.includes('HERNAN GARCIA')) {
-    generadorTag = 'Planificación Operaciones';
-  } else if (genClean.includes('LEGLANIS BRITO') || genClean.includes('JESSICA NAVARRO') || genClean.includes('JOSE AMUNDARAIN')) {
-    generadorTag = 'Gestión de Almacén';
-  } else if (genClean.includes('WUILLIANS') || genClean.includes('GUZMAN')) {
-    generadorTag = 'Ingeniería / Mantto';
-  } else if (COMPRADORES_PROCURA_SET.has(genClean)) {
-    generadorTag = 'Analista de Procura';
-  } else if (isStock) {
-    generadorTag = 'Despachador Almacén';
   }
 
   // 3. Comprador (Procura)
@@ -1536,6 +1614,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
         limit: limitMaster.toString(),
         _t: Date.now().toString()
       });
+      if (filterEstadoRC !== 'todos') params.set('estado_rc', filterEstadoRC);
       if (fechaDesde) params.set('fecha_desde', fechaDesde);
       if (fechaHasta) params.set('fecha_hasta', fechaHasta);
       let res = null;
@@ -1553,8 +1632,31 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       }
       if (res && res.ok) {
         const data = await res.json();
-        setMasterRows(data.items || []);
-        if (data.totales) setMasterTotales(data.totales);
+        let sItems = data.items || [];
+        const isCandidateRC = (r: any) => {
+          const t = String(r.tipo || '').toUpperCase();
+          const p = String(r.pedido || '').toUpperCase();
+          const num = String(r.numero || '').toUpperCase();
+          const alm = String(r.almacen || '').toUpperCase();
+          return t.includes('SERV') || t.includes('COMP') || p.startsWith('OC') || num.startsWith('SC') || alm === 'ALMSE';
+        };
+        if (filterEstadoRC === 'sin_rc') {
+          sItems = sItems.filter((r: any) => (!r.recepcion && !r.rc) && isCandidateRC(r));
+        } else if (filterEstadoRC === 'con_rc') {
+          sItems = sItems.filter((r: any) => Boolean(r.recepcion || r.rc));
+        }
+        setMasterRows(sItems);
+        if (data.totales) {
+          if (filterEstadoRC === 'sin_rc') {
+            setMasterTotales({
+              ...data.totales,
+              total_count: data.totales.sin_rc_count || sItems.length,
+              gran_total: data.totales.sin_rc_total || data.totales.gran_total
+            });
+          } else {
+            setMasterTotales(data.totales);
+          }
+        }
         if (data.top_cuentas) setTopCuentas(data.top_cuentas);
       } else {
         const isVerAjustesHistoricos = filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas';
