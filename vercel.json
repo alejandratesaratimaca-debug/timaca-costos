@@ -125,11 +125,11 @@
   ],
   "rewrites": [
     {
-      "source": "/api/sip-proxy/:path*",
-      "destination": "/api/sip-proxy?path=:path*"
+      "source": "/api/sip-proxy/(.*)",
+      "destination": "/api/sip-proxy"
     },
     {
-      "source": "/api/:match*",
+      "source": "/api/(.*)",
       "destination": "/api/[...route]"
     },
     {
