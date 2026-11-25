@@ -583,11 +583,71 @@ export function detectarDesfaseFechaMotivo(r: any): DesfaseFechaInfo | null {
   return null;
 }
 
+export function getDocumentoOficialInfo(m: any) {
+  if (!m) {
+    return {
+      tipoDoc: 'otro',
+      badgeText: 'Documento SIP',
+      badgeClass: 'bg-slate-100 text-slate-700 border border-slate-300',
+      docLine: 'Documento: -'
+    };
+  }
+
+  const num = String(m.numero || m.dp || m.sc || '').toUpperCase().trim();
+  const ped = String(m.pedido || m.pa || m.oc || '').toUpperCase().trim();
+  const dp = String(m.dp || (num.startsWith('DP') ? num : '')).toUpperCase().trim();
+  const pa = String(m.pa || (ped.startsWith('PA') ? ped : '')).toUpperCase().trim();
+  const sc = String(m.sc || (num.startsWith('SC') ? num : '')).toUpperCase().trim();
+  const oc = String(m.oc || (ped.startsWith('OC') ? ped : (num.startsWith('OC') ? num : ''))).toUpperCase().trim();
+  const hasRC = Boolean(m.recepcion || m.rc);
+  const rcVal = m.recepcion || m.rc || '';
+
+  // 1. Devolución de Orden de Compra (DOC)
+  if (num.startsWith('DOC') || dp.startsWith('DOC')) {
+    const docNumero = num.startsWith('DOC') ? num : dp;
+    const docOc = ped.startsWith('OC') ? ped : (oc || '-');
+    return {
+      tipoDoc: 'devolucion',
+      badgeText: '↩️ Devolución de Compra (DOC)',
+      badgeClass: 'bg-purple-100 text-purple-900 border border-purple-300',
+      docLine: `Devolución (DOC): ${docNumero}  •  Orden (OC): ${docOc}`
+    };
+  }
+
+  // 2. Despacho Interno de Almacén (DP / PA / Stock)
+  if (num.startsWith('DP') || dp.startsWith('DP') || ped.startsWith('PA') || pa.startsWith('PA') || m.tipo === 'consumo' || m.tipo === 'Materiales Directos') {
+    return {
+      tipoDoc: 'despacho',
+      badgeText: '📦 Despacho de Stock (Almacén)',
+      badgeClass: 'bg-slate-100 text-slate-700 border border-slate-300',
+      docLine: `Despacho (DP): ${dp || num || '-'}  •  Pedido (PA): ${pa || ped || '-'}`
+    };
+  }
+
+  // 3. Compra o Servicio de Procura (SC / OC)
+  if (hasRC) {
+    return {
+      tipoDoc: 'compra_rc',
+      badgeText: `✓ Recepción: ${rcVal}`,
+      badgeClass: 'bg-emerald-50 text-emerald-800 border border-emerald-300',
+      docLine: `Solicitud / Orden: ${sc || num || '-'}  •  OC: ${oc || ped || '-'}`
+    };
+  }
+
+  return {
+    tipoDoc: 'compra_sin_rc',
+    badgeText: '⏳ Compra Procura (Pendiente RC)',
+    badgeClass: 'bg-amber-50 text-amber-800 border border-amber-300',
+    docLine: `Solicitud / Orden: ${sc || num || '-'}  •  OC: ${oc || ped || '-'}`
+  };
+}
+
 export function isDespachoOrConsumo(m: any): boolean {
   if (!m) return false;
   const num = String(m.numero || m.dp || '').toUpperCase();
   const ped = String(m.pedido || m.pa || '').toUpperCase();
   const t = String(m.tipo || '').toUpperCase();
+  if (num.startsWith('DOC')) return false;
   return t === 'CONSUMO' || t.includes('MATERIAL') || num.startsWith('DP') || ped.startsWith('PA');
 }
 
@@ -3996,30 +4056,23 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </div>
 
                     {/* 3. Documento Oficial SIP */}
-                    <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-[10px] uppercase font-bold text-slate-500">Documento Oficial SIP:</span>
-                        {isDespachoOrConsumo(selectedMovimiento) ? (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-300">
-                            📦 Despacho de Stock (Almacén)
-                          </span>
-                        ) : selectedMovimiento.recepcion || (selectedMovimiento as any).rc ? (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
-                            ✓ Recepción: {selectedMovimiento.recepcion || (selectedMovimiento as any).rc}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300">
-                            ⏳ Compra Procura (Pendiente RC)
-                          </span>
-                        )}
-                      </div>
-                      <div className="font-mono text-xs font-semibold text-slate-800">
-                        {isDespachoOrConsumo(selectedMovimiento)
-                          ? `Despacho (DP): ${selectedMovimiento.dp || selectedMovimiento.numero || '-'}  •  Pedido (PA): ${selectedMovimiento.pa || selectedMovimiento.pedido || '-'}`
-                          : `Solicitud / Orden: ${selectedMovimiento.sc || selectedMovimiento.numero || '-'}  •  OC: ${selectedMovimiento.oc || '-'}`}
-                        <span className="text-slate-400 font-normal ml-2">({formatFechaDDMMAAAA(selectedMovimiento.fecha)})</span>
-                      </div>
-                    </div>
+                    {(() => {
+                      const docInfo = getDocumentoOficialInfo(selectedMovimiento);
+                      return (
+                        <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <span className="text-[10px] uppercase font-bold text-slate-500">Documento Oficial SIP:</span>
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${docInfo.badgeClass}`}>
+                              {docInfo.badgeText}
+                            </span>
+                          </div>
+                          <div className="font-mono text-xs font-semibold text-slate-800">
+                            {docInfo.docLine}
+                            <span className="text-slate-400 font-normal ml-2">({formatFechaDDMMAAAA(selectedMovimiento.fecha)})</span>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* 4. Código y Descripción Imputada */}
                     <div className="p-2.5 bg-white rounded-lg border border-rose-200 shadow-2xs space-y-1">
@@ -7354,9 +7407,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         <AlertCircle className="w-3.5 h-3.5" />
                         ¿Dónde estaba imputada anteriormente? (SIP)
                       </span>
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-rose-100 text-rose-800">
-                        {isDespachoOrConsumo(selectedMovimiento) ? 'Consumo de Almacén (Stock)' : 'Compra / Servicio'}
-                      </span>
+                      {(() => {
+                        const docInfo = getDocumentoOficialInfo(selectedMovimiento);
+                        return (
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
+                            docInfo.tipoDoc === 'devolucion' ? 'bg-purple-100 text-purple-900' :
+                            docInfo.tipoDoc === 'despacho' ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {docInfo.badgeText}
+                          </span>
+                        );
+                      })()}
                     </div>
 
                     <div className="space-y-2.5 text-xs">
@@ -7397,15 +7458,18 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       </div>
 
                       {/* 3. Documento Oficial SIP */}
-                      <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                        <span className="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">Documento Oficial SIP:</span>
-                        <div className="font-mono text-xs font-semibold text-slate-800">
-                          {isDespachoOrConsumo(selectedMovimiento) 
-                            ? `Despacho (DP): ${selectedMovimiento.dp || selectedMovimiento.numero || '-'}  •  Pedido (PA): ${selectedMovimiento.pa || selectedMovimiento.pedido || '-'}`
-                            : `Solicitud (SC): ${selectedMovimiento.sc || selectedMovimiento.numero || '-'}  •  Orden (OC): ${selectedMovimiento.oc || selectedMovimiento.pedido || '-'}`}
-                          <span className="text-slate-400 font-normal ml-2">(Fecha: {formatFechaDDMMAAAA(selectedMovimiento.fecha)})</span>
-                        </div>
-                      </div>
+                      {(() => {
+                        const docInfo = getDocumentoOficialInfo(selectedMovimiento);
+                        return (
+                          <div className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-2xs">
+                            <span className="text-[10px] uppercase font-bold text-slate-500 block mb-0.5">Documento Oficial SIP:</span>
+                            <div className="font-mono text-xs font-semibold text-slate-800">
+                              {docInfo.docLine}
+                              <span className="text-slate-400 font-normal ml-2">(Fecha: {formatFechaDDMMAAAA(selectedMovimiento.fecha)})</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                       {/* 4. Código y Descripción Imputada */}
                       <div className="p-2.5 bg-white rounded-lg border border-rose-200 shadow-2xs space-y-1">
