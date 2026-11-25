@@ -2414,7 +2414,9 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             if (rcVal && rcVal !== '-') return rcVal;
             if (r.tipo === 'Materiales Directos') return 'Stock';
             const t = String(r.tipo || '').toUpperCase();
+            const cod = String(r.codigo || '').toUpperCase();
             if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) return '-';
+            if (cod.startsWith('SE') || t.includes('SERV')) return 'No Ejecutado';
             if (isCandidateRC(r)) return 'Sin RC (Pendiente)';
             return '-';
           })(),
@@ -5662,11 +5664,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                 );
                               }
                               const t = String(r.tipo || '').toUpperCase();
+                              const cod = String(r.codigo || '').toUpperCase();
                               if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) {
                                 return <span className="text-slate-400 text-[10px]">-</span>;
                               }
+                              if (cod.startsWith('SE') || t.includes('SERV')) {
+                                return (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300" title="Servicio contratado sin finiquito ni registro de ejecución en SIP">
+                                    <Clock className="w-3 h-3 text-amber-600" /> No Ejecutado
+                                  </span>
+                                );
+                              }
                               return (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300" title="Orden de Procura pendiente por boleta de recepción física o finiquito en SIP">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300" title="Material de procura pendiente por boleta de recepción física en almacén">
                                   <Clock className="w-3 h-3 text-amber-600" /> Sin RC (Pendiente)
                                 </span>
                               );
