@@ -2,8 +2,8 @@
   "totales": {
     "total_count": 10618,
     "gran_total": 1921203.29,
-    "mat_total": 697865.47,
-    "serv_total": 637126.13,
+    "mat_total": 675380.32,
+    "serv_total": 659611.28,
     "mdo_total": 472728.22,
     "hm_total": 87975.46,
     "ind_total": 25508,
@@ -1551,7 +1551,7 @@
     },
     {
       "id": 53807,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-07",
       "numero": "SC24854",
@@ -3010,7 +3010,7 @@
     },
     {
       "id": 53808,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-07",
       "numero": "SC24866",
@@ -3145,7 +3145,7 @@
     },
     {
       "id": 53904,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-05",
       "numero": "SC24675",
@@ -6310,7 +6310,7 @@
     },
     {
       "id": 53796,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-17",
       "numero": "SC24802",
@@ -6355,7 +6355,7 @@
     },
     {
       "id": 53942,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-14",
       "numero": "SC24674",
@@ -10671,7 +10671,7 @@
     },
     {
       "id": 53945,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-20",
       "numero": "SC25339",
@@ -10716,7 +10716,7 @@
     },
     {
       "id": 53909,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-05",
       "numero": "SC24715",
@@ -12615,7 +12615,7 @@
     },
     {
       "id": 53816,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-07",
       "numero": "SC24846",
@@ -16756,7 +16756,7 @@
     },
     {
       "id": 53779,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25307",
@@ -17848,7 +17848,7 @@
     },
     {
       "id": 53780,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25306",
@@ -25585,7 +25585,7 @@
     },
     {
       "id": 53975,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-21",
       "numero": "SC25174",
@@ -26446,7 +26446,7 @@
     },
     {
       "id": 53828,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25332",
@@ -27304,7 +27304,7 @@
     },
     {
       "id": 53838,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25322",
@@ -30020,7 +30020,7 @@
     },
     {
       "id": 53935,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-29",
       "numero": "SC25385",
@@ -30111,7 +30111,7 @@
     },
     {
       "id": 53781,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25328",
@@ -35563,7 +35563,7 @@
     },
     {
       "id": 53782,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25331",
@@ -88430,7 +88430,7 @@
     },
     {
       "id": 53784,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25325",
@@ -88475,7 +88475,7 @@
     },
     {
       "id": 53783,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25326",
@@ -93665,7 +93665,7 @@
     },
     {
       "id": 53983,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -97043,7 +97043,7 @@
     },
     {
       "id": 53785,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25303",
@@ -98711,7 +98711,7 @@
     },
     {
       "id": 53839,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25333",
@@ -104451,7 +104451,7 @@
     },
     {
       "id": 53862,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24766",
@@ -104496,7 +104496,7 @@
     },
     {
       "id": 53861,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24770",
@@ -104541,7 +104541,7 @@
     },
     {
       "id": 53860,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24771",
@@ -104586,7 +104586,7 @@
     },
     {
       "id": 53859,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24773",
@@ -104631,7 +104631,7 @@
     },
     {
       "id": 53858,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24774",
@@ -104676,7 +104676,7 @@
     },
     {
       "id": 53857,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24775",
@@ -104721,7 +104721,7 @@
     },
     {
       "id": 53856,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24776",
@@ -104766,7 +104766,7 @@
     },
     {
       "id": 53855,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24777",
@@ -104811,7 +104811,7 @@
     },
     {
       "id": 53854,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24778",
@@ -104856,7 +104856,7 @@
     },
     {
       "id": 53853,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24779",
@@ -104901,7 +104901,7 @@
     },
     {
       "id": 53852,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24780",
@@ -104946,7 +104946,7 @@
     },
     {
       "id": 53851,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24781",
@@ -104991,7 +104991,7 @@
     },
     {
       "id": 53850,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24782",
@@ -105036,7 +105036,7 @@
     },
     {
       "id": 53849,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24783",
@@ -105081,7 +105081,7 @@
     },
     {
       "id": 53848,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24784",
@@ -105126,7 +105126,7 @@
     },
     {
       "id": 53847,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24785",
@@ -105171,7 +105171,7 @@
     },
     {
       "id": 53846,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24786",
@@ -105216,7 +105216,7 @@
     },
     {
       "id": 53845,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24787",
@@ -105261,7 +105261,7 @@
     },
     {
       "id": 53844,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24788",
@@ -105306,7 +105306,7 @@
     },
     {
       "id": 53843,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24790",
@@ -105351,7 +105351,7 @@
     },
     {
       "id": 53842,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24791",
@@ -105396,7 +105396,7 @@
     },
     {
       "id": 53841,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-06",
       "numero": "SC24792",
@@ -105441,7 +105441,7 @@
     },
     {
       "id": 53840,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25323",
@@ -134060,7 +134060,7 @@
     },
     {
       "id": 53834,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25311",
@@ -136736,7 +136736,7 @@
     },
     {
       "id": 53787,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25335",
@@ -137592,7 +137592,7 @@
     },
     {
       "id": 53788,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25334",
@@ -138142,7 +138142,7 @@
     },
     {
       "id": 53998,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-29",
       "numero": "SC25602",
@@ -139772,7 +139772,7 @@
     },
     {
       "id": 53789,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25336",
@@ -145508,7 +145508,7 @@
     },
     {
       "id": 54002,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-17",
       "numero": "SC25176",
@@ -146456,7 +146456,7 @@
     },
     {
       "id": 54006,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-15",
       "numero": "SC24939",
@@ -150023,7 +150023,7 @@
     },
     {
       "id": 53802,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-07",
       "numero": "SC24864",
@@ -150068,7 +150068,7 @@
     },
     {
       "id": 53801,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-07",
       "numero": "SC24865",
@@ -155946,7 +155946,7 @@
     },
     {
       "id": 53793,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-07",
       "numero": "SC24863",
@@ -161919,7 +161919,7 @@
     },
     {
       "id": 54019,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-03",
       "numero": "SC24626",
@@ -169960,7 +169960,7 @@
     },
     {
       "id": 54024,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -170905,7 +170905,7 @@
     },
     {
       "id": 53887,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25308",
@@ -170950,7 +170950,7 @@
     },
     {
       "id": 53886,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-25",
       "numero": "SC25309",
@@ -174026,7 +174026,7 @@
     },
     {
       "id": 54031,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25246",
@@ -178358,7 +178358,7 @@
     },
     {
       "id": 54033,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-29",
       "numero": "SC25387",
@@ -209135,7 +209135,7 @@
     },
     {
       "id": 54059,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-21",
       "numero": "SC24819",
@@ -210443,7 +210443,7 @@
     },
     {
       "id": 54060,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-22",
       "numero": "SC25146",
@@ -232267,7 +232267,7 @@
     },
     {
       "id": 54071,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -235696,7 +235696,7 @@
     },
     {
       "id": 54079,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-21",
       "numero": "SC24529",
@@ -242725,7 +242725,7 @@
     },
     {
       "id": 54083,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -251475,7 +251475,7 @@
     },
     {
       "id": 54094,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -268343,7 +268343,7 @@
     },
     {
       "id": 54108,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -275294,7 +275294,7 @@
     },
     {
       "id": 54112,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -275654,7 +275654,7 @@
     },
     {
       "id": 54114,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -279130,7 +279130,7 @@
     },
     {
       "id": 54116,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -291461,7 +291461,7 @@
     },
     {
       "id": 54135,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-18",
       "numero": "SC25115",
@@ -294525,7 +294525,7 @@
     },
     {
       "id": 54140,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-22",
       "numero": "SC24983",
@@ -467442,7 +467442,7 @@
     },
     {
       "id": 53890,
-      "tipo": "Materiales Directos",
+      "tipo": "Servicios",
       "almacen": "ALMSE",
       "fecha": "2026-08-19",
       "numero": "SC25304",

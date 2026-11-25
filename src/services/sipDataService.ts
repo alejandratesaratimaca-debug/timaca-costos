@@ -123,7 +123,7 @@ export function getMacroCategoriaSip(item: SipItem): string {
     return 'Costos Indirectos';
   }
   // 4. Servicios
-  if (tipo.includes('serv') || cat.includes('serv') || cod.startsWith('SE') || unid === 'USE' || unid === 'SERV' || desc.includes('servicio') || desc.includes('alquiler') || desc.includes('traslado')) {
+  if (tipo.includes('serv') || cat.includes('serv') || cod.startsWith('SE') || unid === 'USE' || unid === 'SERV' || desc.includes('servicio') || desc.includes('alquiler') || desc.includes('traslado') || desc.includes('flete') || desc.includes('transporte')) {
     return 'Servicios';
   }
   // 5. Materiales Directos

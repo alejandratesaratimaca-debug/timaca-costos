@@ -262,6 +262,13 @@ export function getClasificacionPersonal(r: MasterRow) {
   let generadorNombre = (r.creadaPor || (r.tipo === 'Materiales Directos' ? r.solicitante : '') || '').trim();
   let generadorTag = 'Usuario SIP';
   const genClean = generadorNombre.toUpperCase();
+  const cod = String(r.codigo || '').toUpperCase();
+  const desc = String(r.descripcion || '').toUpperCase();
+  const alm = String(r.almacen || '').toUpperCase();
+  const cat = String(r.categoria || '').toUpperCase();
+  const esServicio = cod.startsWith('SE') || (r.tipo || '').toUpperCase().includes('SERV') || cat.includes('SERV') || alm === 'ALMSE' || desc.includes('FLETE') || desc.includes('TRANSPORTE') || desc.includes('ALQUILER');
+  const isStock = r.tipo === 'Materiales Directos' && !esServicio;
+
   if (genClean.includes('ASTRID SILVA') || genClean.includes('MANUEL CHAVEZ') || genClean.includes('HERNAN GARCIA')) {
     generadorTag = 'Planificación Operaciones';
   } else if (genClean.includes('LEGLANIS BRITO') || genClean.includes('JESSICA NAVARRO') || genClean.includes('JOSE AMUNDARAIN')) {
@@ -270,14 +277,13 @@ export function getClasificacionPersonal(r: MasterRow) {
     generadorTag = 'Ingeniería / Mantto';
   } else if (COMPRADORES_PROCURA_SET.has(genClean)) {
     generadorTag = 'Analista de Procura';
-  } else if (r.tipo === 'Materiales Directos') {
+  } else if (isStock) {
     generadorTag = 'Despachador Almacén';
   }
 
   // 3. Comprador (Procura)
   let compradorNombre = (r.comprador || '').trim();
   let compradorTag = 'Analista de Procura';
-  const isStock = r.tipo === 'Materiales Directos';
   if (isStock) {
     compradorNombre = 'Stock Almacén';
     compradorTag = 'Despacho Directo (Sin OC)';
@@ -951,16 +957,40 @@ export async function loadStaticMasterItems(mesKey: string, isVerAjustesHistoric
     }
   }
 
-  // Normalizar cuentas auxiliares para asegurar que nunca aparezcan palabras como OPERACIONES, FABRICACION, TIMACA
+  // Normalizar registros para asegurar consistencia estricta en cuentas auxiliares y tipo (Servicios vs Materiales)
   items = items.map((it: any) => {
     const raw = it.cuenta_aux || it.cuentaAuxiliar || '';
     const resolved = resolverCodigoCuentaAuxiliar(raw, it.motivo, it.descripcion, it.solicitante);
-    if (resolved && resolved !== raw) {
+
+    // Regla de negocio estricta: Fletes, códigos SE y almacén ALMSE son SIEMPRE Servicios
+    const cod = String(it.codigo || '').trim().toUpperCase();
+    const desc = String(it.descripcion || '').trim().toUpperCase();
+    const cat = String(it.categoria || '').trim().toUpperCase();
+    const alm = String(it.almacen || '').trim().toUpperCase();
+
+    const isServicio = cod.startsWith('SE') || 
+                       cat === 'SERVICIOS' || 
+                       alm === 'ALMSE' || 
+                       desc.includes('FLETE') ||
+                       desc.includes('TRANSPORTE') ||
+                       desc.includes('ALQUILER DE') ||
+                       desc.includes('SERVICIO DE');
+
+    let updatedTipo = it.tipo;
+    let updatedCat = it.categoria;
+    if (isServicio && it.tipo !== 'Servicios') {
+      updatedTipo = 'Servicios';
+      updatedCat = 'SERVICIOS';
+    }
+
+    if ((resolved && resolved !== raw) || updatedTipo !== it.tipo) {
       return {
         ...it,
         cuenta_aux_original: it.cuenta_aux_original || raw,
-        cuenta_aux: resolved,
-        cuentaAuxiliar: resolved
+        cuenta_aux: resolved || raw,
+        cuentaAuxiliar: resolved || raw,
+        tipo: updatedTipo,
+        categoria: updatedCat
       };
     }
     return it;
@@ -2412,11 +2442,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'RC / Recepcion': (() => {
             const rcVal = r.recepcion || r.rc;
             if (rcVal && rcVal !== '-') return rcVal;
-            if (r.tipo === 'Materiales Directos') return 'Stock';
             const t = String(r.tipo || '').toUpperCase();
             const cod = String(r.codigo || '').toUpperCase();
+            const desc = String(r.descripcion || '').toUpperCase();
+            const alm = String(r.almacen || '').toUpperCase();
+            const cat = String(r.categoria || '').toUpperCase();
+            const esServicio = cod.startsWith('SE') || t.includes('SERV') || cat.includes('SERV') || alm === 'ALMSE' || desc.includes('FLETE') || desc.includes('TRANSPORTE') || desc.includes('ALQUILER');
+            if (r.tipo === 'Materiales Directos' && !esServicio) return 'Stock';
             if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) return '-';
-            if (cod.startsWith('SE') || t.includes('SERV')) return 'No Ejecutado';
+            if (esServicio) return 'No Ejecutado';
             if (isCandidateRC(r)) return 'Sin RC (Pendiente)';
             return '-';
           })(),
@@ -5572,21 +5606,32 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
                           {/* 2. Tipo */}
                           <td className="py-2 px-3 border-r border-slate-100 whitespace-nowrap">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${
-                              r.tipo === 'Materiales Directos'
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                : r.tipo === 'Servicios'
-                                ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                : 'bg-amber-50 text-amber-700 border-amber-200'
-                            }`}>
-                              {r.tipo === 'Materiales Directos' ? (
-                                <><Boxes className="w-3 h-3 text-emerald-600" /> Material</>
-                              ) : r.tipo === 'Servicios' ? (
-                                <><Briefcase className="w-3 h-3 text-blue-600" /> Servicio</>
-                              ) : (
-                                r.tipo
-                              )}
-                            </span>
+                            {(() => {
+                              const cod = String(r.codigo || '').toUpperCase();
+                              const desc = String(r.descripcion || '').toUpperCase();
+                              const alm = String(r.almacen || '').toUpperCase();
+                              const cat = String(r.categoria || '').toUpperCase();
+                              const esServ = r.tipo === 'Servicios' || cod.startsWith('SE') || cat === 'SERVICIOS' || alm === 'ALMSE' || desc.includes('FLETE') || desc.includes('TRANSPORTE') || desc.includes('ALQUILER');
+                              const esMat = !esServ && r.tipo === 'Materiales Directos';
+
+                              return (
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${
+                                  esServ
+                                    ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                    : esMat
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                    : 'bg-amber-50 text-amber-700 border-amber-200'
+                                }`}>
+                                  {esServ ? (
+                                    <><Briefcase className="w-3 h-3 text-blue-600" /> Servicio</>
+                                  ) : esMat ? (
+                                    <><Boxes className="w-3 h-3 text-emerald-600" /> Material</>
+                                  ) : (
+                                    r.tipo
+                                  )}
+                                </span>
+                              );
+                            })()}
                           </td>
 
                           {/* 3. Cuenta Auxiliar con edición rápida */}
@@ -5656,19 +5701,24 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                   </span>
                                 );
                               }
-                              if (r.tipo === 'Materiales Directos') {
+                              const t = String(r.tipo || '').toUpperCase();
+                              const cod = String(r.codigo || '').toUpperCase();
+                              const desc = String(r.descripcion || '').toUpperCase();
+                              const alm = String(r.almacen || '').toUpperCase();
+                              const cat = String(r.categoria || '').toUpperCase();
+                              const esServicio = cod.startsWith('SE') || t.includes('SERV') || cat.includes('SERV') || alm === 'ALMSE' || desc.includes('FLETE') || desc.includes('TRANSPORTE') || desc.includes('ALQUILER');
+
+                              if (r.tipo === 'Materiales Directos' && !esServicio) {
                                 return (
                                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 font-semibold" title="Despacho directo de inventario / stock de almacén">
                                     Stock
                                   </span>
                                 );
                               }
-                              const t = String(r.tipo || '').toUpperCase();
-                              const cod = String(r.codigo || '').toUpperCase();
                               if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) {
                                 return <span className="text-slate-400 text-[10px]">-</span>;
                               }
-                              if (cod.startsWith('SE') || t.includes('SERV')) {
+                              if (esServicio) {
                                 return (
                                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300" title="Servicio contratado sin finiquito ni registro de ejecución en SIP">
                                     <Clock className="w-3 h-3 text-amber-600" /> No Ejecutado
