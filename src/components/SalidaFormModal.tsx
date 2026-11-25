@@ -220,11 +220,11 @@ export const SalidaFormModal: React.FC<SalidaFormModalProps> = ({
             </div>
           </div>
 
-          {/* Row 2: Proyecto / OT */}
+          {/* Row 2: Proyecto */}
           <div>
             <label className="font-semibold text-neutral-700 block mb-1 flex items-center gap-1">
               <Briefcase className="w-3.5 h-3.5 text-blue-600" />
-              Proyecto / Orden de Trabajo (OT) *
+              Proyecto / Obra *
             </label>
             <select
               value={proyecto}
@@ -236,14 +236,14 @@ export const SalidaFormModal: React.FC<SalidaFormModalProps> = ({
                   {p}
                 </option>
               ))}
-              <option value="OTRO">Otro Proyecto / OT personalizada...</option>
+              <option value="OTRO">Otro Proyecto personalizado...</option>
             </select>
 
             {proyecto === 'OTRO' && (
               <input
                 type="text"
                 required
-                placeholder="Escribe el nombre del Proyecto u OT..."
+                placeholder="Escribe el nombre del Proyecto..."
                 value={customProyecto}
                 onChange={(e) => setCustomProyecto(e.target.value)}
                 className="mt-2 w-full p-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500"

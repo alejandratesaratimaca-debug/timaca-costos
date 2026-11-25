@@ -1973,7 +1973,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
               </h3>
             </div>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Comparativa por Orden de Trabajo entre {mesActualObj?.mesLabel} y {mesAnteriorObj?.mesLabel}
+              Comparativa por Proyecto / Cuenta entre {mesActualObj?.mesLabel} y {mesAnteriorObj?.mesLabel}
             </p>
           </div>
 
@@ -1982,7 +1982,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
               <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Buscar proyecto u OT..."
+                placeholder="Buscar proyecto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="text-xs pl-8 pr-3 py-1.5 bg-neutral-50 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-56"
@@ -1997,7 +1997,7 @@ export const CategoriaDetalleView: React.FC<CategoriaDetalleViewProps> = ({
             <thead className="bg-slate-800 text-white font-bold">
               <tr className="text-white">
                 <th className="py-2.5 px-3 w-8 text-white font-bold">#</th>
-                <th className="py-2.5 px-3 min-w-[240px]">Proyecto Externo / Orden de Trabajo (OT)</th>
+                <th className="py-2.5 px-3 min-w-[240px]">Proyecto Externo / Obra</th>
                 <th className="py-2.5 px-3 min-w-[150px]">Cliente / Destino</th>
                 <th className="py-2.5 px-3 text-right">
                   Monto {mesActualObj?.mesLabel?.split(' ')[0]} (USD)

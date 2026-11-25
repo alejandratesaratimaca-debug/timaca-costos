@@ -354,7 +354,7 @@ async function runSyncNoviembre() {
       ano: 2026,
       nombre_mes: 'noviembre',
       sc: '',
-      oc: r.odt || ''
+      oc: ''
     });
   }
 
