@@ -413,6 +413,8 @@ async function runSyncNoviembre() {
       solicitante: (r.creadaPor || r.solicitante || 'S/D').trim(),
       proveedor: (r.proveedor || r.nombreProveedor || '').trim(),
       motivo: (r.motivo || '').trim(),
+      recepcion: (r.recepcion || '').trim(),
+      fechaRecepcion: (r.fechaRecepcion || '').trim(),
       ajuste: '',
       categoria: 'SERVICIOS',
       precio_final: precioUnitUSD,
