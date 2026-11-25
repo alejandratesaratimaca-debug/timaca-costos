@@ -1964,9 +1964,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
           const isCandidateRC = (r: any) => {
             const t = String(r.tipo || '').toUpperCase();
-            // Mano de obra directa o indirecta no genera boleta de recepción física
-            if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) return false;
-            return true;
+            const p = String(r.pedido || '').toUpperCase();
+            const num = String(r.numero || '').toUpperCase();
+            const alm = String(r.almacen || '').toUpperCase();
+            return t.includes('SERV') || t.includes('COMP') || p.startsWith('OC') || num.startsWith('SC') || alm === 'ALMSE';
           };
 
           for (const r of items) {
@@ -2375,9 +2376,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
       const isCandidateRC = (r: any) => {
         const t = String(r.tipo || '').toUpperCase();
-        // Mano de obra directa o indirecta no genera boleta de recepción física
-        if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) return false;
-        return true;
+        const p = String(r.pedido || '').toUpperCase();
+        const num = String(r.numero || '').toUpperCase();
+        const alm = String(r.almacen || '').toUpperCase();
+        return t.includes('SERV') || t.includes('COMP') || p.startsWith('OC') || num.startsWith('SC') || alm === 'ALMSE';
       };
 
       // 7.5 Filtro de Estado RC / Recepción
@@ -2410,9 +2412,11 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'RC / Recepcion': (() => {
             const rcVal = r.recepcion || r.rc;
             if (rcVal && rcVal !== '-') return rcVal;
+            if (r.tipo === 'Materiales Directos') return 'Conforme Almacén';
             const t = String(r.tipo || '').toUpperCase();
             if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) return '-';
-            return 'Sin RC (Pendiente)';
+            if (isCandidateRC(r)) return 'Sin RC (Pendiente)';
+            return '-';
           })(),
           'Codigo SIP': r.codigo,
           'Descripcion del Item (SIP)': r.descripcion,
@@ -5058,7 +5062,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         {formatUSD(masterTotales.sin_rc_total || 0)}
                       </span>
                       <span className="text-[11px] text-slate-500 hidden md:inline">
-                        (materiales y servicios pendientes por boleta de recepción física o finiquito)
+                        (compras de procura y servicios pendientes por boleta de recepción física o finiquito)
                       </span>
                     </>
                   ) : filterEstadoRC === 'con_rc' ? (
@@ -5650,12 +5654,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                                   </span>
                                 );
                               }
+                              if (r.tipo === 'Materiales Directos') {
+                                return (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600" title="Despacho conforme de inventario interno de almacén">
+                                    Conforme Almacén
+                                  </span>
+                                );
+                              }
                               const t = String(r.tipo || '').toUpperCase();
                               if (t.includes('MANO DE OBRA') || t.includes('NOMINA')) {
                                 return <span className="text-slate-400 text-[10px]">-</span>;
                               }
                               return (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300" title="Pendiente de confirmación o boleta de recepción física en SIP">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300" title="Orden de Procura pendiente por boleta de recepción física o finiquito en SIP">
                                   <Clock className="w-3 h-3 text-amber-600" /> Sin RC (Pendiente)
                                 </span>
                               );
