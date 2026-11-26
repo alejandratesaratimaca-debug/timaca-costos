@@ -23,7 +23,8 @@ import {
   Presentation,
   Tv,
   CheckCircle2,
-  DollarSign
+  DollarSign,
+  Zap
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -146,6 +147,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       bgInactive: 'bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200/80',
       isActive: moduloActivo === 'dotacion' || moduloActivo === 'seguridad' || moduloActivo === 'certificados',
       onClick: () => handleNav('dotacion', 'dotacion')
+    },
+    {
+      id: 'sigma-sip',
+      label: '⚡ SIGMA (SIP Real)',
+      sublabel: 'Almacén, Servicios y Compras',
+      icon: Zap,
+      color: '#6366f1',
+      bgActive: 'bg-[#0f1e36] text-white shadow-md ring-2 ring-indigo-500/30',
+      bgInactive: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/80',
+      isActive: moduloActivo === 'costos' && activeTab === 'sigma-sip',
+      onClick: () => handleNav('sigma-sip', 'costos')
     },
     {
       id: 'unificada-sip',

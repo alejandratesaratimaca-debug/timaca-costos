@@ -42,6 +42,7 @@ const DesglosePartidaView = lazy(() => import('./components/DesglosePartidaView'
 const ManoObraDiariaView = lazy(() => import('./components/ManoObraDiariaView').then(m => ({ default: m.ManoObraDiariaView })));
 const UsuariosView = lazy(() => import('./components/UsuariosView').then(m => ({ default: m.UsuariosView })));
 const MasterUnificadoSipView = lazy(() => import('./components/MasterUnificadoSipView').then(m => ({ default: m.MasterUnificadoSipView })));
+const SigmaSipView = lazy(() => import('./components/SigmaSipView').then(m => ({ default: m.SigmaSipView })));
 const CatalogoPreciosView = lazy(() => import('./components/CatalogoPreciosView').then(m => ({ default: m.CatalogoPreciosView })));
 const HerramientasModuleView = lazy(() => import('./components/herramientas/HerramientasModuleView').then(m => ({ default: m.HerramientasModuleView })));
 const DotacionModuleView = lazy(() => import('./components/dotacion/DotacionModuleView').then(m => ({ default: m.DotacionModuleView })));
@@ -538,7 +539,9 @@ function AppContent() {
 
         {/* ================= MÓDULO PRINCIPAL: DEPARTAMENTO DE COSTOS ================= */}
         {moduloActivo === 'costos' && (
-          activeTab === 'unificada-sip' ? (
+          activeTab === 'sigma-sip' ? (
+            <SigmaSipView currentUser={currentUser} />
+          ) : activeTab === 'unificada-sip' ? (
             <MasterUnificadoSipView currentUser={currentUser} />
           ) : activeTab === 'catalogo-precios' ? (
             <CatalogoPreciosView currentUser={currentUser} onVolver={() => setActiveTab('unificada-sip')} />

@@ -23,7 +23,8 @@ import {
   Truck, 
   Database, 
   DollarSign,
-  Presentation
+  Presentation,
+  Zap
 } from 'lucide-react';
 import { SuiteModulo } from '../types/suite';
 
@@ -43,6 +44,7 @@ interface HeaderProps {
 
 const MENU_EXTERNOS = [
   { id: 'dashboard', label: 'Tablero Ejecutivo', icon: LayoutDashboard, title: 'Resumen General, Evolución Mes a Mes y Control Semanal' },
+  { id: 'sigma-sip', label: '⚡ SIGMA (SIP Real)', icon: Zap, title: 'Datos Puros SIP: Almacén, Servicios y Compras', badge: 'Limpio' },
   { id: 'unificada-sip', label: 'Sábana Master Unificado', icon: Database, title: 'Consolidado Maestro 35 Columnas & SIP en Vivo', badge: '147.5k filas' },
   { id: 'proyectos', label: 'Matriz de Costos por Proyecto', icon: TableProperties, title: 'Cuentas Auxiliares, Matriz de Proyectos y Auditoría por Categoría' },
   { id: 'mano-obra', label: 'Mano de Obra (MOD)', icon: Clock, title: 'Mano de Obra Directa, Devengo 30/31 Días y Carga RRHH' },
@@ -51,6 +53,7 @@ const MENU_EXTERNOS = [
 
 const MENU_INTERNOS = [
   { id: 'internos-dashboard', label: 'Resumen CAPEX & OPEX', icon: LayoutDashboard, title: 'Control CAPEX & OPEX Octubre 2026' },
+  { id: 'sigma-sip', label: '⚡ SIGMA (SIP Real)', icon: Zap, title: 'Datos Puros SIP: Almacén, Servicios y Compras', badge: 'Limpio' },
   { id: 'unificada-sip', label: 'Sábana Master Unificado', icon: Database, title: 'Consolidado Maestro 35 Columnas & SIP en Vivo', badge: '147.5k filas' },
   { id: 'catalogo-precios', label: 'Catálogo de Precios', icon: DollarSign, title: 'Catálogo & Auditoría de Precios SIP (OC vs Despachos)', badge: 'Precios' },
   { id: 'internos-capex', label: 'Inversiones CAPEX', icon: Building2, title: 'Inversiones CAPEX & Obras Civiles' },
