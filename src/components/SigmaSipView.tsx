@@ -160,7 +160,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                 solicitante: item.solicitante || 'S/D',
                 proveedorOAlmacen: item.almacen || 'ALMCE',
                 motivo: item.motivo || '',
-                estadoRC: 'NO_APLICA', // Consumo de almacén ya salió físicamente
+                estadoRC: 'CON_RC', // Consumo de almacén ya salió físicamente y fue entregado en obra
                 mes
               });
             }
@@ -250,10 +250,15 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       // Filtro Origen
       if (origenFiltro !== 'TODOS' && item.origen !== origenFiltro) return false;
 
-      // Filtro Estado RC
+      // Filtro Estado RC (Recepción formal para Servicios/Compras; Vales de almacén siempre están entregados/ejecutados)
       if (estadoRcFiltro !== 'TODOS') {
-        if (estadoRcFiltro === 'CON_RC' && item.estadoRC !== 'CON_RC') return false;
-        if (estadoRcFiltro === 'SIN_RC' && item.estadoRC !== 'SIN_RC') return false;
+        if (item.origen === 'ALMACEN') {
+          // Si el usuario filtra por "SIN_RC", excluye los vales (porque los vales ya fueron entregados físicamente)
+          if (estadoRcFiltro === 'SIN_RC') return false;
+        } else {
+          if (estadoRcFiltro === 'CON_RC' && item.estadoRC !== 'CON_RC') return false;
+          if (estadoRcFiltro === 'SIN_RC' && item.estadoRC !== 'SIN_RC') return false;
+        }
       }
 
       // Filtro Tipo de Costo
@@ -314,6 +319,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       if (r.origen === 'ALMACEN') {
         totalAlmacenUSD += r.totalUSD;
         countAlmacen++;
+        totalConRCUSD += r.totalUSD; // Los vales ya son consumos entregados físicamente en obra
       } else if (r.origen === 'SERVICIO') {
         totalServiciosUSD += r.totalUSD;
         countServicios++;
@@ -461,7 +467,11 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
 
         {/* KPI: Vales Almacén */}
         <div 
-          onClick={() => setOrigenFiltro('ALMACEN')}
+          onClick={() => {
+            const next = origenFiltro === 'ALMACEN' ? 'TODOS' : 'ALMACEN';
+            setOrigenFiltro(next);
+            if (next === 'ALMACEN' && estadoRcFiltro === 'SIN_RC') setEstadoRcFiltro('TODOS');
+          }}
           className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
             origenFiltro === 'ALMACEN'
               ? 'bg-blue-50/70 border-blue-400 ring-2 ring-blue-500/20'
@@ -469,7 +479,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           }`}
         >
           <div className="flex items-center justify-between text-blue-600 text-xs font-semibold">
-            <span>Vales Almacén</span>
+            <span>Vales Almacén (Consumo)</span>
             <Boxes className="w-4 h-4 text-blue-600" />
           </div>
           <div className="mt-2">
@@ -477,7 +487,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               {safeFormatUSD(kpis.totalAlmacenUSD)}
             </div>
             <div className="text-[11px] text-blue-600/80 mt-0.5">
-              {kpis.countAlmacen.toLocaleString()} vales DP...
+              {kpis.countAlmacen.toLocaleString()} vales DP... en obra
             </div>
           </div>
         </div>
@@ -591,13 +601,16 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               Todos ({rawData.length.toLocaleString()})
             </button>
             <button
-              onClick={() => setOrigenFiltro('ALMACEN')}
+              onClick={() => {
+                setOrigenFiltro('ALMACEN');
+                if (estadoRcFiltro === 'SIN_RC') setEstadoRcFiltro('TODOS');
+              }}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 origenFiltro === 'ALMACEN' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               <Boxes className="w-3.5 h-3.5" />
-              Almacén
+              Almacén (Vales)
             </button>
             <button
               onClick={() => setOrigenFiltro('SERVICIO')}
@@ -660,11 +673,19 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               <select
                 value={estadoRcFiltro}
                 onChange={e => setEstadoRcFiltro(e.target.value as any)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-indigo-500 cursor-pointer"
+                disabled={origenFiltro === 'ALMACEN'}
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-indigo-500 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+                title={origenFiltro === 'ALMACEN' ? 'Los vales de almacén son consumos físicos ya despachados en obra' : undefined}
               >
-                <option value="TODOS">Todos los Estados</option>
-                <option value="CON_RC">Con Recepción (RC)</option>
-                <option value="SIN_RC">Sin Recepción (Pendiente)</option>
+                {origenFiltro === 'ALMACEN' ? (
+                  <option value="TODOS">Despachados / Entregados en Obra</option>
+                ) : (
+                  <>
+                    <option value="TODOS">Todos los Estados</option>
+                    <option value="CON_RC">Con Recepción (RC)</option>
+                    <option value="SIN_RC">Sin Recepción (Pendiente)</option>
+                  </>
+                )}
               </select>
             </div>
 
