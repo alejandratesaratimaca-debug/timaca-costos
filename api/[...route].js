@@ -293,6 +293,7 @@ export default async function handler(req, res) {
       let serv_total = 0;
       let mdo_total = 0;
       let hm_total = 0;
+      let ind_total = 0;
       let ext_total = 0;
       let int_total = 0;
       let opex_total = 0;
@@ -302,8 +303,9 @@ export default async function handler(req, res) {
         const t = (r.tipo || '').toUpperCase();
         if (t.includes('MATERIAL')) mat_total += val;
         else if (t.includes('SERV') || t.includes('COMP')) serv_total += val;
-        else if (t.includes('MANO DE OBRA')) mdo_total += val;
-        else if (t.includes('HORA') || t.includes('MAQ')) hm_total += val;
+        else if (t.includes('MANO DE OBRA') || t.includes('MDO')) mdo_total += val;
+        else if (t.includes('HORA') || t.includes('MAQ') || t.includes('HM')) hm_total += val;
+        else if (t.includes('INDIRECTO') || t.includes('CIF')) ind_total += val;
 
         const c = (r.datos_tipo_costo || '').toUpperCase();
         if (c.includes('EXTERNO')) ext_total += val;
@@ -319,6 +321,7 @@ export default async function handler(req, res) {
           serv_total,
           mdo_total,
           hm_total,
+          ind_total,
           ext_total,
           int_total,
           opex_total,

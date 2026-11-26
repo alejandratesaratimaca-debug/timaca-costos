@@ -160,10 +160,10 @@ export const TABLA_PPT_DISTRIBUCION_2026 = [
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 207508.00, 341374.77, 0.00],
-    total2026: 1894988.77,
-    variacion: '-100,0%',
-    variacionNum: -100.0,
+    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 207508.00, 341374.77, 313192.08],
+    total2026: 2208180.85,
+    variacion: '-8,3%',
+    variacionNum: -8.26,
     esPositiva: false
   }
 ];
