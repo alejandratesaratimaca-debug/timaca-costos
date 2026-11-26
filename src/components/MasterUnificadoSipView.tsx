@@ -236,10 +236,10 @@ export function getClasificacionPersonal(r: MasterRow) {
     solicitanteNombre = solRealRaw;
     solicitanteTag = 'Detectado en Motivo';
   } else if (r.motivo) {
-    const m = r.motivo.match(/(?:SOLICITA(?:NTE|DO\s+POR)?|SOLICITA)\s*[:\-]\s*([A-ZÁÉÍÓÚÑa-záéíóúñ\s\.]+)/i);
+    const m = r.motivo.match(/(?:SOLICITA(?:NTE|DO\s+POR)?|SOLICITA|SOLICITADO\s*POR|REQ\.?\s*POR|PEDIDO\s*POR|POR\s+SOLICITUD\s+DE)\s*[:\-]\s*([A-ZÁÉÍÓÚÑa-záéíóúñ\s\.]+)/i);
     if (m) {
-      let extracted = m[1].split('–')[0].split('-')[0].split(',')[0].split('(')[0].trim();
-      extracted = extracted.replace(/^(?:ING\.?|SR\.?|SRA\.?)\s+/i, '').trim();
+      let extracted = m[1].split('–')[0].split('-')[0].split(',')[0].split('(')[0].split('/')[0].trim();
+      extracted = extracted.replace(/^(?:ING\.?|SR\.?|SRA\.?|TSU\.?|LCDO\.?|LIC\.?)\s+/i, '').trim();
       const extractedClean = extracted.toUpperCase();
       if (extracted.length >= 3 && !COMPRADORES_PROCURA_SET.has(extractedClean)) {
         solicitanteNombre = extracted;
@@ -248,15 +248,9 @@ export function getClasificacionPersonal(r: MasterRow) {
     }
   }
 
-  // Si no se encontró en motivo, solo para vales de almacén físicos usar quien retiró en almacén si no es comprador
-  if (!solicitanteNombre && r.tipo === 'Materiales Directos') {
-    const rawSol = (r.solicitante || '').trim();
-    const rawClean = rawSol.toUpperCase();
-    if (rawClean && rawClean !== 'S/D' && !COMPRADORES_PROCURA_SET.has(rawClean)) {
-      solicitanteNombre = rawSol;
-      solicitanteTag = 'Retiró en Almacén';
-    }
-  }
+  // Quien solicita casi nunca lo colocan en campo directo y solo sale en motivo.
+  // Quien monta la PA en SIP es personal de almacén/despachador (Romero, Valdez, Albarrán), NO el solicitante de obra.
+  // Por tanto, si no aparece en motivo, solicitanteNombre queda nulo (no atribuir al despachador).
 
   // 2. Generado Por (SIP)
   let generadorNombre = (r.creadaPor || (r.tipo === 'Materiales Directos' ? r.solicitante : '') || '').trim();
@@ -271,7 +265,7 @@ export function getClasificacionPersonal(r: MasterRow) {
   } else if (COMPRADORES_PROCURA_SET.has(genClean)) {
     generadorTag = 'Analista de Procura';
   } else if (r.tipo === 'Materiales Directos') {
-    generadorTag = 'Despachador Almacén';
+    generadorTag = 'Montó PA en SIP (Almacén)';
   }
 
   // 3. Comprador (Procura)
@@ -2432,7 +2426,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           'Clasificacion': projInfo?.tipoCosto || r.datos_tipo_costo || 'Externo',
           'Vale / Solicitud': r.numero, // Despacho DP / Solicitud SC
           'Pedido / Orden': r.pedido,   // Pedido PA / Orden OC
-          'RC / Recepcion': r.recepcion || r.rc || (r.tipo === 'Servicios' || r.tipo === 'Compras' ? 'Sin RC (Pendiente)' : 'Conforme Almacén'),
+          'RC / Recepcion': r.recepcion || r.rc || (r.tipo === 'Materiales Directos' ? 'Stock' : (r.tipo === 'Servicios' ? '-' : 'Sin RC')),
           'Codigo SIP': r.codigo,
           'Descripcion del Item (SIP)': r.descripcion,
           'Motivo / Justificacion': r.motivo,
@@ -5644,8 +5638,15 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                               }
                               if (r.tipo === 'Materiales Directos') {
                                 return (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">
-                                    Conforme Almacén
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">
+                                    Stock
+                                  </span>
+                                );
+                              }
+                              if (r.tipo === 'Servicios') {
+                                return (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium text-slate-400">
+                                    -
                                   </span>
                                 );
                               }
