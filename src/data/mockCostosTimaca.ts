@@ -128,42 +128,42 @@ export const DETALLE_SUBCONCEPTOS_CATEGORIAS: Record<string, {
 export const TABLA_PPT_DISTRIBUCION_2026 = [
   {
     categoria: 'Materiales Directos',
-    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 561462.88, 823463.09, 475059.64],
-    total2026: 4587407.61,
-    variacion: '-42,3%',
-    variacionNum: -42.3,
+    meses: [268645, 531944, 565344, 465011, 183689, 473348, 239441, 561462.88, 823463.09, 477277.90],
+    total2026: 4589625.87,
+    variacion: '-42,0%',
+    variacionNum: -42.04,
     esPositiva: false
   },
   {
     categoria: 'Servicios Directos',
-    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 569304.00],
-    total2026: 4169406.39,
-    variacion: '+102,9%',
-    variacionNum: 102.9,
+    meses: [128145, 162086, 230866, 91405, 75734, 1639332, 359067, 632926.13, 280541.26, 505386.31],
+    total2026: 4105488.70,
+    variacion: '+80,1%',
+    variacionNum: 80.15,
     esPositiva: true
   },
   {
     categoria: 'Mano de Obra Directa',
-    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 290728.22, 208500.75, 257750.82],
-    total2026: 2500607.79,
-    variacion: '+23,6%',
-    variacionNum: 23.6,
+    meses: [312530, 269666, 255366, 229531, 261564, 202303, 212668, 290728.22, 208500.75, 235131.08],
+    total2026: 2477988.05,
+    variacion: '+12,8%',
+    variacionNum: 12.77,
     esPositiva: true
   },
   {
     categoria: 'Horas Máquina',
-    meses: [145113, 113686, 149030, 55110, 129625, 69063, 75933, 87975.46, 53398.08, 58500.00],
-    total2026: 937433.54,
-    variacion: '+9,6%',
-    variacionNum: 9.6,
+    meses: [145113, 113686, 149030, 55110, 129625, 69063, 75933, 87975.46, 53398.08, 53398.08],
+    total2026: 932331.62,
+    variacion: '0,0%',
+    variacionNum: 0.0,
     esPositiva: true
   },
   {
     categoria: 'Costos Indirectos',
-    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 207508.00, 341374.77, 313192.08],
-    total2026: 2208180.85,
-    variacion: '-8,3%',
-    variacionNum: -8.26,
+    meses: [173397, 173476, 199287, 168410, 223636, 206755, 201145, 207508.00, 341374.77, 0.00],
+    total2026: 1894988.77,
+    variacion: '-100,0%',
+    variacionNum: -100.0,
     esPositiva: false
   }
 ];

@@ -1024,7 +1024,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
   };
   const [selectedCta, setSelectedCta] = useState<string>('TODAS');
   const [selectedTipo, setSelectedTipo] = useState<string>('TODOS');
-  const [selectedClasificacion, setSelectedClasificacion] = useState<string>('TODAS');
+  const [selectedClasificacion, setSelectedClasificacion] = useState<string>('Externo');
   const [selectedCategoria, setSelectedCategoria] = useState<string>('TODAS');
   const [filterNormalizacion, setFilterNormalizacion] = useState<
     'operativos' | 'todos' | 'rezagadas' | 'ajustes_historicos' | 'viejas_historicas' | 'operativas_campo' | 'todas_normalizaciones'
@@ -4241,7 +4241,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       setSelectedMes('todos');
                       setSelectedCta('TODAS');
                       setSelectedTipo('TODOS');
-                      setSelectedClasificacion('TODAS');
+                      setSelectedClasificacion('Externo');
                       setSelectedCategoria('TODAS');
                       setFilterNormalizacion('operativos');
                       setInputProyecto('');
@@ -4488,14 +4488,17 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                         setSelectedClasificacion(e.target.value);
                         setPageMaster(1);
                       }}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-purple-600 shadow-2xs"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-semibold focus:bg-white focus:outline-none focus:border-purple-600 shadow-2xs"
                     >
+                      <option value="Externo">⭐ Solo Proyectos Externos (Facturable)</option>
                       <option value="TODAS">TODAS (EXTERNO / INTERNO / OPEX)</option>
-                      {catalogFiltros.clasificaciones.map((cl) => (
-                        <option key={cl} value={cl}>
-                          {cl}
-                        </option>
-                      ))}
+                      {(catalogFiltros?.clasificaciones || [])
+                        .filter((cl) => cl !== 'Externo')
+                        .map((cl) => (
+                          <option key={cl} value={cl}>
+                            {cl}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
@@ -4643,7 +4646,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
               </div>
 
               {/* BARRA DE FILTROS ACTIVOS CON UN CLIC PARA QUITAR */}
-              {(inputProyecto || selectedCta !== 'TODAS' || selectedMes !== 'todos' || selectedTipo !== 'TODOS' || selectedClasificacion !== 'TODAS' || selectedCategoria !== 'TODAS' || filterEstadoRC !== 'todos' || filterNormalizacion !== 'operativos' || searchMaster || fechaDesde || fechaHasta) && (
+              {(inputProyecto || selectedCta !== 'TODAS' || selectedMes !== 'todos' || selectedTipo !== 'TODOS' || selectedClasificacion !== 'Externo' || selectedCategoria !== 'TODAS' || filterEstadoRC !== 'todos' || filterNormalizacion !== 'operativos' || searchMaster || fechaDesde || fechaHasta) && (
                 <div className="pt-2 border-t border-slate-200 flex flex-wrap items-center gap-2 text-xs">
                   <span className="font-bold text-slate-700 flex items-center gap-1">
                     <Filter className="w-3.5 h-3.5 text-blue-600" />
@@ -4714,10 +4717,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                     </span>
                   )}
 
-                  {selectedClasificacion !== 'TODAS' && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 border border-slate-300">
+                  {selectedClasificacion !== 'Externo' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-100 text-purple-900 border border-purple-300 font-semibold">
                       Clasificación: {selectedClasificacion}
-                      <button onClick={() => { setSelectedClasificacion('TODAS'); setPageMaster(1); }} className="hover:text-slate-900 ml-1 font-bold">×</button>
+                      <button onClick={() => { setSelectedClasificacion('Externo'); setPageMaster(1); }} className="hover:text-purple-700 ml-1 font-bold text-sm">×</button>
                     </span>
                   )}
 
@@ -4757,7 +4760,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       setSelectedCta('TODAS');
                       setSelectedMes('todos');
                       setSelectedTipo('TODOS');
-                      setSelectedClasificacion('TODAS');
+                      setSelectedClasificacion('Externo');
                       setSelectedCategoria('TODAS');
                       setFilterEstadoRC('todos');
                       setFilterNormalizacion('operativos');
