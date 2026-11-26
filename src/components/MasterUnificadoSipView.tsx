@@ -1029,7 +1029,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
     return '';
   };
   const [selectedCta, setSelectedCta] = useState<string>('TODAS');
-  const [selectedTipo, setSelectedTipo] = useState<string>('SOLO_SIP');
+  const [selectedTipo, setSelectedTipo] = useState<string>('TODOS');
   const [selectedClasificacion, setSelectedClasificacion] = useState<string>('TODAS');
   const [selectedCategoria, setSelectedCategoria] = useState<string>('TODAS');
   const [filterNormalizacion, setFilterNormalizacion] = useState<
@@ -1901,7 +1901,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           } else if (selectedTipo && selectedTipo !== 'TODOS') {
             items = items.filter((r: any) => {
               if (selectedTipo === 'Mano de Obra Directa' || selectedTipo === 'Mano de Obra') {
-                return r.tipo === 'Mano de Obra Directa' || r.tipo === 'Mano de Obra Directa ECO' || r.tipo === 'Mano de Obra';
+                return r.tipo === 'Mano de Obra Directa' || r.tipo === 'Mano de Obra';
+              }
+              if (selectedTipo === 'Mano de Obra Directa ECO') {
+                return r.tipo === 'Mano de Obra Directa ECO';
+              }
+              if (selectedTipo === 'Horas Maquina') {
+                return r.tipo === 'Horas Maquina' || r.tipo === 'Horas Máquina';
+              }
+              if (selectedTipo === 'Costos Indirectos') {
+                return r.tipo === 'Costos Indirectos';
+              }
+              if (selectedTipo === 'Servicios') {
+                return r.tipo === 'Servicios' || r.tipo === 'Compras';
               }
               return r.tipo === selectedTipo;
             });
@@ -2322,7 +2334,19 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       } else if (selectedTipo && selectedTipo !== 'TODOS') {
         rows = rows.filter((r: any) => {
           if (selectedTipo === 'Mano de Obra Directa' || selectedTipo === 'Mano de Obra') {
-            return r.tipo === 'Mano de Obra Directa' || r.tipo === 'Mano de Obra Directa ECO' || r.tipo === 'Mano de Obra';
+            return r.tipo === 'Mano de Obra Directa' || r.tipo === 'Mano de Obra';
+          }
+          if (selectedTipo === 'Mano de Obra Directa ECO') {
+            return r.tipo === 'Mano de Obra Directa ECO';
+          }
+          if (selectedTipo === 'Horas Maquina') {
+            return r.tipo === 'Horas Maquina' || r.tipo === 'Horas Máquina';
+          }
+          if (selectedTipo === 'Costos Indirectos') {
+            return r.tipo === 'Costos Indirectos';
+          }
+          if (selectedTipo === 'Servicios') {
+            return r.tipo === 'Servicios' || r.tipo === 'Compras';
           }
           return r.tipo === selectedTipo;
         });
@@ -4433,8 +4457,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   </div>
                 </div>
 
-                {/* FILA 2: FILTROS DE CATÁLOGO Y CLASIFICACIÓN (4 COLUMNAS AMPLIAS) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t border-slate-100">
+                {/* FILA 2: FILTROS DE CATÁLOGO Y CLASIFICACIÓN (3 COLUMNAS AMPLIAS) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
                   {/* 5. Selector de Tipo de Insumo (Elemento de Costo) */}
                   <div>
                     <label className="block text-[11px] font-semibold text-blue-700 uppercase tracking-wider mb-1">
@@ -4448,12 +4472,14 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       }}
                       className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 font-semibold focus:bg-white focus:outline-none focus:border-blue-600 shadow-2xs"
                     >
-                      <option value="SOLO_SIP">✨ SOLO DATOS SIP (Materiales + Servicios)</option>
-                      <option value="TODOS">TODOS LOS INSUMOS (Incluye Cargas Manuales)</option>
+                      <option value="TODOS">TODOS LOS INSUMOS (Todos los Elementos)</option>
                       <option value="Materiales Directos">Solo Materiales Directos (Almacén SIP)</option>
-                      <option value="Servicios">Solo Servicios (Compras SIP)</option>
-                      <option value="Mano de Obra Directa ECO">Solo Horas ECO (Taller)</option>
+                      <option value="Servicios">Solo Servicios (Compras SIP / Contrataciones)</option>
+                      <option value="Horas Maquina">Solo Horas Máquina (Equipos / Grúas)</option>
                       <option value="Mano de Obra Directa">Solo Mano de Obra (Nómina)</option>
+                      <option value="Mano de Obra Directa ECO">Solo Horas ECO (Taller Central)</option>
+                      <option value="Costos Indirectos">Solo Costos Indirectos (CIF)</option>
+                      <option value="SOLO_SIP">✨ SOLO DATOS SIP (Materiales + Servicios)</option>
                     </select>
                   </div>
 
@@ -4498,30 +4524,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                           {cat.categoria} ({cat.count})
                         </option>
                       ))}
-                    </select>
-                  </div>
-
-                  {/* 8. Selector de Estado de Recepción (RC / Finiquito) */}
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center justify-between">
-                      <span>8. Recepción (RC)</span>
-                      {masterTotales.sin_rc_count && masterTotales.sin_rc_count > 0 ? (
-                        <span className="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.5 rounded font-medium">
-                          {masterTotales.sin_rc_count} sin RC
-                        </span>
-                      ) : null}
-                    </label>
-                    <select
-                      value={filterEstadoRC}
-                      onChange={(e) => {
-                        setFilterEstadoRC(e.target.value as 'todos' | 'con_rc' | 'sin_rc');
-                        setPageMaster(1);
-                      }}
-                      className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600 shadow-2xs"
-                    >
-                      <option value="todos">TODAS LAS RECEPCIONES</option>
-                      <option value="sin_rc">Solo Sin RC (Pendientes)</option>
-                      <option value="con_rc">Solo Con RC (Recepcionadas)</option>
                     </select>
                   </div>
                 </div>
@@ -4822,7 +4824,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 {/* Materiales Directos (Filtro Rápido 1 Clic) */}
                 <div 
                   onClick={() => {
-                    setSelectedTipo(prev => prev === 'Materiales Directos' ? 'SOLO_SIP' : 'Materiales Directos');
+                    setSelectedTipo(prev => prev === 'Materiales Directos' ? 'TODOS' : 'Materiales Directos');
                     setPageMaster(1);
                   }}
                   className={`bg-white border rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px] cursor-pointer transition-all hover:scale-[1.02] ${
@@ -4830,7 +4832,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       ? 'border-blue-600 ring-2 ring-blue-500/30 bg-blue-50/30 shadow-sm'
                       : 'border-slate-200 hover:border-blue-300'
                   }`}
-                  title={selectedTipo === 'Materiales Directos' ? 'Filtro activo. Clic para mostrar ambos (Materiales + Servicios)' : 'Clic para filtrar solo Materiales Directos'}
+                  title={selectedTipo === 'Materiales Directos' ? 'Filtro activo. Clic para mostrar todos los insumos' : 'Clic para filtrar solo Materiales Directos'}
                 >
                   <div className="text-[10px] font-semibold text-blue-600 uppercase tracking-wider flex items-center justify-between">
                     <span className="flex items-center gap-1">
@@ -4853,7 +4855,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                 {/* Servicios (Filtro Rápido 1 Clic) */}
                 <div 
                   onClick={() => {
-                    setSelectedTipo(prev => prev === 'Servicios' ? 'SOLO_SIP' : 'Servicios');
+                    setSelectedTipo(prev => prev === 'Servicios' ? 'TODOS' : 'Servicios');
                     setPageMaster(1);
                   }}
                   className={`bg-white border rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px] cursor-pointer transition-all hover:scale-[1.02] ${
@@ -4861,7 +4863,7 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                       ? 'border-emerald-600 ring-2 ring-emerald-500/30 bg-emerald-50/30 shadow-sm'
                       : 'border-slate-200 hover:border-emerald-300'
                   }`}
-                  title={selectedTipo === 'Servicios' ? 'Filtro activo. Clic para mostrar ambos (Materiales + Servicios)' : 'Clic para filtrar solo Servicios'}
+                  title={selectedTipo === 'Servicios' ? 'Filtro activo. Clic para mostrar todos los insumos' : 'Clic para filtrar solo Servicios'}
                 >
                   <div className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider flex items-center justify-between">
                     <span className="flex items-center gap-1">
