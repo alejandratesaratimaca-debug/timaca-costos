@@ -4048,18 +4048,21 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
       {/* 1. TOP HEADER */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-500/20 font-black text-white text-lg tracking-wider">
-              TIM
-            </div>
+          <div className="flex items-center gap-3">
+            <img
+              src="/timaca-logo.png"
+              alt="TIMACA"
+              className="h-10 sm:h-12 w-auto object-contain shrink-0 drop-shadow-xs"
+            />
+            <div className="h-9 w-px bg-slate-300 hidden sm:block shrink-0" />
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-slate-900 tracking-tight">SISTEMA DE GESTIÓN Y AUDITORÍA DE COSTOS</h1>
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                  TIMACA • 2026
+                <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">SISTEMA DE GESTIÓN Y AUDITORÍA DE COSTOS</h1>
+                <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                  2026
                 </span>
               </div>
-              <p className="text-xs text-slate-500">Master Unificado • Consulta Rápida en Vivo • Sin congelamientos de Excel</p>
+              <p className="text-xs text-slate-500 font-medium">Master Unificado • Consulta Rápida en Vivo • Sin congelamientos de Excel</p>
             </div>
           </div>
         </div>
