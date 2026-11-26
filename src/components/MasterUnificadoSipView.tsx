@@ -4088,16 +4088,6 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Sincronizando SIP...' : 'Sincronizar SIP en Vivo'}
           </button>
-
-          <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200">
-            <div className="w-8 h-8 rounded-full bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 font-bold text-xs">
-              DR
-            </div>
-            <div className="text-left hidden sm:block">
-              <div className="text-xs font-semibold text-slate-800">Daniela Riveros</div>
-              <div className="text-[10px] text-slate-500">Analista de Costos</div>
-            </div>
-          </div>
         </div>
       </header>
 
