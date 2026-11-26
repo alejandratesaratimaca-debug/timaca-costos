@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+const SIP_BASE_URL = 'https://sip.timaca.com.ve';
+
 // Helpers
 function parseDateToIso(dStr) {
   if (!dStr) return '';
@@ -185,9 +188,9 @@ function resolverCuentaAuxiliar(rawCta, motivo, desc, solicitante, codigoMat) {
 }
 
 async function getSipCookie() {
-  // 1. Direct login to SIP
+  // 1. Direct login to SIP (sip.timaca.com.ve)
   try {
-    const directRes = await fetch('http://sip.timaca.com/api/acceso/entrar', {
+    const directRes = await fetch(`${SIP_BASE_URL}/api/acceso/entrar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ login: 'drivero', clave: '070717' })
@@ -195,7 +198,7 @@ async function getSipCookie() {
     if (directRes.ok) {
       const cookieHeader = directRes.headers.get('set-cookie');
       if (cookieHeader) {
-        console.log('[SIP] Autenticado directamente como drivero');
+        console.log('[SIP] Autenticado directamente como drivero en ' + SIP_BASE_URL);
         return cookieHeader.split(';')[0];
       }
     }
@@ -204,7 +207,7 @@ async function getSipCookie() {
   }
 
   // 2. Fallback to SSO Núcleo ERP
-  const token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6Ijk4MzgyZTNhLTZlZWQtNDU0OC05ZTY2LTM1NmRiNTM2Y2E2OSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Fra3p2bXBjeHdsaXFndXhybG9tLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkZDQ5NDVjMy0zYTAzLTRlZjctYTcwYS02NTAwMTA2N2Q4NzYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzkzODMwNTU0LCJpYXQiOjE3OTM4MjY5NTQsImVtYWlsIjoiYWxlamFuZHJhdGVzYXJhQHRpbWFjYS5jb20udmUiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7fSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc5MzgyNjk1NH1dLCJzZXNzaW9uX2lkIjoiNGQyYjVjNDktYzZmOS00YmQxLWJjZWEtMGVkNWFjNzQ0OGVjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.c993lFi4MyGXHjLI_toTlozjvhFfAfFooNDP93CSsn-MyRaDgdXDA3MaIOolNavFbtAOu-VkvujWvAPb45LK2g';
+  const token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6Ijk4MzgyZTNhLTZlZWQtNDU0OC05ZTY2LTM1NmRiNTM2Y2E2OSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Fra3p2bXBjeHdsaXFndXhybG9tLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkZDQ5NDVjMy0zYTAzLTRlZjctYTcwYS02NTAwMTA2N2Q4NzYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzkzODMwNTU0LCJpYXQiOjE3OTM4MjY5NTQsImVtYWlsIjoiYWxlamFuZHJhdGVzYXJhQHRpbWFjYS5jb20udmUiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7fSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwxIjoiYWFsMSIsImF1ciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3OTM4MjY5NTR9XSwic2Vzc2lvbl9pZCI6IjRkMmI1YzQ5LWM2ZjktNGJkMS1iY2VhLTBlZDVhYzc0NDhlYyIsImlzX2Fub255bW91cyI6ZmFsc2V9.c993lFi4MyGXHjLI_toTlozjvhFfAfFooNDP93CSsn-MyRaDgdXDA3MaIOolNavFbtAOu-VkvujWvAPb45LK2g';
 
   const valeRes = await fetch('https://nucleo-erp-alpha.vercel.app/api/sip-vale', {
     method: 'POST',
@@ -216,9 +219,9 @@ async function getSipCookie() {
   const formBody = new URLSearchParams();
   formBody.append('vale', valeData.vale);
 
-  const sipRes = await fetch('http://sip.timaca.com/entrar-por-nucleo', {
+  const sipRes = await fetch(`${SIP_BASE_URL}/entrar-por-nucleo`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Host': 'sip.timaca.com' },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formBody.toString(),
     redirect: 'manual'
   });
@@ -241,20 +244,20 @@ async function runSyncNoviembre() {
   console.log('====================================================');
 
   const cookie = await getSipCookie();
-  console.log('[SIP] Conexión establecida con sip.timaca.com');
+  console.log(`[SIP] Conexión establecida con ${SIP_BASE_URL}`);
 
   // 1. Fetch Salidas Nov 1 to Today
   console.log(`[SIP] Consultando Salidas de Almacén (01/11/2026 al ${hoyIso} - Todos los almacenes)...`);
-  const salidasRes = await fetch(`http://sip.timaca.com/api/movimientos/salidas?desde=2026-11-01&hasta=${hoyIso}&almacen=%25`, {
-    headers: { 'Host': 'sip.timaca.com', 'Cookie': cookie }
+  const salidasRes = await fetch(`${SIP_BASE_URL}/api/movimientos/salidas?desde=2026-11-01&hasta=${hoyIso}&almacen=%25`, {
+    headers: { 'Cookie': cookie }
   });
   const rawSalidas = await salidasRes.json();
   console.log(`[SIP] Salidas obtenidas: ${rawSalidas.length}`);
 
   // 2. Fetch Solicitud-Compras Nov 1 to Today (Oficial SIP completo con Solicitante, Motivo y Cuenta Real)
   console.log(`[SIP] Consultando Solicitud-Compras oficiales (01/11/2026 al ${hoyIso})...`);
-  const scRes = await fetch(`http://sip.timaca.com/api/solicitud-compras?desde=2026-11-01&hasta=${hoyIso}`, {
-    headers: { 'Host': 'sip.timaca.com', 'Cookie': cookie }
+  const scRes = await fetch(`${SIP_BASE_URL}/api/solicitud-compras?desde=2026-11-01&hasta=${hoyIso}`, {
+    headers: { 'Cookie': cookie }
   });
   const rawSC = await scRes.json();
   console.log(`[SIP] Solicitud-Compras obtenidas: ${rawSC.length}`);

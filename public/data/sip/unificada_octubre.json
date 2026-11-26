@@ -214451,7 +214451,7 @@
       "ajuste": "",
       "categoria": "SERVICIOS",
       "precio_final": 350,
-      "total_usd": 4200.0,
+      "total_usd": 4200,
       "precio_dolar": 350,
       "semana": null,
       "fecha_hasta": "",
@@ -214503,7 +214503,7 @@
       "ajuste": "",
       "categoria": "SERVICIOS",
       "precio_final": 350,
-      "total_usd": 2450.0,
+      "total_usd": 2450,
       "precio_dolar": 350,
       "semana": null,
       "fecha_hasta": "",
@@ -214554,9 +214554,9 @@
       "motivo": "ACTUALIZACIÓN TECNOLÓGICA DEL SISTEMA DE CONTROL DISTRIBUIDO DE LA PLANTA PARA PASAR DE LA PLATAFORMA YOKOGAWA CENTUM 3000 A LA VERSIÓN MÁS RECIENTE CENTUM VP – PELLAS LINEA 1. EL OBJETIVO ES MITIGAR LA OBSOLESCENCIA DE HARDWARE Y SOFTWARE, GARANTIZANDO LA CONTINUIDAD OPERATIVA MEDIANTE EL USO DE ESTACIONES DE TRABAJO DE ÚLTIMA GENERACIÓN Y CONTROLADORES DE ALTA DISPONIBILIDAD.",
       "ajuste": "VALORIZADO 30% HITO 0 CONTRACTUAL",
       "categoria": "SERVICIOS",
-      "precio_final": 205974.0,
-      "total_usd": 205974.0,
-      "precio_dolar": 205974.0,
+      "precio_final": 205974,
+      "total_usd": 205974,
+      "precio_dolar": 205974,
       "semana": null,
       "fecha_hasta": "",
       "apellidos_nombres": "",
@@ -222784,7 +222784,7 @@
       "ajuste": "",
       "categoria": "SERVICIOS",
       "precio_final": 290,
-      "total_usd": 3480.0,
+      "total_usd": 3480,
       "precio_dolar": 290,
       "semana": null,
       "fecha_hasta": "",
@@ -222836,7 +222836,7 @@
       "ajuste": "",
       "categoria": "SERVICIOS",
       "precio_final": 290,
-      "total_usd": 2030.0,
+      "total_usd": 2030,
       "precio_dolar": 290,
       "semana": null,
       "fecha_hasta": "",
@@ -371863,18 +371863,18 @@
     "mdo_total": 248023.21,
     "hm_total": 0,
     "ind_total": 0,
-    "ext_total": 1215577.03,
-    "int_total": 28553.87,
-    "opex_total": 5487.23,
-    "admon_total": 204178.14
+    "ext_total": 1217795.29,
+    "int_total": 28086.29,
+    "opex_total": 92375.34,
+    "admon_total": 193072
   },
   "top_cuentas": [
     {
       "cuenta_aux": "TTE-C-0706",
       "datos_descripcion": "Recuperación de Línea 1 de Planta de Pellas (VISCO ORINOCO)",
       "datos_tipo_costo": "Externo",
-      "total": 998832.27,
-      "rows": 2911
+      "total": 538974.27,
+      "rows": 2912
     },
     {
       "cuenta_aux": "TTE-C-0671",
@@ -371901,15 +371901,15 @@
       "cuenta_aux": "TTE-C-0668",
       "datos_descripcion": "Fase 2 Planta de briquetas - FMO  (VISCO ORINOCO)",
       "datos_tipo_costo": "Externo",
-      "total": 51670.43,
-      "rows": 482
+      "total": 54103.02,
+      "rows": 485
     },
     {
-      "cuenta_aux": "TTE-C-0697",
-      "datos_descripcion": "Reparación de Generador Eléctrico para Planta de Briquetas FMO (VISCO ORINOCO)",
+      "cuenta_aux": "TTE-C-0694",
+      "datos_descripcion": "Suministro e Instalación de la Caldera BF-6002 para el Area 6000 de Planta de Briquetas FMO (VISCO ORINICO)",
       "datos_tipo_costo": "Externo",
-      "total": 41662.97,
-      "rows": 9
+      "total": 43204.02,
+      "rows": 67
     },
     {
       "cuenta_aux": "TTE-C-0678",

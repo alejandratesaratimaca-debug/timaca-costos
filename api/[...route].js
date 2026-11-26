@@ -146,13 +146,15 @@ export default async function handler(req, res) {
     if (pathname === 'sip/sync') {
       const statusData = readJsonFile('status.json', {});
       const unificadaNov = readJsonFile('unificada_noviembre.json', {});
-      const totalNov = unificadaNov.totales?.total_count || 2992;
+      const totalNov = unificadaNov.totales?.total_count || 5265;
+      const totalConsumos = statusData.totalConsumosNoviembre || 4937;
+      const totalServicios = statusData.totalServiciosNoviembre || 328;
       return res.status(200).json({
         success: true,
-        message: 'Base de datos sincronizada con el corte SIP al 16 de Noviembre de 2026.',
-        periodo: { inicio: '01/11/2026', hasta: '16/11/2026' },
-        consumos: { total: 2818 },
-        compras: { total: 1122 },
+        message: 'Base de datos sincronizada con el corte SIP al 26 de Noviembre de 2026.',
+        periodo: { inicio: '01/11/2026', hasta: '26/11/2026' },
+        consumos: { total: totalConsumos },
+        compras: { total: totalServicios },
         totalMovimientos: totalNov,
         lastSync: statusData.lastSync || new Date().toISOString()
       });
