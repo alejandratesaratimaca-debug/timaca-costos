@@ -3,6 +3,7 @@ import { useCostos } from '../context/CostosContext';
 import { formatCurrency } from '../utils/dateHelpers';
 import { safeFormatUSD } from '../utils/numericHelpers';
 import { KPIHeader } from './KPIHeader';
+import { ProyectosExternosResumenEjecutivo } from './ProyectosExternosResumenEjecutivo';
 import { CUENTAS_CORTAS_MAP, DETALLE_SUBCONCEPTOS_CATEGORIAS, TABLA_PPT_DISTRIBUCION_2026, TOTALES_MESES_PPT } from '../data/mockCostosTimaca';
 import { 
   TrendingUp, 
@@ -108,8 +109,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       )}
 
-      {/* 1. Header con 4 KPI Cards Ejecutivas & Spotlight Banner */}
-      <KPIHeader onOpenProyectosMatriz={onOpenProyectosMatriz} />
+      {/* 1. Módulo Ejecutivo Estilo Daniela Riveros (Parrilla 6 KPIs + Splines Fritsch-Carlson + Dona + Selector Mensual) */}
+      <ProyectosExternosResumenEjecutivo
+        onOpenProyectosMatriz={onOpenProyectosMatriz}
+        onGoToProyectos={onGoToProyectos}
+        onGoToCategoria={onGoToCategoria}
+        onSelectProyecto={onSelectProyecto}
+      />
 
       {/* 2. Sección Principal: Evolución de Costos por Categoría */}
       <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">

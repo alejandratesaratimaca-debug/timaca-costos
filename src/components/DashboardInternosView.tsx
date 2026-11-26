@@ -72,6 +72,7 @@ import {
 import { SALIDAS_REALES_SEPTIEMBRE_2026 } from '../data/realSalidasSeptiembre2026';
 import { formatCurrency, formatNumber } from '../utils/dateHelpers';
 import { UsuarioSistema } from '../types/usuarios';
+import { CapexOpexResumenEjecutivo } from './CapexOpexResumenEjecutivo';
 
 export type SubTabInternos = 'resumen' | 'mod' | 'capex' | 'flota' | 'infra' | 'reclasificacion' | 'gruas';
 
@@ -880,6 +881,11 @@ export const DashboardInternosView: React.FC<DashboardInternosViewProps> = ({
       {/* ========================================================================= */}
       {subTab === 'resumen' && (
         <div className="space-y-6">
+
+          {/* ======================================================================= */}
+          {/* TABLERO EJECUTIVO CAPEX & OPEX (DISEÑO VISUAL DE DANIELA EN VIVO)        */}
+          {/* ======================================================================= */}
+          <CapexOpexResumenEjecutivo />
 
           {/* ======================================================================= */}
           {/* SECCIÓN 1: EVOLUCIÓN MENSUAL EN BARRAS HORIZONTALES APILADAS (IMAGE 2) */}

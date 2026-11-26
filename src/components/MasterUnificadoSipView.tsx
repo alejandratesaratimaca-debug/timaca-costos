@@ -824,7 +824,7 @@ export function determinarTipoGasto(cuenta?: string, tipoCostoExistente?: string
 
 // Caché en memoria para las sábanas SIP del Master Unificado (evita re-descargas y congelamientos)
 const masterStaticCache = new Map<string, any[]>();
-let isLanApiAvailable: boolean | null = false;
+let isLanApiAvailable: boolean | null = true;
 let cachedReclasificaciones: any[] | null = null;
 let reclasificacionesLoadingPromise: Promise<any[]> | null = null;
 
@@ -1514,11 +1514,10 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
           res = await fetch('/api/unificada?' + params.toString(), { 
             cache: 'no-store',
             headers: ANTI_CACHE_HEADERS,
-            signal: AbortSignal.timeout(2000) 
+            signal: AbortSignal.timeout(12000) 
           });
-          if (!res.ok) isLanApiAvailable = false;
         } catch (e) {
-          isLanApiAvailable = false;
+          console.warn('Fallo temporal /api/unificada, usando fallback local:', e);
         }
       }
       if (res && res.ok) {
@@ -2626,6 +2625,8 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
 
   const handleSyncSIP = async (mesTarget?: string) => {
     setIsSyncing(true);
+    isLanApiAvailable = true;
+    masterStaticCache.clear();
     const targetKey = mesTarget || (selectedMes === 'todos' ? 'noviembre' : selectedMes);
     const m = MESES_LIST.find(x => x.key === targetKey) || MESES_LIST.find(x => x.key === 'noviembre')!;
     const ano = selectedAno !== 'todos' ? selectedAno : '2026';

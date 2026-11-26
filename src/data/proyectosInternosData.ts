@@ -30,6 +30,7 @@ export const EVOLUTIVO_INTERNOS_2026: ResumenMensualInterno[] = [
   { mesLabel: 'Julio', mesCorto: 'Jul', proyectosInternosCapex: 45087.13, activosProductivosCapex: 0, capex: 45087.13, opexActivos: 97727.42, opexInfraestructura: 41897.82, admon: 0, totalOpex: 139625.24, totalGeneral: 184712.37, totalConAdmon: 184712.37 },
   { mesLabel: 'Agosto', mesCorto: 'Ago', proyectosInternosCapex: 29017.30, activosProductivosCapex: 0, capex: 29017.30, opexActivos: 113450.01, opexInfraestructura: 40545.39, admon: 0, totalOpex: 153995.40, totalGeneral: 183012.70, totalConAdmon: 183012.70 },
   { mesLabel: 'Septiembre', mesCorto: 'Sep', proyectosInternosCapex: 34995.08, activosProductivosCapex: 28328.84, capex: 63323.92, opexActivos: 65757.04, opexInfraestructura: 42818.77, admon: 0, totalOpex: 108575.81, totalGeneral: 171899.73, totalConAdmon: 171899.73 },
+  { mesLabel: 'Octubre', mesCorto: 'Oct', proyectosInternosCapex: 46512.00, activosProductivosCapex: 42232.00, capex: 88744.00, opexActivos: 54542.00, opexInfraestructura: 56862.00, admon: 166499.00, totalOpex: 277903.00, totalGeneral: 366647.00, totalConAdmon: 366647.00 },
 ];
 
 export const TOTALES_ACUMULADOS_INTERNOS_2026 = {
