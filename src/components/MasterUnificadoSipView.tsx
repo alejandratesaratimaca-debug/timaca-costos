@@ -4778,43 +4778,20 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
             </div>
             {/* DYNAMIC KPI METRICS BANNER (ORGANIZADO EN 2 FILAS PERFECTAMENTE NIVELADAS Y SIMÉTRICAS) */}
             <div className="space-y-3">
-              {/* FILA 1: RESUMEN DE COSTOS OPERATIVOS POR ELEMENTO (5 TARJETAS DE ALTURA UNIFORME) */}
+              {/* FILA 1: RESUMEN DE COSTOS OPERATIVOS POR ELEMENTO (6 TARJETAS DE ALTURA UNIFORME) */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-stretch">
                 {/* Gran Total USD */}
-                <div className="col-span-2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white rounded-xl p-3.5 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[96px]">
+                <div className="col-span-2 sm:col-span-1 lg:col-span-1 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white rounded-xl p-3 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[96px]">
                   <div className="text-[10px] font-semibold text-blue-100 uppercase tracking-wider flex items-center justify-between gap-1">
-                    <span className="truncate">Gran Total Filtrado (USD)</span>
-                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold shrink-0 whitespace-nowrap ${
-                      filterNormalizacion === 'operativos' 
-                        ? 'bg-emerald-500/30 text-emerald-100 border border-emerald-400/40' 
-                        : filterNormalizacion === 'rezagadas'
-                        ? 'bg-indigo-500/30 text-indigo-100 border border-indigo-400/40'
-                        : filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas'
-                        ? 'bg-rose-500/30 text-rose-100 border border-rose-400/40'
-                        : 'bg-white/20 text-white'
-                    }`}>
-                      {filterNormalizacion === 'operativos' ? 'COSTO OPERATIVO' :
-                       filterNormalizacion === 'rezagadas' ? 'REZAGADAS (DESTIEMPO)' :
-                       filterNormalizacion === 'ajustes_historicos' || filterNormalizacion === 'viejas_historicas' ? 'AJUSTES HISTÓRICOS' :
-                       filterNormalizacion === 'todas_normalizaciones' ? 'TODAS NORM.' : 'CON NORMALIZACIÓN'}
-                    </span>
+                    <span className="truncate">Gran Total (USD)</span>
+                    <DollarSign className="w-3.5 h-3.5 text-blue-200 shrink-0" />
                   </div>
-                  <div className="text-xl lg:text-2xl font-black text-white mt-1">
+                  <div className="text-base lg:text-lg font-black text-white mt-1">
                     {formatUSD(masterTotales.gran_total)}
                   </div>
-                  <div 
-                    className="text-[10px] text-blue-200/90 font-medium leading-tight mt-0.5"
-                    title="Registro transaccional en bruto en SIP (vales de almacén y órdenes de compra acumuladas). Difiere del informe auditado ($12,05M) que mide avance físico a Sep."
-                  >
-                    * Base transaccional bruta SIP (vales y compras de almacén)
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-blue-100 mt-1 font-mono">
+                  <div className="flex items-center justify-between text-[10px] text-blue-100 mt-1 font-mono">
                     <span>{formatNumber(masterTotales.total_count)} filas</span>
-                    <span>•</span>
-                    <span className="capitalize">{selectedMes} {selectedAno !== 'todos' ? selectedAno : ''}</span>
-                  </div>
-                  <div className="absolute right-2 top-2 text-white/10 pointer-events-none">
-                    <DollarSign className="w-14 h-14" />
+                    <span className="capitalize">{selectedMes !== 'todos' ? selectedMes : '2026'}</span>
                   </div>
                 </div>
 
@@ -4880,31 +4857,96 @@ export function MasterUnificadoSipView({ currentUser }: { currentUser?: any }) {
                   </div>
                 </div>
 
-                {/* Mano de Obra */}
-                <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px]">
+                {/* Mano de Obra (Filtro Rápido 1 Clic) */}
+                <div 
+                  onClick={() => {
+                    setSelectedTipo(prev => (prev === 'Mano de Obra Directa' || prev === 'Mano de Obra') ? 'TODOS' : 'Mano de Obra Directa');
+                    setPageMaster(1);
+                  }}
+                  className={`bg-white border rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px] cursor-pointer transition-all hover:scale-[1.02] ${
+                    selectedTipo === 'Mano de Obra Directa' || selectedTipo === 'Mano de Obra'
+                      ? 'border-amber-600 ring-2 ring-amber-500/30 bg-amber-50/30 shadow-sm'
+                      : 'border-slate-200 hover:border-amber-300'
+                  }`}
+                  title={selectedTipo === 'Mano de Obra Directa' ? 'Filtro activo. Clic para mostrar todos los insumos' : 'Clic para filtrar solo Mano de Obra'}
+                >
                   <div className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider flex items-center justify-between">
-                    <span>Mano de Obra</span>
+                    <span className="flex items-center gap-1">
+                      Mano de Obra
+                      {(selectedTipo === 'Mano de Obra Directa' || selectedTipo === 'Mano de Obra') && (
+                        <span className="text-[8px] bg-amber-600 text-white px-1 py-0.2 rounded font-bold">FILTRADO</span>
+                      )}
+                    </span>
                     <HardHat className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                   </div>
                   <div className="text-sm font-bold text-slate-900 font-mono mt-1">
                     {formatUSD(masterTotales.mdo_total)}
                   </div>
-                  <div className="text-[10px] text-slate-500">
-                    {safePercent(masterTotales.mdo_total, masterTotales.gran_total)} del total
+                  <div className="text-[10px] text-slate-500 flex items-center justify-between">
+                    <span>{safePercent(masterTotales.mdo_total, masterTotales.gran_total)} del total</span>
+                    <span className="text-[9px] text-amber-500 hover:underline">1-clic ⚡</span>
                   </div>
                 </div>
 
-                {/* Horas Máquina */}
-                <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px]">
+                {/* Horas Máquina (Filtro Rápido 1 Clic) */}
+                <div 
+                  onClick={() => {
+                    setSelectedTipo(prev => prev === 'Horas Maquina' ? 'TODOS' : 'Horas Maquina');
+                    setPageMaster(1);
+                  }}
+                  className={`bg-white border rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px] cursor-pointer transition-all hover:scale-[1.02] ${
+                    selectedTipo === 'Horas Maquina'
+                      ? 'border-purple-600 ring-2 ring-purple-500/30 bg-purple-50/30 shadow-sm'
+                      : 'border-slate-200 hover:border-purple-300'
+                  }`}
+                  title={selectedTipo === 'Horas Maquina' ? 'Filtro activo. Clic para mostrar todos los insumos' : 'Clic para filtrar solo Horas Máquina'}
+                >
                   <div className="text-[10px] font-semibold text-purple-600 uppercase tracking-wider flex items-center justify-between">
-                    <span>Horas Máquina</span>
+                    <span className="flex items-center gap-1">
+                      Horas Máquina
+                      {selectedTipo === 'Horas Maquina' && (
+                        <span className="text-[8px] bg-purple-600 text-white px-1 py-0.2 rounded font-bold">FILTRADO</span>
+                      )}
+                    </span>
                     <Cpu className="w-3.5 h-3.5 text-purple-500 shrink-0" />
                   </div>
                   <div className="text-sm font-bold text-slate-900 font-mono mt-1">
                     {formatUSD(masterTotales.hm_total)}
                   </div>
-                  <div className="text-[10px] text-slate-500">
-                    {safePercent(masterTotales.hm_total, masterTotales.gran_total)} del total
+                  <div className="text-[10px] text-slate-500 flex items-center justify-between">
+                    <span>{safePercent(masterTotales.hm_total, masterTotales.gran_total)} del total</span>
+                    <span className="text-[9px] text-purple-500 hover:underline">1-clic ⚡</span>
+                  </div>
+                </div>
+
+                {/* Costos Indirectos (Filtro Rápido 1 Clic) */}
+                <div 
+                  onClick={() => {
+                    setSelectedTipo(prev => prev === 'Costos Indirectos' ? 'TODOS' : 'Costos Indirectos');
+                    setPageMaster(1);
+                  }}
+                  className={`bg-white border rounded-xl p-3 shadow-xs flex flex-col justify-between min-h-[96px] cursor-pointer transition-all hover:scale-[1.02] col-span-2 sm:col-span-1 ${
+                    selectedTipo === 'Costos Indirectos'
+                      ? 'border-indigo-600 ring-2 ring-indigo-500/30 bg-indigo-50/30 shadow-sm'
+                      : 'border-slate-200 hover:border-indigo-300'
+                  }`}
+                  title={selectedTipo === 'Costos Indirectos' ? 'Filtro activo. Clic para mostrar todos los insumos' : 'Clic para filtrar solo Costos Indirectos'}
+                >
+                  <div className="text-[10px] font-semibold text-indigo-600 uppercase tracking-wider flex items-center justify-between">
+                    <span className="flex items-center gap-1">
+                      Costos Ind. (CIF)
+                      {selectedTipo === 'Costos Indirectos' && (
+                        <span className="text-[8px] bg-indigo-600 text-white px-1 py-0.2 rounded font-bold">FILTRADO</span>
+                      )}
+                    </span>
+                    <Layers className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                  </div>
+                  <div className="text-sm font-bold text-slate-900 font-mono mt-1">
+                    {formatUSD(masterTotales.ind_total || 0)}
+                  </div>
+                  <div className="text-[10px] text-slate-500 flex items-center justify-between">
+                    <span>{safePercent(masterTotales.ind_total || 0, masterTotales.gran_total)} del total</span>
+                    <span className="text-[9px] text-indigo-500 hover:underline">1-clic ⚡</span>
                   </div>
                 </div>
               </div>
