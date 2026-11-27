@@ -59,7 +59,7 @@ interface SigmaSipViewProps {
 
 export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
   const [mesSeleccionado, setMesSeleccionado] = useState<string>('octubre');
-  const [origenFiltro, setOrigenFiltro] = useState<'TODOS' | 'ALMACEN' | 'SERVICIO' | 'COMPRA'>('TODOS');
+  const [origenFiltro, setOrigenFiltro] = useState<'TODOS' | 'ALMACEN' | 'SERVICIO'>('TODOS');
   const [estadoRcFiltro, setEstadoRcFiltro] = useState<'TODOS' | 'CON_RC' | 'SIN_RC'>('TODOS');
   const [tipoCostoFiltro, setTipoCostoFiltro] = useState<string>('TODAS');
   const [cuentaFiltro, setCuentaFiltro] = useState<string>('TODAS');
@@ -171,59 +171,6 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         console.warn('Error cargando unificada:', errUnif);
       }
 
-      // 2. Cargar Compras Directas desde compras.json
-      try {
-        const resCompras = await fetch(`/data/sip/compras.json${cacheBust}`);
-        if (resCompras.ok) {
-          const jsonCompras = await resCompras.json();
-          const comprasList: any[] = jsonCompras.items || (Array.isArray(jsonCompras) ? jsonCompras : []);
-
-          comprasList
-            .filter(cp => (cp.nombre_mes || '').toLowerCase() === mes.toLowerCase())
-            .forEach((cp, idx) => {
-              const cta = (cp.cuentaAuxiliar || '').trim().toUpperCase();
-              let tipoCosto: 'Externo' | 'CAPEX' | 'OPEX' | 'General' = 'Externo';
-              if (cta.startsWith('EE') || cta.startsWith('TT-I') || cta.startsWith('TT-A')) {
-                tipoCosto = 'OPEX';
-              } else if (cta.includes('CAPEX')) {
-                tipoCosto = 'CAPEX';
-              }
-
-              const nomProyecto = CUENTAS_CORTAS_OFICIALES[cta] || cta || 'Sin Asignar';
-              const cantOC = safeNumber(cp.cantidadOC, 0);
-              const cantRec = safeNumber(cp.cantidadRecepcionada, 0);
-              const tieneRC = cantRec >= cantOC && cantOC > 0;
-
-              records.push({
-                id: cp.id || `comp-${idx}`,
-                origen: 'COMPRA',
-                documento: cp.ordenCompra || cp.solicitudCompra || `OC-${idx}`,
-                ocAsociada: cp.ordenCompra || '',
-                fecha: cp.fechaOC || cp.fechaSolicitud || '',
-                cuentaAuxiliar: cta,
-                proyectoNombre: nomProyecto,
-                tipoCosto,
-                codigo: cp.codigo || 'COMPRA',
-                descripcion: cp.descripcion || '',
-                categoria: cp.categoria || 'COMPRAS',
-                cantidad: cantOC,
-                unidad: cp.unidad || 'UND',
-                precioUnitario: safeNumber(cp.precioUnitario, 0),
-                totalUSD: safeNumber(cp.totalUSD, 0),
-                solicitante: cp.solicitante || cp.comprador || 'S/D',
-                proveedorOAlmacen: cp.proveedor || 'Procura TIMACA',
-                motivo: cp.motivo || '',
-                estadoRC: tieneRC ? 'CON_RC' : 'SIN_RC',
-                cantidadOC: cantOC,
-                cantidadRecepcionada: cantRec,
-                mes
-              });
-            });
-        }
-      } catch (errComp) {
-        console.warn('Error cargando compras:', errComp);
-      }
-
       setRawData(records);
     } catch (e) {
       console.error('Error global cargando SIGMA SIP:', e);
@@ -293,8 +240,10 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
     let countAlmacen = 0;
     let totalServiciosUSD = 0;
     let countServicios = 0;
-    let totalComprasUSD = 0;
-    let countCompras = 0;
+    let totalExternosUSD = 0;
+    let countExternos = 0;
+    let totalOpexUSD = 0;
+    let countOpex = 0;
     let totalConRCUSD = 0;
     let totalSinRCUSD = 0;
 
@@ -309,11 +258,14 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         countServicios++;
         if (r.estadoRC === 'CON_RC') totalConRCUSD += r.totalUSD;
         if (r.estadoRC === 'SIN_RC') totalSinRCUSD += r.totalUSD;
-      } else if (r.origen === 'COMPRA') {
-        totalComprasUSD += r.totalUSD;
-        countCompras++;
-        if (r.estadoRC === 'CON_RC') totalConRCUSD += r.totalUSD;
-        if (r.estadoRC === 'SIN_RC') totalSinRCUSD += r.totalUSD;
+      }
+
+      if (r.tipoCosto === 'Externo') {
+        totalExternosUSD += r.totalUSD;
+        countExternos++;
+      } else if (r.tipoCosto === 'OPEX') {
+        totalOpexUSD += r.totalUSD;
+        countOpex++;
       }
     });
 
@@ -323,8 +275,10 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       countAlmacen,
       totalServiciosUSD,
       countServicios,
-      totalComprasUSD,
-      countCompras,
+      totalExternosUSD,
+      countExternos,
+      totalOpexUSD,
+      countOpex,
       totalConRCUSD,
       totalSinRCUSD,
       totalItems: baseData.length
@@ -538,25 +492,50 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           </div>
         </div>
 
-        {/* KPI: Compras Directas */}
+        {/* KPI: Obras Clientes (Externos) */}
         <div 
-          onClick={() => setOrigenFiltro('COMPRA')}
+          onClick={() => setTipoCostoFiltro(tipoCostoFiltro === 'Externo' ? 'TODAS' : 'Externo')}
           className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
-            origenFiltro === 'COMPRA'
+            tipoCostoFiltro === 'Externo'
+              ? 'bg-emerald-50/70 border-emerald-400 ring-2 ring-emerald-500/20'
+              : 'bg-white border-slate-200 hover:border-emerald-300'
+          }`}
+          title="Filtrar por Obras de Clientes (PMH, Pellas, Briquetas, etc.)"
+        >
+          <div className="flex items-center justify-between text-emerald-700 text-xs font-semibold">
+            <span>Obras Clientes (Externos)</span>
+            <Building2 className="w-4 h-4 text-emerald-600" />
+          </div>
+          <div className="mt-2">
+            <div className="text-lg sm:text-xl font-bold text-emerald-950 tracking-tight">
+              {safeFormatUSD(kpis.totalExternosUSD)}
+            </div>
+            <div className="text-[11px] text-emerald-700/80 mt-0.5">
+              {kpis.countExternos.toLocaleString()} movimientos en obra
+            </div>
+          </div>
+        </div>
+
+        {/* KPI: OPEX Flota & Taller */}
+        <div 
+          onClick={() => setTipoCostoFiltro(tipoCostoFiltro === 'OPEX' ? 'TODAS' : 'OPEX')}
+          className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
+            tipoCostoFiltro === 'OPEX'
               ? 'bg-amber-50/70 border-amber-400 ring-2 ring-amber-500/20'
               : 'bg-white border-slate-200 hover:border-amber-300'
           }`}
+          title="Filtrar por Mantenimiento de Flota Pesada, Grúas e Infraestructura"
         >
           <div className="flex items-center justify-between text-amber-700 text-xs font-semibold">
-            <span>Compras Directas</span>
-            <ShoppingBag className="w-4 h-4 text-amber-600" />
+            <span>OPEX Flota & Taller</span>
+            <Layers className="w-4 h-4 text-amber-600" />
           </div>
           <div className="mt-2">
             <div className="text-lg sm:text-xl font-bold text-amber-950 tracking-tight">
-              {safeFormatUSD(kpis.totalComprasUSD)}
+              {safeFormatUSD(kpis.totalOpexUSD)}
             </div>
             <div className="text-[11px] text-amber-700/80 mt-0.5">
-              {kpis.countCompras.toLocaleString()} renglones OC
+              {kpis.countOpex.toLocaleString()} movimientos internos
             </div>
           </div>
         </div>
@@ -566,43 +545,20 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           onClick={() => setEstadoRcFiltro(estadoRcFiltro === 'CON_RC' ? 'TODOS' : 'CON_RC')}
           className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
             estadoRcFiltro === 'CON_RC'
-              ? 'bg-emerald-50/70 border-emerald-400 ring-2 ring-emerald-500/20'
-              : 'bg-white border-slate-200 hover:border-emerald-300'
+              ? 'bg-cyan-50/70 border-cyan-400 ring-2 ring-cyan-500/20'
+              : 'bg-white border-slate-200 hover:border-cyan-300'
           }`}
         >
-          <div className="flex items-center justify-between text-emerald-600 text-xs font-semibold">
-            <span>Con Recepción / RC</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <div className="flex items-center justify-between text-cyan-700 text-xs font-semibold">
+            <span>Confirmado en SIP</span>
+            <CheckCircle2 className="w-4 h-4 text-cyan-600" />
           </div>
           <div className="mt-2">
-            <div className="text-lg sm:text-xl font-bold text-emerald-950 tracking-tight">
+            <div className="text-lg sm:text-xl font-bold text-cyan-950 tracking-tight">
               {safeFormatUSD(kpis.totalConRCUSD)}
             </div>
-            <div className="text-[11px] text-emerald-600/80 mt-0.5">
-              Confirmado en SIP
-            </div>
-          </div>
-        </div>
-
-        {/* KPI: Sin Recepción (Pendiente) */}
-        <div 
-          onClick={() => setEstadoRcFiltro(estadoRcFiltro === 'SIN_RC' ? 'TODOS' : 'SIN_RC')}
-          className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
-            estadoRcFiltro === 'SIN_RC'
-              ? 'bg-rose-50/70 border-rose-400 ring-2 ring-rose-500/20'
-              : 'bg-white border-slate-200 hover:border-rose-300'
-          }`}
-        >
-          <div className="flex items-center justify-between text-rose-600 text-xs font-semibold">
-            <span>Sin RC / En Trámite</span>
-            <AlertTriangle className="w-4 h-4 text-rose-600" />
-          </div>
-          <div className="mt-2">
-            <div className="text-lg sm:text-xl font-bold text-rose-950 tracking-tight">
-              {safeFormatUSD(kpis.totalSinRCUSD)}
-            </div>
-            <div className="text-[11px] text-rose-600/80 mt-0.5">
-              Sin recepción formal
+            <div className="text-[11px] text-cyan-700/80 mt-0.5">
+              100% Auditado SIP Puro
             </div>
           </div>
         </div>
@@ -617,41 +573,32 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           <div className="flex items-center p-1 bg-slate-100 rounded-xl">
             <button
               onClick={() => setOrigenFiltro('TODOS')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                 origenFiltro === 'TODOS' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              Todos ({rawData.length.toLocaleString()})
+              Todos ({kpis.totalItems.toLocaleString()})
             </button>
             <button
               onClick={() => {
                 setOrigenFiltro('ALMACEN');
                 if (estadoRcFiltro === 'SIN_RC') setEstadoRcFiltro('TODOS');
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 origenFiltro === 'ALMACEN' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               <Boxes className="w-3.5 h-3.5" />
-              Almacén (Vales)
+              Almacén (Vales DP)
             </button>
             <button
               onClick={() => setOrigenFiltro('SERVICIO')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 origenFiltro === 'SERVICIO' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               <Briefcase className="w-3.5 h-3.5" />
-              Servicios
-            </button>
-            <button
-              onClick={() => setOrigenFiltro('COMPRA')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-                origenFiltro === 'COMPRA' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              Compras
+              Servicios de Procura (SC/OC)
             </button>
           </div>
 
@@ -759,7 +706,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               <div className="flex items-center gap-2 text-slate-700">
                 <span className="text-slate-500 font-semibold">Mostrando en tabla:</span>
                 <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded-lg border border-slate-200 shadow-2xs">
-                  {origenFiltro === 'TODOS' ? '🌐 Todos los Movimientos SIP' : origenFiltro === 'ALMACEN' ? '📦 Vales de Almacén (Consumo Físico)' : origenFiltro === 'SERVICIO' ? '💼 Servicios de Procura' : '🛍️ Compras Directas'}
+                  {origenFiltro === 'TODOS' ? '🌐 Todos los Movimientos SIP' : origenFiltro === 'ALMACEN' ? '📦 Vales de Almacén (Consumo Físico)' : '💼 Servicios de Procura (SC/OC)'}
                 </span>
                 {estadoRcFiltro !== 'TODOS' && (
                   <span className={`px-2 py-0.5 rounded-lg font-bold border shadow-2xs ${estadoRcFiltro === 'CON_RC' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`}>
@@ -824,13 +771,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                           <Boxes className="w-2.5 h-2.5" /> Almacén
                         </span>
-                      ) : row.origen === 'SERVICIO' ? (
+                      ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
                           <Briefcase className="w-2.5 h-2.5" /> Servicio
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                          <ShoppingBag className="w-2.5 h-2.5" /> Compra
                         </span>
                       )}
                     </td>
