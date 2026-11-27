@@ -63,6 +63,8 @@ export interface SigmaRecord {
   proveedorOAlmacen: string;
   motivo: string;
   condicion?: string;
+  estrella?: boolean;
+  detalleEdicion?: string;
   mes: string;
 }
 
@@ -76,6 +78,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
   const [tipoCostoFiltro, setTipoCostoFiltro] = useState<string>('TODAS');
   const [cuentaFiltro, setCuentaFiltro] = useState<string>('TODAS');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [soloEditadas, setSoloEditadas] = useState<boolean>(false);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [rawData, setRawData] = useState<SigmaRecord[]>([]);
@@ -109,10 +112,21 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           const total = cant * costoUnit;
 
           let tipoCosto: 'Externo' | 'CAPEX' | 'OPEX' | 'General' = 'Externo';
-          if (cta.startsWith('EE') || cta.startsWith('TT-I') || cta.startsWith('TT-A') || cta.includes('INTERNO')) {
-            tipoCosto = 'OPEX';
-          } else if (cta.includes('CAPEX')) {
+          if (
+            cta.startsWith('TT-I') || cta.startsWith('TTI') || cta.startsWith('TT-A') ||
+            cta.includes('INTERNO') || cta.includes('CAPEX') || cta.includes('INVERSION') ||
+            cta.includes('OBRA CIVIL') || cta.includes('GALPON') || cta.includes('PATIO')
+          ) {
             tipoCosto = 'CAPEX';
+          } else if (
+            cta.startsWith('EE') || cta.startsWith('AE') || cta.startsWith('SS-') ||
+            cta.includes('EQUIPO') || cta.includes('MOVIL') || cta.includes('MÓVIL') ||
+            cta.includes('FLOTA') || cta.includes('TALLER') || cta.includes('MANTENIMIENTO') ||
+            cta.includes('ADMIN') || cta.includes('RECURSOS') || cta.includes('SOCIO')
+          ) {
+            tipoCosto = 'OPEX';
+          } else {
+            tipoCosto = 'Externo';
           }
 
           records.push({
@@ -138,6 +152,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
             comprador: 'Almacén TIMACA',
             proveedorOAlmacen: c.almacen || 'ALMCE',
             motivo: c.motivo || '',
+            estrella: Boolean(c.estrella || c.editado === '★'),
+            detalleEdicion: c.detalleEdicion || (c.estrella ? 'Auditado y ajustado por el sistema' : ''),
             mes
           });
         });
@@ -184,8 +200,21 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           }
 
           let tipoCosto: 'Externo' | 'CAPEX' | 'OPEX' | 'General' = 'Externo';
-          if (rawCta.includes('ADMIN') || rawCta.includes('EQUIPO') || rawCta.includes('RECURSOS') || rawCta.includes('INTERNO')) {
+          if (
+            rawCta.startsWith('TT-I') || rawCta.startsWith('TTI') || rawCta.startsWith('TT-A') ||
+            rawCta.includes('INTERNO') || rawCta.includes('CAPEX') || rawCta.includes('INVERSION') ||
+            rawCta.includes('OBRA')
+          ) {
+            tipoCosto = 'CAPEX';
+          } else if (
+            rawCta.startsWith('EE') || rawCta.startsWith('AE') || rawCta.startsWith('SS-') ||
+            rawCta.includes('EQUIPO') || rawCta.includes('MOVIL') || rawCta.includes('MÓVIL') ||
+            rawCta.includes('FLOTA') || rawCta.includes('TALLER') || rawCta.includes('ADMIN') ||
+            rawCta.includes('RECURSOS') || rawCta.includes('SOCIO')
+          ) {
             tipoCosto = 'OPEX';
+          } else {
+            tipoCosto = 'Externo';
           }
 
           records.push({
@@ -212,6 +241,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
             proveedorOAlmacen: cp.proveedor || 'Procura SIP',
             motivo: cp.motivo || cp.justificacion || (cp.condicion ? `Condición: ${cp.condicion}` : 'Orden emitida en Procura SIP'),
             condicion: cp.condicion || '',
+            estrella: Boolean(cp.estrella || cp.editado === '★'),
+            detalleEdicion: cp.detalleEdicion || (cp.estrella ? 'Auditado y ajustado por el sistema' : ''),
             mes
           });
         });
@@ -244,8 +275,16 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       // Filtro Tipo de Costo
       if (tipoCostoFiltro !== 'TODAS' && item.tipoCosto !== tipoCostoFiltro) return false;
 
-      // Filtro Cuenta Auxiliar
-      if (cuentaFiltro !== 'TODAS' && item.cuentaAuxiliar !== cuentaFiltro) return false;
+      // Filtro Cuenta Auxiliar (compara código, nombre amigable y descripción)
+      if (cuentaFiltro !== 'TODAS') {
+        const matchCta = item.cuentaAuxiliar === cuentaFiltro;
+        const matchProy = item.proyectoNombre === cuentaFiltro;
+        const matchDesc = (CUENTAS_CORTAS_OFICIALES[item.cuentaAuxiliar] || '').toUpperCase() === cuentaFiltro.toUpperCase();
+        if (!matchCta && !matchProy && !matchDesc) return false;
+      }
+
+      // Filtro Solo Editadas (Estrella)
+      if (soloEditadas && !item.estrella) return false;
 
       // Buscador Universal
       if (searchTerm.trim()) {
@@ -279,7 +318,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
 
       return true;
     });
-  }, [rawData, tipoCostoFiltro, cuentaFiltro, searchTerm]);
+  }, [rawData, tipoCostoFiltro, cuentaFiltro, searchTerm, soloEditadas]);
 
   // 2. KPIs de los 4 Pilares Operativos SIP
   const kpis = useMemo(() => {
@@ -388,6 +427,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         : r.pilar === 'SERVICIO_SIN_FINIQUITO'
         ? '4. SERVICIO PENDIENTE SIN FINIQUITO'
         : 'COMPRA RECEPCIONADA EN ALMACÉN',
+      'Sistema ★': r.estrella ? '★' : '',
+      'Detalle Edición Sistema': r.detalleEdicion || 'Original sin cambios',
       'Fecha': r.fecha,
       'Solicitud (SC / Pedido)': r.solicitud,
       'Orden Compra (OC / Vale)': r.ordenCompra,
@@ -726,6 +767,20 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               </select>
             </div>
 
+            {/* Filtro Estrella (Líneas Auditadas) */}
+            <button
+              onClick={() => setSoloEditadas(!soloEditadas)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                soloEditadas
+                  ? 'bg-amber-500 text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-amber-50 text-slate-700 hover:text-amber-800 border border-slate-200'
+              }`}
+              title="Filtrar únicamente filas auditadas y ajustadas por el sistema (★)"
+            >
+              <span className={soloEditadas ? 'text-white' : 'text-amber-500 font-bold'}>★</span>
+              <span>{soloEditadas ? 'Solo Editadas (Activo)' : 'Ver Editadas ★'}</span>
+            </button>
+
           </div>
 
           {/* Buscador Universal */}
@@ -814,6 +869,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+                    <th className="py-3 px-2 text-center text-amber-500 font-bold w-8" title="Línea auditada/ajustada por el sistema">
+                      ★
+                    </th>
                     <th
                       className="py-3 px-3 cursor-pointer hover:bg-slate-100/70"
                       onClick={() => {
@@ -869,6 +927,20 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                       key={row.id || idx}
                       className="hover:bg-indigo-50/40 transition-colors"
                     >
+                      {/* Indicador Estrella */}
+                      <td className="py-2.5 px-2 text-center whitespace-nowrap">
+                        {row.estrella ? (
+                          <span
+                            className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-100 text-amber-700 font-bold text-xs cursor-help shadow-xs"
+                            title={row.detalleEdicion || 'Línea auditada y ajustada por el sistema'}
+                          >
+                            ★
+                          </span>
+                        ) : (
+                          <span className="text-slate-200 text-xs">-</span>
+                        )}
+                      </td>
+
                       {/* Fecha */}
                       <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap text-[11px]">
                         {row.fecha || 'S/F'}
@@ -1185,6 +1257,21 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                 </p>
               )}
             </div>
+
+            {/* Trazabilidad de Auditoría del Sistema ★ */}
+            {selectedRecord.estrella && (
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300/80 flex items-start gap-2.5">
+                <span className="text-amber-500 font-bold text-base leading-none mt-0.5">★</span>
+                <div className="space-y-0.5">
+                  <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wide block">
+                    Línea Auditada por el Sistema:
+                  </span>
+                  <p className="text-xs text-amber-950 font-medium">
+                    {selectedRecord.detalleEdicion || 'Auditada con precio real de OC y validación de unidades.'}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end pt-2">
               <button
