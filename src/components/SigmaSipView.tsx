@@ -21,7 +21,8 @@ import {
   Building2,
   DollarSign,
   FileSpreadsheet,
-  Info
+  Info,
+  RotateCcw
 } from 'lucide-react';
 import { safeNumber, safeFormatUSD, safeFormatQuantity } from '../utils/numericHelpers';
 import { CUENTAS_CORTAS_OFICIALES } from '../services/sipDataService';
@@ -244,23 +245,11 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
     return Array.from(set).sort();
   }, [rawData]);
 
-  // Filtrado de datos
-  const filteredData = useMemo(() => {
+  // 1. Ámbito Base: Filtrado por Tipo de Costo, Cuenta Auxiliar y Buscador
+  // Los KPIs superiores se calculan de este ámbito base para que NUNCA se pongan en cero
+  // al hacer clic en una tarjeta o cambiar de pestaña de origen.
+  const baseData = useMemo(() => {
     return rawData.filter(item => {
-      // Filtro Origen
-      if (origenFiltro !== 'TODOS' && item.origen !== origenFiltro) return false;
-
-      // Filtro Estado RC (Recepción formal para Servicios/Compras; Vales de almacén siempre están entregados/ejecutados)
-      if (estadoRcFiltro !== 'TODOS') {
-        if (item.origen === 'ALMACEN') {
-          // Si el usuario filtra por "SIN_RC", excluye los vales (porque los vales ya fueron entregados físicamente)
-          if (estadoRcFiltro === 'SIN_RC') return false;
-        } else {
-          if (estadoRcFiltro === 'CON_RC' && item.estadoRC !== 'CON_RC') return false;
-          if (estadoRcFiltro === 'SIN_RC' && item.estadoRC !== 'SIN_RC') return false;
-        }
-      }
-
       // Filtro Tipo de Costo
       if (tipoCostoFiltro !== 'TODAS' && item.tipoCosto !== tipoCostoFiltro) return false;
 
@@ -295,14 +284,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
 
       return true;
     });
-  }, [rawData, origenFiltro, estadoRcFiltro, tipoCostoFiltro, cuentaFiltro, searchTerm]);
+  }, [rawData, tipoCostoFiltro, cuentaFiltro, searchTerm]);
 
-  // Resetear página al filtrar
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [origenFiltro, estadoRcFiltro, tipoCostoFiltro, cuentaFiltro, searchTerm]);
-
-  // KPIs calculados
+  // 2. KPIs superiores: calculados desde baseData (mantienen siempre visibles los totales reales de cada categoría)
   const kpis = useMemo(() => {
     let totalUSD = 0;
     let totalAlmacenUSD = 0;
@@ -314,7 +298,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
     let totalConRCUSD = 0;
     let totalSinRCUSD = 0;
 
-    filteredData.forEach(r => {
+    baseData.forEach(r => {
       totalUSD += r.totalUSD;
       if (r.origen === 'ALMACEN') {
         totalAlmacenUSD += r.totalUSD;
@@ -343,9 +327,35 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       countCompras,
       totalConRCUSD,
       totalSinRCUSD,
-      totalItems: filteredData.length
+      totalItems: baseData.length
     };
-  }, [filteredData]);
+  }, [baseData]);
+
+  // 3. Filtrado para la tabla de abajo (aplica pestaña de origen y filtro de RC sobre baseData)
+  const filteredData = useMemo(() => {
+    return baseData.filter(item => {
+      // Filtro Origen
+      if (origenFiltro !== 'TODOS' && item.origen !== origenFiltro) return false;
+
+      // Filtro Estado RC (Recepción formal para Servicios/Compras; Vales de almacén siempre están entregados/ejecutados)
+      if (estadoRcFiltro !== 'TODOS') {
+        if (item.origen === 'ALMACEN') {
+          // Si el usuario filtra por "SIN_RC", excluye los vales (porque los vales ya fueron entregados físicamente)
+          if (estadoRcFiltro === 'SIN_RC') return false;
+        } else {
+          if (estadoRcFiltro === 'CON_RC' && item.estadoRC !== 'CON_RC') return false;
+          if (estadoRcFiltro === 'SIN_RC' && item.estadoRC !== 'SIN_RC') return false;
+        }
+      }
+
+      return true;
+    });
+  }, [baseData, origenFiltro, estadoRcFiltro]);
+
+  // Resetear página al filtrar
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [origenFiltro, estadoRcFiltro, tipoCostoFiltro, cuentaFiltro, searchTerm]);
 
   // Paginación
   const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
@@ -450,17 +460,30 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         
         {/* KPI: Gran Total */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-            <span>Gran Total SIP</span>
-            <DollarSign className="w-4 h-4 text-indigo-600" />
+        <div 
+          onClick={() => {
+            setOrigenFiltro('TODOS');
+            setEstadoRcFiltro('TODOS');
+          }}
+          className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
+            origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS'
+              ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-slate-900/20'
+              : 'bg-white border-slate-200 hover:border-slate-400'
+          }`}
+          title="Ver todos los movimientos del mes"
+        >
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span className={origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'text-indigo-200' : 'text-slate-500'}>
+              Gran Total SIP
+            </span>
+            <DollarSign className={`w-4 h-4 ${origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'text-amber-400' : 'text-indigo-600'}`} />
           </div>
           <div className="mt-2">
-            <div className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+            <div className={`text-lg sm:text-xl font-bold tracking-tight ${origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'text-white' : 'text-slate-900'}`}>
               {safeFormatUSD(kpis.totalUSD)}
             </div>
-            <div className="text-[11px] text-slate-400 mt-0.5">
-              {kpis.totalItems.toLocaleString()} movimientos
+            <div className={`text-[11px] mt-0.5 ${origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'text-slate-300' : 'text-slate-400'}`}>
+              {kpis.totalItems.toLocaleString()} movimientos totales
             </div>
           </div>
         </div>
@@ -730,8 +753,47 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
             <p className="text-xs text-slate-400">Intenta cambiar el origen, la cuenta auxiliar o el término de búsqueda.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+          <>
+            {/* Banner de resumen de lo mostrado en tabla */}
+            <div className="bg-slate-50/90 px-4 py-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs select-none">
+              <div className="flex items-center gap-2 text-slate-700">
+                <span className="text-slate-500 font-semibold">Mostrando en tabla:</span>
+                <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded-lg border border-slate-200 shadow-2xs">
+                  {origenFiltro === 'TODOS' ? '🌐 Todos los Movimientos SIP' : origenFiltro === 'ALMACEN' ? '📦 Vales de Almacén (Consumo Físico)' : origenFiltro === 'SERVICIO' ? '💼 Servicios de Procura' : '🛍️ Compras Directas'}
+                </span>
+                {estadoRcFiltro !== 'TODOS' && (
+                  <span className={`px-2 py-0.5 rounded-lg font-bold border shadow-2xs ${estadoRcFiltro === 'CON_RC' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`}>
+                    {estadoRcFiltro === 'CON_RC' ? '✓ Con Recepción / Despachados' : '⚠️ Sin Recepción Formal'}
+                  </span>
+                )}
+                <span className="text-slate-400">•</span>
+                <span className="font-mono font-bold text-indigo-950 text-sm">
+                  {safeFormatUSD(filteredData.reduce((acc, r) => acc + r.totalUSD, 0))}
+                </span>
+                <span className="text-slate-500">
+                  ({filteredData.length.toLocaleString()} movimientos)
+                </span>
+              </div>
+
+              {(origenFiltro !== 'TODOS' || estadoRcFiltro !== 'TODOS' || tipoCostoFiltro !== 'TODAS' || cuentaFiltro !== 'TODAS' || searchTerm) && (
+                <button
+                  onClick={() => {
+                    setOrigenFiltro('TODOS');
+                    setEstadoRcFiltro('TODOS');
+                    setTipoCostoFiltro('TODAS');
+                    setCuentaFiltro('TODAS');
+                    setSearchTerm('');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white hover:bg-slate-100 text-indigo-600 hover:text-indigo-800 font-bold border border-slate-200 shadow-2xs transition cursor-pointer text-xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Restablecer a Todo ({kpis.totalItems.toLocaleString()} movs • {safeFormatUSD(kpis.totalUSD)})
+                </button>
+              )}
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
                   <th className="py-3 px-3">Fecha</th>
@@ -835,6 +897,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               </tbody>
             </table>
           </div>
+        </>
         )}
 
         {/* Paginador */}
