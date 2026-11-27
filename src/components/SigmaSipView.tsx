@@ -62,6 +62,7 @@ export interface SigmaRecord {
   comprador: string;
   proveedorOAlmacen: string;
   motivo: string;
+  condicion?: string;
   mes: string;
 }
 
@@ -206,10 +207,11 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
             unidad: isServicio ? 'USE' : 'UND',
             precioUnitario: precioUnit,
             totalUSD: totalUSD,
-            solicitante: cp.comprador || 'Procura SIP',
+            solicitante: cp.solicitante || cp.solicitado_por || cp.comprador || 'Procura SIP',
             comprador: cp.comprador || 'Procura SIP',
             proveedorOAlmacen: cp.proveedor || 'Procura SIP',
-            motivo: cp.condicion ? `Condición: ${cp.condicion}` : 'Orden emitida en Procura SIP',
+            motivo: cp.motivo || cp.justificacion || (cp.condicion ? `Condición: ${cp.condicion}` : 'Orden emitida en Procura SIP'),
+            condicion: cp.condicion || '',
             mes
           });
         });
@@ -1174,9 +1176,14 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                 <Info className="w-3.5 h-3.5 text-amber-600" />
                 Información / Justificación SIP:
               </span>
-              <p className="text-xs text-amber-950 leading-relaxed italic">
+              <p className="text-xs text-amber-950 leading-relaxed font-medium">
                 "{selectedRecord.motivo || 'Sin texto adicional registrado en SIP.'}"
               </p>
+              {selectedRecord.condicion && (
+                <p className="text-[11px] text-amber-800/80 mt-1 font-semibold">
+                  Condición de pago: {selectedRecord.condicion}
+                </p>
+              )}
             </div>
 
             <div className="flex justify-end pt-2">
