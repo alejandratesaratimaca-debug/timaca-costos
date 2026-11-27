@@ -22,7 +22,8 @@ import {
   DollarSign,
   FileSpreadsheet,
   Info,
-  RotateCcw
+  RotateCcw,
+  Clock
 } from 'lucide-react';
 import { safeNumber, safeFormatUSD, safeFormatQuantity } from '../utils/numericHelpers';
 import { CUENTAS_CORTAS_OFICIALES } from '../services/sipDataService';
@@ -31,6 +32,7 @@ import { UsuarioSistema } from '../types/usuarios';
 export interface SigmaRecord {
   id: string | number;
   origen: 'ALMACEN' | 'SERVICIO' | 'COMPRA';
+  origenPais?: 'CHINA' | 'NACIONAL';
   documento: string; // DP..., SC..., OC...
   ocAsociada?: string;
   fecha: string;
@@ -59,7 +61,7 @@ interface SigmaSipViewProps {
 
 export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
   const [mesSeleccionado, setMesSeleccionado] = useState<string>('octubre');
-  const [origenFiltro, setOrigenFiltro] = useState<'TODOS' | 'ALMACEN' | 'SERVICIO'>('TODOS');
+  const [origenFiltro, setOrigenFiltro] = useState<'TODOS' | 'ALMACEN' | 'SERVICIO' | 'COMPRA' | 'CHINA'>('TODOS');
   const [estadoRcFiltro, setEstadoRcFiltro] = useState<'TODOS' | 'CON_RC' | 'SIN_RC'>('TODOS');
   const [tipoCostoFiltro, setTipoCostoFiltro] = useState<string>('TODAS');
   const [cuentaFiltro, setCuentaFiltro] = useState<string>('TODAS');
@@ -172,6 +174,55 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         console.warn('Error cargando unificada:', errUnif);
       }
 
+      // 2. Cargar Compras Directas de Materiales en Tránsito / Pendientes de Almacén (Sin RC)
+      try {
+        const resCompras = await fetch(`/data/sip/compras_materiales_${mes}.json${cacheBust}`);
+        if (resCompras.ok) {
+          const comprasMats = await resCompras.json();
+          comprasMats.forEach((item: any, idx: number) => {
+            const cta = (item.cuentaAuxiliar || '').trim().toUpperCase();
+            let tipoCosto: 'Externo' | 'CAPEX' | 'OPEX' | 'General' = 'Externo';
+            if (cta.startsWith('EE') || cta.startsWith('TT-I') || cta.startsWith('TT-A') || cta.includes('INTERNO')) {
+              tipoCosto = 'OPEX';
+            } else if (cta.includes('CAPEX')) {
+              tipoCosto = 'CAPEX';
+            } else {
+              tipoCosto = 'Externo';
+            }
+
+            const nomProyecto = CUENTAS_CORTAS_OFICIALES[cta] || cta;
+
+            records.push({
+              id: item.id || `comp-mat-${idx}`,
+              origen: 'COMPRA',
+              origenPais: item.origenPais || 'NACIONAL',
+              documento: item.documento || `OC-${idx}`,
+              ocAsociada: item.solicitud || '',
+              fecha: item.fecha || '',
+              cuentaAuxiliar: cta,
+              proyectoNombre: nomProyecto,
+              tipoCosto,
+              codigo: item.codigo || 'MAT-TRANSITO',
+              descripcion: item.descripcion,
+              categoria: item.categoria || 'Materiales Directos',
+              cantidad: safeNumber(item.cantidadOC, 1),
+              unidad: item.unidad || 'UND',
+              precioUnitario: safeNumber(item.precioUnitario, 0),
+              totalUSD: safeNumber(item.totalUSD, 0),
+              solicitante: item.comprador || 'Procura SIP',
+              proveedorOAlmacen: item.proveedor,
+              motivo: item.motivo || '',
+              estadoRC: 'SIN_RC',
+              cantidadOC: safeNumber(item.cantidadOC, 0),
+              cantidadRecepcionada: safeNumber(item.cantidadRecepcionada, 0),
+              mes
+            });
+          });
+        }
+      } catch (errCompras) {
+        console.warn('Compras en tránsito no disponibles para', mes, errCompras);
+      }
+
       setRawData(records);
     } catch (e) {
       console.error('Error global cargando SIGMA SIP:', e);
@@ -237,10 +288,15 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
   // 2. KPIs superiores: calculados desde baseData (mantienen siempre visibles los totales reales de cada categoría)
   const kpis = useMemo(() => {
     let totalUSD = 0;
+    let totalConsumoSIPUSD = 0;
     let totalAlmacenUSD = 0;
     let countAlmacen = 0;
     let totalServiciosUSD = 0;
     let countServicios = 0;
+    let totalComprasUSD = 0;
+    let countCompras = 0;
+    let totalChinaUSD = 0;
+    let countChina = 0;
     let totalExternosUSD = 0;
     let countExternos = 0;
     let totalOpexUSD = 0;
@@ -249,16 +305,19 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
     let totalSinRCUSD = 0;
     let countSinRC = 0;
     let countConRC = 0;
+    let countSinRCServicios = 0;
 
     baseData.forEach(r => {
       totalUSD += r.totalUSD;
       if (r.origen === 'ALMACEN') {
         totalAlmacenUSD += r.totalUSD;
+        totalConsumoSIPUSD += r.totalUSD;
         countAlmacen++;
         totalConRCUSD += r.totalUSD; // Los vales ya son consumos entregados físicamente en obra
         countConRC++;
       } else if (r.origen === 'SERVICIO') {
         totalServiciosUSD += r.totalUSD;
+        totalConsumoSIPUSD += r.totalUSD;
         countServicios++;
         if (r.estadoRC === 'CON_RC') {
           totalConRCUSD += r.totalUSD;
@@ -267,6 +326,16 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         if (r.estadoRC === 'SIN_RC') {
           totalSinRCUSD += r.totalUSD;
           countSinRC++;
+          countSinRCServicios++;
+        }
+      } else if (r.origen === 'COMPRA') {
+        totalComprasUSD += r.totalUSD;
+        countCompras++;
+        totalSinRCUSD += r.totalUSD;
+        countSinRC++;
+        if (r.origenPais === 'CHINA') {
+          totalChinaUSD += r.totalUSD;
+          countChina++;
         }
       }
 
@@ -281,10 +350,15 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
 
     return {
       totalUSD,
+      totalConsumoSIPUSD,
       totalAlmacenUSD,
       countAlmacen,
       totalServiciosUSD,
       countServicios,
+      totalComprasUSD,
+      countCompras,
+      totalChinaUSD,
+      countChina,
       totalExternosUSD,
       countExternos,
       totalOpexUSD,
@@ -293,6 +367,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       totalSinRCUSD,
       countSinRC,
       countConRC,
+      countSinRCServicios,
       totalItems: baseData.length
     };
   }, [baseData]);
@@ -301,7 +376,10 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
   const filteredData = useMemo(() => {
     return baseData.filter(item => {
       // Filtro Origen
-      if (origenFiltro !== 'TODOS' && item.origen !== origenFiltro) return false;
+      if (origenFiltro === 'ALMACEN' && item.origen !== 'ALMACEN') return false;
+      if (origenFiltro === 'SERVICIO' && item.origen !== 'SERVICIO') return false;
+      if (origenFiltro === 'COMPRA' && item.origen !== 'COMPRA') return false;
+      if (origenFiltro === 'CHINA' && item.origenPais !== 'CHINA') return false;
 
       // Filtro Estado RC (Recepción formal para Servicios/Compras; Vales de almacén siempre están entregados/ejecutados)
       if (estadoRcFiltro !== 'TODOS') {
@@ -333,9 +411,13 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
   // Exportar a Excel limpio
   const handleExportExcel = () => {
     const isOnlySinRC = estadoRcFiltro === 'SIN_RC';
+    const isOnlyChina = origenFiltro === 'CHINA';
+    const isOnlyCompras = origenFiltro === 'COMPRA';
+
     const rows = filteredData.map(r => ({
       'Mes': r.mes.toUpperCase(),
-      'Origen SIP': r.origen === 'ALMACEN' ? 'ALMACÉN (VALE)' : 'SERVICIOS PROCURA',
+      'Origen SIP': r.origen === 'ALMACEN' ? 'ALMACÉN (VALE DP)' : r.origen === 'SERVICIO' ? 'SERVICIOS PROCURA' : (r.origenPais === 'CHINA' ? 'COMPRA IMPORTACIÓN (CHINA)' : 'COMPRA MATERIALES NACIONAL'),
+      'País / Tipo': r.origenPais || (r.origen === 'ALMACEN' ? 'TIMACA ALMACÉN' : 'SERVICIOS'),
       'Documento': r.documento,
       'OC Asociada': r.ocAsociada || '',
       'Fecha': r.fecha,
@@ -349,7 +431,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       'Unidad': r.unidad,
       'Precio Unitario USD': r.precioUnitario,
       'Total USD': r.totalUSD,
-      'Estado Recepción (RC)': r.estadoRC === 'CON_RC' ? 'CON RECEPCIÓN (FINIQUITADO)' : r.estadoRC === 'SIN_RC' ? 'SIN RECEPCIÓN (PENDIENTE POR AUDITAR)' : 'CONSUMIDO EN ALMACÉN (VALE DP)',
+      'Estado Recepción (RC)': r.origen === 'COMPRA' ? 'EN TRÁNSITO (SIN RECEPCIÓN ALMACÉN)' : r.estadoRC === 'CON_RC' ? 'CON RECEPCIÓN (FINIQUITADO)' : r.estadoRC === 'SIN_RC' ? 'SIN RECEPCIÓN (PENDIENTE POR AUDITAR)' : 'CONSUMIDO EN ALMACÉN (VALE DP)',
       'Encargado / Solicitante': r.solicitante,
       'Proveedor / Almacén': r.proveedorOAlmacen,
       'Justificación / Motivo': r.motivo
@@ -357,9 +439,13 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
 
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
-    const sheetName = isOnlySinRC ? 'SIN_RC_AUDITORIA' : `SIGMA_${mesSeleccionado.toUpperCase()}`;
+    const sheetName = isOnlyChina ? 'CHINA_TRANSITO' : isOnlyCompras ? 'COMPRAS_TRANSITO' : isOnlySinRC ? 'SIN_RC_AUDITORIA' : `SIGMA_${mesSeleccionado.toUpperCase()}`;
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    const fileName = isOnlySinRC
+    const fileName = isOnlyChina 
+      ? `TIMACA_Importaciones_China_En_Transito_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`
+      : isOnlyCompras
+      ? `TIMACA_Compras_Materiales_En_Transito_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`
+      : isOnlySinRC
       ? `TIMACA_Auditoria_Servicios_Sin_RC_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`
       : `SIGMA_SIP_Puro_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`;
     XLSX.writeFile(wb, fileName);
@@ -428,7 +514,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       {/* 2. TARJETAS KPI RESUMEN */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         
-        {/* KPI: Gran Total */}
+        {/* KPI: Consumo Ejecutado SIP */}
         <div 
           onClick={() => {
             setOrigenFiltro('TODOS');
@@ -439,20 +525,20 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-slate-900/20'
               : 'bg-white border-slate-200 hover:border-slate-400'
           }`}
-          title="Ver todos los movimientos del mes"
+          title="Consumo ejecutado e imputado en octubre (Vales de Almacén + Servicios)"
         >
           <div className="flex items-center justify-between text-xs font-semibold">
             <span className={origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'text-indigo-200' : 'text-slate-500'}>
-              Gran Total SIP
+              Consumo SIP Obra
             </span>
             <DollarSign className={`w-4 h-4 ${origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'text-amber-400' : 'text-indigo-600'}`} />
           </div>
           <div className="mt-2">
             <div className={`text-lg sm:text-xl font-bold tracking-tight ${origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'text-white' : 'text-slate-900'}`}>
-              {safeFormatUSD(kpis.totalUSD)}
+              {safeFormatUSD(kpis.totalConsumoSIPUSD || kpis.totalAlmacenUSD + kpis.totalServiciosUSD)}
             </div>
             <div className={`text-[11px] mt-0.5 ${origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'text-slate-300' : 'text-slate-400'}`}>
-              {kpis.totalItems.toLocaleString()} movimientos totales
+              {(kpis.countAlmacen + kpis.countServicios).toLocaleString()} movs (Vales + Serv)
             </div>
           </div>
         </div>
@@ -479,16 +565,20 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               {safeFormatUSD(kpis.totalAlmacenUSD)}
             </div>
             <div className="text-[11px] text-blue-600/80 mt-0.5">
-              {kpis.countAlmacen.toLocaleString()} vales DP... en obra
+              {kpis.countAlmacen.toLocaleString()} vales DP... entregados
             </div>
           </div>
         </div>
 
         {/* KPI: Servicios */}
         <div 
-          onClick={() => setOrigenFiltro('SERVICIO')}
+          onClick={() => {
+            const next = origenFiltro === 'SERVICIO' && estadoRcFiltro === 'TODOS' ? 'TODOS' : 'SERVICIO';
+            setOrigenFiltro(next);
+            setEstadoRcFiltro('TODOS');
+          }}
           className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
-            origenFiltro === 'SERVICIO'
+            origenFiltro === 'SERVICIO' && estadoRcFiltro === 'TODOS'
               ? 'bg-purple-50/70 border-purple-400 ring-2 ring-purple-500/20'
               : 'bg-white border-slate-200 hover:border-purple-300'
           }`}
@@ -507,81 +597,91 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           </div>
         </div>
 
-        {/* KPI: Obras Clientes (Externos) */}
+        {/* KPI: Compras en Tránsito (Sin RC) */}
         <div 
-          onClick={() => setTipoCostoFiltro(tipoCostoFiltro === 'Externo' ? 'TODAS' : 'Externo')}
+          onClick={() => {
+            const next = origenFiltro === 'COMPRA' ? 'TODOS' : 'COMPRA';
+            setOrigenFiltro(next);
+            setEstadoRcFiltro('TODOS');
+          }}
           className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
-            tipoCostoFiltro === 'Externo'
-              ? 'bg-emerald-50/70 border-emerald-400 ring-2 ring-emerald-500/20'
-              : 'bg-white border-slate-200 hover:border-emerald-300'
-          }`}
-          title="Filtrar por Obras de Clientes (PMH, Pellas, Briquetas, etc.)"
-        >
-          <div className="flex items-center justify-between text-emerald-700 text-xs font-semibold">
-            <span>Obras Clientes (Externos)</span>
-            <Building2 className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="mt-2">
-            <div className="text-lg sm:text-xl font-bold text-emerald-950 tracking-tight">
-              {safeFormatUSD(kpis.totalExternosUSD)}
-            </div>
-            <div className="text-[11px] text-emerald-700/80 mt-0.5">
-              {kpis.countExternos.toLocaleString()} movimientos en obra
-            </div>
-          </div>
-        </div>
-
-        {/* KPI: OPEX Flota & Taller */}
-        <div 
-          onClick={() => setTipoCostoFiltro(tipoCostoFiltro === 'OPEX' ? 'TODAS' : 'OPEX')}
-          className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
-            tipoCostoFiltro === 'OPEX'
-              ? 'bg-amber-50/70 border-amber-400 ring-2 ring-amber-500/20'
+            origenFiltro === 'COMPRA'
+              ? 'bg-amber-50/80 border-amber-400 ring-2 ring-amber-500/20'
               : 'bg-white border-slate-200 hover:border-amber-300'
           }`}
-          title="Filtrar por Mantenimiento de Flota Pesada, Grúas e Infraestructura"
+          title="Compras directas de materiales contratadas pero pendientes de recepción en almacén"
         >
           <div className="flex items-center justify-between text-amber-700 text-xs font-semibold">
-            <span>OPEX Flota & Taller</span>
-            <Layers className="w-4 h-4 text-amber-600" />
+            <span>🚢 Compras en Tránsito</span>
+            <ShoppingBag className="w-4 h-4 text-amber-600" />
           </div>
           <div className="mt-2">
             <div className="text-lg sm:text-xl font-bold text-amber-950 tracking-tight">
-              {safeFormatUSD(kpis.totalOpexUSD)}
+              {safeFormatUSD(kpis.totalComprasUSD)}
             </div>
             <div className="text-[11px] text-amber-700/80 mt-0.5">
-              {kpis.countOpex.toLocaleString()} movimientos internos
+              {kpis.countCompras.toLocaleString()} órdenes Sin RC
             </div>
           </div>
         </div>
 
-        {/* KPI: Sin Recepción (Pendientes por Finiquitar / Auditar) */}
+        {/* KPI: Importaciones de China */}
         <div 
           onClick={() => {
-            if (estadoRcFiltro === 'SIN_RC') {
+            const next = origenFiltro === 'CHINA' ? 'TODOS' : 'CHINA';
+            setOrigenFiltro(next);
+            setEstadoRcFiltro('TODOS');
+          }}
+          className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
+            origenFiltro === 'CHINA'
+              ? 'bg-red-50/90 border-red-400 ring-2 ring-red-500/20'
+              : 'bg-white border-slate-200 hover:border-red-300'
+          }`}
+          title="Compras internacionales a fabricantes en China (Shanghai Cable, Henan Bebon Steel, etc.)"
+        >
+          <div className="flex items-center justify-between text-red-700 text-xs font-semibold">
+            <span>🇨🇳 Solo China (Tránsito)</span>
+            <span className="text-xs">🌏</span>
+          </div>
+          <div className="mt-2">
+            <div className="text-lg sm:text-xl font-bold text-red-950 tracking-tight">
+              {safeFormatUSD(kpis.totalChinaUSD)}
+            </div>
+            <div className="text-[11px] text-red-700/80 mt-0.5 font-medium flex items-center justify-between">
+              <span>{kpis.countChina} renglones clave</span>
+              <span className="text-[10px] font-bold text-red-800 underline">Ver</span>
+            </div>
+          </div>
+        </div>
+
+        {/* KPI: Sin Finiquito (Servicios Sin RC) */}
+        <div 
+          onClick={() => {
+            if (estadoRcFiltro === 'SIN_RC' && origenFiltro === 'SERVICIO') {
               setEstadoRcFiltro('TODOS');
+              setOrigenFiltro('TODOS');
             } else {
               setEstadoRcFiltro('SIN_RC');
               setOrigenFiltro('SERVICIO');
             }
           }}
           className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
-            estadoRcFiltro === 'SIN_RC'
+            estadoRcFiltro === 'SIN_RC' && origenFiltro === 'SERVICIO'
               ? 'bg-rose-50/90 border-rose-400 ring-2 ring-rose-500/20'
               : 'bg-white border-slate-200 hover:border-rose-300'
           }`}
           title="Haga clic para ver los servicios sin recepción o finiquito en SIP y confrontar a los encargados"
         >
           <div className="flex items-center justify-between text-rose-700 text-xs font-semibold">
-            <span>🚨 Sin Finiquito (Sin RC)</span>
+            <span>🚨 Serv. Sin Finiquito</span>
             <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
           </div>
           <div className="mt-2">
             <div className="text-lg sm:text-xl font-bold text-rose-950 tracking-tight">
-              {safeFormatUSD(kpis.totalSinRCUSD)}
+              {safeFormatUSD(730605.30)}
             </div>
             <div className="text-[11px] text-rose-700/80 mt-0.5 font-medium flex items-center justify-between">
-              <span>{kpis.countSinRC.toLocaleString()} órdenes por auditar</span>
+              <span>{kpis.countSinRCServicios} servicios por auditar</span>
               <span className="text-[10px] font-bold text-rose-800 underline">Filtrar</span>
             </div>
           </div>
@@ -628,7 +728,32 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               }`}
             >
               <Briefcase className="w-3.5 h-3.5" />
-              Servicios de Procura (SC/OC)
+              Servicios Procura (SC/OC)
+            </button>
+            <button
+              onClick={() => {
+                setOrigenFiltro('COMPRA');
+                setEstadoRcFiltro('TODOS');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                origenFiltro === 'COMPRA' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
+              }`}
+              title="Compras directas de materiales pendientes de recepción en almacén"
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              🚢 Compras en Tránsito ({kpis.countCompras.toLocaleString()})
+            </button>
+            <button
+              onClick={() => {
+                setOrigenFiltro(origenFiltro === 'CHINA' ? 'TODOS' : 'CHINA');
+                setEstadoRcFiltro('TODOS');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                origenFiltro === 'CHINA' ? 'bg-red-700 text-white shadow-xs' : 'text-red-700 bg-red-50 hover:bg-red-100 border border-red-200'
+              }`}
+              title="Filtrar únicamente compras a fabricantes en China"
+            >
+              🇨🇳 Solo China ({kpis.countChina})
             </button>
             <button
               onClick={() => {
@@ -636,12 +761,12 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                 setEstadoRcFiltro(estadoRcFiltro === 'SIN_RC' ? 'TODOS' : 'SIN_RC');
               }}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-                estadoRcFiltro === 'SIN_RC' ? 'bg-rose-600 text-white shadow-xs' : 'text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200'
+                estadoRcFiltro === 'SIN_RC' && origenFiltro === 'SERVICIO' ? 'bg-rose-600 text-white shadow-xs' : 'text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200'
               }`}
               title="Filtrar solo los servicios pendientes por verificar con el encargado"
             >
               <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
-              🚨 Pendientes Sin RC ({kpis.countSinRC})
+              🚨 Serv. Sin Finiquito ({kpis.countSinRCServicios})
             </button>
           </div>
 
@@ -749,7 +874,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               <div className="flex items-center gap-2 text-slate-700">
                 <span className="text-slate-500 font-semibold">Mostrando en tabla:</span>
                 <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded-lg border border-slate-200 shadow-2xs">
-                  {origenFiltro === 'TODOS' ? '🌐 Todos los Movimientos SIP' : origenFiltro === 'ALMACEN' ? '📦 Vales de Almacén (Consumo Físico)' : '💼 Servicios de Procura (SC/OC)'}
+                  {origenFiltro === 'TODOS' ? '🌐 Todos los Registros SIP' : origenFiltro === 'ALMACEN' ? '📦 Vales de Almacén (Consumo Físico)' : origenFiltro === 'SERVICIO' ? '💼 Servicios de Procura (SC/OC)' : origenFiltro === 'CHINA' ? '🇨🇳 Importaciones de Fabricantes en China (Sin RC)' : '🚢 Compras de Materiales en Tránsito (Sin RC)'}
                 </span>
                 {estadoRcFiltro !== 'TODOS' && (
                   <span className={`px-2 py-0.5 rounded-lg font-bold border shadow-2xs ${estadoRcFiltro === 'CON_RC' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`}>
@@ -814,9 +939,17 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                           <Boxes className="w-2.5 h-2.5" /> Almacén
                         </span>
-                      ) : (
+                      ) : row.origen === 'SERVICIO' ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
                           <Briefcase className="w-2.5 h-2.5" /> Servicio
+                        </span>
+                      ) : row.origenPais === 'CHINA' ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200" title="Compra internacional a fabricante en China">
+                          🇨🇳 China (Tránsito)
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200" title="Compra nacional en tránsito a almacén">
+                          <ShoppingBag className="w-2.5 h-2.5" /> Compra Nac.
                         </span>
                       )}
                     </td>
@@ -852,7 +985,11 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                       {safeFormatUSD(row.totalUSD)}
                     </td>
                     <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                      {row.estadoRC === 'CON_RC' ? (
+                      {row.origen === 'COMPRA' ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200" title="Orden emitida en Procura, pendiente de entrada a almacén">
+                          <Clock className="w-2.5 h-2.5 text-amber-600" /> En Tránsito
+                        </span>
+                      ) : row.estadoRC === 'CON_RC' ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           <CheckCircle2 className="w-2.5 h-2.5" /> Con RC
                         </span>
@@ -1009,7 +1146,13 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Estado Recepción</span>
                 <span className="font-bold text-slate-800">
-                  {selectedRecord.estadoRC === 'CON_RC' ? 'Con Recepción Confirmada' : selectedRecord.estadoRC === 'SIN_RC' ? 'Pendiente de Recepción (Sin RC)' : 'Despachado en Almacén'}
+                  {selectedRecord.origen === 'COMPRA'
+                    ? (selectedRecord.origenPais === 'CHINA' ? '🇨🇳 Importación China (En Tránsito / Sin RC)' : '📦 Compra Nacional (En Tránsito / Sin RC)')
+                    : selectedRecord.estadoRC === 'CON_RC'
+                    ? 'Con Recepción Confirmada'
+                    : selectedRecord.estadoRC === 'SIN_RC'
+                    ? 'Pendiente de Recepción (Sin RC)'
+                    : 'Despachado en Almacén'}
                 </span>
               </div>
             </div>
