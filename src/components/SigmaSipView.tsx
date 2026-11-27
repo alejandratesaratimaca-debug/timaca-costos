@@ -117,6 +117,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
             const nomProyecto = CUENTAS_CORTAS_OFICIALES[cta] || item.datos_descripcion || cta || 'Sin Asignar';
 
             if (isServicio) {
+              const hasRC = Boolean(item.recepcion || item.rc || item.numRecepcion);
               // Servicio de Procura
               records.push({
                 id: item.id || `serv-${idx}`,
@@ -134,10 +135,10 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                 unidad: item.unidad || 'USE',
                 precioUnitario: safeNumber(item.precio_final || item.precio_dolar, 0),
                 totalUSD: safeNumber(item.total_usd, 0),
-                solicitante: item.solicitante || 'S/D',
+                solicitante: item.solicitante || item.comprador || item.creadaPor || 'S/D',
                 proveedorOAlmacen: item.proveedor || item.almacen || 'Procura SIP',
                 motivo: item.motivo || '',
-                estadoRC: item.total_usd > 0 ? 'CON_RC' : 'SIN_RC',
+                estadoRC: hasRC ? 'CON_RC' : 'SIN_RC',
                 mes
               });
             } else if (numStr.startsWith('DP') || item.almacen) {
@@ -246,6 +247,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
     let countOpex = 0;
     let totalConRCUSD = 0;
     let totalSinRCUSD = 0;
+    let countSinRC = 0;
+    let countConRC = 0;
 
     baseData.forEach(r => {
       totalUSD += r.totalUSD;
@@ -253,11 +256,18 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         totalAlmacenUSD += r.totalUSD;
         countAlmacen++;
         totalConRCUSD += r.totalUSD; // Los vales ya son consumos entregados físicamente en obra
+        countConRC++;
       } else if (r.origen === 'SERVICIO') {
         totalServiciosUSD += r.totalUSD;
         countServicios++;
-        if (r.estadoRC === 'CON_RC') totalConRCUSD += r.totalUSD;
-        if (r.estadoRC === 'SIN_RC') totalSinRCUSD += r.totalUSD;
+        if (r.estadoRC === 'CON_RC') {
+          totalConRCUSD += r.totalUSD;
+          countConRC++;
+        }
+        if (r.estadoRC === 'SIN_RC') {
+          totalSinRCUSD += r.totalUSD;
+          countSinRC++;
+        }
       }
 
       if (r.tipoCosto === 'Externo') {
@@ -281,6 +291,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       countOpex,
       totalConRCUSD,
       totalSinRCUSD,
+      countSinRC,
+      countConRC,
       totalItems: baseData.length
     };
   }, [baseData]);
@@ -320,9 +332,10 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
 
   // Exportar a Excel limpio
   const handleExportExcel = () => {
+    const isOnlySinRC = estadoRcFiltro === 'SIN_RC';
     const rows = filteredData.map(r => ({
       'Mes': r.mes.toUpperCase(),
-      'Origen SIP': r.origen,
+      'Origen SIP': r.origen === 'ALMACEN' ? 'ALMACÉN (VALE)' : 'SERVICIOS PROCURA',
       'Documento': r.documento,
       'OC Asociada': r.ocAsociada || '',
       'Fecha': r.fecha,
@@ -336,18 +349,20 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       'Unidad': r.unidad,
       'Precio Unitario USD': r.precioUnitario,
       'Total USD': r.totalUSD,
-      'Estado Recepción (RC)': r.estadoRC === 'CON_RC' ? 'CON RC' : r.estadoRC === 'SIN_RC' ? 'SIN RC' : 'CONSUMIDO EN ALMACÉN',
-      'Cant. OC': r.cantidadOC ?? '',
-      'Cant. Recepcionada': r.cantidadRecepcionada ?? '',
-      'Solicitante': r.solicitante,
+      'Estado Recepción (RC)': r.estadoRC === 'CON_RC' ? 'CON RECEPCIÓN (FINIQUITADO)' : r.estadoRC === 'SIN_RC' ? 'SIN RECEPCIÓN (PENDIENTE POR AUDITAR)' : 'CONSUMIDO EN ALMACÉN (VALE DP)',
+      'Encargado / Solicitante': r.solicitante,
       'Proveedor / Almacén': r.proveedorOAlmacen,
       'Justificación / Motivo': r.motivo
     }));
 
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `SIGMA_${mesSeleccionado.toUpperCase()}`);
-    XLSX.writeFile(wb, `SIGMA_SIP_Puro_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    const sheetName = isOnlySinRC ? 'SIN_RC_AUDITORIA' : `SIGMA_${mesSeleccionado.toUpperCase()}`;
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const fileName = isOnlySinRC
+      ? `TIMACA_Auditoria_Servicios_Sin_RC_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`
+      : `SIGMA_SIP_Puro_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    XLSX.writeFile(wb, fileName);
   };
 
   return (
@@ -540,25 +555,34 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           </div>
         </div>
 
-        {/* KPI: Con Recepción (RC) */}
+        {/* KPI: Sin Recepción (Pendientes por Finiquitar / Auditar) */}
         <div 
-          onClick={() => setEstadoRcFiltro(estadoRcFiltro === 'CON_RC' ? 'TODOS' : 'CON_RC')}
+          onClick={() => {
+            if (estadoRcFiltro === 'SIN_RC') {
+              setEstadoRcFiltro('TODOS');
+            } else {
+              setEstadoRcFiltro('SIN_RC');
+              setOrigenFiltro('SERVICIO');
+            }
+          }}
           className={`rounded-2xl p-4 border transition cursor-pointer flex flex-col justify-between ${
-            estadoRcFiltro === 'CON_RC'
-              ? 'bg-cyan-50/70 border-cyan-400 ring-2 ring-cyan-500/20'
-              : 'bg-white border-slate-200 hover:border-cyan-300'
+            estadoRcFiltro === 'SIN_RC'
+              ? 'bg-rose-50/90 border-rose-400 ring-2 ring-rose-500/20'
+              : 'bg-white border-slate-200 hover:border-rose-300'
           }`}
+          title="Haga clic para ver los servicios sin recepción o finiquito en SIP y confrontar a los encargados"
         >
-          <div className="flex items-center justify-between text-cyan-700 text-xs font-semibold">
-            <span>Confirmado en SIP</span>
-            <CheckCircle2 className="w-4 h-4 text-cyan-600" />
+          <div className="flex items-center justify-between text-rose-700 text-xs font-semibold">
+            <span>🚨 Sin Finiquito (Sin RC)</span>
+            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
           </div>
           <div className="mt-2">
-            <div className="text-lg sm:text-xl font-bold text-cyan-950 tracking-tight">
-              {safeFormatUSD(kpis.totalConRCUSD)}
+            <div className="text-lg sm:text-xl font-bold text-rose-950 tracking-tight">
+              {safeFormatUSD(kpis.totalSinRCUSD)}
             </div>
-            <div className="text-[11px] text-cyan-700/80 mt-0.5">
-              100% Auditado SIP Puro
+            <div className="text-[11px] text-rose-700/80 mt-0.5 font-medium flex items-center justify-between">
+              <span>{kpis.countSinRC.toLocaleString()} órdenes por auditar</span>
+              <span className="text-[10px] font-bold text-rose-800 underline">Filtrar</span>
             </div>
           </div>
         </div>
@@ -570,11 +594,14 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           
           {/* Selector de Origen Tabs */}
-          <div className="flex items-center p-1 bg-slate-100 rounded-xl">
+          <div className="flex flex-wrap items-center p-1 bg-slate-100 rounded-xl gap-1">
             <button
-              onClick={() => setOrigenFiltro('TODOS')}
+              onClick={() => {
+                setOrigenFiltro('TODOS');
+                setEstadoRcFiltro('TODOS');
+              }}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                origenFiltro === 'TODOS' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                origenFiltro === 'TODOS' && estadoRcFiltro === 'TODOS' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Todos ({kpis.totalItems.toLocaleString()})
@@ -582,7 +609,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
             <button
               onClick={() => {
                 setOrigenFiltro('ALMACEN');
-                if (estadoRcFiltro === 'SIN_RC') setEstadoRcFiltro('TODOS');
+                setEstadoRcFiltro('TODOS');
               }}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
                 origenFiltro === 'ALMACEN' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
@@ -592,13 +619,29 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               Almacén (Vales DP)
             </button>
             <button
-              onClick={() => setOrigenFiltro('SERVICIO')}
+              onClick={() => {
+                setOrigenFiltro('SERVICIO');
+                if (estadoRcFiltro === 'SIN_RC') setEstadoRcFiltro('TODOS');
+              }}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-                origenFiltro === 'SERVICIO' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
+                origenFiltro === 'SERVICIO' && estadoRcFiltro !== 'SIN_RC' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               <Briefcase className="w-3.5 h-3.5" />
               Servicios de Procura (SC/OC)
+            </button>
+            <button
+              onClick={() => {
+                setOrigenFiltro('SERVICIO');
+                setEstadoRcFiltro(estadoRcFiltro === 'SIN_RC' ? 'TODOS' : 'SIN_RC');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                estadoRcFiltro === 'SIN_RC' ? 'bg-rose-600 text-white shadow-xs' : 'text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200'
+              }`}
+              title="Filtrar solo los servicios pendientes por verificar con el encargado"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+              🚨 Pendientes Sin RC ({kpis.countSinRC})
             </button>
           </div>
 
@@ -710,7 +753,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                 </span>
                 {estadoRcFiltro !== 'TODOS' && (
                   <span className={`px-2 py-0.5 rounded-lg font-bold border shadow-2xs ${estadoRcFiltro === 'CON_RC' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`}>
-                    {estadoRcFiltro === 'CON_RC' ? '✓ Con Recepción / Despachados' : '⚠️ Sin Recepción Formal'}
+                    {estadoRcFiltro === 'CON_RC' ? '✓ Con Recepción / Despachados' : '🚨 Auditoría: Sin Finiquito / Sin RC'}
                   </span>
                 )}
                 <span className="text-slate-400">•</span>
