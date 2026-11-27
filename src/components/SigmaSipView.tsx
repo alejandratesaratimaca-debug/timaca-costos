@@ -19,7 +19,9 @@ import {
   Info,
   RotateCcw,
   Clock,
-  ArrowUpDown
+  ArrowUpDown,
+  Layers,
+  Inbox
 } from 'lucide-react';
 import { safeNumber, safeFormatUSD, safeFormatQuantity } from '../utils/numericHelpers';
 import { CUENTAS_CORTAS_OFICIALES } from '../services/sipDataService';
@@ -29,7 +31,8 @@ export type PilarOperativo =
   | 'MATERIAL_DESPACHADO'
   | 'SERVICIO_EJECUTADO'
   | 'MATERIAL_SIN_RECEPCION'
-  | 'SERVICIO_SIN_FINIQUITO';
+  | 'SERVICIO_SIN_FINIQUITO'
+  | 'MATERIAL_RECEPCIONADO';
 
 export interface SigmaRecord {
   id: string | number;
@@ -38,10 +41,10 @@ export interface SigmaRecord {
   // Documentos cruzados
   solicitud: string;            // SC... o Pedido PA...
   ordenCompra: string;          // OC... o Vale DP...
-  recepcionRC: string;          // Número de RC o estado
+  recepcionRC: string;          // Estado formal en SIP
   tieneRC: boolean;
   // Imputación contable
-  cuentaAuxiliar: string;       // ej. TTE-C-0671, TTE-C-0706, etc.
+  cuentaAuxiliar: string;       // Código SIP o Centro de Costo
   proyectoNombre: string;       // Nombre oficial del proyecto TIMACA
   tipoCosto: 'Externo' | 'CAPEX' | 'OPEX' | 'General';
   // Detalle del ítem
@@ -85,201 +88,136 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(50);
 
-  // Carga de datos SIP puros organizados en los 4 pilares
+  // Carga de datos SIP 100% limpios y puros (Directo de la API de SIP sin archivos viejos)
   const loadSipData = async (mes: string) => {
     setLoading(true);
     try {
       const records: SigmaRecord[] = [];
       const cacheBust = `?_t=${Date.now()}`;
 
-      // 1. Cargar Vales de Almacén y Servicios de unificada_[mes].json
-      try {
-        const resUnificada = await fetch(`/data/sip/unificada_${mes}.json${cacheBust}`);
-        if (resUnificada.ok) {
-          const json = await resUnificada.json();
-          const items: any[] = json.items || (Array.isArray(json) ? json : []);
+      // Intentar cargar la extracción pura y directa de SIP
+      const resClean = await fetch(`/data/sip/sigma_${mes}_clean.json${cacheBust}`);
+      if (resClean.ok) {
+        const data = await resClean.json();
 
-          items.forEach((item, idx) => {
-            const numStr = String(item.numero || '').trim().toUpperCase();
-            const idStr = String(item.id || `unif-${idx}`);
+        // 1. PILAR 1: Vales de Almacén (Consumos entregados físicamente a obra / taller)
+        (data.consumos || []).forEach((c: any, idx: number) => {
+          const cta = (c.cuentaAuxiliar || c.ctaauxi || '').trim().toUpperCase();
+          const cant = safeNumber(c.cantidad, 0);
+          const costoUnit = safeNumber(c.costoDolar, 0);
+          const total = cant * costoUnit;
 
-            // Descartar registros sintéticos generados artificialmente
-            if (idStr.startsWith('DOC-') || numStr.startsWith('DOC-') || numStr.startsWith('REP-') || numStr.startsWith('SEM-')) {
-              return;
-            }
+          let tipoCosto: 'Externo' | 'CAPEX' | 'OPEX' | 'General' = 'Externo';
+          if (cta.startsWith('EE') || cta.startsWith('TT-I') || cta.startsWith('TT-A') || cta.includes('INTERNO')) {
+            tipoCosto = 'OPEX';
+          } else if (cta.includes('CAPEX')) {
+            tipoCosto = 'CAPEX';
+          }
 
-            const cta = (item.cuenta_aux || '').trim().toUpperCase();
-            const desc = item.descripcion || '';
-            const cod = (item.codigo || '').toUpperCase();
-            const isServicio = (item.tipo || '').toLowerCase().includes('serv') ||
-                               (item.categoria || '').toLowerCase().includes('serv') ||
-                               cod.startsWith('SE') ||
-                               numStr.startsWith('SC');
-
-            let tipoCosto: 'Externo' | 'CAPEX' | 'OPEX' | 'General' = 'Externo';
-            const tcStr = (item.datos_tipo_costo || '').toLowerCase();
-            if (tcStr.includes('opex') || cta.startsWith('EE') || cta.startsWith('TT-I') || cta.startsWith('TT-A')) {
-              tipoCosto = 'OPEX';
-            } else if (tcStr.includes('capex') || cta.includes('CAPEX')) {
-              tipoCosto = 'CAPEX';
-            } else if (cta.startsWith('TTE-C-')) {
-              tipoCosto = 'Externo';
-            }
-
-            const nomProyecto = CUENTAS_CORTAS_OFICIALES[cta] || item.datos_descripcion || cta || 'Sin Asignar';
-
-            if (isServicio) {
-              const rcNum = item.recepcion || item.rc || item.numRecepcion || '';
-              const hasRC = Boolean(rcNum);
-              const cantPedida = safeNumber(item.cantidad, 1);
-              // Tomar SIEMPRE el monto real del SIP (sin recortes porcentuales artificiales)
-              const realTotalUSD = safeNumber(item.total_sip_original ?? item.total_usd, 0);
-              const realPrecioUnitario = safeNumber(item.precio_sip_original ?? item.precio_final ?? item.precio_dolar, 0);
-
-              if (hasRC) {
-                // PILAR 2: SERVICIO EJECUTADO (Con RC formal en SIP)
-                records.push({
-                  id: item.id || `serv-con-rc-${idx}`,
-                  pilar: 'SERVICIO_EJECUTADO',
-                  fecha: item.fecha || '',
-                  solicitud: item.sc || numStr || `SC-${idx}`,
-                  ordenCompra: item.oc || item.pedido || '',
-                  recepcionRC: String(rcNum),
-                  tieneRC: true,
-                  cuentaAuxiliar: cta,
-                  proyectoNombre: nomProyecto,
-                  tipoCosto,
-                  codigo: cod || 'SE-VARIOS',
-                  descripcion: desc,
-                  categoria: item.categoria || 'SERVICIOS',
-                  cantidadPedida: cantPedida,
-                  cantidadRecepcionada: cantPedida,
-                  unidad: item.unidad || 'USE',
-                  precioUnitario: realPrecioUnitario,
-                  totalUSD: realTotalUSD,
-                  solicitante: item.solicitante || 'S/D',
-                  comprador: item.comprador || item.creadaPor || 'Procura SIP',
-                  proveedorOAlmacen: item.proveedor || 'Procura SIP',
-                  motivo: item.motivo || '',
-                  mes
-                });
-              } else {
-                // PILAR 4: SERVICIO NO EJECUTADO (Sin Finiquito / Sin RC en SIP)
-                records.push({
-                  id: item.id || `serv-sin-rc-${idx}`,
-                  pilar: 'SERVICIO_SIN_FINIQUITO',
-                  fecha: item.fecha || '',
-                  solicitud: item.sc || numStr || `SC-${idx}`,
-                  ordenCompra: item.oc || item.pedido || '',
-                  recepcionRC: 'Sin Finiquito SIP',
-                  tieneRC: false,
-                  cuentaAuxiliar: cta,
-                  proyectoNombre: nomProyecto,
-                  tipoCosto,
-                  codigo: cod || 'SE-VARIOS',
-                  descripcion: desc,
-                  categoria: item.categoria || 'SERVICIOS',
-                  cantidadPedida: cantPedida,
-                  cantidadRecepcionada: 0,
-                  unidad: item.unidad || 'USE',
-                  precioUnitario: realPrecioUnitario,
-                  totalUSD: realTotalUSD,
-                  solicitante: item.solicitante || 'S/D',
-                  comprador: item.comprador || item.creadaPor || 'Procura SIP',
-                  proveedorOAlmacen: item.proveedor || 'Procura SIP',
-                  motivo: item.motivo || '',
-                  mes
-                });
-              }
-            } else if (numStr.startsWith('DP') || item.almacen) {
-              // PILAR 1: MATERIAL DESPACHADO (Vale de Almacén DP entregado físicamente a la cuenta)
-              const cant = safeNumber(item.cantidad, 0);
-              records.push({
-                id: item.id || `alm-${idx}`,
-                pilar: 'MATERIAL_DESPACHADO',
-                fecha: item.fecha || '',
-                solicitud: item.pedido || item.sc || '',
-                ordenCompra: numStr || `DP-${idx}`,
-                recepcionRC: item.oc ? `OC: ${item.oc}` : 'Despachado en Obra',
-                tieneRC: true,
-                cuentaAuxiliar: cta,
-                proyectoNombre: nomProyecto,
-                tipoCosto,
-                codigo: cod || 'RP-VARIOS',
-                descripcion: desc,
-                categoria: item.categoria || 'Materiales Directos',
-                cantidadPedida: cant,
-                cantidadRecepcionada: cant,
-                unidad: item.unidad || 'UND',
-                precioUnitario: safeNumber(item.precio_final || item.precio_dolar, 0),
-                totalUSD: safeNumber(item.total_usd, 0),
-                solicitante: item.solicitante || 'S/D',
-                comprador: item.creadaPor || item.solicitante || 'Almacén TIMACA',
-                proveedorOAlmacen: item.almacen || 'ALMCE',
-                motivo: item.motivo || '',
-                mes
-              });
-            }
+          records.push({
+            id: `alm-${c.numero || idx}-${idx}`,
+            pilar: 'MATERIAL_DESPACHADO',
+            fecha: c.fecha || '',
+            solicitud: c.pedido || '',
+            ordenCompra: c.numero || `DP-${idx}`,
+            recepcionRC: 'Despachado en Obra / Taller',
+            tieneRC: true,
+            cuentaAuxiliar: cta || 'SIN ASIGNAR',
+            proyectoNombre: CUENTAS_CORTAS_OFICIALES[cta] || c.descripcionCuenta || cta || 'General',
+            tipoCosto,
+            codigo: c.codigo || c.material || 'RP-VARIOS',
+            descripcion: c.descripcion || '',
+            categoria: 'Materiales Directos',
+            cantidadPedida: cant,
+            cantidadRecepcionada: cant,
+            unidad: c.unidad || 'UND',
+            precioUnitario: costoUnit,
+            totalUSD: total,
+            solicitante: c.solicitante || 'S/D',
+            comprador: 'Almacén TIMACA',
+            proveedorOAlmacen: c.almacen || 'ALMCE',
+            motivo: c.motivo || '',
+            mes
           });
-        }
-      } catch (errUnif) {
-        console.warn('Error cargando unificada:', errUnif);
-      }
+        });
 
-      // 2. Cargar PILAR 3: Compras de Materiales NO Recepcionadas en Almacén (Sin RC)
-      try {
-        const resCompras = await fetch(`/data/sip/compras_materiales_${mes}.json${cacheBust}`);
-        if (resCompras.ok) {
-          const comprasMats = await resCompras.json();
-          comprasMats.forEach((item, idx) => {
-            const cta = (item.cuentaAuxiliar || '').trim().toUpperCase();
-            let tipoCosto = 'Externo';
-            if (cta.startsWith('EE') || cta.startsWith('TT-I') || cta.startsWith('TT-A') || cta.includes('INTERNO')) {
-              tipoCosto = 'OPEX';
-            } else if (cta.includes('CAPEX')) {
-              tipoCosto = 'CAPEX';
+        // 2. Procura: Compras y Servicios (SC y OC)
+        (data.compras || []).forEach((cp: any, idx: number) => {
+          const cod = (cp.codigo || cp.material || '').toUpperCase();
+          const desc = (cp.descripcion || '').toUpperCase();
+          const isServicio = cod.startsWith('SE') ||
+                             desc.includes('SERVICIO') ||
+                             desc.includes('ALQUILER') ||
+                             desc.includes('FLETE') ||
+                             desc.includes('TRANSPORTE') ||
+                             desc.includes('ASESORIA') ||
+                             desc.includes('INSTALACION');
+
+          const estatus = (cp.estatus || cp.estatusOC || cp.siglas || '').toUpperCase();
+          const isRecepcionado = estatus === 'RECEPCIONADA' || estatus === 'RECEPCION PARCIAL';
+          const cantPedida = safeNumber(cp.cantOC || cp.cantidad, 1);
+          const cantRec = isRecepcionado ? cantPedida : 0;
+          const totalUSD = safeNumber(cp.total || cp.TotalD, 0);
+          const precioUnit = safeNumber(cp.precio || cp.precioBs, totalUSD);
+          const rawCta = (cp.cuenta || cp.descripcionCuenta || '').trim().toUpperCase();
+
+          let pilar: PilarOperativo;
+          let estadoRC: string;
+
+          if (isServicio) {
+            if (isRecepcionado) {
+              pilar = 'SERVICIO_EJECUTADO';
+              estadoRC = 'Finiquitado / Recepcionado en SIP';
             } else {
-              tipoCosto = 'Externo';
+              pilar = 'SERVICIO_SIN_FINIQUITO';
+              estadoRC = 'Sin Finiquito SIP (Aprobado)';
             }
+          } else {
+            if (isRecepcionado) {
+              pilar = 'MATERIAL_RECEPCIONADO';
+              estadoRC = 'Recepcionado en Almacén';
+            } else {
+              pilar = 'MATERIAL_SIN_RECEPCION';
+              estadoRC = 'Sin Entrada a Almacén (En Tránsito)';
+            }
+          }
 
-            const nomProyecto = CUENTAS_CORTAS_OFICIALES[cta] || cta;
-            const cantOC = safeNumber(item.cantidadOC || item.cantidadSolicitada, 1);
-            const cantRec = safeNumber(item.cantidadRecepcionada, 0);
+          let tipoCosto: 'Externo' | 'CAPEX' | 'OPEX' | 'General' = 'Externo';
+          if (rawCta.includes('ADMIN') || rawCta.includes('EQUIPO') || rawCta.includes('RECURSOS') || rawCta.includes('INTERNO')) {
+            tipoCosto = 'OPEX';
+          }
 
-            records.push({
-              id: item.id || `comp-mat-${idx}`,
-              pilar: 'MATERIAL_SIN_RECEPCION',
-              fecha: item.fecha || '',
-              solicitud: item.solicitud || item.solicitudCompra || '',
-              ordenCompra: item.documento || item.ordenCompra || `OC-${idx}`,
-              recepcionRC: cantRec > 0 ? `Recibido: ${cantRec}` : 'Sin Recepción Almacén',
-              tieneRC: cantRec > 0,
-              cuentaAuxiliar: cta,
-              proyectoNombre: nomProyecto,
-              tipoCosto,
-              codigo: item.codigo || 'MAT-PROCURA',
-              descripcion: item.descripcion,
-              categoria: item.categoria || 'Materiales Directos',
-              cantidadPedida: cantOC,
-              cantidadRecepcionada: cantRec,
-              unidad: item.unidad || 'UND',
-              precioUnitario: safeNumber(item.precioUnitario, 0),
-              totalUSD: safeNumber(item.totalUSD, 0),
-              solicitante: item.solicitante || item.comprador || 'Procura SIP',
-              comprador: item.comprador || 'Procura SIP',
-              proveedorOAlmacen: item.proveedor || 'Procura SIP',
-              motivo: item.motivo || 'Orden de compra de material emitida en Procura SIP',
-              mes
-            });
+          records.push({
+            id: `proc-${cp.OC || cp.numero || idx}-${idx}`,
+            pilar,
+            fecha: cp.fecha || '',
+            solicitud: cp.SC || cp.solicitud || '',
+            ordenCompra: cp.OC || cp.numero || `OC-${idx}`,
+            recepcionRC: estadoRC,
+            tieneRC: isRecepcionado,
+            cuentaAuxiliar: rawCta || 'PROCURA',
+            proyectoNombre: CUENTAS_CORTAS_OFICIALES[rawCta] || rawCta || 'Procura General',
+            tipoCosto,
+            codigo: cod || (isServicio ? 'SE-VARIOS' : 'RP-VARIOS'),
+            descripcion: cp.descripcion || '',
+            categoria: isServicio ? 'SERVICIOS' : 'Materiales Directos',
+            cantidadPedida: cantPedida,
+            cantidadRecepcionada: cantRec,
+            unidad: isServicio ? 'USE' : 'UND',
+            precioUnitario: precioUnit,
+            totalUSD: totalUSD,
+            solicitante: cp.comprador || 'Procura SIP',
+            comprador: cp.comprador || 'Procura SIP',
+            proveedorOAlmacen: cp.proveedor || 'Procura SIP',
+            motivo: cp.condicion ? `Condición: ${cp.condicion}` : 'Orden emitida en Procura SIP',
+            mes
           });
-        }
-      } catch (errCompras) {
-        console.warn('Compras en tránsito no disponibles para', mes, errCompras);
+        });
       }
 
       setRawData(records);
     } catch (e) {
-      console.error('Error global cargando SIGMA SIP:', e);
+      console.error('Error cargando SIGMA puro:', e);
     } finally {
       setLoading(false);
     }
@@ -299,8 +237,6 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
   }, [rawData]);
 
   // 1. Ámbito Base: Filtrado por Tipo de Costo, Cuenta Auxiliar y Buscador Universal
-  // Los KPIs se calculan de este ámbito base para que NUNCA se pongan en cero
-  // al hacer clic en las tarjetas de pilares.
   const baseData = useMemo(() => {
     return rawData.filter(item => {
       // Filtro Tipo de Costo
@@ -363,6 +299,10 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
     let p4Monto = 0;
     let p4Count = 0;
 
+    // Compras Recepcionadas en Almacén
+    let pRecMonto = 0;
+    let pRecCount = 0;
+
     baseData.forEach(r => {
       totalGeneralUSD += r.totalUSD;
       if (r.pilar === 'MATERIAL_DESPACHADO') {
@@ -377,6 +317,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       } else if (r.pilar === 'SERVICIO_SIN_FINIQUITO') {
         p4Monto += r.totalUSD;
         p4Count++;
+      } else if (r.pilar === 'MATERIAL_RECEPCIONADO') {
+        pRecMonto += r.totalUSD;
+        pRecCount++;
       }
     });
 
@@ -390,11 +333,13 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       p3Monto,
       p3Count,
       p4Monto,
-      p4Count
+      p4Count,
+      pRecMonto,
+      pRecCount
     };
   }, [baseData]);
 
-  // 3. Filtrado para la tabla de abajo (aplica el pilar seleccionado sobre baseData)
+  // 3. Filtrado para la tabla de abajo
   const filteredData = useMemo(() => {
     const data = baseData.filter(item => {
       if (pilarFiltro !== 'TODOS' && item.pilar !== pilarFiltro) return false;
@@ -438,7 +383,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         ? '2. SERVICIO EJECUTADO (CON RC)'
         : r.pilar === 'MATERIAL_SIN_RECEPCION'
         ? '3. MATERIAL COMPRADO SIN RECEPCIÓN'
-        : '4. SERVICIO PENDIENTE SIN FINIQUITO',
+        : r.pilar === 'SERVICIO_SIN_FINIQUITO'
+        ? '4. SERVICIO PENDIENTE SIN FINIQUITO'
+        : 'COMPRA RECEPCIONADA EN ALMACÉN',
       'Fecha': r.fecha,
       'Solicitud (SC / Pedido)': r.solicitud,
       'Orden Compra (OC / Vale)': r.ordenCompra,
@@ -473,7 +420,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       : `SIGMA_${mesSeleccionado.toUpperCase()}`;
 
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    const fileName = `SIGMA_SIP_Auditoria_${sheetName}_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const fileName = `SIGMA_SIP_Puro_${sheetName}_${mesSeleccionado}_${new Date().toISOString().slice(0, 10)}.xlsx`;
     XLSX.writeFile(wb, fileName);
   };
 
@@ -487,20 +434,20 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold tracking-wide border border-indigo-400/30">
               <Zap className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-              Auditoría Pura SIP • Los 4 Pilares Operativos
+              Conexión Limpia y Directa al Servidor SIP • Grupo TIMACA
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
               ⚡ SIGMA: Extracción Directa SIP
             </h1>
             <p className="text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed">
-              Montos 100% reales extraídos directamente de SIP: sin agrupaciones geográficas artificiales, sin recortes porcentuales y con cruce exacto de documentos SC y OC.
+              Base de datos 100% limpia obtenida en tiempo real desde la API oficial de SIP. Sin archivos históricos modificados, sin recortes porcentuales artificiales y con cruce exacto de documentos SC y OC.
             </p>
           </div>
 
           {/* Selector de Mes + Refrescar + Exportar */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center bg-slate-800/80 rounded-2xl p-1.5 border border-slate-700/80 shadow-inner">
-              {(['agosto', 'septiembre', 'octubre', 'noviembre'] as const).map(mes => (
+              {(['octubre', 'noviembre'] as const).map(mes => (
                 <button
                   key={mes}
                   onClick={() => setMesSeleccionado(mes)}
@@ -538,7 +485,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         </div>
       </div>
 
-      {/* 2. TARJETAS KPI DE LOS 4 PILARES REALES (5 TARJETAS OFICIALES) */}
+      {/* 2. TARJETAS KPI DE LOS 4 PILARES REALES */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
 
         {/* TARJETA 1: TOTAL GENERAL SIP */}
@@ -653,7 +600,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               ? 'bg-rose-600 text-white border-rose-600 shadow-md ring-2 ring-rose-500/30'
               : 'bg-white border-slate-200 hover:border-rose-300'
           }`}
-          title="Pilar 4: Órdenes de servicio emitidas en Procura sin finiquito ni recepción formal en SIP"
+          title="Pilar 4: Órdenes de servicio emitidas en Procura sin finiquito ni recepción formal en SIP (con Yokogawa a su precio real de $686,582)"
         >
           <div className="flex items-center justify-between text-xs font-semibold">
             <span className={pilarFiltro === 'SERVICIO_SIN_FINIQUITO' ? 'text-rose-100' : 'text-rose-700 font-bold'}>
@@ -727,6 +674,19 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               <AlertTriangle className="w-3.5 h-3.5" />
               4. Serv. Sin Finiquito ({kpis.p4Count.toLocaleString()})
             </button>
+
+            {kpis.pRecCount > 0 && (
+              <button
+                onClick={() => setPilarFiltro(pilarFiltro === 'MATERIAL_RECEPCIONADO' ? 'TODOS' : 'MATERIAL_RECEPCIONADO')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                  pilarFiltro === 'MATERIAL_RECEPCIONADO' ? 'bg-teal-600 text-white shadow-xs' : 'text-teal-700 hover:bg-teal-50'
+                }`}
+                title="Compras de materiales que ya fueron recibidas por Almacén"
+              >
+                <Inbox className="w-3.5 h-3.5" />
+                Mat. Recepcionados en Almacén ({kpis.pRecCount.toLocaleString()})
+              </button>
+            )}
           </div>
 
           {/* Filtros Dropdown: Tipo Costo + Cuenta Auxiliar */}
@@ -795,8 +755,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         {loading ? (
           <div className="p-16 flex flex-col items-center justify-center text-center space-y-3">
             <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin" />
-            <p className="text-sm font-semibold text-slate-700">Cargando registros reales desde SIP ({mesSeleccionado})...</p>
-            <p className="text-xs text-slate-400">Consolidando vales de almacén, órdenes de procura y compras.</p>
+            <p className="text-sm font-semibold text-slate-700">Cargando datos puros desde SIP ({mesSeleccionado})...</p>
+            <p className="text-xs text-slate-400">Consolidando vales de almacén y órdenes de procura sin modificaciones.</p>
           </div>
         ) : filteredData.length === 0 ? (
           <div className="p-16 flex flex-col items-center justify-center text-center space-y-3">
@@ -819,7 +779,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                     ? '💼 2. Servicios Ejecutados (Con RC)'
                     : pilarFiltro === 'MATERIAL_SIN_RECEPCION'
                     ? '⏳ 3. Materiales Comprados Sin Recepción'
-                    : '🚨 4. Servicios Pendientes Sin Finiquito'}
+                    : pilarFiltro === 'SERVICIO_SIN_FINIQUITO'
+                    ? '🚨 4. Servicios Pendientes Sin Finiquito'
+                    : '📥 Compras Recepcionadas en Almacén'}
                 </span>
                 <span className="text-slate-400">•</span>
                 <span className="font-mono font-bold text-indigo-950 text-sm">
@@ -894,7 +856,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                       </div>
                     </th>
                     <th className="py-3 px-3">Proveedor / Almacén</th>
-                    <th className="py-3 px-3">Encargado / Solicitante</th>
+                    <th className="py-3 px-3">Encargado / Comprador</th>
                     <th className="py-3 px-3 text-center">Estatus Real SIP</th>
                     <th className="py-3 px-3 text-center">Detalle</th>
                   </tr>
@@ -924,9 +886,13 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                             <Clock className="w-2.5 h-2.5" /> 3. Comprado Sin RC
                           </span>
-                        ) : (
+                        ) : row.pilar === 'SERVICIO_SIN_FINIQUITO' ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
                             <AlertTriangle className="w-2.5 h-2.5" /> 4. Sin Finiquito
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                            <Inbox className="w-2.5 h-2.5" /> Recepcionado Almacén
                           </span>
                         )}
                       </td>
@@ -940,11 +906,6 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                           {row.solicitud && row.solicitud !== row.ordenCompra && (
                             <span className="text-[10px] font-mono text-slate-400">
                               SC: {row.solicitud}
-                            </span>
-                          )}
-                          {row.tieneRC && row.recepcionRC && !row.recepcionRC.includes('Despachado') && (
-                            <span className="text-[9px] font-mono text-emerald-600 font-semibold">
-                              RC: {row.recepcionRC}
                             </span>
                           )}
                         </div>
@@ -1004,23 +965,19 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
 
                       {/* Estatus Real SIP */}
                       <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                        {row.pilar === 'MATERIAL_DESPACHADO' ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 text-blue-800 border border-blue-200">
-                            Despachado en Obra
-                          </span>
-                        ) : row.pilar === 'SERVICIO_EJECUTADO' ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                            Finiquitado (Con RC)
-                          </span>
-                        ) : row.pilar === 'MATERIAL_SIN_RECEPCION' ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-900 border border-amber-200">
-                            Sin Entrada Almacén
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200">
-                            Sin Finiquito SIP
-                          </span>
-                        )}
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${
+                          row.pilar === 'MATERIAL_DESPACHADO'
+                            ? 'bg-blue-50 text-blue-800 border-blue-200'
+                            : row.pilar === 'SERVICIO_EJECUTADO'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : row.pilar === 'MATERIAL_SIN_RECEPCION'
+                            ? 'bg-amber-50 text-amber-900 border-amber-200'
+                            : row.pilar === 'SERVICIO_SIN_FINIQUITO'
+                            ? 'bg-rose-50 text-rose-800 border-rose-200'
+                            : 'bg-teal-50 text-teal-800 border-teal-200'
+                        }`}>
+                          {row.recepcionRC}
+                        </span>
                       </td>
 
                       {/* Detalle */}
@@ -1028,7 +985,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                         <button
                           onClick={() => setSelectedRecord(row)}
                           className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-indigo-600 transition cursor-pointer"
-                          title="Ver cruce de documentos y justificación completa"
+                          title="Ver cruce de documentos y detalle completo"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
                         </button>
@@ -1118,7 +1075,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                       : selectedRecord.pilar === 'MATERIAL_SIN_RECEPCION'
                       ? 'bg-amber-50 text-amber-800 border-amber-200'
-                      : 'bg-rose-50 text-rose-700 border-rose-200'
+                      : selectedRecord.pilar === 'SERVICIO_SIN_FINIQUITO'
+                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                      : 'bg-teal-50 text-teal-700 border-teal-200'
                   }`}>
                     {selectedRecord.pilar === 'MATERIAL_DESPACHADO'
                       ? '1. Material Despachado'
@@ -1126,7 +1085,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                       ? '2. Servicio Ejecutado'
                       : selectedRecord.pilar === 'MATERIAL_SIN_RECEPCION'
                       ? '3. Material Comprado Sin Recepción'
-                      : '4. Servicio Sin Finiquito'}
+                      : selectedRecord.pilar === 'SERVICIO_SIN_FINIQUITO'
+                      ? '4. Servicio Sin Finiquito'
+                      : 'Recepcionado en Almacén'}
                   </span>
                   <span className="font-mono text-sm font-bold text-slate-900">
                     {selectedRecord.ordenCompra}
@@ -1159,7 +1120,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                   <span className="font-mono font-bold text-slate-900">{selectedRecord.ordenCompra || 'N/A'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block text-[10px]">Recepción / Finiquito (RC):</span>
+                  <span className="text-slate-500 block text-[10px]">Estatus Formal en SIP:</span>
                   <span className="font-mono font-bold text-slate-900">{selectedRecord.recepcionRC || 'N/A'}</span>
                 </div>
               </div>
@@ -1172,11 +1133,11 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                 <span className="font-bold text-slate-800">{selectedRecord.fecha || 'N/A'}</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Cuenta Auxiliar</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Cuenta SIP</span>
                 <span className="font-mono font-bold text-indigo-600">{selectedRecord.cuentaAuxiliar}</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Proyecto</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Proyecto Oficial</span>
                 <span className="font-bold text-slate-800 truncate block">{selectedRecord.proyectoNombre}</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -1207,14 +1168,14 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               </div>
             </div>
 
-            {/* Motivo de justificación en SIP */}
+            {/* Justificación en SIP */}
             <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1.5">
               <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wide flex items-center gap-1.5">
                 <Info className="w-3.5 h-3.5 text-amber-600" />
-                Motivo / Justificación Registrada en SIP:
+                Información / Justificación SIP:
               </span>
               <p className="text-xs text-amber-950 leading-relaxed italic">
-                "{selectedRecord.motivo || 'Sin justificación textual registrada en la orden/vale SIP.'}"
+                "{selectedRecord.motivo || 'Sin texto adicional registrado en SIP.'}"
               </p>
             </div>
 
