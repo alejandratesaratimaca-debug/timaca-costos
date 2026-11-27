@@ -214552,11 +214552,11 @@
       "solicitante": "MARIO LOZADA",
       "proveedor": "YOKOGAWA COLOMBIA S.A.S",
       "motivo": "ACTUALIZACIÓN TECNOLÓGICA DEL SISTEMA DE CONTROL DISTRIBUIDO DE LA PLANTA PARA PASAR DE LA PLATAFORMA YOKOGAWA CENTUM 3000 A LA VERSIÓN MÁS RECIENTE CENTUM VP – PELLAS LINEA 1. EL OBJETIVO ES MITIGAR LA OBSOLESCENCIA DE HARDWARE Y SOFTWARE, GARANTIZANDO LA CONTINUIDAD OPERATIVA MEDIANTE EL USO DE ESTACIONES DE TRABAJO DE ÚLTIMA GENERACIÓN Y CONTROLADORES DE ALTA DISPONIBILIDAD.",
-      "ajuste": "VALORIZADO 30% HITO 0 CONTRACTUAL",
+      "ajuste": "",
       "categoria": "SERVICIOS",
-      "precio_final": 205974,
-      "total_usd": 205974,
-      "precio_dolar": 205974,
+      "precio_final": 686582,
+      "total_usd": 686582,
+      "precio_dolar": 686582,
       "semana": null,
       "fecha_hasta": "",
       "apellidos_nombres": "",
@@ -214586,9 +214586,9 @@
       "creadaPor": "MARIO LOZADA",
       "precio_sip_original": 686582,
       "total_sip_original": 686582,
-      "motivo_ajuste": "Ajuste contractual a Hito 0 (30% Anticipo/KOM por USD 205,974). El 70% restante (USD 480,608) se ejecuta entre nov-26 y ene-27 según cronograma.",
-      "estatus_auditoria": "AJUSTADO_30_PORCIENTO",
-      "esReclasificado": true
+      "motivo_ajuste": "",
+      "estatus_auditoria": "SIP_ORIGINAL",
+      "esReclasificado": false
     },
     {
       "id": 340054,

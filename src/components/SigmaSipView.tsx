@@ -48,7 +48,7 @@ export interface SigmaRecord {
   codigo: string;               // Código RP... / SE... / CO...
   descripcion: string;
   categoria: string;
-  // Cantidades y precios
+  // Cantidades y precios (100% SIP Real Original)
   cantidadPedida: number;       // Cantidad solicitada / de la OC
   cantidadRecepcionada: number; // Cantidad recibida formalmente en SIP
   unidad: string;
@@ -132,6 +132,9 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               const rcNum = item.recepcion || item.rc || item.numRecepcion || '';
               const hasRC = Boolean(rcNum);
               const cantPedida = safeNumber(item.cantidad, 1);
+              // Tomar SIEMPRE el monto real del SIP (sin recortes porcentuales artificiales)
+              const realTotalUSD = safeNumber(item.total_sip_original ?? item.total_usd, 0);
+              const realPrecioUnitario = safeNumber(item.precio_sip_original ?? item.precio_final ?? item.precio_dolar, 0);
 
               if (hasRC) {
                 // PILAR 2: SERVICIO EJECUTADO (Con RC formal en SIP)
@@ -152,8 +155,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                   cantidadPedida: cantPedida,
                   cantidadRecepcionada: cantPedida,
                   unidad: item.unidad || 'USE',
-                  precioUnitario: safeNumber(item.precio_final || item.precio_dolar, 0),
-                  totalUSD: safeNumber(item.total_usd, 0),
+                  precioUnitario: realPrecioUnitario,
+                  totalUSD: realTotalUSD,
                   solicitante: item.solicitante || 'S/D',
                   comprador: item.comprador || item.creadaPor || 'Procura SIP',
                   proveedorOAlmacen: item.proveedor || 'Procura SIP',
@@ -179,8 +182,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                   cantidadPedida: cantPedida,
                   cantidadRecepcionada: 0,
                   unidad: item.unidad || 'USE',
-                  precioUnitario: safeNumber(item.precio_final || item.precio_dolar, 0),
-                  totalUSD: safeNumber(item.total_usd, 0),
+                  precioUnitario: realPrecioUnitario,
+                  totalUSD: realTotalUSD,
                   solicitante: item.solicitante || 'S/D',
                   comprador: item.comprador || item.creadaPor || 'Procura SIP',
                   proveedorOAlmacen: item.proveedor || 'Procura SIP',
@@ -377,9 +380,6 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       }
     });
 
-    const consumoObraMonto = p1Monto + p2Monto;
-    const consumoObraCount = p1Count + p2Count;
-
     return {
       totalGeneralUSD,
       totalRegistros: baseData.length,
@@ -390,9 +390,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
       p3Monto,
       p3Count,
       p4Monto,
-      p4Count,
-      consumoObraMonto,
-      consumoObraCount
+      p4Count
     };
   }, [baseData]);
 
@@ -495,7 +493,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
               ⚡ SIGMA: Extracción Directa SIP
             </h1>
             <p className="text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed">
-              Información real extraída de SIP sin agrupaciones artificiales ni datos inventados: Materiales despachados, Servicios ejecutados, Compras pendientes de recepción y Servicios sin finiquito.
+              Montos 100% reales extraídos directamente de SIP: sin agrupaciones geográficas artificiales, sin recortes porcentuales y con cruce exacto de documentos SC y OC.
             </p>
           </div>
 
@@ -540,8 +538,8 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
         </div>
       </div>
 
-      {/* 2. TARJETAS KPI DE LOS 4 PILARES REALES */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+      {/* 2. TARJETAS KPI DE LOS 4 PILARES REALES (5 TARJETAS OFICIALES) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
 
         {/* TARJETA 1: TOTAL GENERAL SIP */}
         <div
@@ -669,25 +667,6 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
             </div>
             <div className={`text-[11px] mt-0.5 ${pilarFiltro === 'SERVICIO_SIN_FINIQUITO' ? 'text-rose-100' : 'text-rose-600'}`}>
               {kpis.p4Count.toLocaleString()} por auditar
-            </div>
-          </div>
-        </div>
-
-        {/* TARJETA 6: CONSUMO REAL IMPUTADO A OBRA (P1 + P2) */}
-        <div
-          className="rounded-2xl p-4 border border-slate-200 bg-slate-50 flex flex-col justify-between"
-          title="Consumo físico imputado directamente a cuentas auxiliares (Pilar 1 + Pilar 2)"
-        >
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
-            <span>Consumo en Obra (P1+P2)</span>
-            <Briefcase className="w-4 h-4 text-indigo-600" />
-          </div>
-          <div className="mt-2">
-            <div className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-              {safeFormatUSD(kpis.consumoObraMonto)}
-            </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
-              {kpis.consumoObraCount.toLocaleString()} entregas reales
             </div>
           </div>
         </div>
@@ -1211,7 +1190,7 @@ export const SigmaSipView: React.FC<SigmaSipViewProps> = () => {
                 </span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Total USD</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Total USD (Monto Real SIP)</span>
                 <span className="font-bold text-emerald-600 text-sm">{safeFormatUSD(selectedRecord.totalUSD)}</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
